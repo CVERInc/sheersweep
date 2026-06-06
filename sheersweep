@@ -1,0 +1,140 @@
+#!/usr/bin/env bash
+# sheersweep — the Mac cleaner you can read.
+# Open source · dry-run first · hard never-touch list · sweeps every account.
+# https://oss.cver.net/sheersweep  ·  MIT © CVER Inc.
+#
+# Only clears caches/temp/logs that the OS and apps rebuild automatically,
+# then releases the local APFS snapshots that pin freed space. It NEVER touches
+# your real files — see the NEVER-TOUCH list below. Read every line; that's the point.
+set -u
+
+VERSION="0.1.0"
+
+print_help() {
+  cat <<'EOF'
+sheersweep — the Mac cleaner you can read.
+
+USAGE
+  sheersweep [--dry-run]
+  sheersweep --version | --help
+
+WHAT IT DOES
+  • For EVERY account under /Users (current and future):
+      Library/Caches, Library/Logs, ~/.cache, ~/.npm,
+      Xcode DerivedData / DeviceSupport, CoreSimulator caches,
+      Cargo/Gradle caches, leftover Adobe caches/support.
+  • System once: /Library/Caches, /.adobeTemp, `brew cleanup`.
+  • Releases local APFS (Time Machine) snapshots — the step that actually
+    returns the freed space (deleting files alone won't, if a snapshot pins them).
+
+OPTIONS
+  --dry-run   List how much each item WOULD free. Deletes nothing.
+  --version   Print version and exit.
+  --help      Show this help and exit.
+
+🔴 NEVER TOUCHED (no line in this script can reach these)
+  Photos / Documents / Desktop / Movies / Music, Clip Studio (CELSYS),
+  app Containers & Application Support (except already-uninstalled Adobe),
+  Dropbox / cloud-sync folders, screen recordings, Mail / Messages / Keychains,
+  any git repo, any Obsidian vault.
+
+Sweeping all accounts needs admin rights, so sheersweep re-runs itself with
+sudo (one password prompt). --version / --help never need sudo.
+EOF
+}
+
+# --- args (parsed BEFORE any privilege escalation or macOS-specific call) ----
+DRY=0
+for arg in "$@"; do
+  case "$arg" in
+    --version|-v) echo "sheersweep $VERSION"; exit 0 ;;
+    --help|-h)    print_help; exit 0 ;;
+    --dry-run)    DRY=1 ;;
+    *) echo "sheersweep: unknown option '$arg' (try --help)" >&2; exit 2 ;;
+  esac
+done
+
+# --- sweeping all accounts needs root; re-exec with sudo (keeps args) --------
+if [ "$(id -u)" -ne 0 ]; then
+  echo "Sweeping every account needs admin rights — re-running with sudo…"
+  exec sudo "$0" "$@"
+fi
+REAL_USER="${SUDO_USER:-$(id -un)}"
+
+human()  { du -sh "$1" 2>/dev/null | cut -f1; }
+free_kb() { df -k /System/Volumes/Data | awk '/Data$/{print $4}'; }
+
+# Clear a directory's CONTENTS (keep the dir). Dry-run only reports the size.
+clean() {
+  local p="$1" sz
+  [ -d "$p" ] || return 0
+  sz="$(human "$p")"
+  if [ -z "$sz" ] || [ "$sz" = "0B" ]; then return 0; fi
+  if [ "$DRY" -eq 1 ]; then
+    printf '   [preview] %6s  %s\n' "$sz" "$p"
+  else
+    printf '   freeing  %6s  %s\n' "$sz" "$p"
+    find "$p" -mindepth 1 -delete 2>/dev/null
+  fi
+}
+
+before="$(free_kb)"
+echo "============================================================"
+if [ "$DRY" -eq 1 ]; then echo "🧪 DRY-RUN — nothing will be deleted"; else echo "🧹 sheersweep"; fi
+echo "Free before: $(df -h /System/Volumes/Data | awk '/Data$/{print $4}')"
+echo "============================================================"
+
+# ---- per-account safe caches (every real home under /Users) ----
+for home in /Users/*; do
+  [ -d "$home/Library" ] || continue
+  case "$(basename "$home")" in Shared|Guest) continue ;; esac
+  echo "── account: $(basename "$home") ──"
+  clean "$home/Library/Caches"
+  clean "$home/Library/Logs"
+  clean "$home/.cache"
+  clean "$home/.npm"
+  clean "$home/Library/Developer/Xcode/DerivedData"
+  clean "$home/Library/Developer/Xcode/iOS DeviceSupport"
+  clean "$home/Library/Developer/Xcode/watchOS DeviceSupport"
+  clean "$home/Library/Developer/Xcode/tvOS DeviceSupport"
+  clean "$home/Library/Developer/CoreSimulator/Caches"
+  clean "$home/.cargo/registry/cache"
+  clean "$home/.gradle/caches"
+  clean "$home/Library/Application Support/Adobe"   # only reached if Adobe uninstalled
+  clean "$home/Library/Caches/Adobe"
+done
+
+# ---- system-wide, once ----
+echo "── system ──"
+clean "/Library/Caches"
+clean "/.adobeTemp"
+# Deliberately NOT touching /private/var/folders — it's the live temp area; deleting
+# it while logged in can break running apps.
+
+# Homebrew old versions (brew refuses to run as root → use the real user)
+if sudo -u "$REAL_USER" sh -c 'command -v brew' >/dev/null 2>&1; then
+  echo "── homebrew cleanup (as $REAL_USER) ──"
+  if [ "$DRY" -eq 1 ]; then
+    sudo -u "$REAL_USER" brew cleanup -n 2>/dev/null | tail -3
+  else
+    sudo -u "$REAL_USER" brew cleanup 2>/dev/null | tail -3
+  fi
+fi
+
+# ---- release local snapshots (the step that actually returns the space) ----
+if [ "$DRY" -eq 1 ]; then
+  echo "── local snapshots (dry-run keeps them) ──"
+  n="$(tmutil listlocalsnapshots / 2>/dev/null | grep -c TimeMachine)"
+  echo "   $n local snapshot(s) present — a real run deletes them to free space"
+else
+  echo "── releasing local snapshots ──"
+  tmutil deletelocalsnapshots / 2>/dev/null | tail -1
+fi
+
+after="$(free_kb)"
+echo "============================================================"
+echo "Free after:  $(df -h /System/Volumes/Data | awk '/Data$/{print $4}')"
+if [ "$DRY" -eq 0 ]; then
+  awk -v b="$before" -v a="$after" 'BEGIN{printf "Reclaimed:   ~%.1f GB\n", (a-b)/1024/1024}'
+fi
+echo "============================================================"

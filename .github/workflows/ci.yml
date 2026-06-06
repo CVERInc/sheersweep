@@ -1,0 +1,34 @@
+# CVER OSS delivery baseline — shell CI (dim 7).
+# Static checks + no-sudo smoke. The actual sweep is macOS+sudo only, so it's
+# verified locally before release, not in the runner (kept fast and green).
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: ShellCheck
+        run: shellcheck sheersweep
+
+      - name: Syntax check
+        run: bash -n sheersweep
+
+      - name: Smoke (no sudo — these must work without privileges)
+        run: |
+          chmod +x sheersweep
+          ./sheersweep --version
+          ./sheersweep --help
+
+      - name: CHANGELOG has an entry for the script version
+        run: |
+          v="$(grep -E '^VERSION=' sheersweep | head -1 | sed -E 's/.*"([0-9.]+)".*/\1/')"
+          echo "script version: $v"
+          grep -q "## \[$v\]" CHANGELOG.md || { echo "CHANGELOG.md missing section for $v"; exit 1; }
