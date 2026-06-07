@@ -2,6 +2,8 @@
 
 [![CI](https://github.com/CVERInc/sheersweep/actions/workflows/ci.yml/badge.svg)](https://github.com/CVERInc/sheersweep/actions/workflows/ci.yml)
 
+**English** · [日本語](./README.ja.md) · [繁體中文](./README.zh-TW.md)
+
 > The Mac cleaner you can **read**. Open source · dry-run first · a hard never-touch list · sweeps every account.
 
 Most Mac cleaners are a black box that asks you to *trust* them while they delete
