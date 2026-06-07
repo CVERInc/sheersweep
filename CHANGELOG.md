@@ -19,3 +19,7 @@ project adheres to [Semantic Versioning](https://semver.org/).
 - Hard never-touch list (photos, documents, app data, Clip Studio, cloud sync,
   repos, vaults). The only delete call runs solely on the listed cache paths.
 - Re-execs with `sudo` to sweep all accounts; `--version` / `--help` need no sudo.
+- Trilingual UI — **en-US / ja-JP / zh-TW**, auto-detected from the system locale
+  (Traditional Chinese only; Simplified falls back to English). Override with
+  `SHEERSWEEP_LANG=en-US|ja-JP|zh-TW`. Language is resolved before the sudo
+  re-exec and passed through, so it survives privilege escalation.

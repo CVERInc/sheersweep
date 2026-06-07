@@ -10,8 +10,176 @@ set -u
 
 VERSION="0.1.0"
 
+# ============================================================================
+# i18n — en-US / ja-JP / zh-TW. Auto-detected; override with SHEERSWEEP_LANG.
+# (Just strings. The safety logic is further down and language-independent.)
+# ============================================================================
+ss_resolve_lang() {
+  local l="${SHEERSWEEP_LANG:-${LANG:-}}"
+  [ -z "$l" ] && l="$(defaults read -g AppleLocale 2>/dev/null || true)"
+  case "$l" in
+    ja*|*ja_JP*|*ja-JP*)        echo "ja-JP" ;;
+    *zh*Hant*|*zh_TW*|*zh-TW*)  echo "zh-TW" ;;   # Traditional only (Simplified → English)
+    *)                          echo "en-US" ;;
+  esac
+}
+SS_LANG="$(ss_resolve_lang)"
+
+# t KEY → localized string. Parameterized strings use {placeholders}.
+t() {
+  case "$1" in
+    escalate)
+      case "$SS_LANG" in
+        ja-JP) echo "全アカウントを掃除するには管理者権限が必要です — sudo で再実行します…" ;;
+        zh-TW) echo "清掃所有帳號需要管理員權限——以 sudo 重新執行…" ;;
+        *)     echo "Sweeping every account needs admin rights — re-running with sudo…" ;;
+      esac ;;
+    dry_banner)
+      case "$SS_LANG" in
+        ja-JP) echo "🧪 ドライラン — 何も削除しません" ;;
+        zh-TW) echo "🧪 預演（DRY-RUN）——不會刪除任何東西" ;;
+        *)     echo "🧪 DRY-RUN — nothing will be deleted" ;;
+      esac ;;
+    free_before)
+      case "$SS_LANG" in
+        ja-JP) echo "クリーン前の空き容量：" ;;
+        zh-TW) echo "清理前可用：" ;;
+        *)     echo "Free before: " ;;
+      esac ;;
+    free_after)
+      case "$SS_LANG" in
+        ja-JP) echo "クリーン後の空き容量：" ;;
+        zh-TW) echo "清理後可用：" ;;
+        *)     echo "Free after:  " ;;
+      esac ;;
+    reclaimed)
+      case "$SS_LANG" in
+        ja-JP) echo "回収した容量：" ;;
+        zh-TW) echo "本輪回收：" ;;
+        *)     echo "Reclaimed:   " ;;
+      esac ;;
+    acct)
+      case "$SS_LANG" in
+        ja-JP) echo "アカウント：" ;;
+        zh-TW) echo "帳號：" ;;
+        *)     echo "account: " ;;
+      esac ;;
+    system)
+      case "$SS_LANG" in
+        ja-JP) echo "システム" ;;
+        zh-TW) echo "系統" ;;
+        *)     echo "system" ;;
+      esac ;;
+    brew)   # {user}
+      case "$SS_LANG" in
+        ja-JP) echo "homebrew クリーンアップ（{user} として）" ;;
+        zh-TW) echo "homebrew 清理（以 {user}）" ;;
+        *)     echo "homebrew cleanup (as {user})" ;;
+      esac ;;
+    snap_dry)
+      case "$SS_LANG" in
+        ja-JP) echo "ローカルスナップショット（ドライランでは保持）" ;;
+        zh-TW) echo "本機快照（預演保留）" ;;
+        *)     echo "local snapshots (dry-run keeps them)" ;;
+      esac ;;
+    snap_count)   # {n}
+      case "$SS_LANG" in
+        ja-JP) echo "ローカルスナップショットが {n} 個 — 本番実行で削除し空き容量を解放します" ;;
+        zh-TW) echo "目前有 {n} 個本機快照——正式執行會刪掉以釋放空間" ;;
+        *)     echo "{n} local snapshot(s) present — a real run deletes them to free space" ;;
+      esac ;;
+    snap_release)
+      case "$SS_LANG" in
+        ja-JP) echo "ローカルスナップショットを解放中" ;;
+        zh-TW) echo "釋放本機快照" ;;
+        *)     echo "releasing local snapshots" ;;
+      esac ;;
+    preview)
+      case "$SS_LANG" in
+        ja-JP) echo "［予定］" ;;
+        zh-TW) echo "［預覽］" ;;
+        *)     echo "[preview]" ;;
+      esac ;;
+    freeing)
+      case "$SS_LANG" in
+        ja-JP) echo "解放" ;;
+        zh-TW) echo "釋放" ;;
+        *)     echo "free  " ;;
+      esac ;;
+    unknown)   # {opt}
+      case "$SS_LANG" in
+        ja-JP) echo "sheersweep: 不明なオプション '{opt}'（--help を参照）" ;;
+        zh-TW) echo "sheersweep：未知選項 '{opt}'（請看 --help）" ;;
+        *)     echo "sheersweep: unknown option '{opt}' (try --help)" ;;
+      esac ;;
+  esac
+}
+
 print_help() {
-  cat <<'EOF'
+  case "$SS_LANG" in
+    ja-JP) cat <<'EOF'
+sheersweep — 読める Mac クリーナー。
+
+使い方
+  sheersweep [--dry-run]
+  sheersweep --version | --help
+
+何をするか
+  • /Users 配下の すべての アカウント（現在も将来も）に対して:
+      Library/Caches, Library/Logs, ~/.cache, ~/.npm,
+      Xcode DerivedData / DeviceSupport, CoreSimulator キャッシュ,
+      Cargo/Gradle キャッシュ, 残った Adobe キャッシュ/サポート。
+  • システム全体（一度）: /Library/Caches, /.adobeTemp, `brew cleanup`。
+  • ローカル APFS（Time Machine）スナップショットを解放 — 解放した容量が
+    実際に戻る唯一の手順（ファイル削除だけではスナップショットが容量を保持）。
+
+オプション
+  --dry-run   各項目が解放する容量を表示。何も削除しません。
+  --version   バージョンを表示して終了。
+  --help      このヘルプを表示して終了。
+
+🔴 絶対に触れない（このスクリプトのどの行も到達しません）
+  写真 / 書類 / デスクトップ / ムービー / ミュージック、Clip Studio (CELSYS)、
+  アプリの Containers と Application Support（アンインストール済み Adobe を除く）、
+  Dropbox / クラウド同期フォルダ、画面収録、メール / メッセージ / キーチェーン、
+  あらゆる git リポジトリ、あらゆる Obsidian vault。
+
+言語: SHEERSWEEP_LANG=en-US|ja-JP|zh-TW で上書き可。
+全アカウントの掃除には管理者権限が必要なため sudo で再実行します（パスワードは一度）。
+EOF
+      ;;
+    zh-TW) cat <<'EOF'
+sheersweep — 你讀得懂的 Mac 清理工具。
+
+用法
+  sheersweep [--dry-run]
+  sheersweep --version | --help
+
+它做什麼
+  • 對 /Users 底下的 每一個 帳號（現有與未來）：
+      Library/Caches、Library/Logs、~/.cache、~/.npm、
+      Xcode DerivedData / DeviceSupport、CoreSimulator 快取、
+      Cargo/Gradle 快取、殘留的 Adobe 快取/支援檔。
+  • 系統層（一次）：/Library/Caches、/.adobeTemp、`brew cleanup`。
+  • 釋放本機 APFS（Time Machine）快照——這是釋出空間真正會回來的一步
+    （只刪檔案，若快照仍釘住就不會還空間）。
+
+選項
+  --dry-run   列出每項會釋放多少。不刪除任何東西。
+  --version   印出版本後結束。
+  --help      顯示這份說明後結束。
+
+🔴 絕不碰（這支腳本沒有任何一行碰得到）
+  照片 / 文件 / 桌面 / 影片 / 音樂、Clip Studio (CELSYS)、
+  app 的 Containers 與 Application Support（已卸載的 Adobe 除外）、
+  Dropbox / 雲端同步資料夾、螢幕錄影、Mail / Messages / 鑰匙圈、
+  任何 git repo、任何 Obsidian vault。
+
+語言：可用 SHEERSWEEP_LANG=en-US|ja-JP|zh-TW 覆寫。
+清掃所有帳號需要管理員權限，因此會以 sudo 重新執行（只問一次密碼）。
+EOF
+      ;;
+    *) cat <<'EOF'
 sheersweep — the Mac cleaner you can read.
 
 USAGE
@@ -38,9 +206,12 @@ OPTIONS
   Dropbox / cloud-sync folders, screen recordings, Mail / Messages / Keychains,
   any git repo, any Obsidian vault.
 
+LANGUAGE: override with SHEERSWEEP_LANG=en-US|ja-JP|zh-TW.
 Sweeping all accounts needs admin rights, so sheersweep re-runs itself with
 sudo (one password prompt). --version / --help never need sudo.
 EOF
+      ;;
+  esac
 }
 
 # --- args (parsed BEFORE any privilege escalation or macOS-specific call) ----
@@ -50,14 +221,14 @@ for arg in "$@"; do
     --version|-v) echo "sheersweep $VERSION"; exit 0 ;;
     --help|-h)    print_help; exit 0 ;;
     --dry-run)    DRY=1 ;;
-    *) echo "sheersweep: unknown option '$arg' (try --help)" >&2; exit 2 ;;
+    *) m="$(t unknown)"; echo "${m//\{opt\}/$arg}" >&2; exit 2 ;;
   esac
 done
 
-# --- sweeping all accounts needs root; re-exec with sudo (keeps args) --------
+# --- sweeping all accounts needs root; re-exec with sudo (keep args + lang) --
 if [ "$(id -u)" -ne 0 ]; then
-  echo "Sweeping every account needs admin rights — re-running with sudo…"
-  exec sudo "$0" "$@"
+  t escalate
+  exec sudo SHEERSWEEP_LANG="$SS_LANG" "$0" "$@"
 fi
 REAL_USER="${SUDO_USER:-$(id -un)}"
 
@@ -71,24 +242,24 @@ clean() {
   sz="$(human "$p")"
   if [ -z "$sz" ] || [ "$sz" = "0B" ]; then return 0; fi
   if [ "$DRY" -eq 1 ]; then
-    printf '   [preview] %6s  %s\n' "$sz" "$p"
+    printf '   %s %6s  %s\n' "$(t preview)" "$sz" "$p"
   else
-    printf '   freeing  %6s  %s\n' "$sz" "$p"
+    printf '   %s %6s  %s\n' "$(t freeing)" "$sz" "$p"
     find "$p" -mindepth 1 -delete 2>/dev/null
   fi
 }
 
 before="$(free_kb)"
 echo "============================================================"
-if [ "$DRY" -eq 1 ]; then echo "🧪 DRY-RUN — nothing will be deleted"; else echo "🧹 sheersweep"; fi
-echo "Free before: $(df -h /System/Volumes/Data | awk '/Data$/{print $4}')"
+if [ "$DRY" -eq 1 ]; then t dry_banner; else echo "🧹 sheersweep"; fi
+echo "$(t free_before)$(df -h /System/Volumes/Data | awk '/Data$/{print $4}')"
 echo "============================================================"
 
 # ---- per-account safe caches (every real home under /Users) ----
 for home in /Users/*; do
   [ -d "$home/Library" ] || continue
   case "$(basename "$home")" in Shared|Guest) continue ;; esac
-  echo "── account: $(basename "$home") ──"
+  echo "── $(t acct)$(basename "$home") ──"
   clean "$home/Library/Caches"
   clean "$home/Library/Logs"
   clean "$home/.cache"
@@ -105,7 +276,7 @@ for home in /Users/*; do
 done
 
 # ---- system-wide, once ----
-echo "── system ──"
+echo "── $(t system) ──"
 clean "/Library/Caches"
 clean "/.adobeTemp"
 # Deliberately NOT touching /private/var/folders — it's the live temp area; deleting
@@ -113,7 +284,7 @@ clean "/.adobeTemp"
 
 # Homebrew old versions (brew refuses to run as root → use the real user)
 if sudo -u "$REAL_USER" sh -c 'command -v brew' >/dev/null 2>&1; then
-  echo "── homebrew cleanup (as $REAL_USER) ──"
+  m="$(t brew)"; echo "── ${m//\{user\}/$REAL_USER} ──"
   if [ "$DRY" -eq 1 ]; then
     sudo -u "$REAL_USER" brew cleanup -n 2>/dev/null | tail -3
   else
@@ -123,18 +294,18 @@ fi
 
 # ---- release local snapshots (the step that actually returns the space) ----
 if [ "$DRY" -eq 1 ]; then
-  echo "── local snapshots (dry-run keeps them) ──"
+  echo "── $(t snap_dry) ──"
   n="$(tmutil listlocalsnapshots / 2>/dev/null | grep -c TimeMachine)"
-  echo "   $n local snapshot(s) present — a real run deletes them to free space"
+  m="$(t snap_count)"; echo "   ${m//\{n\}/$n}"
 else
-  echo "── releasing local snapshots ──"
+  echo "── $(t snap_release) ──"
   tmutil deletelocalsnapshots / 2>/dev/null | tail -1
 fi
 
 after="$(free_kb)"
 echo "============================================================"
-echo "Free after:  $(df -h /System/Volumes/Data | awk '/Data$/{print $4}')"
+echo "$(t free_after)$(df -h /System/Volumes/Data | awk '/Data$/{print $4}')"
 if [ "$DRY" -eq 0 ]; then
-  awk -v b="$before" -v a="$after" 'BEGIN{printf "Reclaimed:   ~%.1f GB\n", (a-b)/1024/1024}'
+  awk -v b="$before" -v a="$after" -v L="$(t reclaimed)" 'BEGIN{printf "%s~%.1f GB\n", L, (a-b)/1024/1024}'
 fi
 echo "============================================================"

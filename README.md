@@ -70,6 +70,16 @@ grow "aggressive" or "deep" cleaners that hunt through app data — that's exact
 where cleaners delete something you wanted, and it's the opposite of the trust
 this tool is built on. Narrow and honest beats broad and scary.
 
+## Language
+
+The interface speaks **English (en-US), 日本語 (ja-JP), and 繁體中文 (zh-TW)**,
+auto-detected from your system locale (Traditional Chinese only — Simplified falls
+back to English). Force one with:
+
+```bash
+SHEERSWEEP_LANG=ja-JP ./sheersweep --dry-run
+```
+
 ## Requirements
 
 macOS (uses `tmutil`, APFS, the standard `/Users` layout). Pure `bash` + system
