@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Pre-push guard: run the repo's full check before any push; a failure blocks the push.
+# Tracked in-repo (not .git/hooks). Activate once with:  git config core.hooksPath hooks
+# Bypass in an emergency with:  git push --no-verify   (CI still guards server-side).
+exec bash "$(dirname "$0")/../scripts/test.sh"
