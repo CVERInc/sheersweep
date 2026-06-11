@@ -15,7 +15,8 @@ The honest cleaner. No subscription, no scare tactics, no surprises.
 
 ## Why trust it
 
-- **You can read every line.** It's ~150 lines of `bash`. The dangerous verb
+- **You can read every line.** It's one `bash` script — ~300 lines, two-thirds of
+  which are its three-language strings; the logic fits on two screens. The dangerous verb
   (`find … -delete`) appears in exactly one helper, on exactly the paths listed below.
 - **Dry-run first.** `sheersweep --dry-run` prints how much each item *would*
   free and deletes nothing. Run it, read it, then decide.
