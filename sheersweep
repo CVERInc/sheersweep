@@ -3,12 +3,22 @@
 # Open source · dry-run first · hard never-touch list · sweeps every account.
 # https://oss.cver.net/sheersweep  ·  MIT © CVER Inc.
 #
-# Only clears caches/temp/logs that the OS and apps rebuild automatically,
-# then releases the local APFS snapshots that pin freed space. It NEVER touches
-# your real files — see the NEVER-TOUCH list below. Read every line; that's the point.
+# DEFAULT SWEEP (no subcommand):
+#   Only clears caches/temp/logs that the OS and apps rebuild automatically,
+#   then releases the local APFS snapshots that pin freed space. It NEVER touches
+#   your real files — see the NEVER-TOUCH list below. Read every line; that's the point.
+#
+# UNINSTALL (`sheersweep uninstall [App]`) — an opt-in, dangerous-by-nature verb:
+#   Finds EVERYTHING that belongs to one app (the .app plus its per-account
+#   preferences / caches / containers / launch agents) across EVERY account,
+#   matched by the app's bundle identifier — never by a fuzzy name. Run it with no
+#   name for an interactive numbered picker. It SHOWS you the full list with sizes
+#   and waits for you to type the app's name. It then MOVES (never rm) each item
+#   into the owning account's Trash, so every deletion is recoverable. Emptying
+#   the Trash is what finally reclaims the space.
 set -u
 
-VERSION="0.1.0"
+VERSION="0.2.0"
 
 # ============================================================================
 # i18n — en-US / ja-JP / zh-TW. Auto-detected; override with SHEERSWEEP_LANG.
@@ -112,6 +122,116 @@ t() {
         zh-TW) echo "sheersweep：未知選項 '{opt}'（請看 --help）" ;;
         *)     echo "sheersweep: unknown option '{opt}' (try --help)" ;;
       esac ;;
+
+    # ---- uninstall flow ----
+    un_usage)
+      case "$SS_LANG" in
+        ja-JP) echo "uninstall にはアプリ名が必要です:  sheersweep uninstall <App>" ;;
+        zh-TW) echo "uninstall 需要一個 App 名稱：sheersweep uninstall <App>" ;;
+        *)     echo "uninstall needs an app name:  sheersweep uninstall <App>" ;;
+      esac ;;
+    un_pick_header)
+      case "$SS_LANG" in
+        ja-JP) echo "アンインストールできるアプリ:" ;;
+        zh-TW) echo "可卸載的 App：" ;;
+        *)     echo "Apps you can uninstall:" ;;
+      esac ;;
+    un_pick_prompt)
+      case "$SS_LANG" in
+        ja-JP) echo "番号を入力して選択（q でキャンセル）: " ;;
+        zh-TW) echo "輸入編號選擇（q 取消）：" ;;
+        *)     echo "Enter a number to choose (q to cancel): " ;;
+      esac ;;
+    un_pick_invalid)
+      case "$SS_LANG" in
+        ja-JP) echo "無効な選択です。" ;;
+        zh-TW) echo "不是有效的編號。" ;;
+        *)     echo "Not a valid choice." ;;
+      esac ;;
+    un_pick_none)
+      case "$SS_LANG" in
+        ja-JP) echo "アンインストールできるアプリが見つかりません。" ;;
+        zh-TW) echo "找不到可卸載的 App。" ;;
+        *)     echo "No removable apps found." ;;
+      esac ;;
+    un_notfound)   # {app}
+      case "$SS_LANG" in
+        ja-JP) echo "❌ '{app}' というアプリが見つかりません（/Applications と ~/Applications を確認）" ;;
+        zh-TW) echo "❌ 找不到名為「{app}」的 App（已找過 /Applications 與 ~/Applications）" ;;
+        *)     echo "❌ no app named '{app}' (looked in /Applications and ~/Applications)" ;;
+      esac ;;
+    un_refuse_apple)   # {app}
+      case "$SS_LANG" in
+        ja-JP) echo "🔴 拒否：{app} は Apple／システムのアプリです。封印された読み取り専用のシステムボリューム上にあり、root でも削除できません（削除しても容量は戻りません）。" ;;
+        zh-TW) echo "🔴 拒絕：{app} 是 Apple／系統 App，住在已封印的唯讀系統卷上——連 root 都刪不掉（刪了也不會釋放空間）。" ;;
+        *)     echo "🔴 refusing: {app} is an Apple / system app on the sealed, read-only system volume — not even root can remove it (and deleting it wouldn't free space)." ;;
+      esac ;;
+    un_refuse_nobid)   # {app}
+      case "$SS_LANG" in
+        ja-JP) echo "🔴 拒否：{app} に bundle id がありません。安全に照合できないため中止します。" ;;
+        zh-TW) echo "🔴 拒絕：{app} 沒有 bundle id，無法安全比對，已中止。" ;;
+        *)     echo "🔴 refusing: {app} has no bundle id — can't match its files safely, aborting." ;;
+      esac ;;
+    un_resolved)   # {app}  ·  {bid}
+      case "$SS_LANG" in
+        ja-JP) echo "アプリ: {app}   ·   bundle id: {bid}" ;;
+        zh-TW) echo "App：{app}   ·   bundle id：{bid}" ;;
+        *)     echo "App: {app}   ·   bundle id: {bid}" ;;
+      esac ;;
+    un_header)   # {app}
+      case "$SS_LANG" in
+        ja-JP) echo "{app} に属するもの（すべてゴミ箱へ移動 — 復元可能）:" ;;
+        zh-TW) echo "屬於 {app} 的所有東西（會移到垃圾桶——可救回）：" ;;
+        *)     echo "Everything that belongs to {app} (moves to Trash — recoverable):" ;;
+      esac ;;
+    un_empty)   # {app}
+      case "$SS_LANG" in
+        ja-JP) echo "{app} に属するファイルは見つかりませんでした。" ;;
+        zh-TW) echo "找不到任何屬於 {app} 的檔案。" ;;
+        *)     echo "Found nothing belonging to {app}." ;;
+      esac ;;
+    un_total)
+      case "$SS_LANG" in
+        ja-JP) echo "合計:        " ;;
+        zh-TW) echo "合計：       " ;;
+        *)     echo "Total:       " ;;
+      esac ;;
+    un_dry_note)
+      case "$SS_LANG" in
+        ja-JP) echo "🧪 プレビュー — 何も移動していません。uninstall するには --dry-run なしで実行。" ;;
+        zh-TW) echo "🧪 預覽——什麼都沒動。要真的卸載請拿掉 --dry-run 再執行。" ;;
+        *)     echo "🧪 preview — nothing moved. Run without --dry-run to uninstall." ;;
+      esac ;;
+    un_confirm)   # {name}
+      case "$SS_LANG" in
+        ja-JP) echo "上記すべてをゴミ箱へ移動するにはアプリ名「{name}」を入力（それ以外でキャンセル）: " ;;
+        zh-TW) echo "要把以上全部移到垃圾桶，請輸入 App 名稱「{name}」（輸入其他則取消）：" ;;
+        *)     echo "Type the app name '{name}' to move all of the above to Trash (anything else cancels): " ;;
+      esac ;;
+    un_cancelled)
+      case "$SS_LANG" in
+        ja-JP) echo "キャンセルしました — 何も変更していません。" ;;
+        zh-TW) echo "已取消——什麼都沒動。" ;;
+        *)     echo "Cancelled — nothing was touched." ;;
+      esac ;;
+    un_quit)   # {app}
+      case "$SS_LANG" in
+        ja-JP) echo "{app} は起動中のようです — 先に終了を依頼します…" ;;
+        zh-TW) echo "{app} 看起來正在執行——先請它結束…" ;;
+        *)     echo "{app} looks like it's running — asking it to quit first…" ;;
+      esac ;;
+    un_trashing)
+      case "$SS_LANG" in
+        ja-JP) echo "ゴミ箱へ" ;;
+        zh-TW) echo "移到垃圾桶" ;;
+        *)     echo "to Trash" ;;
+      esac ;;
+    un_done)   # {app}
+      case "$SS_LANG" in
+        ja-JP) echo "✅ {app} をゴミ箱へ移動しました。容量を取り戻すにはゴミ箱を空にしてください。" ;;
+        zh-TW) echo "✅ {app} 已移到垃圾桶。要真正釋放空間，請清空垃圾桶。" ;;
+        *)     echo "✅ {app} moved to Trash. Empty the Trash to actually reclaim the space." ;;
+      esac ;;
   esac
 }
 
@@ -122,6 +242,7 @@ sheersweep — 読める Mac クリーナー。
 
 使い方
   sheersweep [--dry-run]
+  sheersweep uninstall [App] [--dry-run]
   sheersweep --version | --help
 
 何をするか
@@ -132,6 +253,14 @@ sheersweep — 読める Mac クリーナー。
   • システム全体（一度）: /Library/Caches, /.adobeTemp, `brew cleanup`。
   • ローカル APFS（Time Machine）スナップショットを解放 — 解放した容量が
     実際に戻る唯一の手順（ファイル削除だけではスナップショットが容量を保持）。
+
+アプリのアンインストール（オプトインの危険な操作）
+  sheersweep uninstall <App>
+  そのアプリに属するものを bundle id で全アカウント横断で探し出し（曖昧な名前
+  では照合しません）、一覧と容量を表示してから、アプリ名の入力を待ちます。確認後、
+  各項目を「所有アカウントのゴミ箱」へ移動します（rm はしません＝復元可能）。
+  容量が実際に戻るのはゴミ箱を空にした時です。--dry-run は一覧表示のみ。
+  通常のクリーン（サブコマンドなし）の「実ファイルに触れない」約束は不変です。
 
 オプション
   --dry-run   各項目が解放する容量を表示。何も削除しません。
@@ -153,6 +282,7 @@ sheersweep — 你讀得懂的 Mac 清理工具。
 
 用法
   sheersweep [--dry-run]
+  sheersweep uninstall [App] [--dry-run]
   sheersweep --version | --help
 
 它做什麼
@@ -163,6 +293,13 @@ sheersweep — 你讀得懂的 Mac 清理工具。
   • 系統層（一次）：/Library/Caches、/.adobeTemp、`brew cleanup`。
   • 釋放本機 APFS（Time Machine）快照——這是釋出空間真正會回來的一步
     （只刪檔案，若快照仍釘住就不會還空間）。
+
+卸載一個 App（明確 opt-in 的危險操作）
+  sheersweep uninstall <App>
+  用 bundle id（不靠模糊檔名）跨「每一個帳號」找出屬於這 App 的所有東西，
+  列出清單與大小，等你輸入 App 名稱確認後，把每一項移到「擁有它的那個帳號的
+  垃圾桶」（不是 rm，可救回）。空間要等清空垃圾桶才真的回來。--dry-run 只預覽。
+  預設清理（不帶子命令）「永不碰真檔」的承諾完全不變。
 
 選項
   --dry-run   列出每項會釋放多少。不刪除任何東西。
@@ -184,6 +321,7 @@ sheersweep — the Mac cleaner you can read.
 
 USAGE
   sheersweep [--dry-run]
+  sheersweep uninstall [App] [--dry-run]
   sheersweep --version | --help
 
 WHAT IT DOES
@@ -194,6 +332,15 @@ WHAT IT DOES
   • System once: /Library/Caches, /.adobeTemp, `brew cleanup`.
   • Releases local APFS (Time Machine) snapshots — the step that actually
     returns the freed space (deleting files alone won't, if a snapshot pins them).
+
+UNINSTALL AN APP (opt-in, dangerous by nature)
+  sheersweep uninstall <App>
+  Finds everything that belongs to one app — across EVERY account — matched by
+  its bundle id, never a fuzzy name. Shows the full list with sizes, then waits
+  for you to type the app's name. On confirmation it MOVES each item (never rm)
+  into the owning account's Trash, so it's recoverable; emptying the Trash is
+  what actually reclaims the space. --dry-run only previews. The default sweep's
+  "never touches your real files" promise is unchanged.
 
 OPTIONS
   --dry-run   List how much each item WOULD free. Deletes nothing.
@@ -215,22 +362,45 @@ EOF
 }
 
 # --- args (parsed BEFORE any privilege escalation or macOS-specific call) ----
+# Optional first arg is a subcommand: `uninstall <App>`. Default mode = sweep.
+# $@ is never mutated, so the sudo re-exec below can replay it verbatim.
 DRY=0
+MODE="sweep"
+APP_TARGET=""
+argi=0
 for arg in "$@"; do
+  argi=$((argi + 1))
+  if [ "$argi" -eq 1 ] && { [ "$arg" = "uninstall" ] || [ "$arg" = "remove" ]; }; then
+    MODE="uninstall"; continue
+  fi
   case "$arg" in
     --version|-v) echo "sheersweep $VERSION"; exit 0 ;;
     --help|-h)    print_help; exit 0 ;;
     --dry-run)    DRY=1 ;;
-    *) m="$(t unknown)"; echo "${m//\{opt\}/$arg}" >&2; exit 2 ;;
+    -*) m="$(t unknown)"; echo "${m//\{opt\}/$arg}" >&2; exit 2 ;;
+    *)
+      if [ "$MODE" = "uninstall" ] && [ -z "$APP_TARGET" ]; then
+        APP_TARGET="$arg"
+      else
+        m="$(t unknown)"; echo "${m//\{opt\}/$arg}" >&2; exit 2
+      fi ;;
   esac
 done
 
-# --- sweeping all accounts needs root; re-exec with sudo (keep args + lang) --
+# uninstall with no app name is fine on a terminal (we'll show a picker after
+# escalation). With no TTY there's nothing to pick from → fail before sudo.
+if [ "$MODE" = "uninstall" ] && [ -z "$APP_TARGET" ] && [ ! -t 0 ]; then
+  t un_usage >&2; exit 2
+fi
+
+# --- both modes read every account, which needs root; re-exec with sudo --------
 if [ "$(id -u)" -ne 0 ]; then
   t escalate
   exec sudo SHEERSWEEP_LANG="$SS_LANG" "$0" "$@"
 fi
 REAL_USER="${SUDO_USER:-$(id -un)}"
+REAL_HOME="$(dscl . -read "/Users/$REAL_USER" NFSHomeDirectory 2>/dev/null | awk '{print $2}')"
+[ -n "$REAL_HOME" ] || REAL_HOME="/Users/$REAL_USER"
 
 human()  { du -sh "$1" 2>/dev/null | cut -f1; }
 free_kb() { df -k /System/Volumes/Data | awk '/Data$/{print $4}'; }
@@ -248,6 +418,193 @@ clean() {
     find "$p" -mindepth 1 -delete 2>/dev/null
   fi
 }
+
+# ============================================================================
+# uninstall <App> — opt-in, dangerous-by-nature. Find one app's whole footprint
+# across every account by BUNDLE ID, preview it, then MOVE it to Trash (never rm).
+# Kept self-contained so the safety story reads top-to-bottom in one place.
+# ============================================================================
+
+# Resolve a name/path to an .app bundle. Sets RESOLVED_APP ("" if not found).
+resolve_app() {
+  RESOLVED_APP=""
+  local q="$1" base hit
+  case "$q" in
+    /*) [ -d "$q" ] && RESOLVED_APP="$q"; return ;;   # explicit path wins
+  esac
+  base="$q"; case "$base" in *.app) ;; *) base="$base.app" ;; esac
+  local d
+  for d in "/Applications" "/Applications/Utilities" "$REAL_HOME/Applications"; do
+    if [ -d "$d/$base" ]; then RESOLVED_APP="$d/$base"; return; fi
+  done
+  # case-insensitive fallback (Spotlight-free)
+  hit="$(find "/Applications" "$REAL_HOME/Applications" -maxdepth 2 -iname "$base" -type d 2>/dev/null | head -1)"
+  [ -n "$hit" ] && RESOLVED_APP="$hit"
+}
+
+# Read CFBundleIdentifier from an .app (empty if unreadable).
+bundle_id() {
+  defaults read "$1/Contents/Info" CFBundleIdentifier 2>/dev/null \
+    || /usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$1/Contents/Info.plist" 2>/dev/null
+}
+
+# Interactive picker (mole-style): list user-removable apps, read a number,
+# set APP_TARGET. Apple/system apps are filtered out. Returns with APP_TARGET
+# unset on cancel / invalid input.
+pick_app() {
+  local apps=() d appp base bid n choice
+  for d in "/Applications" "/Applications/Utilities" "$REAL_HOME/Applications"; do
+    [ -d "$d" ] || continue
+    for appp in "$d"/*.app; do
+      [ -d "$appp" ] || continue
+      bid="$(bundle_id "$appp")"
+      case "$bid" in com.apple.*|"") continue ;; esac
+      apps+=("$appp")
+    done
+  done
+  if [ "${#apps[@]}" -eq 0 ]; then t un_pick_none >&2; return 0; fi
+  t un_pick_header
+  n=0
+  for appp in "${apps[@]}"; do
+    n=$((n + 1))
+    base="$(basename "$appp")"; base="${base%.app}"
+    printf '  %3d) %s\n' "$n" "$base"
+  done
+  printf '%s' "$(t un_pick_prompt)"
+  choice=""; read -r choice || true
+  case "$choice" in
+    ''|q|Q)   return 0 ;;
+    *[!0-9]*) t un_pick_invalid >&2; return 0 ;;
+  esac
+  if [ "$choice" -lt 1 ] || [ "$choice" -gt "${#apps[@]}" ]; then
+    t un_pick_invalid >&2; return 0
+  fi
+  APP_TARGET="${apps[$((choice - 1))]}"
+}
+
+# Move one path into a specific account's Trash (recoverable). $1=path $2=ownerHome
+to_trash() {
+  local item="$1" owner_home="$2" tdir base dest stamp
+  [ -e "$item" ] || return 0
+  tdir="$owner_home/.Trash"
+  if [ ! -d "$tdir" ]; then
+    mkdir -p "$tdir" 2>/dev/null
+    chown "$(stat -f %u "$owner_home" 2>/dev/null):$(stat -f %g "$owner_home" 2>/dev/null)" "$tdir" 2>/dev/null
+  fi
+  base="$(basename "$item")"
+  dest="$tdir/$base"
+  if [ -e "$dest" ]; then stamp="$(date +%Y%m%d-%H%M%S)"; dest="$tdir/$base $stamp"; fi
+  mv "$item" "$dest" 2>/dev/null
+}
+
+do_uninstall() {
+  local target="$1" app bid name
+  resolve_app "$target"
+  app="$RESOLVED_APP"
+  if [ -z "$app" ]; then
+    m="$(t un_notfound)"; echo "${m//\{app\}/$target}" >&2; return 1
+  fi
+  case "$app" in
+    /System/*) m="$(t un_refuse_apple)"; echo "${m//\{app\}/$app}" >&2; return 1 ;;
+  esac
+  bid="$(bundle_id "$app")"
+  if [ -z "$bid" ]; then
+    m="$(t un_refuse_nobid)"; echo "${m//\{app\}/$app}" >&2; return 1
+  fi
+  case "$bid" in
+    com.apple.*) m="$(t un_refuse_apple)"; echo "${m//\{app\}/$app}" >&2; return 1 ;;
+  esac
+  name="$(basename "$app")"; name="${name%.app}"
+
+  # --- gather the footprint into parallel arrays (path / owner-home / scope) ---
+  ITEM_PATH=(); ITEM_OWNER=(); ITEM_SCOPE=()
+  local ascope=""
+  add() {                       # add a path IF it exists, under the current scope
+    [ -e "$1" ] || return 0
+    ITEM_PATH+=("$1"); ITEM_OWNER+=("$2"); ITEM_SCOPE+=("$ascope")
+  }
+
+  local home u f
+  for home in /Users/*; do
+    [ -d "$home/Library" ] || continue
+    case "$(basename "$home")" in Shared|Guest) continue ;; esac
+    u="$(basename "$home")"
+    ascope="$(t acct)$u"
+    add "$home/Library/Application Support/$name"            "$home"
+    add "$home/Library/Application Support/$bid"             "$home"
+    add "$home/Library/Caches/$bid"                          "$home"
+    add "$home/Library/Caches/$name"                         "$home"
+    add "$home/Library/Preferences/$bid.plist"              "$home"
+    for f in "$home/Library/Preferences/$bid".*.plist;   do add "$f" "$home"; done
+    add "$home/Library/Containers/$bid"                     "$home"
+    for f in "$home/Library/Group Containers/"*"$bid"*;  do add "$f" "$home"; done
+    add "$home/Library/Saved Application State/$bid.savedState" "$home"
+    for f in "$home/Library/HTTPStorages/$bid"*;         do add "$f" "$home"; done
+    add "$home/Library/WebKit/$bid"                        "$home"
+    add "$home/Library/Cookies/$bid.binarycookies"        "$home"
+    add "$home/Library/Application Scripts/$bid"           "$home"
+    add "$home/Library/Logs/$name"                         "$home"
+    for f in "$home/Library/LaunchAgents/$bid"*.plist;   do add "$f" "$home"; done
+  done
+
+  # system-wide bits + the .app itself → the running user's Trash (Finder-like)
+  ascope="$(t system)"
+  add "$app"                                                "$REAL_HOME"
+  add "/Library/Application Support/$name"                  "$REAL_HOME"
+  add "/Library/Caches/$bid"                                "$REAL_HOME"
+  for f in "/Library/LaunchAgents/$bid"*.plist;        do add "$f" "$REAL_HOME"; done
+  for f in "/Library/LaunchDaemons/$bid"*.plist;       do add "$f" "$REAL_HOME"; done
+  for f in "/Library/PrivilegedHelperTools/$bid"*;     do add "$f" "$REAL_HOME"; done
+
+  # --- show what we found (always; this IS the product) -----------------------
+  echo "============================================================"
+  m="$(t un_resolved)"; m="${m//\{app\}/$app}"; echo "${m//\{bid\}/$bid}"
+  echo "------------------------------------------------------------"
+  if [ "${#ITEM_PATH[@]}" -eq 0 ]; then
+    m="$(t un_empty)"; echo "${m//\{app\}/$name}"
+    echo "============================================================"
+    return 0
+  fi
+  m="$(t un_header)"; echo "${m//\{app\}/$name}"
+  local i last=""
+  for i in "${!ITEM_PATH[@]}"; do
+    if [ "${ITEM_SCOPE[$i]}" != "$last" ]; then echo "── ${ITEM_SCOPE[$i]} ──"; last="${ITEM_SCOPE[$i]}"; fi
+    printf '   %6s  %s\n' "$(human "${ITEM_PATH[$i]}")" "${ITEM_PATH[$i]}"
+  done
+  local total
+  total="$(du -sch "${ITEM_PATH[@]}" 2>/dev/null | tail -1 | cut -f1)"
+  echo "------------------------------------------------------------"
+  echo "$(t un_total)$total"
+  echo "============================================================"
+
+  # --- dry-run stops here; nothing is touched ---------------------------------
+  if [ "$DRY" -eq 1 ]; then t un_dry_note; return 0; fi
+
+  # --- typed-name confirmation (informed consent, GitHub-delete style) --------
+  m="$(t un_confirm)"; printf '%s' "${m//\{name\}/$name}"
+  local reply=""; read -r reply || true
+  if [ "$reply" != "$name" ]; then t un_cancelled; return 0; fi
+
+  # ask the app to quit (best-effort, in the real user's GUI session)
+  m="$(t un_quit)"; echo "${m//\{app\}/$name}"
+  sudo -u "$REAL_USER" osascript -e "tell application id \"$bid\" to quit" >/dev/null 2>&1 || true
+
+  for i in "${!ITEM_PATH[@]}"; do
+    printf '   %s  %s\n' "$(t un_trashing)" "${ITEM_PATH[$i]}"
+    to_trash "${ITEM_PATH[$i]}" "${ITEM_OWNER[$i]}"
+  done
+  echo "============================================================"
+  m="$(t un_done)"; echo "${m//\{app\}/$name}"
+  return 0
+}
+
+# --- dispatch: uninstall is a separate verb; default falls through to sweep ---
+if [ "$MODE" = "uninstall" ]; then
+  [ -z "$APP_TARGET" ] && pick_app          # no app named → show the picker
+  if [ -z "$APP_TARGET" ]; then t un_cancelled; exit 0; fi
+  do_uninstall "$APP_TARGET"
+  exit $?
+fi
 
 before="$(free_kb)"
 echo "============================================================"
