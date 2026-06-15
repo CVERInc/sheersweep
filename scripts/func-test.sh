@@ -16,12 +16,14 @@ SCRIPT="$HERE/sheersweep"
 
 # --- source as a library: define functions, run nothing -----------------------
 # These are read by the sourced library / its functions, not by this file directly.
+# Pin the UI language to en-US so the string assertions below are deterministic
+# regardless of the test machine's locale (the script resolves SS_LANG from
+# SHEERSWEEP_LANG at source time).
+export SHEERSWEEP_LANG="en-US"
 # shellcheck disable=SC2034
 DRY=0
 # shellcheck disable=SC2034
 RESTORE_LIST=0
-# shellcheck disable=SC2034
-SS_LANG="en-US"
 # shellcheck disable=SC2034
 SHEERSWEEP_LIB=1
 # shellcheck source=/dev/null
