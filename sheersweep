@@ -18,7 +18,7 @@
 #   the Trash is what finally reclaims the space.
 set -u
 
-VERSION="0.2.0"
+VERSION="0.3.0"
 
 # ============================================================================
 # i18n — en-US / ja-JP / zh-TW. Auto-detected; override with SHEERSWEEP_LANG.
@@ -228,9 +228,59 @@ t() {
       esac ;;
     un_done)   # {app}
       case "$SS_LANG" in
-        ja-JP) echo "✅ {app} をゴミ箱へ移動しました。容量を取り戻すにはゴミ箱を空にしてください。" ;;
-        zh-TW) echo "✅ {app} 已移到垃圾桶。要真正釋放空間，請清空垃圾桶。" ;;
-        *)     echo "✅ {app} moved to Trash. Empty the Trash to actually reclaim the space." ;;
+        ja-JP) echo "✅ {app} をゴミ箱へ移動しました。容量を取り戻すにはゴミ箱を空に。元に戻すには: sheersweep restore" ;;
+        zh-TW) echo "✅ {app} 已移到垃圾桶。要真正釋放空間請清空垃圾桶；想還原打：sheersweep restore" ;;
+        *)     echo "✅ {app} moved to Trash. Empty the Trash to reclaim the space — or undo with: sheersweep restore" ;;
+      esac ;;
+    un_refuse_protected)   # {app}
+      case "$SS_LANG" in
+        ja-JP) echo "🔴 拒否：{app} はシステムに組み込まれており（firmlink）、削除できません。" ;;
+        zh-TW) echo "🔴 拒絕：{app} 接進系統核心（firmlink），無法移除。" ;;
+        *)     echo "🔴 refusing: {app} is wired into the system (firmlink) and can't be removed." ;;
+      esac ;;
+
+    # ---- restore (undo the last uninstall) ----
+    rs_none)
+      case "$SS_LANG" in
+        ja-JP) echo "復元できるものがありません — アンインストールの記録が見つかりません。" ;;
+        zh-TW) echo "沒有可還原的東西——找不到任何卸載紀錄。" ;;
+        *)     echo "Nothing to restore — no uninstall receipts found." ;;
+      esac ;;
+    rs_header)   # {app}  ·  {date}
+      case "$SS_LANG" in
+        ja-JP) echo "最後のアンインストールを復元: {app}   ·   {date}" ;;
+        zh-TW) echo "要還原最後一次卸載：{app}   ·   {date}" ;;
+        *)     echo "Restoring the last uninstall: {app}   ·   {date}" ;;
+      esac ;;
+    rs_confirm)
+      case "$SS_LANG" in
+        ja-JP) echo "上記をすべて元の場所へ戻しますか？ [y/N]: " ;;
+        zh-TW) echo "把以上全部放回原處？ [y/N]：" ;;
+        *)     echo "Put all of the above back where they came from? [y/N]: " ;;
+      esac ;;
+    rs_restoring)
+      case "$SS_LANG" in
+        ja-JP) echo "復元" ;;
+        zh-TW) echo "還原" ;;
+        *)     echo "restore" ;;
+      esac ;;
+    rs_skip)   # {path}
+      case "$SS_LANG" in
+        ja-JP) echo "スキップ（すでに存在）: {path}" ;;
+        zh-TW) echo "略過（已存在）：{path}" ;;
+        *)     echo "skip (already there): {path}" ;;
+      esac ;;
+    rs_done)   # {app}
+      case "$SS_LANG" in
+        ja-JP) echo "✅ {app} を元の場所へ復元しました。" ;;
+        zh-TW) echo "✅ {app} 已放回原處。" ;;
+        *)     echo "✅ Restored {app} to where it was." ;;
+      esac ;;
+    rs_list_header)
+      case "$SS_LANG" in
+        ja-JP) echo "これまでのアンインストール（新しい順）:" ;;
+        zh-TW) echo "歷次卸載（新到舊）：" ;;
+        *)     echo "Past uninstalls (newest first):" ;;
       esac ;;
   esac
 }
@@ -243,6 +293,7 @@ sheersweep — 読める Mac クリーナー。
 使い方
   sheersweep [--dry-run]
   sheersweep uninstall [App] [--dry-run]
+  sheersweep restore [--list]
   sheersweep --version | --help
 
 何をするか
@@ -261,6 +312,10 @@ sheersweep — 読める Mac クリーナー。
   各項目を「所有アカウントのゴミ箱」へ移動します（rm はしません＝復元可能）。
   容量が実際に戻るのはゴミ箱を空にした時です。--dry-run は一覧表示のみ。
   通常のクリーン（サブコマンドなし）の「実ファイルに触れない」約束は不変です。
+
+直前のアンインストールを元に戻す
+  sheersweep restore          直前のアンインストールをゴミ箱から元の場所へ戻す
+  sheersweep restore --list   これまでのアンインストール履歴を表示
 
 オプション
   --dry-run   各項目が解放する容量を表示。何も削除しません。
@@ -283,6 +338,7 @@ sheersweep — 你讀得懂的 Mac 清理工具。
 用法
   sheersweep [--dry-run]
   sheersweep uninstall [App] [--dry-run]
+  sheersweep restore [--list]
   sheersweep --version | --help
 
 它做什麼
@@ -300,6 +356,10 @@ sheersweep — 你讀得懂的 Mac 清理工具。
   列出清單與大小，等你輸入 App 名稱確認後，把每一項移到「擁有它的那個帳號的
   垃圾桶」（不是 rm，可救回）。空間要等清空垃圾桶才真的回來。--dry-run 只預覽。
   預設清理（不帶子命令）「永不碰真檔」的承諾完全不變。
+
+還原上一次卸載
+  sheersweep restore          把上一次卸載從垃圾桶放回原處
+  sheersweep restore --list   列出歷次卸載紀錄
 
 選項
   --dry-run   列出每項會釋放多少。不刪除任何東西。
@@ -322,6 +382,7 @@ sheersweep — the Mac cleaner you can read.
 USAGE
   sheersweep [--dry-run]
   sheersweep uninstall [App] [--dry-run]
+  sheersweep restore [--list]
   sheersweep --version | --help
 
 WHAT IT DOES
@@ -341,6 +402,10 @@ UNINSTALL AN APP (opt-in, dangerous by nature)
   into the owning account's Trash, so it's recoverable; emptying the Trash is
   what actually reclaims the space. --dry-run only previews. The default sweep's
   "never touches your real files" promise is unchanged.
+
+UNDO THE LAST UNINSTALL
+  sheersweep restore          put the last uninstall back from the Trash
+  sheersweep restore --list   show your past uninstalls
 
 OPTIONS
   --dry-run   List how much each item WOULD free. Deletes nothing.
@@ -367,16 +432,21 @@ EOF
 DRY=0
 MODE="sweep"
 APP_TARGET=""
+RESTORE_LIST=0
 argi=0
 for arg in "$@"; do
   argi=$((argi + 1))
-  if [ "$argi" -eq 1 ] && { [ "$arg" = "uninstall" ] || [ "$arg" = "remove" ]; }; then
-    MODE="uninstall"; continue
+  if [ "$argi" -eq 1 ]; then
+    case "$arg" in
+      uninstall|remove) MODE="uninstall"; continue ;;
+      restore|undo)     MODE="restore";   continue ;;
+    esac
   fi
   case "$arg" in
     --version|-v) echo "sheersweep $VERSION"; exit 0 ;;
     --help|-h)    print_help; exit 0 ;;
     --dry-run)    DRY=1 ;;
+    --list)       RESTORE_LIST=1 ;;
     -*) m="$(t unknown)"; echo "${m//\{opt\}/$arg}" >&2; exit 2 ;;
     *)
       if [ "$MODE" = "uninstall" ] && [ -z "$APP_TARGET" ]; then
@@ -458,7 +528,9 @@ pick_app() {
     for appp in "$d"/*.app; do
       [ -d "$appp" ] || continue
       bid="$(bundle_id "$appp")"
-      case "$bid" in com.apple.*|"") continue ;; esac
+      # The picker only scans writable folders (never /System), so any Apple app
+      # it finds is removable — except the firmlinked ones (Safari).
+      case "$bid" in ""|com.apple.Safari|com.apple.SafariTechnologyPreview) continue ;; esac
       apps+=("$appp")
     done
   done
@@ -483,8 +555,11 @@ pick_app() {
 }
 
 # Move one path into a specific account's Trash (recoverable). $1=path $2=ownerHome
+# Sets TRASH_DEST to the new location on success (empty if nothing moved), so the
+# caller can record a receipt that `restore` later reads to put things back.
 to_trash() {
   local item="$1" owner_home="$2" tdir base dest stamp
+  TRASH_DEST=""
   [ -e "$item" ] || return 0
   tdir="$owner_home/.Trash"
   if [ ! -d "$tdir" ]; then
@@ -494,7 +569,7 @@ to_trash() {
   base="$(basename "$item")"
   dest="$tdir/$base"
   if [ -e "$dest" ]; then stamp="$(date +%Y%m%d-%H%M%S)"; dest="$tdir/$base $stamp"; fi
-  mv "$item" "$dest" 2>/dev/null
+  if mv "$item" "$dest" 2>/dev/null; then TRASH_DEST="$dest"; fi
 }
 
 do_uninstall() {
@@ -504,6 +579,11 @@ do_uninstall() {
   if [ -z "$app" ]; then
     m="$(t un_notfound)"; echo "${m//\{app\}/$target}" >&2; return 1
   fi
+  # Refuse only what genuinely can't be removed — by WHERE it lives, not by who
+  # made it. Apps on the sealed, read-only system volume (/System/*) are off
+  # limits; removable Apple apps in /Applications (iMovie, GarageBand, the iWork
+  # suite, Xcode…) are fair game. A tiny denylist covers Apple apps that sit in a
+  # writable folder but are firmlinked into the system (Safari).
   case "$app" in
     /System/*) m="$(t un_refuse_apple)"; echo "${m//\{app\}/$app}" >&2; return 1 ;;
   esac
@@ -512,7 +592,8 @@ do_uninstall() {
     m="$(t un_refuse_nobid)"; echo "${m//\{app\}/$app}" >&2; return 1
   fi
   case "$bid" in
-    com.apple.*) m="$(t un_refuse_apple)"; echo "${m//\{app\}/$app}" >&2; return 1 ;;
+    com.apple.Safari|com.apple.SafariTechnologyPreview)
+      m="$(t un_refuse_protected)"; echo "${m//\{app\}/$app}" >&2; return 1 ;;
   esac
   name="$(basename "$app")"; name="${name%.app}"
 
@@ -589,20 +670,107 @@ do_uninstall() {
   m="$(t un_quit)"; echo "${m//\{app\}/$name}"
   sudo -u "$REAL_USER" osascript -e "tell application id \"$bid\" to quit" >/dev/null 2>&1 || true
 
+  # write a receipt as we move, so `restore` can undo this exact uninstall later.
+  local rdir rfile stamp moved=0
+  rdir="$REAL_HOME/.sheersweep/uninstalls"
+  mkdir -p "$rdir" 2>/dev/null
+  stamp="$(date +%Y%m%d-%H%M%S)"
+  rfile="$rdir/$stamp-$bid.tsv"
+  {
+    echo "# sheersweep uninstall receipt"
+    echo "# app=$name"
+    echo "# bid=$bid"
+    echo "# date=$stamp"
+  } > "$rfile" 2>/dev/null
   for i in "${!ITEM_PATH[@]}"; do
     printf '   %s  %s\n' "$(t un_trashing)" "${ITEM_PATH[$i]}"
     to_trash "${ITEM_PATH[$i]}" "${ITEM_OWNER[$i]}"
+    if [ -n "$TRASH_DEST" ]; then
+      printf '%s\t%s\n' "$TRASH_DEST" "${ITEM_PATH[$i]}" >> "$rfile" 2>/dev/null
+      moved=$((moved + 1))
+    fi
   done
+  # hand the receipt to the real user (we wrote it as root)
+  chown -R "$(stat -f %u "$REAL_HOME" 2>/dev/null):$(stat -f %g "$REAL_HOME" 2>/dev/null)" "$REAL_HOME/.sheersweep" 2>/dev/null
+  [ "$moved" -eq 0 ] && rm -f "$rfile" 2>/dev/null
+
   echo "============================================================"
   m="$(t un_done)"; echo "${m//\{app\}/$name}"
   return 0
 }
 
-# --- dispatch: uninstall is a separate verb; default falls through to sweep ---
+# ============================================================================
+# restore — undo the last uninstall (or list past ones). Reads the receipt and
+# moves each item from the Trash back to exactly where it came from.
+# ============================================================================
+do_restore() {
+  local rdir newest app date dest orig restored=0
+  rdir="$REAL_HOME/.sheersweep/uninstalls"
+
+  if [ "$RESTORE_LIST" -eq 1 ]; then
+    t rs_list_header
+    local f had=0
+    for f in "$rdir"/*.tsv "$rdir"/*.tsv.restored; do
+      [ -e "$f" ] || continue
+      had=1
+      app="$(awk -F= '/^# app=/{print $2}' "$f")"
+      date="$(awk -F= '/^# date=/{print $2}' "$f")"
+      local n; n="$(grep -cv '^#' "$f")"
+      local mark=""; case "$f" in *.restored) mark=" (restored)" ;; esac
+      printf '   %s   ·   %s   ·   %s item(s)%s\n' "$date" "$app" "$n" "$mark"
+    done
+    [ "$had" -eq 0 ] && t rs_none
+    return 0
+  fi
+
+  # newest un-restored receipt
+  newest=""
+  local f
+  for f in "$rdir"/*.tsv; do [ -e "$f" ] && newest="$f"; done   # glob is sorted → last = newest
+  if [ -z "$newest" ]; then t rs_none; return 0; fi
+
+  app="$(awk -F= '/^# app=/{print $2}' "$newest")"
+  date="$(awk -F= '/^# date=/{print $2}' "$newest")"
+  echo "============================================================"
+  m="$(t rs_header)"; m="${m//\{app\}/$app}"; echo "${m//\{date\}/$date}"
+  echo "------------------------------------------------------------"
+  while IFS="$(printf '\t')" read -r dest orig; do
+    case "$dest" in '#'*|'') continue ;; esac
+    printf '   %s\n' "$orig"
+  done < "$newest"
+  echo "============================================================"
+
+  printf '%s' "$(t rs_confirm)"
+  local reply=""; read -r reply || true
+  case "$reply" in y|Y|yes|YES) ;; *) t un_cancelled; return 0 ;; esac
+
+  while IFS="$(printf '\t')" read -r dest orig; do
+    case "$dest" in '#'*|'') continue ;; esac
+    if [ ! -e "$dest" ]; then continue; fi
+    if [ -e "$orig" ]; then m="$(t rs_skip)"; echo "   ${m//\{path\}/$orig}"; continue; fi
+    mkdir -p "$(dirname "$orig")" 2>/dev/null
+    if mv "$dest" "$orig" 2>/dev/null; then
+      printf '   %s  %s\n' "$(t rs_restoring)" "$orig"
+      restored=$((restored + 1))
+    fi
+  done < "$newest"
+
+  mv "$newest" "$newest.restored" 2>/dev/null
+  chown -R "$(stat -f %u "$REAL_HOME" 2>/dev/null):$(stat -f %g "$REAL_HOME" 2>/dev/null)" "$REAL_HOME/.sheersweep" 2>/dev/null
+  echo "============================================================"
+  m="$(t rs_done)"; echo "${m//\{app\}/$app}"
+  return 0
+}
+
+# --- dispatch: uninstall / restore are separate verbs; default → sweep ---------
 if [ "$MODE" = "uninstall" ]; then
   [ -z "$APP_TARGET" ] && pick_app          # no app named → show the picker
   if [ -z "$APP_TARGET" ]; then t un_cancelled; exit 0; fi
   do_uninstall "$APP_TARGET"
+  exit $?
+fi
+if [ "$MODE" = "restore" ]; then
+  do_restore
   exit $?
 fi
 

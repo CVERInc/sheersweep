@@ -6,6 +6,20 @@ project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.3.0]
+
+- New verb: **`sheersweep restore`** — undo the last uninstall. Every uninstall now
+  writes a small, readable **receipt** (`~/.sheersweep/uninstalls/`), and `restore`
+  reads it to move each item from the Trash back to exactly where it came from —
+  across every account, in one command. `sheersweep restore --list` shows past
+  uninstalls. This is the thing a `rm`-based uninstaller structurally can't offer:
+  a real undo.
+- Uninstall now refuses apps **by where they live, not by who made them.** Removable
+  Apple apps in `/Applications` (iMovie, GarageBand, the iWork suite, Xcode…) are
+  now fair game; only apps on the sealed, read-only system volume (`/System/*`) and
+  the firmlinked Safari are refused. The picker surfaces removable Apple apps too.
+- The uninstall completion message now points at `sheersweep restore`.
+
 ## [0.2.0]
 
 - New opt-in verb: **`sheersweep uninstall <App>`** — fully removes one app and
