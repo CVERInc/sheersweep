@@ -61,10 +61,14 @@ It's held to the same trust rules as the sweep:
   finds *its* files — not everything that happens to share a word.
 - **Preview first, typed confirmation.** It lists the whole footprint grouped by
   account, with sizes and a grand total, then waits for you to type the app's name.
-- **Reversible — it moves to the Trash, never `rm`.** Wrong call? Put it back.
-  Emptying the Trash is what finally reclaims the space.
-- **Refuses Apple/system apps.** They live on a sealed, read-only system volume —
-  not even `root` can remove them, and deleting them wouldn't free space anyway.
+- **Reversible — it moves to the Trash, never `rm`.** Every uninstall writes a
+  small receipt, so **`sheersweep restore`** puts the *entire* last removal back —
+  across every account — in one command. That's the real undo a `rm`-based
+  uninstaller can't give you. Emptying the Trash is what finally reclaims the space.
+- **Refuses only what truly can't go.** Apps on the sealed, read-only system volume
+  (`/System/*`) and the firmlinked Safari are off limits — not even `root` can
+  remove them, and deleting them wouldn't free space. But **removable Apple apps in
+  `/Applications`** (iMovie, GarageBand, the iWork suite, Xcode…) are fair game.
 
 ## Install & use
 
@@ -75,6 +79,7 @@ cd sheersweep
 ./sheersweep --dry-run        # preview — deletes nothing (recommended first run)
 ./sheersweep                  # real run (prompts once for sudo — needed to sweep all accounts)
 ./sheersweep uninstall        # pick an app to fully remove (preview + confirm + Trash)
+./sheersweep restore          # undo the last uninstall — put it all back
 ./sheersweep --version
 ./sheersweep --help
 ```
