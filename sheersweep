@@ -104,6 +104,18 @@ t() {
         zh-TW) echo "釋放本機快照" ;;
         *)     echo "releasing local snapshots" ;;
       esac ;;
+    snap_fail)
+      case "$SS_LANG" in
+        ja-JP) echo "⚠️ スナップショットを解放できませんでした（tmutil がエラーを返しました）。空き容量がスナップショットに保持されたままの可能性があります。" ;;
+        zh-TW) echo "⚠️ 無法釋放快照（tmutil 回報錯誤）。空間可能仍被快照釘住。" ;;
+        *)     echo "⚠️ could not release snapshots (tmutil reported an error) — space may still be pinned by them." ;;
+      esac ;;
+    snap_notool)
+      case "$SS_LANG" in
+        ja-JP) echo "（tmutil が見つかりません — スナップショットの解放をスキップ）" ;;
+        zh-TW) echo "（找不到 tmutil——略過快照釋放）" ;;
+        *)     echo "(tmutil not found — skipping snapshot release)" ;;
+      esac ;;
     preview)
       case "$SS_LANG" in
         ja-JP) echo "［予定］" ;;
@@ -121,6 +133,12 @@ t() {
         ja-JP) echo "sheersweep: 不明なオプション '{opt}'（--help を参照）" ;;
         zh-TW) echo "sheersweep：未知選項 '{opt}'（請看 --help）" ;;
         *)     echo "sheersweep: unknown option '{opt}' (try --help)" ;;
+      esac ;;
+    not_macos)
+      case "$SS_LANG" in
+        ja-JP) echo "🔴 sheersweep は macOS 専用です（tmutil・APFS・/Users レイアウト・~/.Trash に依存）。現在の OS: {os}。中止します。" ;;
+        zh-TW) echo "🔴 sheersweep 只支援 macOS（依賴 tmutil、APFS、/Users 結構、~/.Trash）。目前作業系統：{os}。已中止。" ;;
+        *)     echo "🔴 sheersweep is macOS-only (it relies on tmutil, APFS, the /Users layout, and ~/.Trash). Current OS: {os}. Aborting." ;;
       esac ;;
 
     # ---- uninstall flow ----
@@ -269,6 +287,12 @@ t() {
         ja-JP) echo "スキップ（すでに存在）: {path}" ;;
         zh-TW) echo "略過（已存在）：{path}" ;;
         *)     echo "skip (already there): {path}" ;;
+      esac ;;
+    rs_fail)   # {path}
+      case "$SS_LANG" in
+        ja-JP) echo "⚠️ 復元できませんでした: {path}" ;;
+        zh-TW) echo "⚠️ 無法還原：{path}" ;;
+        *)     echo "⚠️ could not restore: {path}" ;;
       esac ;;
     rs_done)   # {app}
       case "$SS_LANG" in
@@ -433,44 +457,56 @@ DRY=0
 MODE="sweep"
 APP_TARGET=""
 RESTORE_LIST=0
-argi=0
-for arg in "$@"; do
-  argi=$((argi + 1))
-  if [ "$argi" -eq 1 ]; then
+# SHEERSWEEP_LIB=1 lets the test harness `source` this file to reach the pure
+# functions below WITHOUT parsing args, escalating to sudo, or running a sweep.
+if [ -z "${SHEERSWEEP_LIB:-}" ]; then
+  argi=0
+  for arg in "$@"; do
+    argi=$((argi + 1))
+    if [ "$argi" -eq 1 ]; then
+      case "$arg" in
+        uninstall|remove) MODE="uninstall"; continue ;;
+        restore|undo)     MODE="restore";   continue ;;
+      esac
+    fi
     case "$arg" in
-      uninstall|remove) MODE="uninstall"; continue ;;
-      restore|undo)     MODE="restore";   continue ;;
+      --version|-v) echo "sheersweep $VERSION"; exit 0 ;;
+      --help|-h)    print_help; exit 0 ;;
+      --dry-run)    DRY=1 ;;
+      --list)       RESTORE_LIST=1 ;;
+      -*) m="$(t unknown)"; echo "${m//\{opt\}/$arg}" >&2; exit 2 ;;
+      *)
+        if [ "$MODE" = "uninstall" ] && [ -z "$APP_TARGET" ]; then
+          APP_TARGET="$arg"
+        else
+          m="$(t unknown)"; echo "${m//\{opt\}/$arg}" >&2; exit 2
+        fi ;;
     esac
+  done
+
+  # uninstall with no app name is fine on a terminal (we'll show a picker after
+  # escalation). With no TTY there's nothing to pick from → fail before sudo.
+  if [ "$MODE" = "uninstall" ] && [ -z "$APP_TARGET" ] && [ ! -t 0 ]; then
+    t un_usage >&2; exit 2
   fi
-  case "$arg" in
-    --version|-v) echo "sheersweep $VERSION"; exit 0 ;;
-    --help|-h)    print_help; exit 0 ;;
-    --dry-run)    DRY=1 ;;
-    --list)       RESTORE_LIST=1 ;;
-    -*) m="$(t unknown)"; echo "${m//\{opt\}/$arg}" >&2; exit 2 ;;
-    *)
-      if [ "$MODE" = "uninstall" ] && [ -z "$APP_TARGET" ]; then
-        APP_TARGET="$arg"
-      else
-        m="$(t unknown)"; echo "${m//\{opt\}/$arg}" >&2; exit 2
-      fi ;;
-  esac
-done
 
-# uninstall with no app name is fine on a terminal (we'll show a picker after
-# escalation). With no TTY there's nothing to pick from → fail before sudo.
-if [ "$MODE" = "uninstall" ] && [ -z "$APP_TARGET" ] && [ ! -t 0 ]; then
-  t un_usage >&2; exit 2
-fi
+  # macOS-only: everything below assumes tmutil, APFS, the /Users home layout and
+  # ~/.Trash. --version / --help already exited above, so they work anywhere; any
+  # mode that actually touches the disk refuses to run on a non-macOS host rather
+  # than misbehaving against a Linux/other filesystem layout.
+  if [ "$(uname -s)" != "Darwin" ]; then
+    m="$(t not_macos)"; echo "${m//\{os\}/$(uname -s)}" >&2; exit 1
+  fi
 
-# --- both modes read every account, which needs root; re-exec with sudo --------
-if [ "$(id -u)" -ne 0 ]; then
-  t escalate
-  exec sudo SHEERSWEEP_LANG="$SS_LANG" "$0" "$@"
+  # --- both modes read every account, which needs root; re-exec with sudo ------
+  if [ "$(id -u)" -ne 0 ]; then
+    t escalate
+    exec sudo SHEERSWEEP_LANG="$SS_LANG" "$0" "$@"
+  fi
+  REAL_USER="${SUDO_USER:-$(id -un)}"
+  REAL_HOME="$(dscl . -read "/Users/$REAL_USER" NFSHomeDirectory 2>/dev/null | awk '{print $2}')"
+  [ -n "$REAL_HOME" ] || REAL_HOME="/Users/$REAL_USER"
 fi
-REAL_USER="${SUDO_USER:-$(id -un)}"
-REAL_HOME="$(dscl . -read "/Users/$REAL_USER" NFSHomeDirectory 2>/dev/null | awk '{print $2}')"
-[ -n "$REAL_HOME" ] || REAL_HOME="/Users/$REAL_USER"
 
 human()  { du -sh "$1" 2>/dev/null | cut -f1; }
 free_kb() { df -k /System/Volumes/Data | awk '/Data$/{print $4}'; }
@@ -507,9 +543,13 @@ resolve_app() {
   for d in "/Applications" "/Applications/Utilities" "$REAL_HOME/Applications"; do
     if [ -d "$d/$base" ]; then RESOLVED_APP="$d/$base"; return; fi
   done
-  # case-insensitive fallback (Spotlight-free)
-  hit="$(find "/Applications" "$REAL_HOME/Applications" -maxdepth 2 -iname "$base" -type d 2>/dev/null | head -1)"
-  [ -n "$hit" ] && RESOLVED_APP="$hit"
+  # case-insensitive fallback (Spotlight-free). Match by name and read the first
+  # NUL-delimited hit, so a name with spaces/newlines is preserved; validate with
+  # `[ -d ]` (follows symlinks) so a symlinked .app resolves too.
+  while IFS= read -r -d '' hit; do
+    [ -d "$hit" ] || continue
+    RESOLVED_APP="$hit"; break
+  done < <(find "/Applications" "$REAL_HOME/Applications" -maxdepth 2 -iname "$base" -not -path '*.app/*' -print0 2>/dev/null)
 }
 
 # Read CFBundleIdentifier from an .app (empty if unreadable).
@@ -526,7 +566,13 @@ pick_app() {
   # Scan /Applications and ~/Applications, one folder deep (so apps nested in a
   # subfolder like "CLIP STUDIO 1.5/CLIP STUDIO.app" show up) — but NEVER descend
   # into a .app bundle (its embedded helper .apps aren't separate apps).
-  while IFS= read -r appp; do
+  # NUL-delimited end to end (find -print0 · sort -z · read -d '') so an app whose
+  # name contains a space, quote, or even a newline can't split or corrupt the list.
+  # We match by NAME (not -type d) and validate with `[ -d ]`, which follows
+  # symlinks — so a symlinked .app still appears. `-not -path '*.app/*'` keeps us
+  # from descending into a bundle's embedded helper apps; without -L, find never
+  # follows the symlink itself, so there's no traversal loop.
+  while IFS= read -r -d '' appp; do
     [ -d "$appp" ] || continue
     bid="$(bundle_id "$appp")"
     # These folders are writable (never /System), so any Apple app found here is
@@ -535,8 +581,8 @@ pick_app() {
     apps+=("$appp")
   done < <(
     for d in "/Applications" "$REAL_HOME/Applications"; do
-      [ -d "$d" ] && find "$d" -maxdepth 2 -type d -name '*.app' -not -path '*.app/*' 2>/dev/null
-    done | sort
+      [ -d "$d" ] && find "$d" -maxdepth 2 -name '*.app' -not -path '*.app/*' -print0 2>/dev/null
+    done | sort -z
   )
   if [ "${#apps[@]}" -eq 0 ]; then t un_pick_none >&2; return 0; fi
   printf '%s (%d)\n' "$(t un_pick_header)" "${#apps[@]}"   # show the full count → no hidden "next page"
@@ -562,17 +608,33 @@ pick_app() {
 # Sets TRASH_DEST to the new location on success (empty if nothing moved), so the
 # caller can record a receipt that `restore` later reads to put things back.
 to_trash() {
-  local item="$1" owner_home="$2" tdir base dest stamp
+  local item="$1" owner_home="$2" tdir base dest stamp i uid gid
   TRASH_DEST=""
   [ -e "$item" ] || return 0
   tdir="$owner_home/.Trash"
+  # Recreate a missing .Trash with the right OWNER and 0700 perms — a Trash owned
+  # by root (or world-readable) is one Finder can't empty and other users can peek
+  # into. Match the home folder's owner; mode mirrors a stock ~/.Trash.
   if [ ! -d "$tdir" ]; then
-    mkdir -p "$tdir" 2>/dev/null
-    chown "$(stat -f %u "$owner_home" 2>/dev/null):$(stat -f %g "$owner_home" 2>/dev/null)" "$tdir" 2>/dev/null
+    mkdir -p "$tdir" 2>/dev/null || return 0
+    uid="$(stat -f %u "$owner_home" 2>/dev/null)"
+    gid="$(stat -f %g "$owner_home" 2>/dev/null)"
+    [ -n "$uid" ] && [ -n "$gid" ] && chown "$uid:$gid" "$tdir" 2>/dev/null
+    chmod 700 "$tdir" 2>/dev/null
   fi
   base="$(basename "$item")"
   dest="$tdir/$base"
-  if [ -e "$dest" ]; then stamp="$(date +%Y%m%d-%H%M%S)"; dest="$tdir/$base $stamp"; fi
+  # On a name clash, find a free slot that is GUARANTEED unique even for several
+  # collisions within the same second (a coarse second-stamp would clobber the
+  # earlier one and lose it). Stamp to the nanosecond, then add a probe counter
+  # so it works regardless of the platform date's sub-second support.
+  if [ -e "$dest" ]; then
+    stamp="$(date +%Y%m%d-%H%M%S-%N 2>/dev/null)"
+    case "$stamp" in *N|"") stamp="$(date +%Y%m%d-%H%M%S)" ;; esac   # date without %N
+    dest="$tdir/$base $stamp"
+    i=1
+    while [ -e "$dest" ]; do dest="$tdir/$base $stamp-$i"; i=$((i + 1)); done
+  fi
   if mv "$item" "$dest" 2>/dev/null; then TRASH_DEST="$dest"; fi
 }
 
@@ -675,22 +737,30 @@ do_uninstall() {
   sudo -u "$REAL_USER" osascript -e "tell application id \"$bid\" to quit" >/dev/null 2>&1 || true
 
   # write a receipt as we move, so `restore` can undo this exact uninstall later.
+  # The data rows are NUL-delimited (dest \0 orig \0) so a path containing a TAB
+  # or a NEWLINE — both legal in a macOS filename — can't corrupt the parse. The
+  # leading "# ..." header stays human-readable (its fields are controlled).
   local rdir rfile stamp moved=0
   rdir="$REAL_HOME/.sheersweep/uninstalls"
   mkdir -p "$rdir" 2>/dev/null
   stamp="$(date +%Y%m%d-%H%M%S)"
   rfile="$rdir/$stamp-$bid.tsv"
+  # Header is record #1 (everything up to the first NUL); data records follow as
+  # NUL-terminated dest/orig pairs. Splitting on the first NUL means neither a TAB
+  # nor a NEWLINE in any path — nor in the app name — can corrupt the parse.
   {
     echo "# sheersweep uninstall receipt"
     echo "# app=$name"
     echo "# bid=$bid"
     echo "# date=$stamp"
+    echo "# format=nul-pairs"   # data below: NUL-terminated dest, NUL-terminated orig, repeated
+    printf '\0'                 # end-of-header sentinel: data (NUL-pairs) starts here
   } > "$rfile" 2>/dev/null
   for i in "${!ITEM_PATH[@]}"; do
     printf '   %s  %s\n' "$(t un_trashing)" "${ITEM_PATH[$i]}"
     to_trash "${ITEM_PATH[$i]}" "${ITEM_OWNER[$i]}"
     if [ -n "$TRASH_DEST" ]; then
-      printf '%s\t%s\n' "$TRASH_DEST" "${ITEM_PATH[$i]}" >> "$rfile" 2>/dev/null
+      printf '%s\0%s\0' "$TRASH_DEST" "${ITEM_PATH[$i]}" >> "$rfile" 2>/dev/null
       moved=$((moved + 1))
     fi
   done
@@ -707,8 +777,42 @@ do_uninstall() {
 # restore — undo the last uninstall (or list past ones). Reads the receipt and
 # moves each item from the Trash back to exactly where it came from.
 # ============================================================================
+# Read one "# key=value" field from a receipt's header record — the first
+# NUL-delimited record, i.e. the bytes before the first NUL. Scoping the read to
+# the header means data bytes can never be mistaken for a header line. We use
+# bash's own NUL-aware `read -d ''` because BSD awk can't split on NUL.
+# $1=file $2=key
+receipt_header() {
+  local hdr line
+  IFS= read -r -d '' hdr < "$1" 2>/dev/null || return 0
+  while IFS= read -r line; do
+    case "$line" in "# $2="*) printf '%s\n' "${line#"# $2="}"; return 0 ;; esac
+  done <<EOF
+$hdr
+EOF
+}
+
+# Count the data pairs in a receipt (dest+orig per item), robust to TAB/NEWLINE
+# in paths: skip the header record, then count NUL-delimited fields and halve.
+receipt_count() {
+  local hdr fld n=0
+  { IFS= read -r -d '' hdr || true
+    while IFS= read -r -d '' fld; do n=$((n + 1)); done
+  } < "$1" 2>/dev/null
+  echo $((n / 2))
+}
+
+# Stream the receipt's data fields (dest, orig, dest, …) as NUL-delimited records,
+# skipping the header. Callers pair them up with `read -r -d ''`.
+receipt_data() {
+  local hdr fld
+  { IFS= read -r -d '' hdr || true
+    while IFS= read -r -d '' fld; do printf '%s\0' "$fld"; done
+  } < "$1" 2>/dev/null
+}
+
 do_restore() {
-  local rdir newest app date dest orig restored=0
+  local rdir newest claimed app date dest orig restored=0 failed=0
   rdir="$REAL_HOME/.sheersweep/uninstalls"
 
   if [ "$RESTORE_LIST" -eq 1 ]; then
@@ -717,9 +821,9 @@ do_restore() {
     for f in "$rdir"/*.tsv "$rdir"/*.tsv.restored; do
       [ -e "$f" ] || continue
       had=1
-      app="$(awk -F= '/^# app=/{print $2}' "$f")"
-      date="$(awk -F= '/^# date=/{print $2}' "$f")"
-      local n; n="$(grep -cv '^#' "$f")"
+      app="$(receipt_header "$f" app)"
+      date="$(receipt_header "$f" date)"
+      local n; n="$(receipt_count "$f")"
       local mark=""; case "$f" in *.restored) mark=" (restored)" ;; esac
       printf '   %s   ·   %s   ·   %s item(s)%s\n' "$date" "$app" "$n" "$mark"
     done
@@ -733,40 +837,57 @@ do_restore() {
   for f in "$rdir"/*.tsv; do [ -e "$f" ] && newest="$f"; done   # glob is sorted → last = newest
   if [ -z "$newest" ]; then t rs_none; return 0; fi
 
-  app="$(awk -F= '/^# app=/{print $2}' "$newest")"
-  date="$(awk -F= '/^# date=/{print $2}' "$newest")"
+  app="$(receipt_header "$newest" app)"
+  date="$(receipt_header "$newest" date)"
   echo "============================================================"
   m="$(t rs_header)"; m="${m//\{app\}/$app}"; echo "${m//\{date\}/$date}"
   echo "------------------------------------------------------------"
-  while IFS="$(printf '\t')" read -r dest orig; do
-    case "$dest" in '#'*|'') continue ;; esac
+  while IFS= read -r -d '' dest && IFS= read -r -d '' orig; do
     printf '   %s\n' "$orig"
-  done < "$newest"
+  done < <(receipt_data "$newest")
   echo "============================================================"
 
   printf '%s' "$(t rs_confirm)"
   local reply=""; read -r reply || true
   case "$reply" in y|Y|yes|YES) ;; *) t un_cancelled; return 0 ;; esac
 
-  while IFS="$(printf '\t')" read -r dest orig; do
-    case "$dest" in '#'*|'') continue ;; esac
+  # Claim this receipt atomically BEFORE touching anything: rename it to a
+  # ".restoring" name. `mv` (rename(2)) is atomic, so two concurrent restores
+  # can't both grab the same receipt — the loser's mv fails and it backs off,
+  # and a concurrent uninstall's brand-new receipt is untouched (different name).
+  claimed="$newest.restoring.$$"
+  if ! mv "$newest" "$claimed" 2>/dev/null; then t rs_none; return 0; fi
+
+  while IFS= read -r -d '' dest && IFS= read -r -d '' orig; do
     if [ ! -e "$dest" ]; then continue; fi
     if [ -e "$orig" ]; then m="$(t rs_skip)"; echo "   ${m//\{path\}/$orig}"; continue; fi
-    mkdir -p "$(dirname "$orig")" 2>/dev/null
+    if ! mkdir -p "$(dirname "$orig")" 2>/dev/null; then
+      m="$(t rs_fail)"; echo "   ${m//\{path\}/$orig}" >&2; failed=$((failed + 1)); continue
+    fi
+    # mv falls back to copy+remove across filesystems, so a Trash on a different
+    # volume than the original location still restores correctly.
     if mv "$dest" "$orig" 2>/dev/null; then
       printf '   %s  %s\n' "$(t rs_restoring)" "$orig"
       restored=$((restored + 1))
+    else
+      m="$(t rs_fail)"; echo "   ${m//\{path\}/$orig}" >&2; failed=$((failed + 1))
     fi
-  done < "$newest"
+  done < <(receipt_data "$claimed")
 
-  mv "$newest" "$newest.restored" 2>/dev/null
+  mv "$claimed" "$newest.restored" 2>/dev/null
   chown -R "$(stat -f %u "$REAL_HOME" 2>/dev/null):$(stat -f %g "$REAL_HOME" 2>/dev/null)" "$REAL_HOME/.sheersweep" 2>/dev/null
   echo "============================================================"
   m="$(t rs_done)"; echo "${m//\{app\}/$app}"
+  [ "$failed" -gt 0 ] && return 1
   return 0
 }
 
 # --- dispatch: uninstall / restore are separate verbs; default → sweep ---------
+# When sourced as a library for tests (SHEERSWEEP_LIB=1) we stop here: the pure
+# functions above are now defined, but nothing is executed.
+# shellcheck disable=SC2317  # the exit is reached only if run (not sourced) under the lib flag
+if [ -n "${SHEERSWEEP_LIB:-}" ]; then return 0 2>/dev/null || exit 0; fi
+
 if [ "$MODE" = "uninstall" ]; then
   [ -z "$APP_TARGET" ] && pick_app          # no app named → show the picker
   if [ -z "$APP_TARGET" ]; then t un_cancelled; exit 0; fi
@@ -822,13 +943,23 @@ if sudo -u "$REAL_USER" sh -c 'command -v brew' >/dev/null 2>&1; then
 fi
 
 # ---- release local snapshots (the step that actually returns the space) ----
-if [ "$DRY" -eq 1 ]; then
+# tmutil is macOS-only; guard so a non-macOS host (or a stripped image) degrades
+# cleanly instead of erroring. On a real run, surface a tmutil failure rather than
+# swallowing it — a silent failure here means the freed space never came back.
+if ! command -v tmutil >/dev/null 2>&1; then
+  echo "── $(t snap_release) ──"
+  echo "   $(t snap_notool)"
+elif [ "$DRY" -eq 1 ]; then
   echo "── $(t snap_dry) ──"
   n="$(tmutil listlocalsnapshots / 2>/dev/null | grep -c TimeMachine)"
   m="$(t snap_count)"; echo "   ${m//\{n\}/$n}"
 else
   echo "── $(t snap_release) ──"
-  tmutil deletelocalsnapshots / 2>/dev/null | tail -1
+  snap_out="$(tmutil deletelocalsnapshots / 2>&1)"; snap_rc=$?
+  printf '%s\n' "$snap_out" | tail -1
+  if [ "$snap_rc" -ne 0 ]; then
+    t snap_fail >&2
+  fi
 fi
 
 after="$(free_kb)"
