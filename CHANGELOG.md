@@ -6,6 +6,34 @@ project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Hardened the uninstall/restore edge cases (no behaviour change on the happy path)
+
+- **Uninstall receipts are now NUL-framed**, so a path containing a TAB or a
+  NEWLINE — both legal in a macOS filename — can no longer corrupt the receipt or
+  the `restore` parse. The header stays human-readable; data rows are
+  NUL-terminated `dest`/`orig` pairs read with bash's own `read -d ''`.
+- **Trash name-collisions are now unique to the nanosecond + a probe counter.**
+  Trashing several same-named items within one second used to clobber the earlier
+  one (a coarse second-stamp); now every one is kept.
+- **A recreated `~/.Trash` is given the home folder's owner and mode `0700`**, so
+  it's a Trash the user can actually empty and that other users can't read into.
+- **`restore` now surfaces failures** (a parent dir it can't create, a move that
+  fails) on stderr and exits non-zero, instead of silently skipping the item.
+  Cross-filesystem restores work via `mv`'s copy+remove fallback.
+- **`restore` claims its receipt atomically before touching anything**, so two
+  overlapping `restore` runs can't both work the same uninstall.
+- **The picker and `resolve_app` now find symlinked `.app`s and tolerate app
+  names with spaces, quotes, or newlines** (NUL-delimited `find -print0` /
+  `sort -z`; match by name + `[ -d ]` instead of `-type d`).
+- **`tmutil` failures are reported, not swallowed**, and the snapshot step
+  degrades cleanly when `tmutil` is absent.
+- **macOS-only is now explicit**: the disk-touching modes refuse to run on a
+  non-Darwin host with a clear message (`--version` / `--help` still work
+  anywhere); README states the requirement and the degradation.
+- Added a macOS functional test suite (`scripts/func-test.sh`, run by
+  `scripts/test.sh` on Darwin) that reproduces each of the above as a regression
+  guard.
+
 ## [0.3.1]
 
 - The uninstall picker now finds apps nested **one folder deep** (e.g.

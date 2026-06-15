@@ -120,8 +120,15 @@ SHEERSWEEP_LANG=ja-JP ./sheersweep --dry-run
 
 ## Requirements
 
-macOS (uses `tmutil`, APFS, the standard `/Users` layout). Pure `bash` + system
-tools — no dependencies to install.
+**macOS only.** sheersweep is built for macOS and nothing else — it relies on
+`tmutil` (local APFS snapshots), the APFS data volume, the standard `/Users` home
+layout, and each account's `~/.Trash`. It is pure `bash` + the system tools that
+ship with macOS, so there is **nothing to install**.
+
+Run on a non-macOS host, the disk-touching modes (sweep / uninstall / restore)
+**refuse to run** with a clear message rather than misbehave against a different
+filesystem layout; only `--version` and `--help` work everywhere. The snapshot
+step also degrades cleanly if `tmutil` is somehow absent.
 
 ## License
 
