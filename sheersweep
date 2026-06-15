@@ -18,7 +18,7 @@
 #   the Trash is what finally reclaims the space.
 set -u
 
-VERSION="0.3.0"
+VERSION="0.3.1"
 
 # ============================================================================
 # i18n — en-US / ja-JP / zh-TW. Auto-detected; override with SHEERSWEEP_LANG.
@@ -522,20 +522,24 @@ bundle_id() {
 # set APP_TARGET. Apple/system apps are filtered out. Returns with APP_TARGET
 # unset on cancel / invalid input.
 pick_app() {
-  local apps=() d appp base bid n choice
-  for d in "/Applications" "/Applications/Utilities" "$REAL_HOME/Applications"; do
-    [ -d "$d" ] || continue
-    for appp in "$d"/*.app; do
-      [ -d "$appp" ] || continue
-      bid="$(bundle_id "$appp")"
-      # The picker only scans writable folders (never /System), so any Apple app
-      # it finds is removable — except the firmlinked ones (Safari).
-      case "$bid" in ""|com.apple.Safari|com.apple.SafariTechnologyPreview) continue ;; esac
-      apps+=("$appp")
-    done
-  done
+  local apps=() appp base bid n choice
+  # Scan /Applications and ~/Applications, one folder deep (so apps nested in a
+  # subfolder like "CLIP STUDIO 1.5/CLIP STUDIO.app" show up) — but NEVER descend
+  # into a .app bundle (its embedded helper .apps aren't separate apps).
+  while IFS= read -r appp; do
+    [ -d "$appp" ] || continue
+    bid="$(bundle_id "$appp")"
+    # These folders are writable (never /System), so any Apple app found here is
+    # removable — except the firmlinked ones (Safari).
+    case "$bid" in ""|com.apple.Safari|com.apple.SafariTechnologyPreview) continue ;; esac
+    apps+=("$appp")
+  done < <(
+    for d in "/Applications" "$REAL_HOME/Applications"; do
+      [ -d "$d" ] && find "$d" -maxdepth 2 -type d -name '*.app' -not -path '*.app/*' 2>/dev/null
+    done | sort
+  )
   if [ "${#apps[@]}" -eq 0 ]; then t un_pick_none >&2; return 0; fi
-  t un_pick_header
+  printf '%s (%d)\n' "$(t un_pick_header)" "${#apps[@]}"   # show the full count → no hidden "next page"
   n=0
   for appp in "${apps[@]}"; do
     n=$((n + 1))

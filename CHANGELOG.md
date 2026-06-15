@@ -6,6 +6,15 @@ project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.3.1]
+
+- The uninstall picker now finds apps nested **one folder deep** (e.g.
+  `CLIP STUDIO 1.5/CLIP STUDIO.app`, the Wacom suite) — it never descends into a
+  `.app` bundle's embedded helpers. Previously only top-level `/Applications/*.app`
+  showed up, so subfolder apps were invisible.
+- The picker header now shows the **total count**, so it's clear the list is
+  complete (no hidden "next page").
+
 ## [0.3.0]
 
 - New verb: **`sheersweep restore`** — undo the last uninstall. Every uninstall now
