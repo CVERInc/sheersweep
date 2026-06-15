@@ -15,9 +15,11 @@ The honest cleaner. No subscription, no scare tactics, no surprises.
 
 ## Why trust it
 
-- **You can read every line.** It's one `bash` script — ~300 lines, two-thirds of
-  which are its three-language strings; the logic fits on two screens. The dangerous verb
-  (`find … -delete`) appears in exactly one helper, on exactly the paths listed below.
+- **You can read every line.** It's one `bash` script — ~670 lines, more than half
+  of which are its three-language strings; the logic fits on a few screens. Only two
+  operations delete anything, and both are easy to find: the sweep's `find … -delete`
+  runs solely on the cache paths listed below, and `uninstall` only ever *moves*
+  files to the Trash — it never calls `rm`.
 - **Dry-run first.** `sheersweep --dry-run` prints how much each item *would*
   free and deletes nothing. Run it, read it, then decide.
 - **🔴 Never-touch list — no line in the script can reach these:**
@@ -42,17 +44,42 @@ The honest cleaner. No subscription, no scare tactics, no surprises.
 It sweeps **all accounts** in one pass — handy on a shared or family Mac where
 every other tool only cleans the user running it.
 
+## Uninstall an app (opt-in)
+
+A second, deliberate verb — for when you actually want an app *gone*: the app
+**and every trace it left behind, across every account**.
+
+```bash
+sheersweep uninstall                     # pick from a numbered list of your apps
+sheersweep uninstall Discord             # …or name it directly
+sheersweep uninstall Discord --dry-run   # preview only — moves nothing
+```
+
+It's held to the same trust rules as the sweep:
+
+- **Matched by bundle id, never a fuzzy name.** It reads the app's identifier and
+  finds *its* files — not everything that happens to share a word.
+- **Preview first, typed confirmation.** It lists the whole footprint grouped by
+  account, with sizes and a grand total, then waits for you to type the app's name.
+- **Reversible — it moves to the Trash, never `rm`.** Wrong call? Put it back.
+  Emptying the Trash is what finally reclaims the space.
+- **Refuses Apple/system apps.** They live on a sealed, read-only system volume —
+  not even `root` can remove them, and deleting them wouldn't free space anyway.
+
 ## Install & use
 
 ```bash
 git clone https://github.com/CVERInc/sheersweep.git
 cd sheersweep
 
-./sheersweep --dry-run   # preview — deletes nothing (recommended first run)
-./sheersweep             # real run (prompts once for sudo — needed to sweep all accounts)
+./sheersweep --dry-run        # preview — deletes nothing (recommended first run)
+./sheersweep                  # real run (prompts once for sudo — needed to sweep all accounts)
+./sheersweep uninstall        # pick an app to fully remove (preview + confirm + Trash)
 ./sheersweep --version
 ./sheersweep --help
 ```
+
+Installed via Homebrew? Drop the `./` — `sheersweep`, `sudo sheersweep uninstall`, etc.
 
 Prefer a double-click? Copy it to your Desktop and rename to `sheersweep.command`,
 or symlink onto your `PATH`:
@@ -66,10 +93,15 @@ Sweeping every account needs admin rights, so sheersweep re-runs itself with
 
 ## Scope, on purpose
 
-sheersweep deliberately clears **only** the safe, regenerable stuff. It will not
-grow "aggressive" or "deep" cleaners that hunt through app data — that's exactly
-where cleaners delete something you wanted, and it's the opposite of the trust
-this tool is built on. Narrow and honest beats broad and scary.
+The default **sweep** clears **only** safe, regenerable junk. It will never grow
+"aggressive" or "deep" modes that rummage through app data hoping to find more to
+delete — that's exactly where cleaners delete something you wanted.
+
+Removing an app *is* deleting real data, so it's **not** folded into the sweep.
+It's a separate verb you invoke on purpose, one app at a time, that previews
+everything and moves it to the **Trash** so the call is reversible. A narrow,
+honest sweep and an explicit, recoverable uninstall — never a broad, scary
+"clean everything" button.
 
 ## Language
 
