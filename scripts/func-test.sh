@@ -223,6 +223,153 @@ else
 fi
 teardown
 
+# (L1) leftovers classification: lf_scan must sort launchd plists into DEAD (the
+# launched binary is gone), REVIEW (interpreter that references a now-missing
+# /Applications app), and KEPT (program exists, OR Apple's own job, OR an
+# interpreter with no app refs). This is the honest brain — a working updater must
+# never land in DEAD/REVIEW. We feed five synthetic plists and check the buckets.
+setup
+AG="$SBX/agents"; mkdir -p "$AG"
+# a) DEAD — Program points to a binary that doesn't exist (note: $SBX expands).
+cat > "$AG/com.test.dead.plist" <<PLIST
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+<key>Label</key><string>com.test.dead</string>
+<key>Program</key><string>$SBX/gone/nope-binary</string>
+</dict></plist>
+PLIST
+# b) REVIEW — /bin/bash referencing a missing /Applications app.
+cat > "$AG/com.test.review.plist" <<'PLIST'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+<key>Label</key><string>com.test.review</string>
+<key>ProgramArguments</key><array>
+<string>/bin/bash</string><string>-c</string>
+<string>test -d "/Applications/Definitely Gone 9000.app"</string>
+</array></dict></plist>
+PLIST
+# c) KEPT — Program exists (/bin/ls), so it's a live item, not junk.
+cat > "$AG/com.test.live.plist" <<'PLIST'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+<key>Label</key><string>com.test.live</string>
+<key>Program</key><string>/bin/ls</string>
+</dict></plist>
+PLIST
+# d) KEPT — Apple's own job is skipped BEFORE the dead check, even with a missing
+# program (proves com.apple.* is never flagged).
+cat > "$AG/com.apple.something.plist" <<'PLIST'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+<key>Label</key><string>com.apple.something</string>
+<key>Program</key><string>/nonexistent/apple/thing</string>
+</dict></plist>
+PLIST
+# e) KEPT — interpreter with NO /Applications references → can't call it junk.
+cat > "$AG/com.test.quiet.plist" <<'PLIST'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+<key>Label</key><string>com.test.quiet</string>
+<key>ProgramArguments</key><array><string>/bin/bash</string><string>-c</string><string>echo hi</string></array>
+</dict></plist>
+PLIST
+LF_DEAD_PATH=(); LF_DEAD_OWNER=(); LF_DEAD_INFO=()
+LF_REVIEW_PATH=(); LF_REVIEW_OWNER=(); LF_REVIEW_INFO=()
+LF_KEPT=0
+lf_scan "$AG" "$SBX/home"
+if [ "${#LF_DEAD_PATH[@]}" -eq 1 ] && [ "${#LF_REVIEW_PATH[@]}" -eq 1 ] && [ "$LF_KEPT" -eq 3 ] \
+   && [ "${LF_DEAD_PATH[0]}" = "$AG/com.test.dead.plist" ] \
+   && [ "${LF_DEAD_OWNER[0]}" = "$SBX/home" ] \
+   && [ "${LF_DEAD_INFO[0]}" = "$SBX/gone/nope-binary" ] \
+   && [ "${LF_REVIEW_PATH[0]}" = "$AG/com.test.review.plist" ] \
+   && [ "${LF_REVIEW_OWNER[0]}" = "$SBX/home" ] \
+   && printf '%s' "${LF_REVIEW_INFO[0]}" | grep -q 'Definitely Gone 9000.app'; then
+  pass "lf_scan: dead / likely-orphan / kept classified correctly (live + apple never flagged)"
+else
+  fail "lf_scan misclassified (dead=${#LF_DEAD_PATH[@]} review=${#LF_REVIEW_PATH[@]} kept=$LF_KEPT)"
+fi
+teardown
+
+# (M1) Multi-account routing: an item from account A must land in A's OWN Trash,
+# and B's in B's — never crossed. This is the multi-account guarantee that can't
+# be exercised with one real login, proven here at the routing level.
+setup
+A="$SBX/acctA"; B="$SBX/acctB"; mkdir -p "$A" "$B" "$SBX/src"
+echo a > "$SBX/src/itemA"; echo b > "$SBX/src/itemB"
+to_trash "$SBX/src/itemA" "$A"; da="$TRASH_DEST"
+to_trash "$SBX/src/itemB" "$B"; db="$TRASH_DEST"
+if [ -f "$A/.Trash/itemA" ] && [ -f "$B/.Trash/itemB" ] \
+   && [ ! -e "$B/.Trash/itemA" ] && [ ! -e "$A/.Trash/itemB" ] \
+   && [ "$da" = "$A/.Trash/itemA" ] && [ "$db" = "$B/.Trash/itemB" ]; then
+  pass "to_trash routes each item to its OWNER account's Trash (multi-account)"
+else
+  fail "to_trash crossed accounts (da=$da db=$db)"
+fi
+teardown
+
+# (L2) restore must undo a LEFTOVERS sweep too: a leftovers receipt (app=leftovers)
+# moves an orphaned plist back from the Trash to where it lived. Proves the two
+# verbs share one undo.
+setup
+REAL_HOME="$SBX/home"
+mkdir -p "$REAL_HOME/.sheersweep/uninstalls" "$REAL_HOME/.Trash"
+echo plist > "$REAL_HOME/.Trash/com.ea.origin.ESHelper.plist"
+orig="$SBX/Library/LaunchDaemons/com.ea.origin.ESHelper.plist"
+rfile="$REAL_HOME/.sheersweep/uninstalls/20260616-000010-leftovers.tsv"
+{ echo "# sheersweep leftovers receipt"; echo "# app=leftovers"; echo "# bid=leftovers"
+  echo "# date=20260616-000010"; echo "# format=nul-pairs"; printf '\0'
+  printf '%s\0%s\0' "$REAL_HOME/.Trash/com.ea.origin.ESHelper.plist" "$orig"; } > "$rfile"
+printf 'y\n' | do_restore >/dev/null 2>&1
+if [ -f "$orig" ] && [ "$(cat "$orig")" = "plist" ] && [ -f "$rfile.restored" ]; then
+  pass "restore undoes a leftovers sweep (leftovers receipt round-trips)"
+else
+  fail "restore failed to undo a leftovers sweep (orig exists: $([ -f "$orig" ] && echo y || echo n))"
+fi
+teardown
+
+# (C1) the sweep's clean(): a real run empties a dir's CONTENTS but KEEPS the dir;
+# --dry-run reports and deletes nothing. This is the only delete path in the sweep.
+setup
+mkdir -p "$SBX/cache/sub"
+dd if=/dev/zero of="$SBX/cache/blob" bs=1024 count=8 2>/dev/null
+echo x > "$SBX/cache/sub/f"
+DRY=0
+clean "$SBX/cache" >/dev/null 2>&1
+real_ok=0
+{ [ -d "$SBX/cache" ] && [ -z "$(find "$SBX/cache" -mindepth 1 2>/dev/null)" ]; } && real_ok=1
+mkdir -p "$SBX/cache2"; echo keep > "$SBX/cache2/file"
+DRY=1
+clean "$SBX/cache2" >/dev/null 2>&1
+# shellcheck disable=SC2034  # DRY is read inside the sourced clean(), not in this file
+DRY=0
+dry_ok=0
+[ -f "$SBX/cache2/file" ] && dry_ok=1
+if [ "$real_ok" -eq 1 ] && [ "$dry_ok" -eq 1 ]; then
+  pass "clean(): real run empties the dir but keeps it; --dry-run deletes nothing"
+else
+  fail "clean() wrong (real_ok=$real_ok dry_ok=$dry_ok)"
+fi
+teardown
+
+# (i18n) locale resolution: ja and either Traditional-Chinese spelling map through;
+# Simplified Chinese and any other locale fall back to en-US (the stated policy).
+ja="$(SHEERSWEEP_LANG=ja_JP ss_resolve_lang)"
+tw="$(SHEERSWEEP_LANG=zh_TW ss_resolve_lang)"
+hant="$(SHEERSWEEP_LANG=zh-Hant ss_resolve_lang)"
+cn="$(SHEERSWEEP_LANG=zh_CN ss_resolve_lang)"
+fr="$(SHEERSWEEP_LANG=fr_FR ss_resolve_lang)"
+if [ "$ja" = "ja-JP" ] && [ "$tw" = "zh-TW" ] && [ "$hant" = "zh-TW" ] \
+   && [ "$cn" = "en-US" ] && [ "$fr" = "en-US" ]; then
+  pass "locale: ja / zh-Hant / zh-TW resolve; Simplified + others fall back to en-US"
+else
+  fail "locale resolution wrong (ja=$ja tw=$tw hant=$hant cn=$cn fr=$fr)"
+fi
+
 echo "→ func-test done"
 [ "$fails" -eq 0 ] || { echo "❌ $fails functional test(s) failed"; exit 1; }
 echo "✅ func-test all green"

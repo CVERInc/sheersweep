@@ -6,6 +6,14 @@ project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+- **Wider functional test coverage** (no behaviour change): `lf_scan`'s
+  dead/likely-orphan/kept classification (a live or Apple item is never flagged),
+  multi-account Trash routing (each account's item lands in its *own* Trash),
+  `restore` undoing a `leftovers` sweep, the sweep's `clean()` delete semantics
+  (real empties-but-keeps-the-dir; `--dry-run` deletes nothing), and locale
+  resolution (Traditional Chinese maps through; Simplified + others fall back to
+  English).
+
 ## [0.4.0]
 
 - New verb: **`sheersweep leftovers`** — finds orphaned startup/background items
