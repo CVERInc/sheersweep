@@ -18,7 +18,7 @@
 #   the Trash is what finally reclaims the space.
 set -u
 
-VERSION="0.3.1"
+VERSION="0.4.0"
 
 # ============================================================================
 # i18n — en-US / ja-JP / zh-TW. Auto-detected; override with SHEERSWEEP_LANG.
@@ -306,6 +306,56 @@ t() {
         zh-TW) echo "歷次卸載（新到舊）：" ;;
         *)     echo "Past uninstalls (newest first):" ;;
       esac ;;
+
+    # ---- leftovers (orphaned background items from apps that are gone) ----
+    lf_header)
+      case "$SS_LANG" in
+        ja-JP) echo "残骸 — 削除済みアプリが残した起動項目（LaunchAgents / LaunchDaemons）:" ;;
+        zh-TW) echo "孤兒殘骸——已刪除的 app 留下的開機／背景項目（LaunchAgents／Daemons）：" ;;
+        *)     echo "Leftovers — startup/background items left behind by apps that are gone:" ;;
+      esac ;;
+    lf_dead_header)
+      case "$SS_LANG" in
+        ja-JP) echo "🧟 死んでいる（起動する実行ファイルがもう存在しない）:" ;;
+        zh-TW) echo "🧟 死的（要啟動的程式已經不存在）：" ;;
+        *)     echo "🧟 Dead (the program they launch no longer exists):" ;;
+      esac ;;
+    lf_review_header)
+      case "$SS_LANG" in
+        ja-JP) echo "⚠️ 孤児の可能性（存在しないアプリを参照 — 要確認）:" ;;
+        zh-TW) echo "⚠️ 可能孤兒（指向一個已不存在的 app——請自行確認）：" ;;
+        *)     echo "⚠️ Likely orphans (they reference an app that's gone — review):" ;;
+      esac ;;
+    lf_kept)   # {n}
+      case "$SS_LANG" in
+        ja-JP) echo "✅ 稼働中の起動項目 {n} 件はそのまま（実行ファイルが存在 — 削除しません）。" ;;
+        zh-TW) echo "✅ 另有 {n} 個還在用的項目原封不動（程式還在＝不是垃圾，別動它）。" ;;
+        *)     echo "✅ Kept {n} live item(s) untouched — their program still exists (not junk)." ;;
+      esac ;;
+    lf_clean)
+      case "$SS_LANG" in
+        ja-JP) echo "✅ 残骸はありません — すべての起動項目が実在するものを指しています。" ;;
+        zh-TW) echo "✅ 沒有孤兒殘骸——每個開機項目都指向真實存在的東西。" ;;
+        *)     echo "✅ No leftovers — every startup item points to something real." ;;
+      esac ;;
+    lf_dry_note)
+      case "$SS_LANG" in
+        ja-JP) echo "🧪 プレビュー — 何も移動していません。--dry-run なしで実行すると削除できます。" ;;
+        zh-TW) echo "🧪 預覽——什麼都沒動。拿掉 --dry-run 再執行才會清。" ;;
+        *)     echo "🧪 preview — nothing moved. Run without --dry-run to clean." ;;
+      esac ;;
+    lf_confirm)
+      case "$SS_LANG" in
+        ja-JP) echo "ゴミ箱へ移動: [yes＝死んでいるもののみ ／ all＝孤児候補も含む ／ それ以外でキャンセル]: " ;;
+        zh-TW) echo "移到垃圾桶：[yes＝只清死的 ／ all＝連可能孤兒一起 ／ 其他則取消]：" ;;
+        *)     echo "Move to Trash: [yes = dead only · all = include likely-orphans · anything else cancels]: " ;;
+      esac ;;
+    lf_done)   # {n}
+      case "$SS_LANG" in
+        ja-JP) echo "✅ 残骸 {n} 件をゴミ箱へ移動。完全に反映されるのは次回ログイン／再起動後です。元に戻す: sheersweep restore" ;;
+        zh-TW) echo "✅ 已把 {n} 個殘骸移到垃圾桶。下次登入／重開機後完全生效。想還原打：sheersweep restore" ;;
+        *)     echo "✅ Moved {n} leftover(s) to Trash. Fully takes effect after the next login/restart. Undo: sheersweep restore" ;;
+      esac ;;
   esac
 }
 
@@ -318,6 +368,7 @@ sheersweep — 読める Mac クリーナー。
   sheersweep [--dry-run]
   sheersweep uninstall [App] [--dry-run]
   sheersweep restore [--list]
+  sheersweep leftovers [--dry-run]
   sheersweep --version | --help
 
 何をするか
@@ -341,6 +392,12 @@ sheersweep — 読める Mac クリーナー。
   sheersweep restore          直前のアンインストールをゴミ箱から元の場所へ戻す
   sheersweep restore --list   これまでのアンインストール履歴を表示
 
+残骸の掃除（削除済みアプリが残した起動項目）
+  sheersweep leftovers        孤児化した LaunchAgents/Daemons を探す。死んでいるもの
+                              と「孤児の可能性」を分けて表示し、稼働中の項目には
+                              手を出さない。確認後ゴミ箱へ移動（restore で復元可）。
+                              --dry-run はプレビューのみ。
+
 オプション
   --dry-run   各項目が解放する容量を表示。何も削除しません。
   --version   バージョンを表示して終了。
@@ -363,6 +420,7 @@ sheersweep — 你讀得懂的 Mac 清理工具。
   sheersweep [--dry-run]
   sheersweep uninstall [App] [--dry-run]
   sheersweep restore [--list]
+  sheersweep leftovers [--dry-run]
   sheersweep --version | --help
 
 它做什麼
@@ -384,6 +442,11 @@ sheersweep — 你讀得懂的 Mac 清理工具。
 還原上一次卸載
   sheersweep restore          把上一次卸載從垃圾桶放回原處
   sheersweep restore --list   列出歷次卸載紀錄
+
+清孤兒殘骸（已刪除 app 留下的開機項目）
+  sheersweep leftovers        找出孤兒化的 LaunchAgents/Daemons：把「死的」與「可能
+                              孤兒」分開列，還在用的項目絕不碰。確認後移到垃圾桶
+                              （可用 restore 還原）。--dry-run 只預覽。
 
 選項
   --dry-run   列出每項會釋放多少。不刪除任何東西。
@@ -407,6 +470,7 @@ USAGE
   sheersweep [--dry-run]
   sheersweep uninstall [App] [--dry-run]
   sheersweep restore [--list]
+  sheersweep leftovers [--dry-run]
   sheersweep --version | --help
 
 WHAT IT DOES
@@ -430,6 +494,13 @@ UNINSTALL AN APP (opt-in, dangerous by nature)
 UNDO THE LAST UNINSTALL
   sheersweep restore          put the last uninstall back from the Trash
   sheersweep restore --list   show your past uninstalls
+
+CLEAN UP LEFTOVERS (orphaned startup items from apps that are gone)
+  sheersweep leftovers        Find orphaned LaunchAgents/Daemons. Shows "dead"
+                              vs "likely orphan" separately and never touches a
+                              live item (a working updater isn't junk). Moves the
+                              chosen ones to the Trash (undo with restore).
+                              --dry-run only previews.
 
 OPTIONS
   --dry-run   List how much each item WOULD free. Deletes nothing.
@@ -465,8 +536,9 @@ if [ -z "${SHEERSWEEP_LIB:-}" ]; then
     argi=$((argi + 1))
     if [ "$argi" -eq 1 ]; then
       case "$arg" in
-        uninstall|remove) MODE="uninstall"; continue ;;
-        restore|undo)     MODE="restore";   continue ;;
+        uninstall|remove)         MODE="uninstall"; continue ;;
+        restore|undo)             MODE="restore";   continue ;;
+        leftovers|orphans|cruft)  MODE="leftovers"; continue ;;
       esac
     fi
     case "$arg" in
@@ -882,7 +954,150 @@ do_restore() {
   return 0
 }
 
-# --- dispatch: uninstall / restore are separate verbs; default → sweep ---------
+# ============================================================================
+# leftovers — find orphaned startup/background items (LaunchAgents/Daemons) from
+# apps that are GONE, and (on confirmation) move them to the Trash. The honest
+# part is the classification: dead vs. likely-orphan vs. LIVE-keep — so a working
+# updater (e.g. one a still-installed app shares) is never mistaken for junk.
+# ============================================================================
+# Classify every *.plist in one launchd dir into the LF_* global arrays.
+# $1 = dir, $2 = owner-home (whose Trash a removed plist would go to).
+lf_scan() {
+  local dir="$1" owner="$2" p prog label tier info
+  [ -d "$dir" ] || return 0
+  for p in "$dir"/*.plist; do
+    [ -e "$p" ] || continue
+    label="$(/usr/libexec/PlistBuddy -c 'Print :Label' "$p" 2>/dev/null)"
+    [ -z "$label" ] && label="$(basename "$p" .plist)"
+    case "$label" in com.apple.*) LF_KEPT=$((LF_KEPT + 1)); continue ;; esac  # never touch Apple's own jobs
+    prog="$(/usr/libexec/PlistBuddy -c 'Print :Program' "$p" 2>/dev/null)"
+    [ -z "$prog" ] && prog="$(/usr/libexec/PlistBuddy -c 'Print :ProgramArguments:0' "$p" 2>/dev/null)"
+    tier="live"; info=""
+    case "$prog" in
+      /bin/sh|/bin/bash|/usr/bin/env|/usr/bin/python|/usr/bin/python3|/usr/bin/perl|/usr/bin/osascript|/usr/bin/ruby|"")
+        # interpreter (or none): judge by the app paths it references instead.
+        local refs ref anyref=0 allmissing=1
+        refs="$(plutil -p "$p" 2>/dev/null | grep -oE '/Applications/[^"]+\.app' | sort -u)"
+        if [ -n "$refs" ]; then
+          while IFS= read -r ref; do
+            [ -z "$ref" ] && continue
+            anyref=1
+            [ -e "$ref" ] && allmissing=0
+          done <<REFS
+$refs
+REFS
+          if [ "$anyref" -eq 1 ] && [ "$allmissing" -eq 1 ]; then
+            tier="review"; info="$(printf '%s' "$refs" | head -1)"
+          fi
+        fi
+        ;;
+      /*)
+        # explicit binary path → dead if that binary is gone.
+        [ -e "$prog" ] || { tier="dead"; info="$prog"; }
+        ;;
+    esac
+    case "$tier" in
+      dead)   LF_DEAD_PATH+=("$p");   LF_DEAD_OWNER+=("$owner");   LF_DEAD_INFO+=("$info") ;;
+      review) LF_REVIEW_PATH+=("$p"); LF_REVIEW_OWNER+=("$owner"); LF_REVIEW_INFO+=("$info") ;;
+      *)      LF_KEPT=$((LF_KEPT + 1)) ;;
+    esac
+  done
+}
+
+do_leftovers() {
+  LF_DEAD_PATH=(); LF_DEAD_OWNER=(); LF_DEAD_INFO=()
+  LF_REVIEW_PATH=(); LF_REVIEW_OWNER=(); LF_REVIEW_INFO=()
+  LF_KEPT=0
+  local home i
+
+  for home in /Users/*; do
+    [ -d "$home/Library" ] || continue
+    case "$(basename "$home")" in Shared|Guest) continue ;; esac
+    lf_scan "$home/Library/LaunchAgents" "$home"
+  done
+  lf_scan "/Library/LaunchAgents"  "$REAL_HOME"
+  lf_scan "/Library/LaunchDaemons" "$REAL_HOME"
+
+  local ndead="${#LF_DEAD_PATH[@]}" nrev="${#LF_REVIEW_PATH[@]}"
+  echo "============================================================"
+  t lf_header
+  if [ "$ndead" -eq 0 ] && [ "$nrev" -eq 0 ]; then
+    echo "------------------------------------------------------------"
+    t lf_clean
+    m="$(t lf_kept)"; echo "${m//\{n\}/$LF_KEPT}"
+    echo "============================================================"
+    return 0
+  fi
+  if [ "$ndead" -gt 0 ]; then
+    echo "------------------------------------------------------------"; t lf_dead_header
+    for i in "${!LF_DEAD_PATH[@]}"; do
+      printf '   %s\n        ↳ %s\n' "${LF_DEAD_PATH[$i]}" "${LF_DEAD_INFO[$i]}"
+    done
+  fi
+  if [ "$nrev" -gt 0 ]; then
+    echo "------------------------------------------------------------"; t lf_review_header
+    for i in "${!LF_REVIEW_PATH[@]}"; do
+      printf '   %s\n        ↳ %s\n' "${LF_REVIEW_PATH[$i]}" "${LF_REVIEW_INFO[$i]}"
+    done
+  fi
+  echo "------------------------------------------------------------"
+  m="$(t lf_kept)"; echo "${m//\{n\}/$LF_KEPT}"
+  echo "============================================================"
+
+  if [ "$DRY" -eq 1 ]; then t lf_dry_note; return 0; fi
+
+  printf '%s' "$(t lf_confirm)"
+  local reply=""; read -r reply || true
+  local include_review=0
+  case "$reply" in
+    all|ALL)      include_review=1 ;;
+    y|Y|yes|YES)  include_review=0 ;;
+    *)            t un_cancelled; return 0 ;;
+  esac
+
+  local rdir rfile stamp moved=0
+  rdir="$REAL_HOME/.sheersweep/uninstalls"   # same store → `restore` undoes these too
+  mkdir -p "$rdir" 2>/dev/null
+  stamp="$(date +%Y%m%d-%H%M%S)"
+  rfile="$rdir/$stamp-leftovers.tsv"
+  {
+    echo "# sheersweep leftovers receipt"
+    echo "# app=leftovers"
+    echo "# bid=leftovers"
+    echo "# date=$stamp"
+    echo "# format=nul-pairs"
+    printf '\0'
+  } > "$rfile" 2>/dev/null
+
+  if [ "$ndead" -gt 0 ]; then
+    for i in "${!LF_DEAD_PATH[@]}"; do
+      printf '   %s  %s\n' "$(t un_trashing)" "${LF_DEAD_PATH[$i]}"
+      to_trash "${LF_DEAD_PATH[$i]}" "${LF_DEAD_OWNER[$i]}"
+      if [ -n "$TRASH_DEST" ]; then
+        printf '%s\0%s\0' "$TRASH_DEST" "${LF_DEAD_PATH[$i]}" >> "$rfile" 2>/dev/null
+        moved=$((moved + 1))
+      fi
+    done
+  fi
+  if [ "$include_review" -eq 1 ] && [ "$nrev" -gt 0 ]; then
+    for i in "${!LF_REVIEW_PATH[@]}"; do
+      printf '   %s  %s\n' "$(t un_trashing)" "${LF_REVIEW_PATH[$i]}"
+      to_trash "${LF_REVIEW_PATH[$i]}" "${LF_REVIEW_OWNER[$i]}"
+      if [ -n "$TRASH_DEST" ]; then
+        printf '%s\0%s\0' "$TRASH_DEST" "${LF_REVIEW_PATH[$i]}" >> "$rfile" 2>/dev/null
+        moved=$((moved + 1))
+      fi
+    done
+  fi
+  chown -R "$(stat -f %u "$REAL_HOME" 2>/dev/null):$(stat -f %g "$REAL_HOME" 2>/dev/null)" "$REAL_HOME/.sheersweep" 2>/dev/null
+  [ "$moved" -eq 0 ] && rm -f "$rfile" 2>/dev/null
+
+  echo "============================================================"
+  m="$(t lf_done)"; echo "${m//\{n\}/$moved}"
+  return 0
+}
+
+# --- dispatch: uninstall / restore / leftovers are verbs; default → sweep ------
 # When sourced as a library for tests (SHEERSWEEP_LIB=1) we stop here: the pure
 # functions above are now defined, but nothing is executed.
 # shellcheck disable=SC2317  # the exit is reached only if run (not sourced) under the lib flag
@@ -896,6 +1111,10 @@ if [ "$MODE" = "uninstall" ]; then
 fi
 if [ "$MODE" = "restore" ]; then
   do_restore
+  exit $?
+fi
+if [ "$MODE" = "leftovers" ]; then
+  do_leftovers
   exit $?
 fi
 

@@ -70,6 +70,31 @@ It's held to the same trust rules as the sweep:
   remove them, and deleting them wouldn't free space. But **removable Apple apps in
   `/Applications`** (iMovie, GarageBand, the iWork suite, Xcode…) are fair game.
 
+## Clean up leftovers (opt-in)
+
+Apps you removed long ago often leave a **background item** behind — a
+`LaunchAgent` or `LaunchDaemon` that still tries to run at login. `leftovers`
+finds them across every account:
+
+```bash
+sheersweep leftovers             # find orphaned startup items (preview + confirm)
+sheersweep leftovers --dry-run   # preview only
+```
+
+The point isn't finding *more* — it's being **honest about what's actually junk**:
+
+- **🧟 Dead** — the program it launches no longer exists (e.g. an EA Origin helper
+  whose binary is gone). Safe to remove.
+- **⚠️ Likely orphan** — it references an app that's now missing (e.g. a
+  discontinued app's self-remover). Shown for review; removed only if you opt in.
+- **✅ Kept** — anything whose program still exists is left alone and counted. A
+  *working* updater that a still-installed app shares (say, the Google updater that
+  Google Drive needs) is **never** mistaken for junk — the trap dumb cleaners spring
+  to scare you into deleting something load-bearing.
+
+Chosen items move to the Trash and are logged, so **`sheersweep restore`** undoes a
+leftovers sweep too. The system list catches up after the next login/restart.
+
 ## Install & use
 
 ```bash
@@ -79,7 +104,8 @@ cd sheersweep
 ./sheersweep --dry-run        # preview — deletes nothing (recommended first run)
 ./sheersweep                  # real run (prompts once for sudo — needed to sweep all accounts)
 ./sheersweep uninstall        # pick an app to fully remove (preview + confirm + Trash)
-./sheersweep restore          # undo the last uninstall — put it all back
+./sheersweep leftovers        # find orphaned startup items from apps that are gone
+./sheersweep restore          # undo the last uninstall/leftovers — put it all back
 ./sheersweep --version
 ./sheersweep --help
 ```

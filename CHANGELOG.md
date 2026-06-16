@@ -6,6 +6,24 @@ project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.4.0]
+
+- New verb: **`sheersweep leftovers`** — finds orphaned startup/background items
+  (`LaunchAgents` / `LaunchDaemons`) left behind by apps that are **gone**, across
+  every account. The honest part is the **classification**:
+  - **🧟 Dead** — the program the item launches no longer exists (e.g. an EA Origin
+    helper whose binary was removed). Auto-selected.
+  - **⚠️ Likely orphan** — an interpreter-run item that references an `/Applications`
+    app that's now missing (e.g. a discontinued app's self-remover). Shown for
+    review; only removed if you type `all`.
+  - **✅ Kept** — anything whose program still exists is left untouched and counted,
+    so a *working* updater shared by a still-installed app is never mistaken for
+    junk (the trap dumb cleaners fall into).
+  Preview-first; moves chosen items to the Trash and writes a receipt, so
+  **`sheersweep restore`** undoes a leftovers sweep too. Full effect after the next
+  login/restart. `--dry-run` only previews. Apple's own (`com.apple.*`) jobs are
+  never touched.
+
 ### Hardened the uninstall/restore edge cases (no behaviour change on the happy path)
 
 - **Uninstall receipts are now NUL-framed**, so a path containing a TAB or a
