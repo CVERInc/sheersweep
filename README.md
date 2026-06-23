@@ -5,13 +5,15 @@
 > The Mac cleaner you can **read**. Open source · dry-run first · a hard never-touch list · sweeps every account.
 
 Most Mac cleaners are a black box that asks you to *trust* them while they delete
-things you can't see, behind a subscription, with a little fear in the marketing.
+things you can't see, behind a subscription.
 `sheersweep` is the opposite: it's **one short shell script you can read end to
 end**, it **shows you exactly what it will free before it frees anything**, it
 **only clears caches/temp/logs the OS rebuilds on its own**, and it has a
 **hard-coded list of things it will never touch**.
 
-The honest cleaner. No subscription, no scare tactics, no surprises.
+Open source, no subscription, no surprises.
+
+*The full teardown — how black-box cleaners work, and the APFS-snapshot trick most skip — is on the [devlog](https://cver.net/devlog/anatomy-of-a-scary-cleaner).*
 
 ## Why trust it
 
@@ -131,7 +133,7 @@ delete — that's exactly where cleaners delete something you wanted.
 Removing an app *is* deleting real data, so it's **not** folded into the sweep.
 It's a separate verb you invoke on purpose, one app at a time, that previews
 everything and moves it to the **Trash** so the call is reversible. A narrow,
-honest sweep and an explicit, recoverable uninstall — never a broad, scary
+honest sweep and an explicit, recoverable uninstall — never a single broad
 "clean everything" button.
 
 ## Language
@@ -158,4 +160,4 @@ step also degrades cleanly if `tmutil` is somehow absent.
 
 ## License
 
-MIT © [CVER Inc.](https://cver.net) — *making delightful digital tools since 2011.*
+Published by **CVER Inc.** · [cver.net](https://cver.net) · MIT License.
