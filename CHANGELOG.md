@@ -14,6 +14,26 @@ project adheres to [Semantic Versioning](https://semver.org/).
   resolution (Traditional Chinese maps through; Simplified + others fall back to
   English).
 
+## [0.5.0]
+
+- **`uninstall` now reaches vendor-nested app data** — the gap that let a real
+  `sheersweep uninstall "Google Chrome"` move only the `.app` and a prefs plist
+  while leaving **~1 GB of profile** behind. Some apps don't store their data at
+  `Application Support/<AppName>` or `/<bundle id>`; they nest it under a vendor
+  folder (`Application Support/Google/Chrome`, `…/BraveSoftware/Brave-Browser`,
+  …). A small, readable **catalog keyed by bundle id** now adds those paths to the
+  footprint. Covers Chrome (+ Canary), Edge, Brave, Vivaldi, Arc, and Chromium.
+- **Shared-vendor guard (`extra_is_safe`)** — a runtime refusal that no catalog
+  entry can route around: a *vendor root* (`Application Support/Google`) is never
+  removable, because it also holds a **different, possibly still-installed app's**
+  data (Google Drive's `DriveFS`, the shared updater). The catalog only ever lists
+  *product* subfolders; the guard makes a future typo impossible to act on.
+- **`uninstall` works on an already-removed app** — if the `.app` is gone but the
+  target is a catalog app, `uninstall <name>` still resolves it (by name → bundle
+  id, or a literal bundle id) and cleans up the data it left behind, instead of
+  failing with "no app named …". Same preview → typed-name confirm → move-to-Trash
+  (recoverable via `restore`) flow; nothing new is auto-deleted.
+
 ## [0.4.0]
 
 - New verb: **`sheersweep leftovers`** — finds orphaned startup/background items

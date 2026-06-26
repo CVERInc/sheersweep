@@ -370,6 +370,38 @@ else
   fail "locale resolution wrong (ja=$ja tw=$tw hant=$hant cn=$cn fr=$fr)"
 fi
 
+# (catalog) Vendor-nested data catalog: Chrome resolves to its PRODUCT subfolders
+# (Application Support/Google/Chrome), name<->bid round-trips, and an unknown bid
+# yields nothing — the guarantee that `uninstall` now reaches profile data the
+# standard patterns miss, without ever guessing.
+chrome_extra="$(catalog_extra_rel com.google.Chrome | tr '\n' '|')"
+unknown_extra="$(catalog_extra_rel com.no.such.app)"
+n2b="$(catalog_bid_for_name "Google Chrome")"
+b2n="$(catalog_name_for_bid com.brave.Browser)"
+if [ "$chrome_extra" = "Application Support/Google/Chrome|Caches/Google/Chrome|" ] \
+   && [ -z "$unknown_extra" ] \
+   && [ "$n2b" = "com.google.Chrome" ] && [ "$b2n" = "Brave Browser" ]; then
+  pass "catalog: Chrome → product subfolders; name<->bid round-trip; unknown → empty"
+else
+  fail "catalog wrong (chrome=[$chrome_extra] unknown=[$unknown_extra] n2b=$n2b b2n=$b2n)"
+fi
+
+# (guard) extra_is_safe is the belt-and-suspenders that protects a sibling app:
+# a PRODUCT subfolder is removable, but a shared VENDOR ROOT (Application Support/
+# Google — which also holds Google Drive's DriveFS) must be refused even if a
+# future catalog typo lists it. This is the test that keeps DriveFS safe.
+guard_ok=1
+extra_is_safe "Application Support/Google/Chrome" || guard_ok=0          # product → safe
+extra_is_safe "Application Support/BraveSoftware/Brave-Browser" || guard_ok=0
+extra_is_safe "Application Support/Google" && guard_ok=0                 # vendor root → refuse
+extra_is_safe "Caches/Google" && guard_ok=0
+extra_is_safe "Application Support/BraveSoftware" && guard_ok=0
+if [ "$guard_ok" -eq 1 ]; then
+  pass "guard: product subfolders pass; shared vendor roots (Google/, BraveSoftware/) refused"
+else
+  fail "extra_is_safe guard wrong — a vendor root was not refused (DriveFS at risk)"
+fi
+
 echo "→ func-test done"
 [ "$fails" -eq 0 ] || { echo "❌ $fails functional test(s) failed"; exit 1; }
 echo "✅ func-test all green"

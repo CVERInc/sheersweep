@@ -18,7 +18,7 @@
 #   the Trash is what finally reclaims the space.
 set -u
 
-VERSION="0.4.0"
+VERSION="0.5.0"
 
 # ============================================================================
 # i18n — en-US / ja-JP / zh-TW. Auto-detected; override with SHEERSWEEP_LANG.
@@ -177,6 +177,12 @@ t() {
         ja-JP) echo "❌ '{app}' というアプリが見つかりません（/Applications と ~/Applications を確認）" ;;
         zh-TW) echo "❌ 找不到名為「{app}」的 App（已找過 /Applications 與 ~/Applications）" ;;
         *)     echo "❌ no app named '{app}' (looked in /Applications and ~/Applications)" ;;
+      esac ;;
+    un_appgone)   # {app}
+      case "$SS_LANG" in
+        ja-JP) echo "ℹ️ {app} の本体は見当たりません（すでに削除済み）。カタログを使って、残ったデータだけを掃除します。" ;;
+        zh-TW) echo "ℹ️ 找不到 {app} 本體（已被刪除）。改用內建目錄，把它殘留的資料清掉。" ;;
+        *)     echo "ℹ️ {app}'s app bundle is already gone — using the catalog to clean up just the data it left behind." ;;
       esac ;;
     un_refuse_apple)   # {app}
       case "$SS_LANG" in
@@ -387,6 +393,9 @@ sheersweep — 読める Mac クリーナー。
   各項目を「所有アカウントのゴミ箱」へ移動します（rm はしません＝復元可能）。
   容量が実際に戻るのはゴミ箱を空にした時です。--dry-run は一覧表示のみ。
   通常のクリーン（サブコマンドなし）の「実ファイルに触れない」約束は不変です。
+  ベンダー入れ子のデータ（Chrome の Google/Chrome など）も内蔵カタログで回収。
+  共有ベンダーフォルダ（Google/ ＝Google ドライブの DriveFS が同居）には触れません。
+  本体を先に削除済みでも、カタログ掲載アプリなら残りデータを掃除できます。
 
 直前のアンインストールを元に戻す
   sheersweep restore          直前のアンインストールをゴミ箱から元の場所へ戻す
@@ -438,6 +447,9 @@ sheersweep — 你讀得懂的 Mac 清理工具。
   列出清單與大小，等你輸入 App 名稱確認後，把每一項移到「擁有它的那個帳號的
   垃圾桶」（不是 rm，可救回）。空間要等清空垃圾桶才真的回來。--dry-run 只預覽。
   預設清理（不帶子命令）「永不碰真檔」的承諾完全不變。
+  廠商巢狀的資料（如 Chrome 的 Google/Chrome）也用內建目錄一起收。
+  共用廠商夾（Google/＝底下還有 Google 雲端硬碟的 DriveFS）絕不碰。
+  就算 App 本體已經先刪掉，只要在目錄裡，照樣能清掉它殘留的資料。
 
 還原上一次卸載
   sheersweep restore          把上一次卸載從垃圾桶放回原處
@@ -490,6 +502,10 @@ UNINSTALL AN APP (opt-in, dangerous by nature)
   into the owning account's Trash, so it's recoverable; emptying the Trash is
   what actually reclaims the space. --dry-run only previews. The default sweep's
   "never touches your real files" promise is unchanged.
+  Vendor-nested data (e.g. Chrome's Google/Chrome) is reached via a built-in
+  catalog, while a shared vendor root (Google/ — which also holds Google Drive's
+  DriveFS) is always refused. Works even if the .app was already deleted, as long
+  as it's a catalog app — it still cleans up the data left behind.
 
 UNDO THE LAST UNINSTALL
   sheersweep restore          put the last uninstall back from the Trash
@@ -630,6 +646,82 @@ bundle_id() {
     || /usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$1/Contents/Info.plist" 2>/dev/null
 }
 
+# ── Vendor-nested app data: the catalog that closes the "uninstall left a GB
+# behind" gap ────────────────────────────────────────────────────────────────
+# Some apps DON'T store their data at Application Support/<AppName> or /<bundle
+# id> — they nest it under a VENDOR folder: Chrome lives in
+#   ~/Library/Application Support/Google/Chrome
+# not /Google Chrome and not /com.google.Chrome, so do_uninstall's standard
+# patterns can't see it (this is exactly why a real `uninstall Google Chrome`
+# moved only the .app + a prefs plist and left ~1 GB of profile behind). These
+# paths are listed here BY BUNDLE ID — never a fuzzy name — one path relative to
+# ~/Library per line. Two hard rules keep it safe:
+#   • Only ever a PRODUCT subfolder (Google/Chrome), NEVER the vendor root
+#     (Google/): that root also holds Google Drive's DriveFS and the shared
+#     updater, which belong to a DIFFERENT, often still-installed app.
+#   • extra_is_safe() below refuses, at runtime, to add a known shared vendor
+#     root — so even a typo here can't reach a sibling app's data.
+catalog_extra_rel() {   # $1 = bundle id → ~/Library-relative paths, one per line
+  case "$1" in
+    com.google.Chrome)
+      printf '%s\n' "Application Support/Google/Chrome" "Caches/Google/Chrome" ;;
+    com.google.Chrome.canary)
+      printf '%s\n' "Application Support/Google/Chrome Canary" "Caches/Google/Chrome Canary" ;;
+    com.microsoft.edgemac)
+      printf '%s\n' "Application Support/Microsoft Edge" "Caches/Microsoft Edge" ;;
+    com.brave.Browser)
+      printf '%s\n' "Application Support/BraveSoftware/Brave-Browser" "Caches/BraveSoftware/Brave-Browser" ;;
+    com.vivaldi.Vivaldi)
+      printf '%s\n' "Application Support/Vivaldi" "Caches/Vivaldi" ;;
+    company.thebrowser.Browser)
+      printf '%s\n' "Application Support/Arc" "Caches/Arc" ;;
+    org.chromium.Chromium)
+      printf '%s\n' "Application Support/Chromium" "Caches/Chromium" ;;
+  esac
+}
+
+# Map a display name → bundle id for apps whose .app may already be gone, so
+# `uninstall <name>` can still finish the job. Exact match only (a curated table,
+# not a fuzzy guess) — the result is still a bundle id, honoring sheersweep's
+# "match by bundle id, never a name" rule.
+catalog_bid_for_name() {   # $1 = app name (no .app) → bundle id, empty if unknown
+  case "$1" in
+    "Google Chrome")        echo "com.google.Chrome" ;;
+    "Google Chrome Canary") echo "com.google.Chrome.canary" ;;
+    "Microsoft Edge")       echo "com.microsoft.edgemac" ;;
+    "Brave Browser")        echo "com.brave.Browser" ;;
+    "Vivaldi")              echo "com.vivaldi.Vivaldi" ;;
+    "Arc")                  echo "company.thebrowser.Browser" ;;
+    "Chromium")             echo "org.chromium.Chromium" ;;
+  esac
+}
+catalog_name_for_bid() {   # reverse, for the display banner when the .app is gone
+  case "$1" in
+    com.google.Chrome)          echo "Google Chrome" ;;
+    com.google.Chrome.canary)   echo "Google Chrome Canary" ;;
+    com.microsoft.edgemac)      echo "Microsoft Edge" ;;
+    com.brave.Browser)          echo "Brave Browser" ;;
+    com.vivaldi.Vivaldi)        echo "Vivaldi" ;;
+    company.thebrowser.Browser) echo "Arc" ;;
+    org.chromium.Chromium)      echo "Chromium" ;;
+  esac
+}
+
+# Runtime guard: refuse to treat a SHARED VENDOR ROOT as removable app data.
+# These folders hold more than one app's data (Application Support/Google also
+# contains Google Drive's DriveFS and the shared GoogleUpdater), so removing the
+# whole folder on a browser uninstall would delete a different — possibly still
+# installed — app's data. The catalog only ever lists product subfolders; this is
+# the belt-and-suspenders that makes a future typo impossible to act on.
+extra_is_safe() {   # $1 = ~/Library-relative path → returns 0 = safe, 1 = refuse
+  case "$1" in
+    "Application Support/Google"|"Caches/Google")                 return 1 ;;
+    "Application Support/BraveSoftware"|"Caches/BraveSoftware")   return 1 ;;
+    "Application Support/Microsoft"|"Caches/Microsoft")           return 1 ;;
+  esac
+  return 0
+}
+
 # Interactive picker (mole-style): list user-removable apps, read a number,
 # set APP_TARGET. Apple/system apps are filtered out. Returns with APP_TARGET
 # unset on cancel / invalid input.
@@ -715,25 +807,41 @@ do_uninstall() {
   resolve_app "$target"
   app="$RESOLVED_APP"
   if [ -z "$app" ]; then
-    m="$(t un_notfound)"; echo "${m//\{app\}/$target}" >&2; return 1
+    # The .app isn't there. If this is a catalog app, the human likely dragged
+    # the bundle to the Trash already while a big profile stayed behind (the very
+    # case this upgrade exists for). Resolve it from the catalog — by name, or as
+    # a literal bundle id — so `uninstall` can still finish cleaning up. If it's
+    # not a known app, there's nothing safe to match on → the original error.
+    local q="${target%.app}"
+    bid="$(catalog_bid_for_name "$q")"
+    [ -z "$bid" ] && [ -n "$(catalog_extra_rel "$target")" ] && bid="$target"
+    if [ -z "$bid" ]; then
+      m="$(t un_notfound)"; echo "${m//\{app\}/$target}" >&2; return 1
+    fi
+    name="$(catalog_name_for_bid "$bid")"; [ -z "$name" ] && name="$q"
+    # app stays empty — that IS the "bundle already gone" state: the system-wide
+    # `add "$app"` below no-ops on a missing path, so no .app is moved.
+    app=""
+    m="$(t un_appgone)"; echo "${m//\{app\}/$name}"
+  else
+    # Refuse only what genuinely can't be removed — by WHERE it lives, not by who
+    # made it. Apps on the sealed, read-only system volume (/System/*) are off
+    # limits; removable Apple apps in /Applications (iMovie, GarageBand, the iWork
+    # suite, Xcode…) are fair game. A tiny denylist covers Apple apps that sit in a
+    # writable folder but are firmlinked into the system (Safari).
+    case "$app" in
+      /System/*) m="$(t un_refuse_apple)"; echo "${m//\{app\}/$app}" >&2; return 1 ;;
+    esac
+    bid="$(bundle_id "$app")"
+    if [ -z "$bid" ]; then
+      m="$(t un_refuse_nobid)"; echo "${m//\{app\}/$app}" >&2; return 1
+    fi
+    case "$bid" in
+      com.apple.Safari|com.apple.SafariTechnologyPreview)
+        m="$(t un_refuse_protected)"; echo "${m//\{app\}/$app}" >&2; return 1 ;;
+    esac
+    name="$(basename "$app")"; name="${name%.app}"
   fi
-  # Refuse only what genuinely can't be removed — by WHERE it lives, not by who
-  # made it. Apps on the sealed, read-only system volume (/System/*) are off
-  # limits; removable Apple apps in /Applications (iMovie, GarageBand, the iWork
-  # suite, Xcode…) are fair game. A tiny denylist covers Apple apps that sit in a
-  # writable folder but are firmlinked into the system (Safari).
-  case "$app" in
-    /System/*) m="$(t un_refuse_apple)"; echo "${m//\{app\}/$app}" >&2; return 1 ;;
-  esac
-  bid="$(bundle_id "$app")"
-  if [ -z "$bid" ]; then
-    m="$(t un_refuse_nobid)"; echo "${m//\{app\}/$app}" >&2; return 1
-  fi
-  case "$bid" in
-    com.apple.Safari|com.apple.SafariTechnologyPreview)
-      m="$(t un_refuse_protected)"; echo "${m//\{app\}/$app}" >&2; return 1 ;;
-  esac
-  name="$(basename "$app")"; name="${name%.app}"
 
   # --- gather the footprint into parallel arrays (path / owner-home / scope) ---
   ITEM_PATH=(); ITEM_OWNER=(); ITEM_SCOPE=()
@@ -743,7 +851,7 @@ do_uninstall() {
     ITEM_PATH+=("$1"); ITEM_OWNER+=("$2"); ITEM_SCOPE+=("$ascope")
   }
 
-  local home u f
+  local home u f rel
   for home in /Users/*; do
     [ -d "$home/Library" ] || continue
     case "$(basename "$home")" in Shared|Guest) continue ;; esac
@@ -764,6 +872,14 @@ do_uninstall() {
     add "$home/Library/Application Scripts/$bid"           "$home"
     add "$home/Library/Logs/$name"                         "$home"
     for f in "$home/Library/LaunchAgents/$bid"*.plist;   do add "$f" "$home"; done
+    # vendor-nested data the standard patterns above can't reach (Chrome's
+    # Google/Chrome, Brave's BraveSoftware/Brave-Browser, …). extra_is_safe()
+    # refuses a shared vendor root so a sibling app (e.g. Google Drive) is never
+    # swept up with the browser.
+    while IFS= read -r rel; do
+      [ -z "$rel" ] && continue
+      extra_is_safe "$rel" && add "$home/Library/$rel" "$home"
+    done < <(catalog_extra_rel "$bid")
   done
 
   # system-wide bits + the .app itself → the running user's Trash (Finder-like)
@@ -777,7 +893,7 @@ do_uninstall() {
 
   # --- show what we found (always; this IS the product) -----------------------
   echo "============================================================"
-  m="$(t un_resolved)"; m="${m//\{app\}/$app}"; echo "${m//\{bid\}/$bid}"
+  m="$(t un_resolved)"; m="${m//\{app\}/${app:-$name}}"; echo "${m//\{bid\}/$bid}"
   echo "------------------------------------------------------------"
   if [ "${#ITEM_PATH[@]}" -eq 0 ]; then
     m="$(t un_empty)"; echo "${m//\{app\}/$name}"
