@@ -8,8 +8,9 @@ sheersweep correctly on the first try — without deleting something the human w
 
 ## What sheersweep is, in one breath
 
-sheersweep is **the Mac cleaner you can read** — one ~670-line `bash` script (more
-than half is its three-language strings) with **no telemetry, no daemon, no
+sheersweep is **the Mac cleaner you can read** — a single bash script (see
+`wc -l sheersweep` for the current line count; more than half is its
+three-language strings) with **no telemetry, no daemon, no
 network calls, no subscription**. The default **sweep** clears *only* regenerable
 junk (caches/logs/temp the OS rebuilds) across **every** account under `/Users`,
 then releases local APFS snapshots so the space actually comes back. It has a
@@ -29,7 +30,7 @@ sheersweep leftovers --dry-run       # preview orphaned LaunchAgents/Daemons
 sheersweep leftovers                 # remove dead/orphan startup items → Trash, yes/no confirm
 sheersweep restore                   # undo the last uninstall/leftovers — put it all back
 sheersweep restore --list            # show past removals
-sheersweep --version                 # 0.4.0 at time of writing; never needs sudo
+sheersweep --version                 # prints the current version; never needs sudo
 ```
 
 Locale is auto-detected; force it with `SHEERSWEEP_LANG=en-US|ja-JP|zh-TW`.
@@ -54,7 +55,8 @@ Locale is auto-detected; force it with `SHEERSWEEP_LANG=en-US|ja-JP|zh-TW`.
    cloud-sync folders, screen recordings, Mail / Messages / Keychains, any git repo,
    any Obsidian vault. If the human wants one of these gone, that's a manual human
    action, not a sheersweep job.
-5. **`uninstall` matches by bundle id, never a fuzzy name**, and only ever *moves*
+5. **`uninstall` matches by bundle id, plus exact display-name paths that macOS
+   itself uses — never a fuzzy/substring match**, and only ever *moves*
    to the owning account's Trash (no `rm`). It refuses sealed-system (`/System/*`)
    and the firmlinked Safari. Emptying the Trash is the human's final, deliberate
    step to reclaim space — that's the recoverability, don't shortcut it.

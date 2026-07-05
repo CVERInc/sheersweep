@@ -17,8 +17,9 @@ Open source, no subscription, no surprises.
 
 ## Why trust it
 
-- **You can read every line.** It's one `bash` script — ~670 lines, more than half
-  of which are its three-language strings; the logic fits on a few screens. Only two
+- **You can read every line.** It's one `bash` script (see `wc -l sheersweep` for
+  the current line count) — more than half is its three-language strings; the logic
+  fits on a few screens. Only two
   operations delete anything, and both are easy to find: the sweep's `find … -delete`
   runs solely on the cache paths listed below, and `uninstall` only ever *moves*
   files to the Trash — it never calls `rm`.
@@ -59,7 +60,8 @@ sheersweep uninstall Discord --dry-run   # preview only — moves nothing
 
 It's held to the same trust rules as the sweep:
 
-- **Matched by bundle id, never a fuzzy name.** It reads the app's identifier and
+- **Matched by bundle id, plus exact display-name paths that macOS itself
+  uses — never a fuzzy/substring match.** It reads the app's identifier and
   finds *its* files — not everything that happens to share a word.
 - **Preview first, typed confirmation.** It lists the whole footprint grouped by
   account, with sizes and a grand total, then waits for you to type the app's name.
