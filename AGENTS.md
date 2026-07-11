@@ -26,6 +26,11 @@ sheersweep --dry-run                 # preview the sweep — deletes NOTHING (al
 sheersweep                           # real sweep (re-execs with sudo: one password prompt)
 sheersweep uninstall <App> --dry-run # preview one app's full footprint across all accounts
 sheersweep uninstall <App>           # remove it → MOVES to Trash (never rm), typed-name confirm
+sheersweep uninstall <formula>       # a Homebrew formula → DELEGATED to `brew uninstall`,
+                                     #   dependency-checked, exact command shown, typed confirm
+sheersweep uninstall <binary>        # a hand-installed bare binary → Trash, typed confirm
+sheersweep tools                     # read-only CLI inventory (formulae/orphans/binaries/
+                                     #   toolchain data) — changes nothing, no sudo needed
 sheersweep leftovers --dry-run       # preview orphaned LaunchAgents/Daemons
 sheersweep leftovers                 # remove dead/orphan startup items → Trash, yes/no confirm
 sheersweep restore                   # undo the last uninstall/leftovers — put it all back
@@ -60,6 +65,13 @@ Locale is auto-detected; force it with `SHEERSWEEP_LANG=en-US|ja-JP|zh-TW`.
    to the owning account's Trash (no `rm`). It refuses sealed-system (`/System/*`)
    and the firmlinked Safari. Emptying the Trash is the human's final, deliberate
    step to reclaim space — that's the recoverability, don't shortcut it.
+   For CLI tools the anchor changes but the rule doesn't: a Homebrew formula is
+   matched by brew's own receipt and removed by **delegating to `brew uninstall`**
+   (dependency-checked, exact command shown first; restore = `brew install`); a
+   bare binary is matched by exact filename in `~/bin` / `~/.local/bin` /
+   `/usr/local/bin` and moved to the Trash. sheersweep itself still never `rm`s —
+   never "help" by trashing a Homebrew keg or its symlinks by hand; that
+   half-uninstalls someone else's install and leaves brew's links dangling.
 6. **Transparency over a black-box clean.** When you report what happened, report
    what the tool actually printed (the per-item sizes, the grand total, what was
    kept vs removed) — never assert a clean that didn't run or space that wasn't freed.
@@ -69,6 +81,8 @@ Locale is auto-detected; force it with `SHEERSWEEP_LANG=en-US|ja-JP|zh-TW`.
 - `sheersweep --help` — the command surface, SSOT. Self-documents every mode.
 - [README.md](README.md) — why-trust-it, scope-on-purpose, the full never-touch rationale.
 - [CHANGELOG.md](CHANGELOG.md) — what changed and why.
-- The `sheersweep` script itself — it's readable end to end; only two operations
-  delete anything (the sweep's `find … -delete` on the listed cache paths, and
-  `uninstall`/`leftovers` which *move* to Trash).
+- The `sheersweep` script itself — it's readable end to end; sheersweep itself
+  only deletes via the sweep's `find … -delete` on the listed cache paths, or by
+  *moving* to the Trash (`uninstall`/`leftovers`). Anything else destructive is a
+  tool's own uninstaller (`brew uninstall`, `brew cleanup`), delegated and shown
+  verbatim before it runs.

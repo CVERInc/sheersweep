@@ -402,6 +402,50 @@ else
   fail "extra_is_safe guard wrong — a vendor root was not refused (DriveFS at risk)"
 fi
 
+# (guard) unmanaged_bins must list only what has NO other uninstaller: a plain
+# executable is a candidate, but a symlink into a Homebrew keg or an .app bundle
+# is owned by brew / the app — trashing it would half-uninstall someone else's
+# install. Uses an exact-name query so real /usr/local/bin contents can't leak in.
+setup
+FAKE_HOME="$SBX/home"
+mkdir -p "$FAKE_HOME/bin" "$FAKE_HOME/.local/bin" "$SBX/Cellar/tool-a/1.0/bin" "$SBX/Fake.app/Contents/MacOS"
+uniq="ss-func-test-bin-$$"
+printf '#!/bin/sh\n' > "$FAKE_HOME/bin/$uniq"; chmod +x "$FAKE_HOME/bin/$uniq"
+printf '#!/bin/sh\n' > "$SBX/Cellar/tool-a/1.0/bin/tool-a"; chmod +x "$SBX/Cellar/tool-a/1.0/bin/tool-a"
+printf '#!/bin/sh\n' > "$SBX/Fake.app/Contents/MacOS/tool-b"; chmod +x "$SBX/Fake.app/Contents/MacOS/tool-b"
+ln -s "$SBX/Cellar/tool-a/1.0/bin/tool-a" "$FAKE_HOME/.local/bin/tool-a"
+ln -s "$SBX/Fake.app/Contents/MacOS/tool-b" "$FAKE_HOME/.local/bin/tool-b"
+got_plain=""; while IFS= read -r -d '' f; do got_plain="$f"; done < <(unmanaged_bins "$uniq" "$FAKE_HOME")
+got_keg="";   while IFS= read -r -d '' f; do got_keg="$f";   done < <(unmanaged_bins "tool-a" "$FAKE_HOME")
+got_app="";   while IFS= read -r -d '' f; do got_app="$f";   done < <(unmanaged_bins "tool-b" "$FAKE_HOME")
+if [ "$got_plain" = "$FAKE_HOME/bin/$uniq" ] && [ -z "$got_keg" ] && [ -z "$got_app" ]; then
+  pass "unmanaged_bins: plain binary listed; Homebrew-keg and .app symlinks skipped"
+else
+  fail "unmanaged_bins wrong (plain=[$got_plain] keg=[$got_keg] app=[$got_app])"
+fi
+teardown
+
+# (guard) every CLI-branch / tools string key must exist in ALL THREE locales —
+# the i18n rule is tiered (command lines stay raw) but a key that IS localized
+# may never silently fall back for one language, least of all a consent prompt.
+i18n_ok=1
+for key in un_brew_resolved un_brew_deps un_brew_cmd un_brew_config un_brew_confirm \
+           un_brew_done un_brew_orphans un_bin_header un_bin_note un_bin_confirm \
+           tl_banner tl_brew_header tl_nobrew tl_orphans_header tl_orphans_none \
+           tl_bins_header tl_bins_none tl_chains_header tl_hint; do
+  for loc in en-US ja-JP zh-TW; do
+    SS_LANG="$loc"   # read by the sourced t()
+    [ -n "$(t "$key")" ] || { i18n_ok=0; echo "     missing: $key ($loc)"; }
+  done
+done
+# shellcheck disable=SC2034  # read by the sourced library, not this file
+SS_LANG="en-US"
+if [ "$i18n_ok" -eq 1 ]; then
+  pass "i18n: all CLI/tools keys present in en-US · ja-JP · zh-TW"
+else
+  fail "i18n: some CLI/tools keys are missing a locale"
+fi
+
 echo "→ func-test done"
 [ "$fails" -eq 0 ] || { echo "❌ $fails functional test(s) failed"; exit 1; }
 echo "✅ func-test all green"

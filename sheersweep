@@ -16,9 +16,22 @@
 #   and waits for you to type the app's name. It then MOVES (never rm) each item
 #   into the owning account's Trash, so every deletion is recoverable. Emptying
 #   the Trash is what finally reclaims the space.
+#   CLI tools ride the same verb, each removed the way it can best be restored:
+#   a Homebrew formula is DELEGATED to brew itself (its receipt knows the keg and
+#   the links; restore = `brew install`) — sheersweep first checks nothing
+#   depends on it, prints the exact command, and runs it only after a typed
+#   confirm. A hand-installed bare binary moves to the Trash like an app.
+#   sheersweep itself never deletes a file except by moving it to the Trash;
+#   every other destructive action is a tool's OWN uninstaller, shown verbatim
+#   before it runs.
+#
+# TOOLS (`sheersweep tools`) — a read-only inventory of the CLI side of the Mac:
+#   the Homebrew formulae you chose (with sizes), orphaned dependencies,
+#   hand-installed binaries no manager owns, and the big toolchain data folders —
+#   each with the native way to remove it. Changes nothing; never needs sudo.
 set -u
 
-VERSION="0.5.0"
+VERSION="0.6.0"
 
 # ============================================================================
 # i18n — en-US / ja-JP / zh-TW. Auto-detected; override with SHEERSWEEP_LANG.
@@ -174,9 +187,9 @@ t() {
       esac ;;
     un_notfound)   # {app}
       case "$SS_LANG" in
-        ja-JP) echo "❌ '{app}' というアプリが見つかりません（/Applications と ~/Applications を確認）" ;;
-        zh-TW) echo "❌ 找不到名為「{app}」的 App（已找過 /Applications 與 ~/Applications）" ;;
-        *)     echo "❌ no app named '{app}' (looked in /Applications and ~/Applications)" ;;
+        ja-JP) echo "❌ '{app}' が見つかりません（アプリ / Homebrew formula / 手動インストールのバイナリのいずれにも該当なし）" ;;
+        zh-TW) echo "❌ 找不到「{app}」（不是 App、不是 Homebrew formula、也不是手動裝的裸二進位）" ;;
+        *)     echo "❌ nothing named '{app}' — not an app, not a Homebrew formula, not a hand-installed binary" ;;
       esac ;;
     un_appgone)   # {app}
       case "$SS_LANG" in
@@ -261,6 +274,127 @@ t() {
         ja-JP) echo "🔴 拒否：{app} はシステムに組み込まれており（firmlink）、削除できません。" ;;
         zh-TW) echo "🔴 拒絕：{app} 接進系統核心（firmlink），無法移除。" ;;
         *)     echo "🔴 refusing: {app} is wired into the system (firmlink) and can't be removed." ;;
+      esac ;;
+
+    # ---- uninstall: CLI branches (Homebrew formula → delegate; bare binary → Trash).
+    # Consent/judgment sentences are fully localized; command lines, paths and
+    # sizes are printed raw — that vocabulary IS the interface (you'll copy,
+    # run and Google it in English no matter your locale).
+    un_brew_resolved)   # {name}  ·  {ver}
+      case "$SS_LANG" in
+        ja-JP) echo "Homebrew formula: {name}   ·   バージョン: {ver}" ;;
+        zh-TW) echo "Homebrew formula：{name}   ·   版本：{ver}" ;;
+        *)     echo "Homebrew formula: {name}   ·   version: {ver}" ;;
+      esac ;;
+    un_brew_deps)   # {name} {deps}
+      case "$SS_LANG" in
+        ja-JP) echo "🔴 拒否：インストール済みの formula が {name} に依存しています: {deps}— 削除すると壊れます。先にそちらを削除するか、そのままに。" ;;
+        zh-TW) echo "🔴 拒絕：這些已安裝的 formula 依賴 {name}：{deps}——移掉會弄壞它們。要嘛先移除它們，要嘛都留著。" ;;
+        *)     echo "🔴 refusing: installed formulae depend on {name}: {deps}— removing it would break them. Remove those first, or keep both." ;;
+      esac ;;
+    un_brew_cmd)
+      case "$SS_LANG" in
+        ja-JP) echo "この操作はツール自身のアンインストーラーを、表示のとおりに実行します:" ;;
+        zh-TW) echo "這會執行工具自己的解除安裝器，一字不差如下：" ;;
+        *)     echo "This runs the tool's own uninstaller, exactly as shown:" ;;
+      esac ;;
+    un_brew_config)   # {name}
+      case "$SS_LANG" in
+        ja-JP) echo "ℹ️ Homebrew が管理するのはツール本体のみ。{name} がホームに置いた設定（例: ~/.{name}）には触れません。" ;;
+        zh-TW) echo "ℹ️ Homebrew 只管工具本體。{name} 若在家目錄留有設定（如 ~/.{name}），原封不動。" ;;
+        *)     echo "ℹ️ Homebrew's receipt covers the tool itself. Any settings {name} kept in your home folder (e.g. ~/.{name}) are left untouched." ;;
+      esac ;;
+    un_brew_confirm)   # {name}
+      case "$SS_LANG" in
+        ja-JP) echo "上のコマンドを実行するには「{name}」と入力（それ以外でキャンセル）: " ;;
+        zh-TW) echo "要執行上面那行指令，請輸入「{name}」（輸入其他則取消）：" ;;
+        *)     echo "Type '{name}' to run the command above (anything else cancels): " ;;
+      esac ;;
+    un_brew_done)   # {name}  ·  {ver}
+      case "$SS_LANG" in
+        ja-JP) echo "✅ {name} を Homebrew が削除しました。元に戻すには: brew install {name}（削除時のバージョン: {ver}）" ;;
+        zh-TW) echo "✅ {name} 已由 Homebrew 移除。想要回來隨時：brew install {name}（移除時版本：{ver}）" ;;
+        *)     echo "✅ {name} removed by Homebrew. Get it back anytime with: brew install {name}   (was version {ver})" ;;
+      esac ;;
+    un_brew_orphans)
+      case "$SS_LANG" in
+        ja-JP) echo "この削除で不要になった依存が残っています。一覧を確認して自分で実行を: brew autoremove" ;;
+        zh-TW) echo "這次移除讓一些依賴變成孤兒。看過清單後自己執行：brew autoremove" ;;
+        *)     echo "This left some dependencies orphaned. Review the list, then run: brew autoremove" ;;
+      esac ;;
+    un_bin_header)
+      case "$SS_LANG" in
+        ja-JP) echo "パッケージマネージャ管理外のバイナリ（手動インストール）:" ;;
+        zh-TW) echo "沒有套件管理器認領的裸二進位（手動安裝）：" ;;
+        *)     echo "Unmanaged binary — no package manager owns it:" ;;
+      esac ;;
+    un_bin_note)
+      case "$SS_LANG" in
+        ja-JP) echo "ℹ️ 素のバイナリです — データをどこかに置いたかは作者のみが知ります。sheersweep はバイナリ本体だけをゴミ箱へ移動します。" ;;
+        zh-TW) echo "ℹ️ 這是顆裸二進位——它有沒有在別處留資料，只有作者知道。sheersweep 只把本體移到垃圾桶。" ;;
+        *)     echo "ℹ️ It's a bare binary — whether it kept data elsewhere, only its author knows. sheersweep moves just the binary to the Trash." ;;
+      esac ;;
+    un_bin_confirm)   # {name}
+      case "$SS_LANG" in
+        ja-JP) echo "「{name}」と入力すると上記をゴミ箱へ移動（それ以外でキャンセル）: " ;;
+        zh-TW) echo "輸入「{name}」就把以上移到垃圾桶（輸入其他則取消）：" ;;
+        *)     echo "Type '{name}' to move the above to the Trash (anything else cancels): " ;;
+      esac ;;
+
+    # ---- tools (read-only CLI inventory) ----
+    tl_banner)
+      case "$SS_LANG" in
+        ja-JP) echo "🧰 CLI ツールの棚卸し — 読み取り専用。何も変更しません。" ;;
+        zh-TW) echo "🧰 CLI 工具盤點——唯讀，什麼都不會動。" ;;
+        *)     echo "🧰 CLI tool inventory — read-only. Nothing is changed." ;;
+      esac ;;
+    tl_brew_header)
+      case "$SS_LANG" in
+        ja-JP) echo "自分で入れた Homebrew formula（leaves — 他の何にも必要とされていない）:" ;;
+        zh-TW) echo "你自己裝的 Homebrew formula（leaves——沒有別的東西依賴它們）：" ;;
+        *)     echo "Homebrew formulae you installed (leaves — nothing else depends on them):" ;;
+      esac ;;
+    tl_nobrew)
+      case "$SS_LANG" in
+        ja-JP) echo "（Homebrew が見つかりません — formula の棚卸しをスキップ）" ;;
+        zh-TW) echo "（找不到 Homebrew——略過 formula 盤點）" ;;
+        *)     echo "(Homebrew not found — skipping formulae)" ;;
+      esac ;;
+    tl_orphans_header)
+      case "$SS_LANG" in
+        ja-JP) echo "🧟 どの formula にも不要になった依存（brew autoremove が削除するもの）:" ;;
+        zh-TW) echo "🧟 已經沒人需要的依賴孤兒（brew autoremove 會清掉的）：" ;;
+        *)     echo "🧟 Orphaned dependencies nothing needs anymore (what brew autoremove would remove):" ;;
+      esac ;;
+    tl_orphans_none)
+      case "$SS_LANG" in
+        ja-JP) echo "✅ 孤児化した依存はありません。" ;;
+        zh-TW) echo "✅ 沒有孤兒依賴。" ;;
+        *)     echo "✅ No orphaned dependencies." ;;
+      esac ;;
+    tl_bins_header)
+      case "$SS_LANG" in
+        ja-JP) echo "手動インストールのバイナリ（マネージャ管理外 — ~/bin · ~/.local/bin · /usr/local/bin）:" ;;
+        zh-TW) echo "手動裝的裸二進位（無管理器認領——~/bin・~/.local/bin・/usr/local/bin）：" ;;
+        *)     echo "Hand-installed binaries no manager owns (~/bin · ~/.local/bin · /usr/local/bin):" ;;
+      esac ;;
+    tl_bins_none)
+      case "$SS_LANG" in
+        ja-JP) echo "（なし）" ;;
+        zh-TW) echo "（沒有）" ;;
+        *)     echo "(none)" ;;
+      esac ;;
+    tl_chains_header)
+      case "$SS_LANG" in
+        ja-JP) echo "ツールチェーンのデータ（参考情報 — 消すなら各ツール自身の方法で）:" ;;
+        zh-TW) echo "Toolchain 資料目錄（純資訊——要清請用各工具自己的方式）：" ;;
+        *)     echo "Toolchain data (informational — remove with each tool's own method):" ;;
+      esac ;;
+    tl_hint)
+      case "$SS_LANG" in
+        ja-JP) echo "formula やバイナリを削除: sheersweep uninstall <名前>（--dry-run で先にプレビュー）" ;;
+        zh-TW) echo "要移除 formula 或裸二進位：sheersweep uninstall <名稱>（先加 --dry-run 預覽）" ;;
+        *)     echo "Remove a formula or a bare binary with: sheersweep uninstall <name>   (preview first with --dry-run)" ;;
       esac ;;
 
     # ---- restore (undo the last uninstall) ----
@@ -373,6 +507,7 @@ sheersweep — 読める Mac クリーナー。
 使い方
   sheersweep [--dry-run]
   sheersweep uninstall [App] [--dry-run]
+  sheersweep tools
   sheersweep restore [--list]
   sheersweep leftovers [--dry-run]
   sheersweep --version | --help
@@ -396,6 +531,17 @@ sheersweep — 読める Mac クリーナー。
   ベンダー入れ子のデータ（Chrome の Google/Chrome など）も内蔵カタログで回収。
   共有ベンダーフォルダ（Google/ ＝Google ドライブの DriveFS が同居）には触れません。
   本体を先に削除済みでも、カタログ掲載アプリなら残りデータを掃除できます。
+  CLI ツールにも同じ動詞が使えます: Homebrew formula は brew 自身に委任 —
+  依存されていないことを確認し、実行する `brew uninstall` コマンドをそのまま
+  表示、名前を入力した時だけ実行します（復元 = brew install）。手動インストール
+  のバイナリ（~/bin・~/.local/bin・/usr/local/bin）はアプリ同様ゴミ箱へ。
+
+CLI ツールの棚卸し（読み取り専用）
+  sheersweep tools            この Mac の CLI 側を一覧に: 自分で入れた Homebrew
+                              formula（容量つき）、孤児化した依存、マネージャ
+                              管理外のバイナリ、大きなツールチェーンデータ —
+                              それぞれのネイティブな削除方法つき。何も変更せず、
+                              パスワードも要りません。
 
 直前のアンインストールを元に戻す
   sheersweep restore          直前のアンインストールをゴミ箱から元の場所へ戻す
@@ -428,6 +574,7 @@ sheersweep — 你讀得懂的 Mac 清理工具。
 用法
   sheersweep [--dry-run]
   sheersweep uninstall [App] [--dry-run]
+  sheersweep tools
   sheersweep restore [--list]
   sheersweep leftovers [--dry-run]
   sheersweep --version | --help
@@ -450,6 +597,16 @@ sheersweep — 你讀得懂的 Mac 清理工具。
   廠商巢狀的資料（如 Chrome 的 Google/Chrome）也用內建目錄一起收。
   共用廠商夾（Google/＝底下還有 Google 雲端硬碟的 DriveFS）絕不碰。
   就算 App 本體已經先刪掉，只要在目錄裡，照樣能清掉它殘留的資料。
+  CLI 工具用同一個動詞：Homebrew formula 委派給 brew 自己——先確認沒有東西
+  依賴它，把要執行的 `brew uninstall` 指令一字不差印給你看，輸入名稱才執行
+  （還原＝brew install）。手動裝的裸二進位（~/bin、~/.local/bin、
+  /usr/local/bin）則和 App 一樣移到垃圾桶。
+
+CLI 工具盤點（唯讀）
+  sheersweep tools            把這台 Mac 的 CLI 側收成一張清單：你自己裝的
+                              Homebrew formula（含大小）、孤兒依賴、無管理器
+                              認領的裸二進位、大型 toolchain 資料目錄——每項
+                              附上它自己的移除方式。什麼都不動、不用密碼。
 
 還原上一次卸載
   sheersweep restore          把上一次卸載從垃圾桶放回原處
@@ -481,6 +638,7 @@ sheersweep — the Mac cleaner you can read.
 USAGE
   sheersweep [--dry-run]
   sheersweep uninstall [App] [--dry-run]
+  sheersweep tools
   sheersweep restore [--list]
   sheersweep leftovers [--dry-run]
   sheersweep --version | --help
@@ -506,6 +664,19 @@ UNINSTALL AN APP (opt-in, dangerous by nature)
   catalog, while a shared vendor root (Google/ — which also holds Google Drive's
   DriveFS) is always refused. Works even if the .app was already deleted, as long
   as it's a catalog app — it still cleans up the data left behind.
+  CLI tools use the same verb: a Homebrew formula is DELEGATED to brew itself —
+  sheersweep first checks nothing installed depends on it, prints the exact
+  `brew uninstall` command it will run, and runs it only after you type the
+  name (restore = brew install). A hand-installed bare binary (~/bin,
+  ~/.local/bin, /usr/local/bin) moves to the Trash like an app.
+
+SEE YOUR CLI TOOLS (read-only)
+  sheersweep tools            One list for the CLI side of this Mac: the
+                              Homebrew formulae you chose (with sizes), orphaned
+                              dependencies, hand-installed binaries no manager
+                              owns, and the big toolchain data folders — each
+                              with the native way to remove it. Changes nothing;
+                              never asks for a password.
 
 UNDO THE LAST UNINSTALL
   sheersweep restore          put the last uninstall back from the Trash
@@ -553,6 +724,7 @@ if [ -z "${SHEERSWEEP_LIB:-}" ]; then
     if [ "$argi" -eq 1 ]; then
       case "$arg" in
         uninstall|remove)         MODE="uninstall"; continue ;;
+        tools|cli)                MODE="tools";     continue ;;
         restore|undo)             MODE="restore";   continue ;;
         leftovers|orphans|cruft)  MODE="leftovers"; continue ;;
       esac
@@ -586,8 +758,11 @@ if [ -z "${SHEERSWEEP_LIB:-}" ]; then
     m="$(t not_macos)"; echo "${m//\{os\}/$(uname -s)}" >&2; exit 1
   fi
 
-  # --- both modes read every account, which needs root; re-exec with sudo ------
-  if [ "$(id -u)" -ne 0 ]; then
+  # --- disk-touching modes read every account, which needs root; re-exec with
+  # sudo. `tools` is the exception: a read-only inventory of the CURRENT user's
+  # tool world — nothing is written, no other account is read, and brew refuses
+  # to run as root anyway → it must NOT demand a password.
+  if [ "$(id -u)" -ne 0 ] && [ "$MODE" != "tools" ]; then
     t escalate
     exec sudo SHEERSWEEP_LANG="$SS_LANG" "$0" "$@"
   fi
@@ -803,7 +978,7 @@ to_trash() {
 }
 
 do_uninstall() {
-  local target="$1" app bid name
+  local target="$1" app bid name rc
   resolve_app "$target"
   app="$RESOLVED_APP"
   if [ -z "$app" ]; then
@@ -816,6 +991,13 @@ do_uninstall() {
     bid="$(catalog_bid_for_name "$q")"
     [ -z "$bid" ] && [ -n "$(catalog_extra_rel "$target")" ] && bid="$target"
     if [ -z "$bid" ]; then
+      # Not an app and not in the app catalog — maybe it's a CLI tool. Try the
+      # Homebrew resolver, then the bare-binary one; each returns 2 for "not
+      # mine" (→ fall through) and otherwise owns the whole flow.
+      do_uninstall_brew "$q"; rc=$?
+      [ "$rc" -ne 2 ] && return "$rc"
+      do_uninstall_bin "$q"; rc=$?
+      [ "$rc" -ne 2 ] && return "$rc"
       m="$(t un_notfound)"; echo "${m//\{app\}/$target}" >&2; return 1
     fi
     name="$(catalog_name_for_bid "$bid")"; [ -z "$name" ] && name="$q"
@@ -958,6 +1140,237 @@ do_uninstall() {
 
   echo "============================================================"
   m="$(t un_done)"; echo "${m//\{app\}/$name}"
+  return 0
+}
+
+# ============================================================================
+# uninstall, CLI branches — DELEGATION, not surgery.
+# A brew-installed tool is best removed by brew itself: its receipt knows the
+# keg, the links, the services — and `brew install <name>` restores it more
+# cleanly than any Trash copy could (a keg is a rebuildable artifact, not user
+# data; hand-moving it would leave brew's links dangling). So sheersweep itself
+# never deletes a file except by moving it to the Trash: everything else is a
+# tool's OWN uninstaller, printed verbatim and run only after a typed confirm.
+# ============================================================================
+
+# Locate brew and run it AS THE HUMAN — brew refuses root, and sheersweep is
+# usually root by the time uninstall runs. Auto-update is pinned off so no
+# invocation ever touches the network. BREW_BIN empty = no Homebrew here.
+brew_locate() {
+  if [ "$(id -u)" -eq 0 ]; then
+    BREW_BIN="$(sudo -u "$REAL_USER" sh -c 'command -v brew' 2>/dev/null)"
+  else
+    BREW_BIN="$(command -v brew 2>/dev/null)"
+  fi
+}
+brew_run() {
+  if [ "$(id -u)" -eq 0 ]; then
+    sudo -u "$REAL_USER" HOMEBREW_NO_AUTO_UPDATE=1 "$BREW_BIN" "$@"
+  else
+    HOMEBREW_NO_AUTO_UPDATE=1 "$BREW_BIN" "$@"
+  fi
+}
+
+# uninstall a Homebrew formula by delegating to brew. Returns 0 = done or
+# cancelled · 1 = refused/failed · 2 = not a brew formula (caller falls through).
+do_uninstall_brew() {
+  local name vers deps keg sz cmd reply
+  brew_locate
+  [ -z "$BREW_BIN" ] && return 2
+  name="$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')"   # formula names are lowercase
+  vers="$(brew_run list --formula --versions "$name" 2>/dev/null | head -1)"
+  [ -z "$vers" ] && return 2
+  name="${vers%% *}"                                        # brew's canonical short name
+  vers="${vers#* }"
+  # Refuse if any INSTALLED formula depends on it — removing it would break them.
+  deps="$(brew_run uses --installed "$name" 2>/dev/null | tr '\n' ' ')"
+  if [ -n "${deps// }" ]; then
+    m="$(t un_brew_deps)"; m="${m//\{name\}/$name}"; echo "${m//\{deps\}/$deps}" >&2
+    return 1
+  fi
+  keg="$(brew_run --cellar 2>/dev/null)/$name"
+  sz="$(du -sh "$keg" 2>/dev/null | cut -f1)"
+  cmd="brew uninstall $name"
+  echo "============================================================"
+  m="$(t un_brew_resolved)"; m="${m//\{name\}/$name}"; echo "${m//\{ver\}/$vers}"
+  echo "------------------------------------------------------------"
+  printf '   %6s  %s\n' "${sz:-?}" "$keg"
+  echo "------------------------------------------------------------"
+  t un_brew_cmd
+  printf '\n      %s\n\n' "$cmd"
+  m="$(t un_brew_config)"; echo "${m//\{name\}/$name}"
+  echo "============================================================"
+  if [ "$DRY" -eq 1 ]; then t un_dry_note; return 0; fi
+  m="$(t un_brew_confirm)"; printf '%s' "${m//\{name\}/$name}"
+  reply=""; read -r reply || true
+  if [ "$reply" != "$name" ]; then t un_cancelled; return 0; fi
+  brew_run uninstall "$name" || return 1
+  m="$(t un_brew_done)"; m="${m//\{name\}/$name}"; echo "${m//\{ver\}/$vers}"
+  # If this was the last formula needing some dependencies, say so — but never
+  # auto-run autoremove: the consent above covered ONE formula, not a batch.
+  [ -n "$(brew_run autoremove --dry-run 2>/dev/null)" ] && t un_brew_orphans
+  return 0
+}
+
+# Print (NUL-delimited) the hand-installed binaries in $2's personal bin dirs
+# and /usr/local/bin — skipping anything a manager or an app owns: symlinks into
+# a Homebrew keg (…/Cellar/…, …/Homebrew/…) or into an .app bundle (e.g. Docker
+# Desktop's /usr/local/bin/docker). Those have real uninstallers; a bare binary
+# has only us. $1 = exact name to match, or "" for the full inventory.
+unmanaged_bins() {
+  local q="$1" home="$2" d f tgt
+  for d in "$home/bin" "$home/.local/bin" "/usr/local/bin"; do
+    [ -d "$d" ] || continue
+    for f in "$d"/*; do
+      [ -f "$f" ] && [ -x "$f" ] || continue    # follows symlinks; skips dirs and dangling links
+      [ -n "$q" ] && [ "$(basename "$f")" != "$q" ] && continue
+      if [ -L "$f" ]; then
+        tgt="$(readlink "$f")"
+        case "$tgt" in */Cellar/*|*/Homebrew/*|*.app/*) continue ;; esac
+      fi
+      printf '%s\0' "$f"
+    done
+  done
+}
+
+# uninstall a hand-installed bare binary. No receipt anywhere knows its
+# footprint, so sheersweep stays honest: it moves ONLY the binary itself to the
+# Trash (recoverable via `restore`) and says out loud that any data the tool
+# kept elsewhere is beyond what anyone can match safely by name.
+# Returns 0 = done or cancelled · 2 = no such binary (caller reports not-found).
+do_uninstall_bin() {
+  local q="$1" hits=() f sz reply
+  while IFS= read -r -d '' f; do hits+=("$f"); done < <(unmanaged_bins "$q" "$REAL_HOME")
+  [ "${#hits[@]}" -eq 0 ] && return 2
+  echo "============================================================"
+  t un_bin_header
+  echo "------------------------------------------------------------"
+  for f in "${hits[@]}"; do
+    sz="$(du -shL "$f" 2>/dev/null | cut -f1)"
+    printf '   %6s  %s\n' "${sz:-?}" "$f"
+  done
+  echo "------------------------------------------------------------"
+  t un_bin_note
+  echo "============================================================"
+  if [ "$DRY" -eq 1 ]; then t un_dry_note; return 0; fi
+  m="$(t un_bin_confirm)"; printf '%s' "${m//\{name\}/$q}"
+  reply=""; read -r reply || true
+  if [ "$reply" != "$q" ]; then t un_cancelled; return 0; fi
+  # same receipt store and format as an app uninstall → `restore` undoes this too
+  local rdir rfile stamp moved=0
+  rdir="$REAL_HOME/.sheersweep/uninstalls"
+  mkdir -p "$rdir" 2>/dev/null
+  stamp="$(date +%Y%m%d-%H%M%S)"
+  rfile="$rdir/$stamp-bin-$q.tsv"
+  {
+    echo "# sheersweep uninstall receipt"
+    echo "# app=$q"
+    echo "# bid=unmanaged-binary"
+    echo "# date=$stamp"
+    echo "# format=nul-pairs"
+    printf '\0'
+  } > "$rfile" 2>/dev/null
+  for f in "${hits[@]}"; do
+    printf '   %s  %s\n' "$(t un_trashing)" "$f"
+    to_trash "$f" "$REAL_HOME"
+    if [ -n "$TRASH_DEST" ]; then
+      printf '%s\0%s\0' "$TRASH_DEST" "$f" >> "$rfile" 2>/dev/null
+      moved=$((moved + 1))
+    fi
+  done
+  chown -R "$(stat -f %u "$REAL_HOME" 2>/dev/null):$(stat -f %g "$REAL_HOME" 2>/dev/null)" "$REAL_HOME/.sheersweep" 2>/dev/null
+  [ "$moved" -eq 0 ] && rm -f "$rfile" 2>/dev/null
+  echo "============================================================"
+  m="$(t un_done)"; echo "${m//\{app\}/$q}"
+  return 0
+}
+
+# ============================================================================
+# tools — a read-only inventory of the CLI side of this Mac: the formulae YOU
+# chose (leaves), orphaned dependencies, hand-installed binaries no manager
+# owns, and the big toolchain data folders — each with the native way to remove
+# it. This verb changes NOTHING and never asks for a password; sheersweep only
+# ever removes a CLI tool via `uninstall`, which delegates (see above).
+# ============================================================================
+do_tools() {
+  local line name vers sz cellar leaves orphans f n rel hint p
+  echo "============================================================"
+  t tl_banner
+  echo "------------------------------------------------------------"
+
+  # ---- Homebrew: what you chose, and what nothing needs anymore --------------
+  brew_locate
+  if [ -z "$BREW_BIN" ]; then
+    t tl_nobrew
+  else
+    t tl_brew_header
+    leaves="$(brew_run leaves 2>/dev/null)"
+    if [ -n "$leaves" ]; then
+      cellar="$(brew_run --cellar 2>/dev/null)"
+      # shellcheck disable=SC2086  # formula names never contain spaces; splitting is the point
+      while IFS= read -r line; do
+        [ -z "$line" ] && continue
+        name="${line%% *}"; vers="${line#* }"
+        sz="$(du -sh "$cellar/$name" 2>/dev/null | cut -f1)"
+        printf '   %6s  %-24s %s\n' "${sz:-?}" "$name" "$vers"
+      done < <(brew_run list --formula --versions $leaves 2>/dev/null)
+    fi
+    echo "------------------------------------------------------------"
+    orphans="$(brew_run autoremove --dry-run 2>/dev/null)"
+    if [ -z "$orphans" ]; then
+      t tl_orphans_none
+    else
+      t tl_orphans_header
+      printf '%s\n' "$orphans" | grep -v '^==>' | sed 's/^/   /'
+    fi
+  fi
+  echo "------------------------------------------------------------"
+
+  # ---- hand-installed binaries no manager owns --------------------------------
+  t tl_bins_header
+  n=0
+  while IFS= read -r -d '' f; do
+    n=$((n + 1))
+    sz="$(du -shL "$f" 2>/dev/null | cut -f1)"
+    if [ -L "$f" ]; then
+      printf '   %6s  %s → %s\n' "${sz:-?}" "$f" "$(readlink "$f")"
+    else
+      printf '   %6s  %s\n' "${sz:-?}" "$f"
+    fi
+  done < <(unmanaged_bins "" "$REAL_HOME")
+  [ "$n" -eq 0 ] && echo "   $(t tl_bins_none)"
+  echo "------------------------------------------------------------"
+
+  # ---- toolchain data folders (informational — each row shows the NATIVE way
+  # to reclaim it; sheersweep never touches these) ------------------------------
+  t tl_chains_header
+  n=0
+  while IFS='|' read -r rel hint; do
+    [ -z "$rel" ] && continue
+    p="$REAL_HOME/$rel"
+    [ -d "$p" ] || continue
+    sz="$(du -sh "$p" 2>/dev/null | cut -f1)"
+    case "$sz" in ""|0B) continue ;; esac
+    n=$((n + 1))
+    # shellcheck disable=SC2088  # the literal "~/" is display text, not a path
+    printf '   %6s  %-22s %s\n' "$sz" "~/$rel" "$hint"
+  done <<'CHAINS'
+.rustup|rustup self uninstall
+.cargo|removed by: rustup self uninstall
+go|Go workspace · go clean -modcache
+.pyenv|pyenv — Python versions/shims
+.nvm|nvm — Node versions
+.sdkman|SDKMAN
+.dotnet|.NET SDK data
+.m2|Maven cache
+.gradle|Gradle (the default sweep already clears its caches)
+Library/Android|Android Studio → SDK Manager
+.android|Android emulator/adb data
+CHAINS
+  [ "$n" -eq 0 ] && echo "   $(t tl_bins_none)"
+  echo "------------------------------------------------------------"
+  t tl_hint
+  echo "============================================================"
   return 0
 }
 
@@ -1213,7 +1626,7 @@ do_leftovers() {
   return 0
 }
 
-# --- dispatch: uninstall / restore / leftovers are verbs; default → sweep ------
+# --- dispatch: uninstall / tools / restore / leftovers are verbs; default → sweep
 # When sourced as a library for tests (SHEERSWEEP_LIB=1) we stop here: the pure
 # functions above are now defined, but nothing is executed.
 # shellcheck disable=SC2317  # the exit is reached only if run (not sourced) under the lib flag
@@ -1223,6 +1636,10 @@ if [ "$MODE" = "uninstall" ]; then
   [ -z "$APP_TARGET" ] && pick_app          # no app named → show the picker
   if [ -z "$APP_TARGET" ]; then t un_cancelled; exit 0; fi
   do_uninstall "$APP_TARGET"
+  exit $?
+fi
+if [ "$MODE" = "tools" ]; then
+  do_tools
   exit $?
 fi
 if [ "$MODE" = "restore" ]; then

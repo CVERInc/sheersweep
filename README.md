@@ -19,10 +19,11 @@ Open source, no subscription, no surprises.
 
 - **You can read every line.** It's one `bash` script (see `wc -l sheersweep` for
   the current line count) — more than half is its three-language strings; the logic
-  fits on a few screens. Only two
-  operations delete anything, and both are easy to find: the sweep's `find … -delete`
-  runs solely on the cache paths listed below, and `uninstall` only ever *moves*
-  files to the Trash — it never calls `rm`.
+  fits on a few screens. sheersweep itself never deletes a file except two easy-to-find
+  ways: the sweep's `find … -delete` runs solely on the cache paths listed below, and
+  `uninstall` *moves* files to the Trash — it never calls `rm`. Every other
+  destructive action is a tool's **own** uninstaller (`brew uninstall`, delegated),
+  and sheersweep prints the exact command before running it.
 - **Dry-run first.** `sheersweep --dry-run` prints how much each item *would*
   free and deletes nothing. Run it, read it, then decide.
 - **🔴 Never-touch list — no line in the script can reach these:**
@@ -74,6 +75,42 @@ It's held to the same trust rules as the sweep:
   remove them, and deleting them wouldn't free space. But **removable Apple apps in
   `/Applications`** (iMovie, GarageBand, the iWork suite, Xcode…) are fair game.
 
+### CLI tools use the same verb — removed the way each restores best
+
+```bash
+sheersweep uninstall ffmpeg              # a Homebrew formula → delegated to brew
+sheersweep uninstall mytool              # a hand-installed binary → Trash, like an app
+```
+
+- **A Homebrew formula is removed by brew itself.** brew's receipt knows the keg,
+  the links, the services; `brew install <name>` is a *cleaner* restore than any
+  Trash copy (a keg is a rebuildable artifact, not user data — and hand-moving it
+  would leave brew's links dangling). sheersweep refuses if anything installed
+  depends on the formula, prints the **exact** `brew uninstall` command, and runs
+  it only after you type the name. Config the tool kept in your home folder is
+  reported as untouched — guessing it by name is exactly the fuzzy matching this
+  script refuses to do.
+- **A bare binary** (`~/bin`, `~/.local/bin`, `/usr/local/bin`) moves to the Trash
+  with a receipt, and sheersweep says out loud that only its author knows whether
+  it kept data elsewhere. Symlinks owned by Homebrew or an `.app` are never
+  candidates — their owners uninstall them.
+
+## See your CLI tools (read-only)
+
+The list that never existed anywhere: `/Applications` you can scan with your eyes,
+but the CLI side of a Mac has no shelf to look at — until now:
+
+```bash
+sheersweep tools
+```
+
+One read-only screen: the Homebrew formulae **you** chose (leaves, with sizes),
+orphaned dependencies (`brew autoremove` candidates), hand-installed binaries no
+manager owns, and the big toolchain data folders (`~/.rustup`, `~/.android`, …) —
+each with the **native** command that removes it. It changes nothing, needs no
+password, and never touches the network. Which to keep is your call — this verb
+just finally lets you *see* what you have; sheersweep gives evidence, not verdicts.
+
 ## Clean up leftovers (opt-in)
 
 Apps you removed long ago often leave a **background item** behind — a
@@ -108,6 +145,7 @@ cd sheersweep
 ./sheersweep --dry-run        # preview — deletes nothing (recommended first run)
 ./sheersweep                  # real run (prompts once for sudo — needed to sweep all accounts)
 ./sheersweep uninstall        # pick an app to fully remove (preview + confirm + Trash)
+./sheersweep tools            # read-only: your CLI tools, orphans, toolchain data
 ./sheersweep leftovers        # find orphaned startup items from apps that are gone
 ./sheersweep restore          # undo the last uninstall/leftovers — put it all back
 ./sheersweep --version
@@ -124,7 +162,7 @@ ln -s "$PWD/sheersweep" /usr/local/bin/sheersweep
 ```
 
 Sweeping every account needs admin rights, so sheersweep re-runs itself with
-`sudo` (one password prompt). `--version` / `--help` never need it.
+`sudo` (one password prompt). `--version` / `--help` / `tools` never need it.
 
 ## Scope, on purpose
 

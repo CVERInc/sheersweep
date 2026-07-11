@@ -4,8 +4,38 @@ All notable changes to sheersweep are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [0.6.0]
 
+- New verb: **`sheersweep tools`** — a **read-only** inventory of the CLI side of
+  the Mac, the list that never existed anywhere: the Homebrew formulae *you*
+  chose (`brew leaves`, with sizes), orphaned dependencies (`brew autoremove`
+  candidates), hand-installed binaries no manager owns (`~/bin`, `~/.local/bin`,
+  `/usr/local/bin` — Homebrew-keg and `.app`-bundle symlinks are excluded, their
+  owners uninstall them), and the big toolchain data folders (`~/.rustup`,
+  `~/.android`, …) each with its **native** removal method. Changes nothing,
+  never asks for a password, never touches the network
+  (`HOMEBREW_NO_AUTO_UPDATE=1` on every brew call).
+- **`uninstall` now covers CLI tools — by delegation, not surgery.** A Homebrew
+  formula is removed by brew itself: sheersweep refuses if any installed formula
+  depends on it, prints the **exact** `brew uninstall <name>` command it will
+  run, and runs it only after the usual typed-name confirm (restore =
+  `brew install <name>`; the removed version is shown). A keg is a rebuildable
+  artifact, not user data — reinstalling is a *cleaner* restore than any Trash
+  copy, and hand-moving a keg would leave brew's links dangling. Config a tool
+  kept in the home folder is explicitly reported as untouched — matching by
+  name would violate the no-fuzzy-match rule.
+- **`uninstall` also takes a hand-installed bare binary** (`~/bin`,
+  `~/.local/bin`, `/usr/local/bin`): moves **just the binary** to the Trash with
+  a receipt (`restore` undoes it) and says out loud that any data it kept
+  elsewhere is unknowable. Manager-owned symlinks are never candidates.
+- **The trust sentence got *stronger*, not weaker**: sheersweep itself still
+  never deletes a file except by moving it to the Trash — every other
+  destructive action is a tool's *own* uninstaller, shown verbatim before it
+  runs. (`brew cleanup` in the sweep already worked this way.)
+- **i18n is now tiered**: consent/judgment sentences stay fully localized
+  (en-US · ja-JP · zh-TW — a func-test enforces all three per key); command
+  lines, paths, sizes and table rows print raw — that vocabulary *is* the
+  interface you copy, run, and search.
 - **Wider functional test coverage** (no behaviour change): `lf_scan`'s
   dead/likely-orphan/kept classification (a live or Apple item is never flagged),
   multi-account Trash routing (each account's item lands in its *own* Trash),
