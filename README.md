@@ -109,6 +109,12 @@ count of ids shown), one receipt — and `sheersweep restore` undoes the whole
 batch. Years of residue, one pass. `sheersweep uninstall <bundle-id>` reaches
 a single one directly (add `--dry-run` to preview headlessly).
 
+One more honesty rule: **the ✅ only appears if everything actually moved.**
+macOS protects app containers from other programs (even as root) unless your
+terminal has Full Disk Access — when that blocks an item, sheersweep marks it
+`❌ still in place`, reports `🔴 only N of M moved`, and tells you about the
+System Settings toggle instead of pretending.
+
 ### CLI tools use the same verb — removed the way each restores best
 
 ```bash
@@ -182,7 +188,7 @@ cd sheersweep
 
 ./sheersweep --dry-run        # preview — deletes nothing (recommended first run)
 ./sheersweep                  # real run (prompts once for sudo — needed to sweep all accounts)
-./sheersweep uninstall        # pick an app to fully remove (preview + confirm + Trash)
+./sheersweep uninstall        # pick an app — or removed apps' leftover data — to clear
 ./sheersweep tools            # read-only: your CLI tools, orphans, toolchain data
 ./sheersweep leftovers        # find orphaned startup items from apps that are gone
 ./sheersweep restore          # undo the last uninstall/leftovers — put it all back
@@ -209,10 +215,12 @@ The default **sweep** clears **only** safe, regenerable junk. It will never grow
 delete — that's exactly where cleaners delete something you wanted.
 
 Removing an app *is* deleting real data, so it's **not** folded into the sweep.
-It's a separate verb you invoke on purpose, one app at a time, that previews
-everything and moves it to the **Trash** so the call is reversible. A narrow,
-honest sweep and an explicit, recoverable uninstall — never a single broad
-"clean everything" button.
+It's a separate verb you invoke on purpose — one app at a time for anything
+still installed (that's surgery), in one previewed, explicitly-confirmed batch
+for the residue of apps already gone (that's housekeeping) — and everything it
+moves goes to the **Trash**, so the call is reversible. A narrow, honest sweep
+and an explicit, recoverable uninstall — never a single broad "clean
+everything" button.
 
 ## Language
 

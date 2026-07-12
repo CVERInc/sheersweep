@@ -32,7 +32,7 @@
 #   each with the native way to remove it. Changes nothing; never needs sudo.
 set -u
 
-VERSION="0.7.3"
+VERSION="0.7.4"
 
 # ============================================================================
 # i18n — en-US · ja-JP · zh-TW · zh-Hans · ko-KR · es-ES · de-DE · fr-FR · pt-BR.
@@ -281,7 +281,7 @@ t() {
     un_pick_header)
       case "$SS_LANG" in
         ja-JP) echo "アンインストールできるアプリ:" ;;
-        zh-TW) echo "可卸載的 App：" ;;
+        zh-TW) echo "可移除的 App：" ;;
         zh-Hans) echo "可卸载的 App：" ;;
         ko-KR) echo "제거할 수 있는 앱:" ;;
         es-ES) echo "Apps que puedes desinstalar:" ;;
@@ -317,7 +317,7 @@ t() {
     un_pick_none)
       case "$SS_LANG" in
         ja-JP) echo "アンインストールできるアプリが見つかりません。" ;;
-        zh-TW) echo "找不到可卸載的 App。" ;;
+        zh-TW) echo "找不到可移除的 App。" ;;
         zh-Hans) echo "找不到可卸载的 App。" ;;
         ko-KR) echo "제거할 수 있는 앱이 없습니다." ;;
         es-ES) echo "No se encontraron apps desinstalables." ;;
@@ -533,7 +533,7 @@ t() {
     un_dry_note)
       case "$SS_LANG" in
         ja-JP) echo "🧪 プレビュー — 何も移動していません。uninstall するには --dry-run なしで実行。" ;;
-        zh-TW) echo "🧪 預覽——什麼都沒動。要真的卸載請拿掉 --dry-run 再執行。" ;;
+        zh-TW) echo "🧪 預覽——什麼都沒動。要真的移除請拿掉 --dry-run 再執行。" ;;
         zh-Hans) echo "🧪 预览——什么都没动。要真正卸载请去掉 --dry-run 再运行。" ;;
         ko-KR) echo "🧪 미리보기 — 아무것도 옮기지 않았습니다. 실제로 제거하려면 --dry-run 없이 실행하세요." ;;
         es-ES) echo "🧪 vista previa — no se movió nada. Ejecuta sin --dry-run para desinstalar." ;;
@@ -589,6 +589,42 @@ t() {
         fr-FR) echo "vers la Corbeille" ;;
         pt-BR) echo "para a Lixeira" ;;
         *)     echo "to Trash" ;;
+      esac ;;
+    un_item_stuck)
+      case "$SS_LANG" in
+        ja-JP) echo "❌ 移動できませんでした — 元の場所に残っています（理由は下記）" ;;
+        zh-TW) echo "❌ 搬不動——仍留在原位（原因見最後）" ;;
+        zh-Hans) echo "❌ 移不动——仍留在原位（原因见最后）" ;;
+        ko-KR) echo "❌ 옮기지 못했습니다 — 원래 자리에 남아 있습니다(이유는 아래)" ;;
+        es-ES) echo "❌ no se pudo mover — sigue en su sitio (motivo abajo)" ;;
+        de-DE) echo "❌ ließ sich nicht verschieben — liegt noch am alten Ort (Grund unten)" ;;
+        fr-FR) echo "❌ impossible à déplacer — toujours en place (raison plus bas)" ;;
+        pt-BR) echo "❌ não foi possível mover — continua no lugar (motivo abaixo)" ;;
+        *)     echo "❌ couldn't be moved — still in place (reason at the end)" ;;
+      esac ;;
+    un_partial)   # {moved} · {total}
+      case "$SS_LANG" in
+        ja-JP) echo "🔴 {total} 項目中 {moved} 項目しかゴミ箱へ移動できませんでした — 残りは元の場所にあります。移動した分を戻す: sheersweep restore" ;;
+        zh-TW) echo "🔴 {total} 個項目只搬走了 {moved} 個——其餘仍留在原位。想還原已搬走的部分打：sheersweep restore" ;;
+        zh-Hans) echo "🔴 {total} 个项目只移走了 {moved} 个——其余仍留在原位。要恢复已移走的部分输入：sheersweep restore" ;;
+        ko-KR) echo "🔴 {total}개 중 {moved}개만 휴지통으로 옮겼습니다 — 나머지는 그대로 있습니다. 옮긴 것 되돌리기: sheersweep restore" ;;
+        es-ES) echo "🔴 solo {moved} de {total} elementos pudieron moverse a la Papelera — el resto sigue en su sitio. Deshacer los movidos: sheersweep restore" ;;
+        de-DE) echo "🔴 nur {moved} von {total} Einträgen konnten in den Papierkorb — der Rest liegt noch am alten Ort. Verschobenes rückgängig: sheersweep restore" ;;
+        fr-FR) echo "🔴 seulement {moved} éléments sur {total} ont pu aller à la Corbeille — le reste est toujours en place. Annuler les déplacés : sheersweep restore" ;;
+        pt-BR) echo "🔴 só {moved} de {total} itens foram para a Lixeira — o resto continua no lugar. Desfazer os movidos: sheersweep restore" ;;
+        *)     echo "🔴 only {moved} of {total} items could be moved to the Trash — the rest are still in place. Undo the moved ones: sheersweep restore" ;;
+      esac ;;
+    un_protected_hint)
+      case "$SS_LANG" in
+        ja-JP) echo "🔒 残ったのはアプリの「コンテナ」（Library/Containers）です。macOS が他のプログラムから保護していて、root でも動かせません。ターミナルに「フルディスクアクセス」を許可（システム設定 → プライバシーとセキュリティ → フルディスクアクセス）してから再実行してください。他アカウントのコンテナは、そのアカウントでのログインも必要な場合があります。" ;;
+        zh-TW) echo "🔒 搬不動的是 App 的「容器」（Library/Containers）——macOS 保護它們不被其他程式移動，連 root 也一樣。請給你的終端機「完整磁碟取用權」（系統設定 → 隱私權與安全性 → 完整磁碟取用權），再跑一次。別的帳號的容器可能還需要登入那個帳號處理。" ;;
+        zh-Hans) echo "🔒 移不动的是 App 的“容器”（Library/Containers）——macOS 保护它们不被其他程序移动，root 也一样。请给你的终端“完全磁盘访问权限”（系统设置 → 隐私与安全性 → 完全磁盘访问权限），再运行一次。其他账户的容器可能还需要登录该账户处理。" ;;
+        ko-KR) echo "🔒 남은 것은 앱의 '컨테이너'(Library/Containers)입니다. macOS가 다른 프로그램으로부터 보호하며 root도 옮길 수 없습니다. 터미널에 '전체 디스크 접근 권한'을 허용(시스템 설정 → 개인정보 보호 및 보안 → 전체 디스크 접근 권한)한 뒤 다시 실행하세요. 다른 계정의 컨테이너는 해당 계정으로 로그인해야 할 수 있습니다." ;;
+        es-ES) echo "🔒 lo que quedó son CONTENEDORES de apps (Library/Containers) — macOS los protege de otros programas, incluso como root. Da a tu terminal Acceso total al disco (Ajustes del Sistema → Privacidad y seguridad → Acceso total al disco) y vuelve a ejecutar. Los contenedores de otra cuenta pueden requerir iniciar sesión en esa cuenta." ;;
+        de-DE) echo "🔒 übrig blieben App-CONTAINER (Library/Containers) — macOS schützt sie vor anderen Programmen, selbst als root. Gib deinem Terminal Festplattenvollzugriff (Systemeinstellungen → Datenschutz & Sicherheit → Festplattenvollzugriff) und führe es erneut aus. Container anderer Accounts können zusätzlich eine Anmeldung dort erfordern." ;;
+        fr-FR) echo "🔒 ce qui reste, ce sont des CONTENEURS d'apps (Library/Containers) — macOS les protège des autres programmes, même en root. Donnez à votre terminal l'Accès complet au disque (Réglages Système → Confidentialité et sécurité → Accès complet au disque), puis relancez. Les conteneurs d'un autre compte peuvent exiger de s'y connecter." ;;
+        pt-BR) echo "🔒 o que ficou são CONTÊINERES de apps (Library/Containers) — o macOS os protege de outros programas, mesmo como root. Dê ao seu terminal Acesso Total ao Disco (Ajustes do Sistema → Privacidade e Segurança → Acesso Total ao Disco) e execute de novo. Contêineres de outra conta podem exigir login nela." ;;
+        *)     echo "🔒 What stayed behind are app CONTAINERS (Library/Containers) — macOS protects them from other programs, even running as root. Give your terminal Full Disk Access (System Settings → Privacy & Security → Full Disk Access), then run this again. Another account's containers may also require logging in as that account." ;;
       esac ;;
     un_done)   # {app}
       case "$SS_LANG" in
@@ -866,7 +902,7 @@ t() {
     rs_none)
       case "$SS_LANG" in
         ja-JP) echo "復元できるものがありません — アンインストールの記録が見つかりません。" ;;
-        zh-TW) echo "沒有可還原的東西——找不到任何卸載紀錄。" ;;
+        zh-TW) echo "沒有可還原的東西——找不到任何移除紀錄。" ;;
         zh-Hans) echo "没有可还原的内容——找不到任何卸载记录。" ;;
         ko-KR) echo "복원할 것이 없습니다 — 제거 기록을 찾을 수 없습니다." ;;
         es-ES) echo "Nada que restaurar — no hay recibos de desinstalación." ;;
@@ -878,7 +914,7 @@ t() {
     rs_header)   # {app}  ·  {date}
       case "$SS_LANG" in
         ja-JP) echo "最後のアンインストールを復元: {app}   ·   {date}" ;;
-        zh-TW) echo "要還原最後一次卸載：{app}   ·   {date}" ;;
+        zh-TW) echo "要還原最後一次移除：{app}   ·   {date}" ;;
         zh-Hans) echo "要还原最近一次卸载：{app}   ·   {date}" ;;
         ko-KR) echo "마지막 제거를 복원합니다: {app}   ·   {date}" ;;
         es-ES) echo "Restaurando la última desinstalación: {app}   ·   {date}" ;;
@@ -950,7 +986,7 @@ t() {
     rs_list_header)
       case "$SS_LANG" in
         ja-JP) echo "これまでのアンインストール（新しい順）:" ;;
-        zh-TW) echo "歷次卸載（新到舊）：" ;;
+        zh-TW) echo "歷次移除（新到舊）：" ;;
         zh-Hans) echo "历次卸载（从新到旧）：" ;;
         ko-KR) echo "지난 제거 기록(최신순):" ;;
         es-ES) echo "Desinstalaciones pasadas (recientes primero):" ;;
@@ -1178,7 +1214,7 @@ sheersweep — 你讀得懂的 Mac 清理工具。
   • 釋放本機 APFS（Time Machine）快照——這是釋出空間真正會回來的一步
     （只刪檔案，若快照仍釘住就不會還空間）。
 
-卸載一個 App（明確 opt-in 的危險操作）
+移除一個 App（明確 opt-in 的危險操作）
   sheersweep uninstall <App>
   用 bundle id（不靠模糊檔名）跨「每一個帳號」找出屬於這 App 的所有東西，
   列出清單與大小，等你輸入 App 名稱確認後，把每一項移到「擁有它的那個帳號的
@@ -1201,9 +1237,9 @@ CLI 工具盤點（唯讀）
                               可升級的 formula 會標示出來——只讀 brew 本地索引，
                               一樣不碰網路。
 
-還原上一次卸載
-  sheersweep restore          把上一次卸載從垃圾桶放回原處
-  sheersweep restore --list   列出歷次卸載紀錄
+還原上一次移除
+  sheersweep restore          把上一次移除從垃圾桶放回原處
+  sheersweep restore --list   列出歷次移除紀錄
 
 清孤兒殘骸（已刪除 app 留下的開機項目）
   sheersweep leftovers        找出孤兒化的 LaunchAgents/Daemons：把「死的」與「可能
@@ -2449,7 +2485,41 @@ to_trash() {
     i=1
     while [ -e "$dest" ]; do dest="$tdir/$base $stamp-$i"; i=$((i + 1)); done
   fi
+  # shellcheck disable=SC2034  # read by trash_one and the callers' receipt writers
   if mv "$item" "$dest" 2>/dev/null; then TRASH_DEST="$dest"; fi
+}
+
+# One attempted move, honestly accounted: prints the item, tries to_trash,
+# writes the receipt pair — and says ❌ OUT LOUD when nothing moved. A silent
+# skip is how three real runs "succeeded" while every macOS-protected app
+# container stayed put and the summary still claimed ✅. Uses the caller's
+# MV_TRIED / MV_MOVED / MV_STUCK_CONT via bash dynamic scoping — declare them
+# in the caller before the loop.
+trash_one() {   # $1 = path  $2 = owner-home  $3 = receipt file
+  printf '   %s  %s\n' "$(t un_trashing)" "$1"
+  MV_TRIED=$((MV_TRIED + 1))
+  to_trash "$1" "$2"
+  if [ -n "$TRASH_DEST" ]; then
+    printf '%s\0%s\0' "$TRASH_DEST" "$1" >> "$3" 2>/dev/null
+    MV_MOVED=$((MV_MOVED + 1))
+  else
+    printf '        %s\n' "$(t un_item_stuck)"
+    case "$1" in */Library/Containers/*) MV_STUCK_CONT=1 ;; esac
+  fi
+}
+
+# The honest tail of every move loop: full success keeps the old one-line ✅;
+# anything less becomes a 🔴 with the real numbers — and when macOS's app
+# container protection is the culprit, the one line that actually helps.
+report_moves() {   # $1 = the fully-successful ✅ line, already formatted
+  local m
+  if [ "$MV_TRIED" -gt 0 ] && [ "$MV_MOVED" -eq "$MV_TRIED" ]; then
+    echo "$1"
+  else
+    m="$(t un_partial)"; m="${m//\{moved\}/$MV_MOVED}"; echo "${m//\{total\}/$MV_TRIED}"
+    [ "$MV_STUCK_CONT" -eq 1 ] && t un_protected_hint
+  fi
+  return 0
 }
 
 do_uninstall() {
@@ -2628,7 +2698,8 @@ do_uninstall() {
   # The data rows are NUL-delimited (dest \0 orig \0) so a path containing a TAB
   # or a NEWLINE — both legal in a macOS filename — can't corrupt the parse. The
   # leading "# ..." header stays human-readable (its fields are controlled).
-  local rdir rfile stamp moved=0
+# shellcheck disable=SC2034  # MV_* are read/written by trash_one/report_moves via dynamic scope
+  local rdir rfile stamp MV_TRIED=0 MV_MOVED=0 MV_STUCK_CONT=0
   rdir="$REAL_HOME/.sheersweep/uninstalls"
   mkdir -p "$rdir" 2>/dev/null
   stamp="$(date +%Y%m%d-%H%M%S)"
@@ -2645,19 +2716,14 @@ do_uninstall() {
     printf '\0'                 # end-of-header sentinel: data (NUL-pairs) starts here
   } > "$rfile" 2>/dev/null
   for i in "${!ITEM_PATH[@]}"; do
-    printf '   %s  %s\n' "$(t un_trashing)" "${ITEM_PATH[$i]}"
-    to_trash "${ITEM_PATH[$i]}" "${ITEM_OWNER[$i]}"
-    if [ -n "$TRASH_DEST" ]; then
-      printf '%s\0%s\0' "$TRASH_DEST" "${ITEM_PATH[$i]}" >> "$rfile" 2>/dev/null
-      moved=$((moved + 1))
-    fi
+    trash_one "${ITEM_PATH[$i]}" "${ITEM_OWNER[$i]}" "$rfile"
   done
   # hand the receipt to the real user (we wrote it as root)
   chown -R "$(stat -f %u "$REAL_HOME" 2>/dev/null):$(stat -f %g "$REAL_HOME" 2>/dev/null)" "$REAL_HOME/.sheersweep" 2>/dev/null
-  [ "$moved" -eq 0 ] && rm -f "$rfile" 2>/dev/null
+  [ "$MV_MOVED" -eq 0 ] && rm -f "$rfile" 2>/dev/null
 
   echo "============================================================"
-  m="$(t un_done)"; echo "${m//\{app\}/$name}"
+  m="$(t un_done)"; report_moves "${m//\{app\}/$name}"
   return 0
 }
 
@@ -2703,7 +2769,8 @@ do_uninstall_orphans() {
   local reply=""; read -r reply || true
   if [ "$reply" != "$nids" ]; then t un_cancelled; return 0; fi
 
-  local rdir rfile stamp moved=0
+# shellcheck disable=SC2034  # MV_* are read/written by trash_one/report_moves via dynamic scope
+  local rdir rfile stamp MV_TRIED=0 MV_MOVED=0 MV_STUCK_CONT=0
   rdir="$REAL_HOME/.sheersweep/uninstalls"
   mkdir -p "$rdir" 2>/dev/null
   stamp="$(date +%Y%m%d-%H%M%S)"
@@ -2717,18 +2784,14 @@ do_uninstall_orphans() {
     printf '\0'
   } > "$rfile" 2>/dev/null
   for i in "${!ITEM_PATH[@]}"; do
-    printf '   %s  %s\n' "$(t un_trashing)" "${ITEM_PATH[$i]}"
-    to_trash "${ITEM_PATH[$i]}" "${ITEM_OWNER[$i]}"
-    if [ -n "$TRASH_DEST" ]; then
-      printf '%s\0%s\0' "$TRASH_DEST" "${ITEM_PATH[$i]}" >> "$rfile" 2>/dev/null
-      moved=$((moved + 1))
-    fi
+    trash_one "${ITEM_PATH[$i]}" "${ITEM_OWNER[$i]}" "$rfile"
   done
   chown -R "$(stat -f %u "$REAL_HOME" 2>/dev/null):$(stat -f %g "$REAL_HOME" 2>/dev/null)" "$REAL_HOME/.sheersweep" 2>/dev/null
-  [ "$moved" -eq 0 ] && rm -f "$rfile" 2>/dev/null
+  [ "$MV_MOVED" -eq 0 ] && rm -f "$rfile" 2>/dev/null
 
   echo "============================================================"
-  m="$(t un_orphans_done)"; m="${m//\{n\}/$moved}"; echo "${m//\{ids\}/$nids}"
+  m="$(t un_orphans_done)"; m="${m//\{n\}/$MV_MOVED}"
+  report_moves "${m//\{ids\}/$nids}"
   return 0
 }
 
@@ -2862,7 +2925,8 @@ do_uninstall_bin() {
   reply=""; read -r reply || true
   if [ "$reply" != "$q" ]; then t un_cancelled; return 0; fi
   # same receipt store and format as an app uninstall → `restore` undoes this too
-  local rdir rfile stamp moved=0
+# shellcheck disable=SC2034  # MV_* are read/written by trash_one/report_moves via dynamic scope
+  local rdir rfile stamp MV_TRIED=0 MV_MOVED=0 MV_STUCK_CONT=0
   rdir="$REAL_HOME/.sheersweep/uninstalls"
   mkdir -p "$rdir" 2>/dev/null
   stamp="$(date +%Y%m%d-%H%M%S)"
@@ -2876,17 +2940,12 @@ do_uninstall_bin() {
     printf '\0'
   } > "$rfile" 2>/dev/null
   for f in "${hits[@]}"; do
-    printf '   %s  %s\n' "$(t un_trashing)" "$f"
-    to_trash "$f" "$REAL_HOME"
-    if [ -n "$TRASH_DEST" ]; then
-      printf '%s\0%s\0' "$TRASH_DEST" "$f" >> "$rfile" 2>/dev/null
-      moved=$((moved + 1))
-    fi
+    trash_one "$f" "$REAL_HOME" "$rfile"
   done
   chown -R "$(stat -f %u "$REAL_HOME" 2>/dev/null):$(stat -f %g "$REAL_HOME" 2>/dev/null)" "$REAL_HOME/.sheersweep" 2>/dev/null
-  [ "$moved" -eq 0 ] && rm -f "$rfile" 2>/dev/null
+  [ "$MV_MOVED" -eq 0 ] && rm -f "$rfile" 2>/dev/null
   echo "============================================================"
-  m="$(t un_done)"; echo "${m//\{app\}/$q}"
+  m="$(t un_done)"; report_moves "${m//\{app\}/$q}"
   return 0
 }
 
@@ -3211,7 +3270,8 @@ do_leftovers() {
     *)            t un_cancelled; return 0 ;;
   esac
 
-  local rdir rfile stamp moved=0
+# shellcheck disable=SC2034  # MV_* are read/written by trash_one/report_moves via dynamic scope
+  local rdir rfile stamp MV_TRIED=0 MV_MOVED=0 MV_STUCK_CONT=0
   rdir="$REAL_HOME/.sheersweep/uninstalls"   # same store → `restore` undoes these too
   mkdir -p "$rdir" 2>/dev/null
   stamp="$(date +%Y%m%d-%H%M%S)"
@@ -3227,29 +3287,19 @@ do_leftovers() {
 
   if [ "$ndead" -gt 0 ]; then
     for i in "${!LF_DEAD_PATH[@]}"; do
-      printf '   %s  %s\n' "$(t un_trashing)" "${LF_DEAD_PATH[$i]}"
-      to_trash "${LF_DEAD_PATH[$i]}" "${LF_DEAD_OWNER[$i]}"
-      if [ -n "$TRASH_DEST" ]; then
-        printf '%s\0%s\0' "$TRASH_DEST" "${LF_DEAD_PATH[$i]}" >> "$rfile" 2>/dev/null
-        moved=$((moved + 1))
-      fi
+      trash_one "${LF_DEAD_PATH[$i]}" "${LF_DEAD_OWNER[$i]}" "$rfile"
     done
   fi
   if [ "$include_review" -eq 1 ] && [ "$nrev" -gt 0 ]; then
     for i in "${!LF_REVIEW_PATH[@]}"; do
-      printf '   %s  %s\n' "$(t un_trashing)" "${LF_REVIEW_PATH[$i]}"
-      to_trash "${LF_REVIEW_PATH[$i]}" "${LF_REVIEW_OWNER[$i]}"
-      if [ -n "$TRASH_DEST" ]; then
-        printf '%s\0%s\0' "$TRASH_DEST" "${LF_REVIEW_PATH[$i]}" >> "$rfile" 2>/dev/null
-        moved=$((moved + 1))
-      fi
+      trash_one "${LF_REVIEW_PATH[$i]}" "${LF_REVIEW_OWNER[$i]}" "$rfile"
     done
   fi
   chown -R "$(stat -f %u "$REAL_HOME" 2>/dev/null):$(stat -f %g "$REAL_HOME" 2>/dev/null)" "$REAL_HOME/.sheersweep" 2>/dev/null
-  [ "$moved" -eq 0 ] && rm -f "$rfile" 2>/dev/null
+  [ "$MV_MOVED" -eq 0 ] && rm -f "$rfile" 2>/dev/null
 
   echo "============================================================"
-  m="$(t lf_done)"; echo "${m//\{n\}/$moved}"
+  m="$(t lf_done)"; report_moves "${m//\{n\}/$MV_MOVED}"
   return 0
 }
 

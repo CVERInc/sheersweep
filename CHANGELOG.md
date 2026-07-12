@@ -4,6 +4,36 @@ All notable changes to sheersweep are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.7.4]
+
+Found the honest way, live: three real batch runs printed ✅ while every single
+`Library/Containers/` item silently stayed put — macOS protects app containers
+from other programs, **even running as root**, and the `mv` failure vanished
+into a `2>/dev/null`. Receipts don't lie (143 moves, zero containers among
+them); summaries did. This release makes the summaries as honest as the receipts.
+
+### Fixed — no more ✅ on a run that moved nothing
+
+- Every move loop (uninstall, orphan batch, bare binary, leftovers) now counts
+  **tried vs moved** through one shared, accounted path (`trash_one`). An item
+  that couldn't be moved says so right there (`❌ still in place`), and the
+  summary turns into `🔴 only {moved} of {total} items could be moved` the
+  moment the numbers disagree — the plain ✅ only appears when everything
+  actually moved. A run that moved nothing no longer claims success (it used
+  to print ✅ *and* silently delete its own empty receipt).
+- When the stuck items are app containers, sheersweep prints the one line that
+  actually helps: **grant your terminal Full Disk Access** (System Settings →
+  Privacy & Security), then rerun — verified end-to-end on a protected
+  container (mv fails as root without it; succeeds with it). Another account's
+  containers may additionally require logging in as that account. sheersweep
+  never asks for this permission itself; it tells you when macOS wants it and
+  leaves the decision where it belongs.
+
+### Changed — zh-TW wording aligned with macOS
+
+- 「卸載」→「移除」 across all zh-TW strings and help, matching Apple's own
+  Taiwanese-Chinese system vocabulary.
+
 ## [0.7.3]
 
 ### Changed — the menu arrives in one piece

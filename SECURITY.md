@@ -119,6 +119,14 @@ never escalate and never need a password.
   orphaned. That is the honest platform bound — there is nothing left to scan —
   and it is why every discovered item still goes through the full preview, the
   typed confirmation, the Trash (never `rm`), and `restore`.
+- macOS itself protects **app containers** (`Library/Containers/*`) from being
+  moved by other programs — even running as root — unless the invoking terminal
+  has Full Disk Access. sheersweep does not ask for that permission and cannot
+  route around the protection; when it blocks a move, sheersweep reports the
+  exact shortfall (`🔴 only N of M items could be moved`) and points at the
+  System Settings toggle so the decision stays yours. Every move is *accounted*:
+  the ✅ summary appears only when everything the preview promised actually
+  reached the Trash.
 - The multi-account guards above reduce the demonstrated attacks to races or
   refusals; they are the honest bound a shell script running as root can enforce,
   not a claim of formal isolation. On a single-user Mac none of this applies.

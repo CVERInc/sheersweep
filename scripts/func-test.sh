@@ -589,6 +589,43 @@ else
   fail "pick_parse misparsed (see above)"
 fi
 
+# (P1 guard) honest move accounting: three real runs "succeeded" (✅) while
+# every macOS-protected container silently stayed put. trash_one must count
+# tried vs moved, mark a stuck item ❌ out loud, flag the container case, and
+# report_moves must turn any shortfall into a 🔴 with real numbers — plus the
+# actionable 🔒 hint when containers are what stuck.
+setup
+HOME_OWNER="$SBX/home"; mkdir -p "$HOME_OWNER"
+mkdir -p "$SBX/fake/Library/Containers/com.stuck.app"; echo x > "$SBX/fake/Library/Containers/com.stuck.app/f"
+mkdir -p "$SBX/loose"; echo y > "$SBX/loose/plain.plist"
+ln -s "$SBX/elsewhere" "$HOME_OWNER/.Trash"          # symlinked Trash → to_trash refuses silently
+RF="$SBX/r.tsv"; : > "$RF"
+# NOTE: redirection, not $( ) — command substitution would subshell trash_one
+# and the MV_* accounting (dynamic scope) would never reach report_moves.
+# shellcheck disable=SC2034  # consumed inside the sourced trash_one/report_moves
+MV_TRIED=0; MV_MOVED=0; MV_STUCK_CONT=0
+trash_one "$SBX/fake/Library/Containers/com.stuck.app" "$HOME_OWNER" "$RF" > "$SBX/out1"
+report_moves "SHOULD-NOT-PRINT" > "$SBX/sum1"
+out1="$(cat "$SBX/out1")"; sum1="$(cat "$SBX/sum1")"
+rm "$HOME_OWNER/.Trash"                               # heal the Trash → moves succeed again
+# shellcheck disable=SC2034  # consumed inside the sourced trash_one/report_moves
+MV_TRIED=0; MV_MOVED=0; MV_STUCK_CONT=0
+trash_one "$SBX/loose/plain.plist" "$HOME_OWNER" "$RF" > "$SBX/out2"
+report_moves "ALL-GOOD-LINE" > "$SBX/sum2"
+out2="$(cat "$SBX/out2")"; sum2="$(cat "$SBX/sum2")"
+: "reads for shellcheck — the real consumers live in the sourced script: $MV_TRIED $MV_MOVED $MV_STUCK_CONT"
+case "$out1" in *"❌"*) ok1=1 ;; *) ok1=0 ;; esac
+case "$sum1" in *"🔴"*"0"*"1"*|*"🔴"*) ok2=1 ;; *) ok2=0 ;; esac
+case "$sum1" in *"🔒"*) ok3=1 ;; *) ok3=0 ;; esac
+case "$out2" in *"❌"*) ok4=0 ;; *) ok4=1 ;; esac
+[ "$sum2" = "ALL-GOOD-LINE" ] && ok5=1 || ok5=0
+if [ "$ok1$ok2$ok3$ok4$ok5" = "11111" ]; then
+  pass "honest accounting: stuck item ❌ + 🔴 shortfall + 🔒 container hint; full success keeps plain ✅"
+else
+  fail "move accounting wrong (stuck-mark=$ok1 shortfall=$ok2 hint=$ok3 clean-item=$ok4 clean-summary=$ok5)"
+fi
+teardown
+
 # (regression) Adobe has LEFT the sweep entirely — no vendor name in the sweep's
 # clean list, no installed-check machinery, no help-text carve-out. The residue
 # story now lives in uninstall's discovery, where it belongs.
