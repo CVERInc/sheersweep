@@ -32,7 +32,7 @@
 #   each with the native way to remove it. Changes nothing; never needs sudo.
 set -u
 
-VERSION="0.7.0"
+VERSION="0.7.1"
 
 # ============================================================================
 # i18n — en-US · ja-JP · zh-TW · zh-Hans · ko-KR · es-ES · de-DE · fr-FR · pt-BR.
@@ -374,17 +374,65 @@ t() {
         pt-BR) echo "🧟 já removidos — dados deixados para trás ({n}):" ;;
         *)     echo "🧟 Already removed — leftover data found ({n}):" ;;
       esac ;;
-    un_orphan_small)   # {n}
+    un_orphan_tail)   # {n}
       case "$SS_LANG" in
-        ja-JP) echo "…ほかに小さな設定ファイルの残りが {n} 件（sheersweep uninstall <bundle-id> --dry-run でプレビュー）" ;;
-        zh-TW) echo "…另有 {n} 個零星的偏好設定殘檔（用 sheersweep uninstall <bundle-id> --dry-run 預覽）" ;;
-        zh-Hans) echo "…另有 {n} 个零星的偏好设置残留（用 sheersweep uninstall <bundle-id> --dry-run 预览）" ;;
-        ko-KR) echo "…그 외 작은 설정 파일 잔여물 {n}개 (sheersweep uninstall <bundle-id> --dry-run으로 미리보기)" ;;
-        es-ES) echo "…y {n} pequeños restos de preferencias (previsualiza uno con sheersweep uninstall <bundle-id> --dry-run)" ;;
-        de-DE) echo "…dazu {n} kleine übrig gebliebene Einstellungsdateien (Vorschau mit sheersweep uninstall <bundle-id> --dry-run)" ;;
-        fr-FR) echo "…plus {n} petits restes de préférences (aperçu avec sheersweep uninstall <bundle-id> --dry-run)" ;;
-        pt-BR) echo "…mais {n} pequenas sobras de preferências (veja uma com sheersweep uninstall <bundle-id> --dry-run)" ;;
-        *)     echo "…plus {n} small leftover preference files (preview one with sheersweep uninstall <bundle-id> --dry-run)" ;;
+        ja-JP) echo "──── ほかに小さな残りが {n} 件（単独の設定ファイルなど） ────" ;;
+        zh-TW) echo "──── 另有 {n} 個零星殘留（單獨的偏好設定檔等） ────" ;;
+        zh-Hans) echo "──── 另有 {n} 个零星残留（单独的偏好设置文件等） ────" ;;
+        ko-KR) echo "──── 그 외 작은 잔여물 {n}개(단독 설정 파일 등) ────" ;;
+        es-ES) echo "──── {n} restos pequeños más (preferencias sueltas y similares) ────" ;;
+        de-DE) echo "──── {n} weitere kleine Reste (einzelne Einstellungsdateien u. ä.) ────" ;;
+        fr-FR) echo "──── {n} autres petits restes (préférences isolées, etc.) ────" ;;
+        pt-BR) echo "──── mais {n} sobras pequenas (preferências avulsas etc.) ────" ;;
+        *)     echo "──── {n} more small leftovers (lone preference files and scraps) ────" ;;
+      esac ;;
+    un_orphan_multi_hint)
+      case "$SS_LANG" in
+        ja-JP) echo "🧟 行はまとめて選べます — 例: 19 20 25-32 · all で全部。" ;;
+        zh-TW) echo "🧟 列可以一次選多個——例如 19 20 25-32；輸入 all 全選。" ;;
+        zh-Hans) echo "🧟 行可以一次选多个——例如 19 20 25-32；输入 all 全选。" ;;
+        ko-KR) echo "🧟 행은 한 번에 여러 개 선택할 수 있습니다 — 예: 19 20 25-32 · all은 전부." ;;
+        es-ES) echo "Puedes elegir varias filas 🧟 a la vez — p. ej. 19 20 25-32 · all las toma todas." ;;
+        de-DE) echo "🧟-Zeilen lassen sich gebündelt wählen — z. B. 19 20 25-32 · all nimmt alle." ;;
+        fr-FR) echo "Les lignes 🧟 se choisissent en lot — p. ex. 19 20 25-32 · all les prend toutes." ;;
+        pt-BR) echo "Linhas 🧟 podem ser escolhidas em lote — ex.: 19 20 25-32 · all pega todas." ;;
+        *)     echo "Pick several 🧟 rows at once — e.g. 19 20 25-32 · all takes every one." ;;
+      esac ;;
+    un_orphans_header)   # {n}
+      case "$SS_LANG" in
+        ja-JP) echo "🧟 削除済みアプリ {n} 件の置き土産 — 以下すべてゴミ箱へ移動します（復元可能）:" ;;
+        zh-TW) echo "🧟 {n} 個已移除 App 的殘留資料——以下全部會移到垃圾桶（可救回）：" ;;
+        zh-Hans) echo "🧟 {n} 个已移除 App 的残留数据——以下全部会移到废纸篓（可恢复）：" ;;
+        ko-KR) echo "🧟 제거된 앱 {n}개가 남긴 데이터 — 아래 전부 휴지통으로 이동합니다(복원 가능):" ;;
+        es-ES) echo "🧟 datos dejados por {n} apps eliminadas — todo lo de abajo se mueve a la Papelera (recuperable):" ;;
+        de-DE) echo "🧟 Daten von {n} entfernten Apps — alles Folgende wandert in den Papierkorb (wiederherstellbar):" ;;
+        fr-FR) echo "🧟 données laissées par {n} apps supprimées — tout ce qui suit part à la Corbeille (récupérable) :" ;;
+        pt-BR) echo "🧟 dados deixados por {n} apps removidos — tudo abaixo vai para a Lixeira (recuperável):" ;;
+        *)     echo "🧟 Leftover data of {n} removed apps — everything below moves to the Trash (recoverable):" ;;
+      esac ;;
+    un_orphans_confirm)   # {n}
+      case "$SS_LANG" in
+        ja-JP) echo "上記すべてをゴミ箱へ移動するには件数「{n}」を入力（それ以外でキャンセル）: " ;;
+        zh-TW) echo "要把以上全部移到垃圾桶，請輸入條數「{n}」（輸入其他則取消）：" ;;
+        zh-Hans) echo "要把以上全部移到废纸篓，请输入条数“{n}”（输入其他则取消）：" ;;
+        ko-KR) echo "위 항목을 모두 휴지통으로 옮기려면 개수 '{n}'을 입력하세요(다른 입력은 취소): " ;;
+        es-ES) echo "Escribe el número ({n}) para mover todo a la Papelera (otra cosa cancela): " ;;
+        de-DE) echo "Tippe die Anzahl ({n}), um alles in den Papierkorb zu verschieben (alles andere bricht ab): " ;;
+        fr-FR) echo "Saisissez le nombre ({n}) pour tout déplacer vers la Corbeille (autre chose annule) : " ;;
+        pt-BR) echo "Digite a contagem ({n}) para mover tudo para a Lixeira (qualquer outra coisa cancela): " ;;
+        *)     echo "Type the count ({n}) to move all of it to the Trash (anything else cancels): " ;;
+      esac ;;
+    un_orphans_done)   # {n} items · {ids} apps
+      case "$SS_LANG" in
+        ja-JP) echo "✅ 削除済みアプリ {ids} 件の残り {n} 項目をゴミ箱へ移動しました。元に戻す: sheersweep restore · 容量はゴミ箱を空にすると戻ります。" ;;
+        zh-TW) echo "✅ 已把 {ids} 個已移除 App 的 {n} 個項目移到垃圾桶。想還原打：sheersweep restore；清空垃圾桶才會拿回空間。" ;;
+        zh-Hans) echo "✅ 已把 {ids} 个已移除 App 的 {n} 个项目移到废纸篓。要恢复输入：sheersweep restore；清空废纸篓才会拿回空间。" ;;
+        ko-KR) echo "✅ 제거된 앱 {ids}개의 항목 {n}개를 휴지통으로 옮겼습니다. 되돌리기: sheersweep restore · 공간은 휴지통을 비워야 돌아옵니다." ;;
+        es-ES) echo "✅ Movidos {n} elementos de {ids} apps eliminadas a la Papelera. Deshacer: sheersweep restore · vaciar la Papelera recupera el espacio." ;;
+        de-DE) echo "✅ {n} Einträge von {ids} entfernten Apps in den Papierkorb verschoben. Rückgängig: sheersweep restore · erst das Leeren des Papierkorbs gibt den Platz frei." ;;
+        fr-FR) echo "✅ {n} éléments de {ids} apps supprimées déplacés vers la Corbeille. Annuler : sheersweep restore · vider la Corbeille rend l'espace." ;;
+        pt-BR) echo "✅ {n} itens de {ids} apps removidos movidos para a Lixeira. Desfazer: sheersweep restore · esvaziar a Lixeira devolve o espaço." ;;
+        *)     echo "✅ Moved {n} items from {ids} removed apps to the Trash. Undo: sheersweep restore · emptying the Trash reclaims the space." ;;
       esac ;;
     un_orphan)   # {bid}
       case "$SS_LANG" in
@@ -1720,6 +1768,8 @@ EOF
 DRY=0
 MODE="sweep"
 APP_TARGET=""
+PICK_ORPHANS=()
+PICK_ROWS=()
 RESTORE_LIST=0
 # SHEERSWEEP_LIB=1 lets the test harness `source` this file to reach the pure
 # functions below WITHOUT parsing args, escalating to sudo, or running a sweep.
@@ -1923,13 +1973,21 @@ extra_is_safe() {   # $1 = ~/Library-relative path → returns 0 = safe, 1 = ref
 # Application Support folders named after a VENDOR (Adobe, Spotify) can't be
 # proved and are never surfaced; those stay the hand-curated catalog's job.
 
-looks_like_bid() {   # $1 → 0 if it has the shape of a bundle id (com.vendor.app)
+looks_like_bid() {   # $1 → 0 if it has the shape of an APP's bundle id (com.vendor.app)
   case "$1" in
     *.*) ;; *) return 1 ;;                 # at least one dot
   esac
   case "$1" in
     .*|*.) return 1 ;;                      # no leading/trailing dot
     *[!A-Za-z0-9.-]*) return 1 ;;           # the id charset, nothing else
+    # the group NAMESPACE is never an app's identity, in any of its three
+    # spellings (group.* / systemgroup.* / 10-char TEAM-ID first label). It
+    # shows up as Preferences plists and Application Scripts sandboxes too —
+    # a live Google Drive's group surfaced as a 6 MB "orphan" before this.
+    group.*|systemgroup.*) return 1 ;;
+  esac
+  case "${1%%.*}" in
+    [A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9]) return 1 ;;
   esac
   return 0
 }
@@ -2051,7 +2109,7 @@ orphan_candidates() {   # $1 = home
   for f in "$L/Application Scripts"/*; do
     [ -e "$f" ] || continue
     b="$(basename "$f")"
-    case "$b" in group.*) continue ;; esac
+    # group-namespace sandboxes live here too — looks_like_bid rejects them
     looks_like_bid "$b" && printf '%s\n' "$b"
   done
   for f in "$L/Saved Application State"/*.savedState; do
@@ -2078,7 +2136,7 @@ orphan_paths_home() {   # $1 = id  $2 = home
     [ -e "$f" ] && printf '%s\0' "$f"
   done
   for f in "$L/Preferences/$id".*.plist "$L/HTTPStorages/$id"* \
-           "$L/Group Containers/group.$id" "$L/LaunchAgents/$id"*.plist; do
+           "$L/Group Containers/"*"$id"* "$L/LaunchAgents/$id"*.plist; do
     [ -e "$f" ] && printf '%s\0' "$f"
   done
 }
@@ -2102,8 +2160,10 @@ orphan_is_strong() {   # $1 = id  $2… = homes
   local id="$1" h f; shift
   for h in "$@"; do
     for f in "$h/Library/Containers/$id" "$h/Library/Application Support/$id" \
-             "$h/Library/Saved Application State/$id.savedState" \
-             "$h/Library/Group Containers/group.$id"; do
+             "$h/Library/Saved Application State/$id.savedState"; do
+      [ -e "$f" ] && return 0
+    done
+    for f in "$h/Library/Group Containers/"*"$id"*; do
       [ -e "$f" ] && return 0
     done
   done
@@ -2130,13 +2190,17 @@ od_human_kb() {   # KB → "12K" / "340M" / "1.2G" (matches du -h's vocabulary)
 }
 
 # The discovery driver. Requires collect_claims to have run. Fills, largest
-# first: OD_IDS / OD_SIZE / OD_HINT (surfaced: strong family or ≥ 1 MB) and
-# OD_SMALL (count of tiny id-only leftovers kept out of the list). Args
+# first: OD_IDS / OD_SIZE / OD_HINT (a strong family or ≥ 1 MB) and, below the
+# fold, OD_TIDS / OD_TSIZE / OD_THINT — the small stuff (a lone preferences
+# plist and the like). The tail is LISTED, not hidden: size-sorting already
+# sinks it to the bottom, and hiding evidence behind a count line would be a
+# verdict — the one thing this tool promises not to make for you. Args
 # override the homes to scan (for tests); default = every real /Users home.
 # shellcheck disable=SC2120  # args are the test seam; production calls take the default
 orphan_discover() {
-  OD_IDS=(); OD_SIZE=(); OD_HINT=(); OD_SMALL=0
-  local homes=() home id kb rows="" paths=() p
+  OD_IDS=(); OD_SIZE=(); OD_HINT=()
+  OD_TIDS=(); OD_TSIZE=(); OD_THINT=()
+  local homes=() home id kb rows="" tail="" paths=() p
   if [ "$#" -gt 0 ]; then homes=("$@"); else
     for home in /Users/*; do
       [ -d "$home/Library" ] || continue
@@ -2155,7 +2219,7 @@ orphan_discover() {
     if orphan_is_strong "$id" "${homes[@]}" || [ "${kb:-0}" -ge 1024 ]; then
       rows="$rows$kb $id"$'\n'
     else
-      OD_SMALL=$((OD_SMALL + 1))
+      tail="$tail$kb $id"$'\n'
     fi
   done < <(
     for home in "${homes[@]}"; do orphan_candidates "$home"; done \
@@ -2165,11 +2229,61 @@ orphan_discover() {
     [ -z "$id" ] && continue
     OD_IDS+=("$id"); OD_SIZE+=("$(od_human_kb "$kb")"); OD_HINT+=("$(orphan_hint "$id")")
   done < <(printf '%s' "$rows" | LC_ALL=C sort -rn)
+  while read -r kb id; do
+    [ -z "$id" ] && continue
+    OD_TIDS+=("$id"); OD_TSIZE+=("$(od_human_kb "$kb")"); OD_THINT+=("$(orphan_hint "$id")")
+  done < <(printf '%s' "$tail" | LC_ALL=C sort -rn)
 }
 
-# Interactive picker (mole-style): list user-removable apps, read a number,
-# set APP_TARGET. Apple/system apps are filtered out. Returns with APP_TARGET
-# unset on cancel / invalid input.
+# Parse a picker selection: one number, several ("19 20 25-32", commas ok), or
+# `all` (= every 🧟 orphan row). Fills PICK_ROWS with unique row numbers.
+# A MULTI selection may contain only orphan rows — removing a live app is
+# precise surgery and keeps its own one-at-a-time typed-name consent; removing
+# residue is housekeeping and gets batch consent (see do_uninstall_orphans).
+# Returns 0 = ok · 1 = invalid.
+pick_parse() {   # $1 = input  $2 = app-row count  $3 = total row count
+  local input="$1" napps="$2" total="$3" tok lo hi k seen=" "
+  PICK_ROWS=()
+  input="${input//,/ }"
+  case "$input" in
+    all|ALL)
+      [ "$total" -le "$napps" ] && return 1    # nothing discovered → no "all"
+      k=$((napps + 1))
+      while [ "$k" -le "$total" ]; do PICK_ROWS+=("$k"); k=$((k + 1)); done
+      return 0 ;;
+  esac
+  for tok in $input; do
+    case "$tok" in
+      *-*) lo="${tok%%-*}"; hi="${tok#*-}" ;;
+      *)   lo="$tok";       hi="$tok" ;;
+    esac
+    case "$lo$hi" in ''|*[!0-9]*) return 1 ;; esac
+    { [ "$lo" -ge 1 ] && [ "$hi" -le "$total" ] && [ "$lo" -le "$hi" ]; } || return 1
+    k="$lo"
+    while [ "$k" -le "$hi" ]; do
+      case "$seen" in *" $k "*) ;; *) PICK_ROWS+=("$k"); seen="$seen$k " ;; esac
+      k=$((k + 1))
+    done
+  done
+  [ "${#PICK_ROWS[@]}" -eq 0 ] && return 1
+  if [ "${#PICK_ROWS[@]}" -gt 1 ]; then
+    for k in "${PICK_ROWS[@]}"; do [ "$k" -gt "$napps" ] || return 1; done
+  fi
+  return 0
+}
+
+orphan_row_id() {   # $1 = picker row number  $2 = app-row count → the orphan id
+  local idx=$(( $1 - 1 - $2 ))
+  if [ "$idx" -lt "${#OD_IDS[@]}" ]; then
+    printf '%s' "${OD_IDS[$idx]}"
+  else
+    printf '%s' "${OD_TIDS[$((idx - ${#OD_IDS[@]}))]}"
+  fi
+}
+
+# Interactive picker (mole-style): list user-removable apps, read a selection,
+# set APP_TARGET (single) or PICK_ORPHANS (multi). Apple/system apps are
+# filtered out. Returns with both unset on cancel / invalid input.
 pick_app() {
   local apps=() appp base bid n choice m i hint odn
   # Scan /Applications and ~/Applications, one folder deep (so apps nested in a
@@ -2216,22 +2330,37 @@ pick_app() {
       printf '  %3d) %-44s %6s%s\n' "$n" "${OD_IDS[$i]}" "${OD_SIZE[$i]}" "$hint"
     done
   fi
-  if [ "$OD_SMALL" -gt 0 ]; then
-    m="$(t un_orphan_small)"; echo "       ${m//\{n\}/$OD_SMALL}"
+  # the small stuff is LISTED too (a divider, not a hiding place — you can't
+  # select what you can't see); size-sorting already sank it down here
+  if [ "${#OD_TIDS[@]}" -gt 0 ]; then
+    m="$(t un_orphan_tail)"; echo "  ${m//\{n\}/${#OD_TIDS[@]}}"
+    for i in "${!OD_TIDS[@]}"; do
+      n=$((n + 1))
+      hint="${OD_THINT[$i]}"; [ -n "$hint" ] && hint="  ($hint?)"
+      printf '  %3d) %-44s %6s%s\n' "$n" "${OD_TIDS[$i]}" "${OD_TSIZE[$i]}" "$hint"
+    done
   fi
+  [ "$n" -gt "${#apps[@]}" ] && t un_orphan_multi_hint
   printf '%s' "$(t un_pick_prompt)"
   choice=""; read -r choice || true
   case "$choice" in
-    ''|q|Q)   return 0 ;;                          # clean cancel → caller prints un_cancelled
-    *[!0-9]*) t un_pick_invalid >&2; return 2 ;;    # already messaged → caller must not re-print
+    ''|q|Q) return 0 ;;                            # clean cancel → caller prints un_cancelled
   esac
-  if [ "$choice" -lt 1 ] || [ "$choice" -gt "$n" ]; then
-    t un_pick_invalid >&2; return 2
+  if ! pick_parse "$choice" "${#apps[@]}" "$n"; then
+    t un_pick_invalid >&2; return 2                 # already messaged → caller must not re-print
   fi
-  if [ "$choice" -le "${#apps[@]}" ]; then
-    APP_TARGET="${apps[$((choice - 1))]}"
+  if [ "${#PICK_ROWS[@]}" -eq 1 ]; then
+    choice="${PICK_ROWS[0]}"
+    if [ "$choice" -le "${#apps[@]}" ]; then
+      APP_TARGET="${apps[$((choice - 1))]}"
+    else
+      APP_TARGET="$(orphan_row_id "$choice" "${#apps[@]}")"
+    fi
   else
-    APP_TARGET="${OD_IDS[$((choice - 1 - ${#apps[@]}))]}"
+    local k
+    for k in "${PICK_ROWS[@]}"; do
+      PICK_ORPHANS+=("$(orphan_row_id "$k" "${#apps[@]}")")
+    done
   fi
 }
 
@@ -2485,6 +2614,77 @@ do_uninstall() {
 
   echo "============================================================"
   m="$(t un_done)"; echo "${m//\{app\}/$name}"
+  return 0
+}
+
+# Batch removal of PROVEN orphans — discovery arrives in bulk (years of
+# residue at once), so consent is leftovers-shaped: ONE combined preview of
+# every file, grouped by id, then one explicit confirmation. Typing 42 app
+# names doesn't scale, so you type the COUNT of ids shown — a number you can
+# only know by having read the summary. Same Trash, one receipt, one restore.
+do_uninstall_orphans() {
+  local ids=("$@") nids id home p i m total last=""
+  nids="${#ids[@]}"
+  ITEM_PATH=(); ITEM_OWNER=(); ITEM_SCOPE=()
+  for id in "${ids[@]}"; do
+    for home in /Users/*; do
+      [ -d "$home/Library" ] || continue
+      case "$(basename "$home")" in Shared|Guest) continue ;; esac
+      while IFS= read -r -d '' p; do
+        ITEM_PATH+=("$p"); ITEM_OWNER+=("$home"); ITEM_SCOPE+=("$id")
+      done < <(orphan_paths_home "$id" "$home")
+    done
+  done
+
+  echo "============================================================"
+  m="$(t un_orphans_header)"; echo "${m//\{n\}/$nids}"
+  echo "------------------------------------------------------------"
+  if [ "${#ITEM_PATH[@]}" -eq 0 ]; then
+    m="$(t un_empty)"; echo "${m//\{app\}/orphans}"
+    echo "============================================================"
+    return 0
+  fi
+  for i in "${!ITEM_PATH[@]}"; do
+    if [ "${ITEM_SCOPE[$i]}" != "$last" ]; then echo "── ${ITEM_SCOPE[$i]} ──"; last="${ITEM_SCOPE[$i]}"; fi
+    printf '   %6s  %s\n' "$(human "${ITEM_PATH[$i]}")" "$(printf '%s' "${ITEM_PATH[$i]}" | vis)"
+  done
+  total="$(du -sch "${ITEM_PATH[@]}" 2>/dev/null | tail -1 | cut -f1)"
+  echo "------------------------------------------------------------"
+  echo "$(t un_total)$total"
+  echo "============================================================"
+
+  if [ "$DRY" -eq 1 ]; then t un_dry_note; return 0; fi
+
+  m="$(t un_orphans_confirm)"; printf '%s' "${m//\{n\}/$nids}"
+  local reply=""; read -r reply || true
+  if [ "$reply" != "$nids" ]; then t un_cancelled; return 0; fi
+
+  local rdir rfile stamp moved=0
+  rdir="$REAL_HOME/.sheersweep/uninstalls"
+  mkdir -p "$rdir" 2>/dev/null
+  stamp="$(date +%Y%m%d-%H%M%S)"
+  rfile="$rdir/$stamp-orphans.tsv"
+  {
+    echo "# sheersweep uninstall receipt"
+    echo "# app=orphans ($nids ids)"
+    echo "# bid=orphans"
+    echo "# date=$stamp"
+    echo "# format=nul-pairs"
+    printf '\0'
+  } > "$rfile" 2>/dev/null
+  for i in "${!ITEM_PATH[@]}"; do
+    printf '   %s  %s\n' "$(t un_trashing)" "${ITEM_PATH[$i]}"
+    to_trash "${ITEM_PATH[$i]}" "${ITEM_OWNER[$i]}"
+    if [ -n "$TRASH_DEST" ]; then
+      printf '%s\0%s\0' "$TRASH_DEST" "${ITEM_PATH[$i]}" >> "$rfile" 2>/dev/null
+      moved=$((moved + 1))
+    fi
+  done
+  chown -R "$(stat -f %u "$REAL_HOME" 2>/dev/null):$(stat -f %g "$REAL_HOME" 2>/dev/null)" "$REAL_HOME/.sheersweep" 2>/dev/null
+  [ "$moved" -eq 0 ] && rm -f "$rfile" 2>/dev/null
+
+  echo "============================================================"
+  m="$(t un_orphans_done)"; m="${m//\{n\}/$moved}"; echo "${m//\{ids\}/$nids}"
   return 0
 }
 
@@ -3022,6 +3222,10 @@ if [ "$MODE" = "uninstall" ]; then
     # apps) — exit with it, don't also print "Cancelled". Only a clean q/blank
     # cancel (return 0, empty target) gets the un_cancelled line.
     [ "$pk" -ne 0 ] && exit "$pk"
+    if [ "${#PICK_ORPHANS[@]}" -gt 0 ]; then   # multi-select → batch orphan flow
+      do_uninstall_orphans "${PICK_ORPHANS[@]}"
+      exit $?
+    fi
     [ -z "$APP_TARGET" ] && { t un_cancelled; exit 0; }
   fi
   do_uninstall "$APP_TARGET"

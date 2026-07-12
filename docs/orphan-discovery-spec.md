@@ -151,6 +151,12 @@ forced by running discovery on the maintainer's actual machine:
    `group.is.workflow.*` with no matching bundle id anywhere — group membership
    lives in entitlements, unscannable. Group entries can't nominate candidates
    but a proven orphan's group container rides along with its footprint.
+   *(v0.7.1 completed the rule: the namespace wears THREE spellings —
+   `group.*`, `systemgroup.*`, and a 10-char team-id first label like
+   `EQHXZ8M8AV.group.com.google.drivefs` — and it leaks in through Application
+   Scripts sandboxes and stray Preferences plists, not just Group Containers.
+   A live Google Drive's group surfaced as a 6 MB "orphan" before the rule
+   moved into `looks_like_bid` itself, where every source shares it.)*
 4. **Application Support candidates must be directories.** SwiftData's
    `default.store` (+ `-shm`/`-wal`) are id-shaped FILES naming a file format,
    not an app.

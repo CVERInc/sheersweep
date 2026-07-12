@@ -468,11 +468,13 @@ lb_ok=1
 for good in com.foo.bar org.x-y.z com.a.b.c.d zoom.us; do
   looks_like_bid "$good" || { lb_ok=0; echo "     rejected good: $good"; }
 done
-for bad in Adobe Code ".hidden" "foo." "zoom us" "foo/bar" "com..~" "a b.c"; do
+for bad in Adobe Code ".hidden" "foo." "zoom us" "foo/bar" "com..~" "a b.c" \
+           group.com.apple.mail systemgroup.com.apple.icloud \
+           EQHXZ8M8AV.group.com.google.drivefs 243LU875E5.groups.com.apple.podcasts; do
   looks_like_bid "$bad" && { lb_ok=0; echo "     accepted bad: $bad"; }
 done
 if [ "$lb_ok" -eq 1 ]; then
-  pass "looks_like_bid: id shapes pass; names/paths/dots-at-edges refused"
+  pass "looks_like_bid: id shapes pass; names/paths/edges + the group namespace (group./systemgroup./team-id) refused"
 else
   fail "looks_like_bid misclassified (see above)"
 fi
@@ -519,7 +521,10 @@ H="$SBX/home"; L="$H/Library"
 mkdir -p "$L/Containers/com.gone.app" "$L/Application Support/Adobe" \
          "$L/Application Support/com.vendor.live" "$L/Preferences" \
          "$L/Group Containers/group.is.workflow.my.app" \
-         "$L/Application Scripts/group.is.workflow.my.app"
+         "$L/Application Scripts/group.is.workflow.my.app" \
+         "$L/Application Scripts/EQHXZ8M8AV.group.com.live.drive" \
+         "$L/Application Scripts/systemgroup.com.apple.thing" \
+         "$L/Group Containers/EQHXZ8M8AV.group.com.live.drive"
 echo data > "$L/Containers/com.gone.app/state"
 dd if=/dev/zero of="$L/Preferences/com.big.tool.plist" bs=1024 count=1500 2>/dev/null
 echo tiny > "$L/Preferences/com.tiny.left.plist"
@@ -530,10 +535,11 @@ collect_claims "$SBX/Apps"
 orphan_discover "$H"
 od_list="$(printf '%s ' "${OD_IDS[@]-}")"
 if [ "${#OD_IDS[@]}" -eq 2 ] && [ "${OD_IDS[0]}" = "com.big.tool" ] \
-   && [ "${OD_IDS[1]}" = "com.gone.app" ] && [ "$OD_SMALL" -eq 1 ]; then
-  pass "orphan_discover: strong+big surfaced (largest first), tiny folded; claimed/name-dirs/AS-files/group.* never appear"
+   && [ "${OD_IDS[1]}" = "com.gone.app" ] \
+   && [ "${#OD_TIDS[@]}" -eq 1 ] && [ "${OD_TIDS[0]}" = "com.tiny.left" ]; then
+  pass "orphan_discover: strong+big surfaced (largest first), tiny listed in the tail; claimed/name-dirs/AS-files/group.* never appear"
 else
-  fail "orphan_discover wrong (ids=[$od_list] small=$OD_SMALL)"
+  fail "orphan_discover wrong (ids=[$od_list] tail=[${OD_TIDS[*]-}])"
 fi
 # …but a PROVEN orphan's group container still rides along with its footprint
 mkdir -p "$L/Group Containers/group.com.gone.app"
@@ -555,6 +561,33 @@ else
   fail "orphan_hint wrong ($h1/$h2/$h3/$h4)"
 fi
 teardown
+
+# (guard) pick_parse: the multi-select grammar. Multi selections may contain
+# ONLY orphan rows (apps keep one-at-a-time typed-name consent); ranges expand,
+# dupes collapse, `all` covers every orphan row, and anything malformed or
+# out of range is rejected as a whole — never a partial pick.
+pp_ok=1
+pp() {   # $1=input $2=napps $3=total $4=expected rows ("-" = expect invalid)
+  local got="-"
+  if pick_parse "$1" "$2" "$3"; then got="${PICK_ROWS[*]}"; fi
+  [ "$got" = "$4" ] || { pp_ok=0; echo "     pick_parse '$1' → [$got], want [$4]"; }
+}
+pp "19"          18 30 "19"            # single orphan row
+pp "5"           18 30 "5"             # single app row is fine alone
+pp "19 20,25-27" 18 30 "19 20 25 26 27"  # spaces+commas+range
+pp "19 19 19"    18 30 "19"            # dupes collapse
+pp "all"         18 21 "19 20 21"      # all = every orphan row
+pp "5 19"        18 30 "-"             # app row inside a multi pick → refused
+pp "18-20"       18 30 "-"             # range crossing into app rows → refused
+pp "31"          18 30 "-"             # out of range
+pp "20-19"       18 30 "-"             # backwards range
+pp "19 x"        18 30 "-"             # junk token poisons the whole pick
+pp "all"         18 18 "-"             # no orphans → no all
+if [ "$pp_ok" -eq 1 ]; then
+  pass "pick_parse: ranges/dupes/all ok; app rows never enter a multi pick; junk rejects whole"
+else
+  fail "pick_parse misparsed (see above)"
+fi
 
 # (regression) Adobe has LEFT the sweep entirely — no vendor name in the sweep's
 # clean list, no installed-check machinery, no help-text carve-out. The residue

@@ -4,6 +4,43 @@ All notable changes to sheersweep are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.7.1]
+
+v0.7.0's discovery found the residue; v0.7.1 makes it *removable in one pass*.
+(Field-tested immediately: a real Mac surfaced 42 orphans plus 56 small
+leftovers — and one-at-a-time selection turned out to be 98 rounds of typing.)
+
+### Added — pick many orphans at once
+
+- The picker's 🧟 rows now take a **multi-selection**: `19 20 25-32`, commas
+  ok, or `all`. A batch shows ONE combined preview — every file, grouped by
+  id, with sizes and a grand total — then asks you to **type the count of ids
+  shown** (a number you can only know by reading the summary; 42 typed app
+  names don't scale, 42 unread `y`s don't inform). Everything moves to the
+  Trash under **one receipt**, so `sheersweep restore` undoes the whole batch.
+- Live apps deliberately stay one-at-a-time with the typed-name confirm:
+  removing an installed app is precise surgery; removing residue is
+  housekeeping. A multi-selection may therefore contain only 🧟 rows.
+
+### Changed — the small leftovers are listed, not folded
+
+- v0.7.0 folded sub-1 MB, weak-family orphans into a count line
+  (`…plus 56 small leftover preference files`). That was a verdict, and this
+  tool promises evidence: you can't select what you can't see. The tail is now
+  **listed and numbered** under a divider — size-sorting already sinks it to
+  the bottom, so the big finds still lead.
+
+### Fixed — the group namespace could still nominate
+
+- The `group.*` rule from v0.7.0 missed the namespace's other two spellings:
+  `systemgroup.*` and the 10-character **team-id first label**
+  (`EQHXZ8M8AV.group.com.google.drivefs`). Through Application Scripts
+  sandboxes and stray Preferences plists, a **live Google Drive's** group
+  container surfaced as a 6 MB "provable orphan" and a live Wacom driver's as
+  another. All three spellings are now rejected at the id-shape level
+  (`looks_like_bid`), so no source can nominate them — while a proven orphan's
+  group data still rides along with its footprint.
+
 ## [0.7.0]
 
 The original wish behind sheersweep was always "reliably clear the residue of

@@ -100,11 +100,14 @@ share of app data is named **by bundle id**, and an id is surfaced only when
 bundle ids (including every helper/XPC nested inside, at any folder depth),
 driver and updater bundles under `/Library`, and every Launch Agent/Daemon
 whose program still exists. No name-guessing anywhere: the `(spotify?)` hint is
-explicitly a guess derived from the id; the id is the identity. Picking one
-runs the same preview → typed-confirm → Trash → receipt flow, so
-`sheersweep restore` undoes it too. Small lone preference files are counted in
-one line rather than listed; clean one directly with
-`sheersweep uninstall <bundle-id>` (add `--dry-run` to preview headlessly).
+explicitly a guess derived from the id; the id is the identity. Everything is
+listed — the small scraps too, numbered under a divider at the bottom, because
+you can't select what you can't see. Pick one and it runs the same preview →
+typed-confirm → Trash → receipt flow; pick **many** (`19 20 25-32`, or `all`)
+and you get one combined preview of every file, one confirmation (you type the
+count of ids shown), one receipt — and `sheersweep restore` undoes the whole
+batch. Years of residue, one pass. `sheersweep uninstall <bundle-id>` reaches
+a single one directly (add `--dry-run` to preview headlessly).
 
 ### CLI tools use the same verb — removed the way each restores best
 
