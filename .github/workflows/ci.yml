@@ -32,3 +32,14 @@ jobs:
           v="$(grep -E '^VERSION=' sheersweep | head -1 | sed -E 's/.*"([0-9.]+)".*/\1/')"
           echo "script version: $v"
           grep -q "## \[$v\]" CHANGELOG.md || { echo "CHANGELOG.md missing section for $v"; exit 1; }
+
+  # The functional suite needs macOS (BSD stat/find, PlistBuddy, defaults) — and
+  # it carries the gate that makes "adding a language is a self-contained PR"
+  # true: every t() key × every locale is extracted from the script itself, so
+  # a partial translation fails HERE, visibly, instead of merging silently.
+  func-test:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Functional tests (hermetic — fixtures only, no sudo)
+        run: bash scripts/func-test.sh

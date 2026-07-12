@@ -239,9 +239,11 @@ SHEERSWEEP_LANG=ja-JP ./sheersweep --dry-run
 the one script, in three places: one `xx-XX) echo "…" ;;` line per string in
 `t()`, one help heredoc in `print_help`, and one detection line in
 `ss_resolve_lang`. Then run `scripts/test.sh` — it extracts every string key
-*and* every locale from the script itself and points at exactly what's missing,
-so a partial translation can't merge silently. Baseline translations are
-machine-grade; native-speaker refinements are gladly taken.
+*and* every locale from the script itself and points at exactly what's missing.
+CI runs the same gate on every pull request (a macOS job), so a partial
+translation can't merge silently — it fails visibly, with the missing keys
+named. Baseline translations are machine-grade; native-speaker refinements are
+gladly taken.
 
 ## Requirements
 
