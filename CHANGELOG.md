@@ -4,6 +4,17 @@ All notable changes to sheersweep are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.7.5]
+
+Housekeeping — no behavior change. The CI badge had been red since v0.6.0
+(an older shellcheck on the runner flags `A && B || C`; split into two lines),
+the functional suite now runs on a macOS runner for every PR — which makes
+the "a partial translation can't merge silently" promise machine-enforced —
+and the README lists the nine languages A-Z by locale code. Released so the
+tagged tarball matches `main` byte for byte: this project asks you to read
+the script you installed, so the script you installed should be exactly the
+one on display.
+
 ## [0.7.4]
 
 Found the honest way, live: three real batch runs printed ✅ while every single
