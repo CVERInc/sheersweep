@@ -10,7 +10,7 @@ sheersweep correctly on the first try — without deleting something the human w
 
 sheersweep is **the Mac cleaner you can read** — a single bash script (see
 `wc -l sheersweep` for the current line count; more than half is its
-three-language strings) with **no telemetry, no daemon, no
+nine-language strings) with **no telemetry, no daemon, no
 network calls, no subscription**. The default **sweep** clears *only* regenerable
 junk (caches/logs/temp the OS rebuilds) across **every** account under `/Users`,
 then releases local APFS snapshots so the space actually comes back. It has a
@@ -38,7 +38,7 @@ sheersweep restore --list            # show past removals
 sheersweep --version                 # prints the current version; never needs sudo
 ```
 
-Locale is auto-detected; force it with `SHEERSWEEP_LANG=en-US|ja-JP|zh-TW`.
+Locale is auto-detected; force it with `SHEERSWEEP_LANG=en-US|ja-JP|zh-TW|zh-Hans|ko-KR|es-ES|de-DE|fr-FR|pt-BR`.
 
 ## Non-negotiable rules (a cleaner is destructive-adjacent — break one and you hurt the human)
 

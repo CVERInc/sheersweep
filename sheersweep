@@ -34,123 +34,233 @@ set -u
 VERSION="0.6.0"
 
 # ============================================================================
-# i18n — en-US / ja-JP / zh-TW. Auto-detected; override with SHEERSWEEP_LANG.
+# i18n — en-US · ja-JP · zh-TW · zh-Hans · ko-KR · es-ES · de-DE · fr-FR · pt-BR.
+# Auto-detected; override with SHEERSWEEP_LANG.
 # (Just strings. The safety logic is further down and language-independent.)
 # ============================================================================
 ss_resolve_lang() {
   local l="${SHEERSWEEP_LANG:-${LANG:-}}"
   [ -z "$l" ] && l="$(defaults read -g AppleLocale 2>/dev/null || true)"
   case "$l" in
-    ja*|*ja_JP*|*ja-JP*)        echo "ja-JP" ;;
-    *zh*Hant*|*zh_TW*|*zh-TW*)  echo "zh-TW" ;;   # Traditional only (Simplified → English)
-    *)                          echo "en-US" ;;
+    ja*|*ja_JP*|*ja-JP*)                        echo "ja-JP" ;;
+    *zh*Hant*|*zh_TW*|*zh-TW*|*zh_HK*|*zh-HK*)  echo "zh-TW" ;;
+    zh*|*zh_CN*|*zh-CN*|*zh_SG*|*zh*Hans*)      echo "zh-Hans" ;;
+    ko*|*ko_KR*|*ko-KR*)                        echo "ko-KR" ;;
+    es*|*es_ES*|*es-ES*|*es_419*)               echo "es-ES" ;;
+    de*|*de_DE*|*de-DE*)                        echo "de-DE" ;;
+    fr*|*fr_FR*|*fr-FR*|*fr_CA*)                echo "fr-FR" ;;
+    pt*|*pt_BR*|*pt-BR*|*pt_PT*)                echo "pt-BR" ;;
+    *)                                          echo "en-US" ;;
   esac
 }
 SS_LANG="$(ss_resolve_lang)"
 
 # t KEY → localized string. Parameterized strings use {placeholders}.
 t() {
+  # shellcheck disable=SC1111  # fullwidth “” below are deliberate CJK typography, not typos
   case "$1" in
     escalate)
       case "$SS_LANG" in
         ja-JP) echo "全アカウントを掃除するには管理者権限が必要です — sudo で再実行します…" ;;
         zh-TW) echo "清掃所有帳號需要管理員權限——以 sudo 重新執行…" ;;
+        zh-Hans) echo "清扫所有账户需要管理员权限——正在以 sudo 重新运行…" ;;
+        ko-KR) echo "모든 계정을 청소하려면 관리자 권한이 필요합니다 — sudo로 다시 실행합니다…" ;;
+        es-ES) echo "Limpiar todas las cuentas requiere permisos de administrador — reejecutando con sudo…" ;;
+        de-DE) echo "Das Aufräumen aller Benutzerkonten erfordert Administratorrechte — wird mit sudo neu ausgeführt…" ;;
+        fr-FR) echo "Nettoyer tous les comptes nécessite les droits d'administrateur — relance avec sudo…" ;;
+        pt-BR) echo "Limpar todas as contas exige privilégios de administrador — reexecutando com sudo…" ;;
         *)     echo "Sweeping every account needs admin rights — re-running with sudo…" ;;
       esac ;;
     dry_banner)
       case "$SS_LANG" in
         ja-JP) echo "🧪 ドライラン — 何も削除しません" ;;
         zh-TW) echo "🧪 預演（DRY-RUN）——不會刪除任何東西" ;;
+        zh-Hans) echo "🧪 预演（DRY-RUN）——不会删除任何内容" ;;
+        ko-KR) echo "🧪 시험 실행(DRY-RUN) — 아무것도 삭제하지 않습니다" ;;
+        es-ES) echo "🧪 SIMULACIÓN (dry-run) — no se eliminará nada" ;;
+        de-DE) echo "🧪 PROBELAUF (dry-run) — es wird nichts gelöscht" ;;
+        fr-FR) echo "🧪 SIMULATION (dry-run) — rien ne sera supprimé" ;;
+        pt-BR) echo "🧪 SIMULAÇÃO (dry-run) — nada será apagado" ;;
         *)     echo "🧪 DRY-RUN — nothing will be deleted" ;;
       esac ;;
     free_before)
       case "$SS_LANG" in
         ja-JP) echo "クリーン前の空き容量：" ;;
         zh-TW) echo "清理前可用：" ;;
+        zh-Hans) echo "清理前可用：" ;;
+        ko-KR) echo "청소 전 여유 공간: " ;;
+        es-ES) echo "Libre antes:   " ;;
+        de-DE) echo "Frei vorher:  " ;;
+        fr-FR) echo "Libre avant :  " ;;
+        pt-BR) echo "Livre antes:  " ;;
         *)     echo "Free before: " ;;
       esac ;;
     free_after)
       case "$SS_LANG" in
         ja-JP) echo "クリーン後の空き容量：" ;;
         zh-TW) echo "清理後可用：" ;;
+        zh-Hans) echo "清理后可用：" ;;
+        ko-KR) echo "청소 후 여유 공간: " ;;
+        es-ES) echo "Libre después: " ;;
+        de-DE) echo "Frei nachher: " ;;
+        fr-FR) echo "Libre après :  " ;;
+        pt-BR) echo "Livre depois: " ;;
         *)     echo "Free after:  " ;;
       esac ;;
     reclaimed)
       case "$SS_LANG" in
         ja-JP) echo "回収した容量：" ;;
         zh-TW) echo "本輪回收：" ;;
+        zh-Hans) echo "本轮回收：" ;;
+        ko-KR) echo "회수한 공간: " ;;
+        es-ES) echo "Recuperado:    " ;;
+        de-DE) echo "Freigegeben:  " ;;
+        fr-FR) echo "Récupéré :     " ;;
+        pt-BR) echo "Recuperado:   " ;;
         *)     echo "Reclaimed:   " ;;
       esac ;;
     acct)
       case "$SS_LANG" in
         ja-JP) echo "アカウント：" ;;
         zh-TW) echo "帳號：" ;;
+        zh-Hans) echo "账户：" ;;
+        ko-KR) echo "계정: " ;;
+        es-ES) echo "cuenta: " ;;
+        de-DE) echo "Konto: " ;;
+        fr-FR) echo "compte : " ;;
+        pt-BR) echo "conta: " ;;
         *)     echo "account: " ;;
       esac ;;
     system)
       case "$SS_LANG" in
         ja-JP) echo "システム" ;;
         zh-TW) echo "系統" ;;
+        zh-Hans) echo "系统" ;;
+        ko-KR) echo "시스템" ;;
+        es-ES) echo "sistema" ;;
+        de-DE) echo "System" ;;
+        fr-FR) echo "système" ;;
+        pt-BR) echo "sistema" ;;
         *)     echo "system" ;;
       esac ;;
     brew)   # {user}
       case "$SS_LANG" in
         ja-JP) echo "homebrew クリーンアップ（{user} として）" ;;
         zh-TW) echo "homebrew 清理（以 {user}）" ;;
+        zh-Hans) echo "homebrew 清理（以 {user}）" ;;
+        ko-KR) echo "homebrew 정리({user} 권한으로)" ;;
+        es-ES) echo "limpieza de homebrew (como {user})" ;;
+        de-DE) echo "Homebrew-Aufräumen (als {user})" ;;
+        fr-FR) echo "nettoyage homebrew (en tant que {user})" ;;
+        pt-BR) echo "limpeza do homebrew (como {user})" ;;
         *)     echo "homebrew cleanup (as {user})" ;;
       esac ;;
     snap_dry)
       case "$SS_LANG" in
         ja-JP) echo "ローカルスナップショット（ドライランでは保持）" ;;
         zh-TW) echo "本機快照（預演保留）" ;;
+        zh-Hans) echo "本机快照（预演保留）" ;;
+        ko-KR) echo "로컬 스냅샷(시험 실행에서는 유지)" ;;
+        es-ES) echo "instantáneas locales (la simulación las conserva)" ;;
+        de-DE) echo "lokale Schnappschüsse (der Probelauf behält sie)" ;;
+        fr-FR) echo "instantanés locaux (la simulation les conserve)" ;;
+        pt-BR) echo "instantâneos locais (a simulação os mantém)" ;;
         *)     echo "local snapshots (dry-run keeps them)" ;;
       esac ;;
     snap_count)   # {n}
       case "$SS_LANG" in
         ja-JP) echo "ローカルスナップショットが {n} 個 — 本番実行で削除し空き容量を解放します" ;;
         zh-TW) echo "目前有 {n} 個本機快照——正式執行會刪掉以釋放空間" ;;
+        zh-Hans) echo "目前有 {n} 个本机快照——正式运行会删除它们以释放空间" ;;
+        ko-KR) echo "로컬 스냅샷 {n}개 있음 — 실제 실행 시 삭제하여 공간을 확보합니다" ;;
+        es-ES) echo "hay {n} instantánea(s) local(es) — una ejecución real las elimina para liberar espacio" ;;
+        de-DE) echo "{n} lokale Schnappschüsse vorhanden — ein echter Lauf löscht sie, um Platz freizugeben" ;;
+        fr-FR) echo "{n} instantané(s) local(aux) présent(s) — une exécution réelle les supprime pour libérer l'espace" ;;
+        pt-BR) echo "{n} instantâneo(s) local(is) — uma execução real os apaga para liberar espaço" ;;
         *)     echo "{n} local snapshot(s) present — a real run deletes them to free space" ;;
       esac ;;
     snap_release)
       case "$SS_LANG" in
         ja-JP) echo "ローカルスナップショットを解放中" ;;
         zh-TW) echo "釋放本機快照" ;;
+        zh-Hans) echo "释放本机快照" ;;
+        ko-KR) echo "로컬 스냅샷 해제 중" ;;
+        es-ES) echo "liberando instantáneas locales" ;;
+        de-DE) echo "lokale Schnappschüsse werden freigegeben" ;;
+        fr-FR) echo "libération des instantanés locaux" ;;
+        pt-BR) echo "liberando instantâneos locais" ;;
         *)     echo "releasing local snapshots" ;;
       esac ;;
     snap_fail)
       case "$SS_LANG" in
         ja-JP) echo "⚠️ スナップショットを解放できませんでした（tmutil がエラーを返しました）。空き容量がスナップショットに保持されたままの可能性があります。" ;;
         zh-TW) echo "⚠️ 無法釋放快照（tmutil 回報錯誤）。空間可能仍被快照釘住。" ;;
+        zh-Hans) echo "⚠️ 无法释放快照（tmutil 报错）。空间可能仍被快照占用。" ;;
+        ko-KR) echo "⚠️ 스냅샷을 해제할 수 없습니다(tmutil 오류). 공간이 여전히 스냅샷에 붙들려 있을 수 있습니다." ;;
+        es-ES) echo "⚠️ no se pudieron liberar las instantáneas (tmutil devolvió un error) — puede que sigan reteniendo el espacio." ;;
+        de-DE) echo "⚠️ Schnappschüsse konnten nicht freigegeben werden (tmutil meldete einen Fehler) — der Platz bleibt womöglich von ihnen belegt." ;;
+        fr-FR) echo "⚠️ impossible de libérer les instantanés (tmutil a signalé une erreur) — l'espace peut rester retenu par eux." ;;
+        pt-BR) echo "⚠️ não foi possível liberar os instantâneos (o tmutil retornou um erro) — o espaço pode continuar preso a eles." ;;
         *)     echo "⚠️ could not release snapshots (tmutil reported an error) — space may still be pinned by them." ;;
       esac ;;
     snap_notool)
       case "$SS_LANG" in
         ja-JP) echo "（tmutil が見つかりません — スナップショットの解放をスキップ）" ;;
         zh-TW) echo "（找不到 tmutil——略過快照釋放）" ;;
+        zh-Hans) echo "（找不到 tmutil——跳过快照释放）" ;;
+        ko-KR) echo "(tmutil을 찾을 수 없음 — 스냅샷 해제 건너뜀)" ;;
+        es-ES) echo "(tmutil no encontrado — se omite la liberación de instantáneas)" ;;
+        de-DE) echo "(tmutil nicht gefunden — Schnappschuss-Freigabe übersprungen)" ;;
+        fr-FR) echo "(tmutil introuvable — libération des instantanés ignorée)" ;;
+        pt-BR) echo "(tmutil não encontrado — liberação de instantâneos ignorada)" ;;
         *)     echo "(tmutil not found — skipping snapshot release)" ;;
       esac ;;
     preview)
       case "$SS_LANG" in
         ja-JP) echo "［予定］" ;;
         zh-TW) echo "［預覽］" ;;
+        zh-Hans) echo "［预览］" ;;
+        ko-KR) echo "[미리보기]" ;;
+        es-ES) echo "[previsto]" ;;
+        de-DE) echo "[Vorschau]" ;;
+        fr-FR) echo "[aperçu]" ;;
+        pt-BR) echo "[prévia]" ;;
         *)     echo "[preview]" ;;
       esac ;;
     freeing)
       case "$SS_LANG" in
         ja-JP) echo "解放" ;;
         zh-TW) echo "釋放" ;;
+        zh-Hans) echo "释放" ;;
+        ko-KR) echo "확보" ;;
+        es-ES) echo "libera" ;;
+        de-DE) echo "frei  " ;;
+        fr-FR) echo "libère" ;;
+        pt-BR) echo "libera" ;;
         *)     echo "free  " ;;
       esac ;;
     unknown)   # {opt}
       case "$SS_LANG" in
         ja-JP) echo "sheersweep: 不明なオプション '{opt}'（--help を参照）" ;;
         zh-TW) echo "sheersweep：未知選項 '{opt}'（請看 --help）" ;;
+        zh-Hans) echo "sheersweep：未知选项 '{opt}'（请看 --help）" ;;
+        ko-KR) echo "sheersweep: 알 수 없는 옵션 '{opt}' (--help 참고)" ;;
+        es-ES) echo "sheersweep: opción desconocida '{opt}' (prueba --help)" ;;
+        de-DE) echo "sheersweep: unbekannte Option '{opt}' (siehe --help)" ;;
+        fr-FR) echo "sheersweep : option inconnue '{opt}' (voir --help)" ;;
+        pt-BR) echo "sheersweep: opção desconhecida '{opt}' (veja --help)" ;;
         *)     echo "sheersweep: unknown option '{opt}' (try --help)" ;;
       esac ;;
     not_macos)
       case "$SS_LANG" in
         ja-JP) echo "🔴 sheersweep は macOS 専用です（tmutil・APFS・/Users レイアウト・~/.Trash に依存）。現在の OS: {os}。中止します。" ;;
         zh-TW) echo "🔴 sheersweep 只支援 macOS（依賴 tmutil、APFS、/Users 結構、~/.Trash）。目前作業系統：{os}。已中止。" ;;
+        zh-Hans) echo "🔴 sheersweep 仅支持 macOS（依赖 tmutil、APFS、/Users 结构、~/.Trash）。当前操作系统：{os}。已中止。" ;;
+        ko-KR) echo "🔴 sheersweep는 macOS 전용입니다(tmutil, APFS, /Users 구조, ~/.Trash에 의존). 현재 OS: {os}. 중단합니다." ;;
+        es-ES) echo "🔴 sheersweep es solo para macOS (depende de tmutil, APFS, la estructura /Users y ~/.Trash). SO actual: {os}. Abortando." ;;
+        de-DE) echo "🔴 sheersweep ist nur für macOS (es braucht tmutil, APFS, das /Users-Layout und ~/.Trash). Aktuelles OS: {os}. Abbruch." ;;
+        fr-FR) echo "🔴 sheersweep est réservé à macOS (il dépend de tmutil, APFS, la structure /Users et ~/.Trash). OS actuel : {os}. Abandon." ;;
+        pt-BR) echo "🔴 o sheersweep é só para macOS (depende de tmutil, APFS, da estrutura /Users e da ~/.Trash). SO atual: {os}. Abortando." ;;
         *)     echo "🔴 sheersweep is macOS-only (it relies on tmutil, APFS, the /Users layout, and ~/.Trash). Current OS: {os}. Aborting." ;;
       esac ;;
 
@@ -159,120 +269,240 @@ t() {
       case "$SS_LANG" in
         ja-JP) echo "uninstall にはアプリ名が必要です:  sheersweep uninstall <App>" ;;
         zh-TW) echo "uninstall 需要一個 App 名稱：sheersweep uninstall <App>" ;;
+        zh-Hans) echo "uninstall 需要一个 App 名称：sheersweep uninstall <App>" ;;
+        ko-KR) echo "uninstall에는 앱 이름이 필요합니다:  sheersweep uninstall <App>" ;;
+        es-ES) echo "uninstall necesita el nombre de una app:  sheersweep uninstall <App>" ;;
+        de-DE) echo "uninstall braucht einen App-Namen:  sheersweep uninstall <App>" ;;
+        fr-FR) echo "uninstall a besoin d'un nom d'app :  sheersweep uninstall <App>" ;;
+        pt-BR) echo "uninstall precisa do nome de um app:  sheersweep uninstall <App>" ;;
         *)     echo "uninstall needs an app name:  sheersweep uninstall <App>" ;;
       esac ;;
     un_pick_header)
       case "$SS_LANG" in
         ja-JP) echo "アンインストールできるアプリ:" ;;
         zh-TW) echo "可卸載的 App：" ;;
+        zh-Hans) echo "可卸载的 App：" ;;
+        ko-KR) echo "제거할 수 있는 앱:" ;;
+        es-ES) echo "Apps que puedes desinstalar:" ;;
+        de-DE) echo "Apps, die du deinstallieren kannst:" ;;
+        fr-FR) echo "Apps que vous pouvez désinstaller :" ;;
+        pt-BR) echo "Apps que você pode desinstalar:" ;;
         *)     echo "Apps you can uninstall:" ;;
       esac ;;
     un_pick_prompt)
       case "$SS_LANG" in
         ja-JP) echo "番号を入力して選択（q でキャンセル）: " ;;
         zh-TW) echo "輸入編號選擇（q 取消）：" ;;
+        zh-Hans) echo "输入编号选择（q 取消）：" ;;
+        ko-KR) echo "번호를 입력해 선택(q 취소): " ;;
+        es-ES) echo "Introduce un número para elegir (q para cancelar): " ;;
+        de-DE) echo "Nummer eingeben zum Auswählen (q bricht ab): " ;;
+        fr-FR) echo "Saisissez un numéro pour choisir (q pour annuler) : " ;;
+        pt-BR) echo "Digite um número para escolher (q cancela): " ;;
         *)     echo "Enter a number to choose (q to cancel): " ;;
       esac ;;
     un_pick_invalid)
       case "$SS_LANG" in
         ja-JP) echo "無効な選択です。" ;;
         zh-TW) echo "不是有效的編號。" ;;
+        zh-Hans) echo "不是有效的编号。" ;;
+        ko-KR) echo "올바른 선택이 아닙니다." ;;
+        es-ES) echo "No es una opción válida." ;;
+        de-DE) echo "Keine gültige Auswahl." ;;
+        fr-FR) echo "Choix non valide." ;;
+        pt-BR) echo "Não é uma opção válida." ;;
         *)     echo "Not a valid choice." ;;
       esac ;;
     un_pick_none)
       case "$SS_LANG" in
         ja-JP) echo "アンインストールできるアプリが見つかりません。" ;;
         zh-TW) echo "找不到可卸載的 App。" ;;
+        zh-Hans) echo "找不到可卸载的 App。" ;;
+        ko-KR) echo "제거할 수 있는 앱이 없습니다." ;;
+        es-ES) echo "No se encontraron apps desinstalables." ;;
+        de-DE) echo "Keine entfernbaren Apps gefunden." ;;
+        fr-FR) echo "Aucune app désinstallable trouvée." ;;
+        pt-BR) echo "Nenhum app desinstalável encontrado." ;;
         *)     echo "No removable apps found." ;;
       esac ;;
     un_notfound)   # {app}
       case "$SS_LANG" in
         ja-JP) echo "❌ '{app}' が見つかりません（アプリ / Homebrew formula / 手動インストールのバイナリのいずれにも該当なし）" ;;
         zh-TW) echo "❌ 找不到「{app}」（不是 App、不是 Homebrew formula、也不是手動裝的裸二進位）" ;;
+        zh-Hans) echo "❌ 找不到“{app}”（不是 App、不是 Homebrew formula、也不是手动安装的二进制文件）" ;;
+        ko-KR) echo "❌ '{app}'을(를) 찾을 수 없습니다 — 앱도, Homebrew formula도, 수동 설치한 바이너리도 아닙니다" ;;
+        es-ES) echo "❌ no hay nada llamado '{app}' — ni app, ni formula de Homebrew, ni binario instalado a mano" ;;
+        de-DE) echo "❌ nichts namens '{app}' gefunden — keine App, keine Homebrew-Formula, kein von Hand installiertes Binary" ;;
+        fr-FR) echo "❌ rien nommé '{app}' — ni app, ni formula Homebrew, ni binaire installé à la main" ;;
+        pt-BR) echo "❌ nada chamado '{app}' — não é app, nem formula do Homebrew, nem binário instalado à mão" ;;
         *)     echo "❌ nothing named '{app}' — not an app, not a Homebrew formula, not a hand-installed binary" ;;
       esac ;;
     un_appgone)   # {app}
       case "$SS_LANG" in
         ja-JP) echo "ℹ️ {app} の本体は見当たりません（すでに削除済み）。カタログを使って、残ったデータだけを掃除します。" ;;
         zh-TW) echo "ℹ️ 找不到 {app} 本體（已被刪除）。改用內建目錄，把它殘留的資料清掉。" ;;
+        zh-Hans) echo "ℹ️ 找不到 {app} 本体（已被删除）。改用内置目录，清理它残留的数据。" ;;
+        ko-KR) echo "ℹ️ {app}의 앱 본체는 이미 없습니다 — 내장 카탈로그로 남은 데이터만 정리합니다." ;;
+        es-ES) echo "ℹ️ la app {app} ya no está — se usa el catálogo para limpiar solo los datos que dejó." ;;
+        de-DE) echo "ℹ️ die App {app} ist schon weg — der Katalog räumt nur die zurückgelassenen Daten auf." ;;
+        fr-FR) echo "ℹ️ l'app {app} n'est plus là — le catalogue sert à nettoyer seulement les données restantes." ;;
+        pt-BR) echo "ℹ️ o app {app} já se foi — usando o catálogo para limpar só os dados que ficaram." ;;
         *)     echo "ℹ️ {app}'s app bundle is already gone — using the catalog to clean up just the data it left behind." ;;
       esac ;;
     un_refuse_apple)   # {app}
       case "$SS_LANG" in
         ja-JP) echo "🔴 拒否：{app} は Apple／システムのアプリです。封印された読み取り専用のシステムボリューム上にあり、root でも削除できません（削除しても容量は戻りません）。" ;;
         zh-TW) echo "🔴 拒絕：{app} 是 Apple／系統 App，住在已封印的唯讀系統卷上——連 root 都刪不掉（刪了也不會釋放空間）。" ;;
+        zh-Hans) echo "🔴 拒绝：{app} 是 Apple／系统 App，位于已封印的只读系统卷上——连 root 都删不掉（删了也不会释放空间）。" ;;
+        ko-KR) echo "🔴 거부: {app}은(는) Apple/시스템 앱으로, 봉인된 읽기 전용 시스템 볼륨에 있습니다 — root도 제거할 수 없습니다(지워도 공간이 돌아오지 않습니다)." ;;
+        es-ES) echo "🔴 rechazado: {app} es una app de Apple/del sistema en el volumen sellado de solo lectura — ni root puede quitarla (y borrarla no liberaría espacio)." ;;
+        de-DE) echo "🔴 abgelehnt: {app} ist eine Apple-/System-App auf dem versiegelten, schreibgeschützten Systemvolume — nicht mal root kann sie entfernen (und Löschen gäbe keinen Platz frei)." ;;
+        fr-FR) echo "🔴 refus : {app} est une app Apple/système sur le volume système scellé en lecture seule — même root ne peut pas la retirer (et la supprimer ne libérerait pas d'espace)." ;;
+        pt-BR) echo "🔴 recusado: {app} é um app da Apple/do sistema no volume selado somente leitura — nem o root consegue removê-lo (e apagá-lo não liberaria espaço)." ;;
         *)     echo "🔴 refusing: {app} is an Apple / system app on the sealed, read-only system volume — not even root can remove it (and deleting it wouldn't free space)." ;;
       esac ;;
     un_refuse_nobid)   # {app}
       case "$SS_LANG" in
         ja-JP) echo "🔴 拒否：{app} に bundle id がありません。安全に照合できないため中止します。" ;;
         zh-TW) echo "🔴 拒絕：{app} 沒有 bundle id，無法安全比對，已中止。" ;;
+        zh-Hans) echo "🔴 拒绝：{app} 没有 bundle id，无法安全匹配它的文件，已中止。" ;;
+        ko-KR) echo "🔴 거부: {app}에 bundle id가 없어 파일을 안전하게 대조할 수 없습니다. 중단합니다." ;;
+        es-ES) echo "🔴 rechazado: {app} no tiene bundle id — no se pueden identificar sus archivos con seguridad, abortando." ;;
+        de-DE) echo "🔴 abgelehnt: {app} hat keine Bundle-ID — seine Dateien lassen sich nicht sicher zuordnen, Abbruch." ;;
+        fr-FR) echo "🔴 refus : {app} n'a pas de bundle id — impossible d'identifier ses fichiers sûrement, abandon." ;;
+        pt-BR) echo "🔴 recusado: {app} não tem bundle id — não dá para identificar seus arquivos com segurança, abortando." ;;
         *)     echo "🔴 refusing: {app} has no bundle id — can't match its files safely, aborting." ;;
       esac ;;
     un_resolved)   # {app}  ·  {bid}
       case "$SS_LANG" in
         ja-JP) echo "アプリ: {app}   ·   bundle id: {bid}" ;;
         zh-TW) echo "App：{app}   ·   bundle id：{bid}" ;;
+        zh-Hans) echo "App：{app}   ·   bundle id：{bid}" ;;
+        ko-KR) echo "앱: {app}   ·   bundle id: {bid}" ;;
+        es-ES) echo "App: {app}   ·   bundle id: {bid}" ;;
+        de-DE) echo "App: {app}   ·   Bundle-ID: {bid}" ;;
+        fr-FR) echo "App : {app}   ·   bundle id : {bid}" ;;
+        pt-BR) echo "App: {app}   ·   bundle id: {bid}" ;;
         *)     echo "App: {app}   ·   bundle id: {bid}" ;;
       esac ;;
     un_header)   # {app}
       case "$SS_LANG" in
         ja-JP) echo "{app} に属するもの（すべてゴミ箱へ移動 — 復元可能）:" ;;
         zh-TW) echo "屬於 {app} 的所有東西（會移到垃圾桶——可救回）：" ;;
+        zh-Hans) echo "属于 {app} 的所有内容（将移到废纸篓——可恢复）：" ;;
+        ko-KR) echo "{app}에 속한 모든 항목(휴지통으로 이동 — 복원 가능):" ;;
+        es-ES) echo "Todo lo que pertenece a {app} (va a la Papelera — recuperable):" ;;
+        de-DE) echo "Alles, was zu {app} gehört (wandert in den Papierkorb — wiederherstellbar):" ;;
+        fr-FR) echo "Tout ce qui appartient à {app} (part à la Corbeille — récupérable) :" ;;
+        pt-BR) echo "Tudo o que pertence a {app} (vai para a Lixeira — recuperável):" ;;
         *)     echo "Everything that belongs to {app} (moves to Trash — recoverable):" ;;
       esac ;;
     un_empty)   # {app}
       case "$SS_LANG" in
         ja-JP) echo "{app} に属するファイルは見つかりませんでした。" ;;
         zh-TW) echo "找不到任何屬於 {app} 的檔案。" ;;
+        zh-Hans) echo "找不到任何属于 {app} 的文件。" ;;
+        ko-KR) echo "{app}에 속한 파일을 찾지 못했습니다." ;;
+        es-ES) echo "No se encontró nada de {app}." ;;
+        de-DE) echo "Nichts gefunden, was zu {app} gehört." ;;
+        fr-FR) echo "Rien trouvé appartenant à {app}." ;;
+        pt-BR) echo "Nada pertencente a {app} foi encontrado." ;;
         *)     echo "Found nothing belonging to {app}." ;;
       esac ;;
     un_total)
       case "$SS_LANG" in
         ja-JP) echo "合計:        " ;;
         zh-TW) echo "合計：       " ;;
+        zh-Hans) echo "合计：       " ;;
+        ko-KR) echo "합계:        " ;;
+        es-ES) echo "Total:       " ;;
+        de-DE) echo "Gesamt:      " ;;
+        fr-FR) echo "Total :      " ;;
+        pt-BR) echo "Total:       " ;;
         *)     echo "Total:       " ;;
       esac ;;
     un_dry_note)
       case "$SS_LANG" in
         ja-JP) echo "🧪 プレビュー — 何も移動していません。uninstall するには --dry-run なしで実行。" ;;
         zh-TW) echo "🧪 預覽——什麼都沒動。要真的卸載請拿掉 --dry-run 再執行。" ;;
+        zh-Hans) echo "🧪 预览——什么都没动。要真正卸载请去掉 --dry-run 再运行。" ;;
+        ko-KR) echo "🧪 미리보기 — 아무것도 옮기지 않았습니다. 실제로 제거하려면 --dry-run 없이 실행하세요." ;;
+        es-ES) echo "🧪 vista previa — no se movió nada. Ejecuta sin --dry-run para desinstalar." ;;
+        de-DE) echo "🧪 Vorschau — nichts wurde bewegt. Ohne --dry-run ausführen, um zu deinstallieren." ;;
+        fr-FR) echo "🧪 aperçu — rien n'a bougé. Relancez sans --dry-run pour désinstaller." ;;
+        pt-BR) echo "🧪 prévia — nada foi movido. Execute sem --dry-run para desinstalar." ;;
         *)     echo "🧪 preview — nothing moved. Run without --dry-run to uninstall." ;;
       esac ;;
     un_confirm)   # {name}
       case "$SS_LANG" in
         ja-JP) echo "上記すべてをゴミ箱へ移動するにはアプリ名「{name}」を入力（それ以外でキャンセル）: " ;;
         zh-TW) echo "要把以上全部移到垃圾桶，請輸入 App 名稱「{name}」（輸入其他則取消）：" ;;
+        zh-Hans) echo "要把以上全部移到废纸篓，请输入 App 名称“{name}”（输入其他则取消）：" ;;
+        ko-KR) echo "위 항목을 모두 휴지통으로 옮기려면 앱 이름 '{name}'을(를) 입력하세요(다른 입력은 취소): " ;;
+        es-ES) echo "Escribe el nombre de la app '{name}' para mover todo lo anterior a la Papelera (cualquier otra cosa cancela): " ;;
+        de-DE) echo "Tippe den App-Namen '{name}', um alles oben in den Papierkorb zu legen (alles andere bricht ab): " ;;
+        fr-FR) echo "Saisissez le nom de l'app '{name}' pour tout déplacer vers la Corbeille (toute autre saisie annule) : " ;;
+        pt-BR) echo "Digite o nome do app '{name}' para mover tudo acima para a Lixeira (qualquer outra coisa cancela): " ;;
         *)     echo "Type the app name '{name}' to move all of the above to Trash (anything else cancels): " ;;
       esac ;;
     un_cancelled)
       case "$SS_LANG" in
         ja-JP) echo "キャンセルしました — 何も変更していません。" ;;
         zh-TW) echo "已取消——什麼都沒動。" ;;
+        zh-Hans) echo "已取消——什么都没动。" ;;
+        ko-KR) echo "취소했습니다 — 아무것도 건드리지 않았습니다." ;;
+        es-ES) echo "Cancelado — no se tocó nada." ;;
+        de-DE) echo "Abgebrochen — nichts wurde angerührt." ;;
+        fr-FR) echo "Annulé — rien n'a été touché." ;;
+        pt-BR) echo "Cancelado — nada foi tocado." ;;
         *)     echo "Cancelled — nothing was touched." ;;
       esac ;;
     un_quit)   # {app}
       case "$SS_LANG" in
         ja-JP) echo "{app} は起動中のようです — 先に終了を依頼します…" ;;
         zh-TW) echo "{app} 看起來正在執行——先請它結束…" ;;
+        zh-Hans) echo "{app} 似乎正在运行——先请它退出…" ;;
+        ko-KR) echo "{app}이(가) 실행 중인 것 같습니다 — 먼저 종료를 요청합니다…" ;;
+        es-ES) echo "{app} parece estar en ejecución — pidiéndole que se cierre primero…" ;;
+        de-DE) echo "{app} scheint zu laufen — es wird erst zum Beenden aufgefordert…" ;;
+        fr-FR) echo "{app} semble en cours d'exécution — on lui demande d'abord de quitter…" ;;
+        pt-BR) echo "{app} parece estar em execução — pedindo para encerrar primeiro…" ;;
         *)     echo "{app} looks like it's running — asking it to quit first…" ;;
       esac ;;
     un_trashing)
       case "$SS_LANG" in
         ja-JP) echo "ゴミ箱へ" ;;
         zh-TW) echo "移到垃圾桶" ;;
+        zh-Hans) echo "移到废纸篓" ;;
+        ko-KR) echo "휴지통으로" ;;
+        es-ES) echo "a la Papelera" ;;
+        de-DE) echo "in den Papierkorb" ;;
+        fr-FR) echo "vers la Corbeille" ;;
+        pt-BR) echo "para a Lixeira" ;;
         *)     echo "to Trash" ;;
       esac ;;
     un_done)   # {app}
       case "$SS_LANG" in
         ja-JP) echo "✅ {app} をゴミ箱へ移動しました。容量を取り戻すにはゴミ箱を空に。元に戻すには: sheersweep restore" ;;
         zh-TW) echo "✅ {app} 已移到垃圾桶。要真正釋放空間請清空垃圾桶；想還原打：sheersweep restore" ;;
+        zh-Hans) echo "✅ {app} 已移到废纸篓。要真正释放空间请清空废纸篓；想还原请运行：sheersweep restore" ;;
+        ko-KR) echo "✅ {app}을(를) 휴지통으로 옮겼습니다. 공간을 되찾으려면 휴지통을 비우세요. 되돌리려면: sheersweep restore" ;;
+        es-ES) echo "✅ {app} movida a la Papelera. Vacía la Papelera para recuperar el espacio — o deshaz con: sheersweep restore" ;;
+        de-DE) echo "✅ {app} liegt im Papierkorb. Leere ihn, um den Platz zurückzubekommen — oder mach es rückgängig mit: sheersweep restore" ;;
+        fr-FR) echo "✅ {app} déplacée vers la Corbeille. Videz-la pour récupérer l'espace — ou annulez avec : sheersweep restore" ;;
+        pt-BR) echo "✅ {app} foi para a Lixeira. Esvazie a Lixeira para recuperar o espaço — ou desfaça com: sheersweep restore" ;;
         *)     echo "✅ {app} moved to Trash. Empty the Trash to reclaim the space — or undo with: sheersweep restore" ;;
       esac ;;
     un_refuse_protected)   # {app}
       case "$SS_LANG" in
         ja-JP) echo "🔴 拒否：{app} はシステムに組み込まれており（firmlink）、削除できません。" ;;
         zh-TW) echo "🔴 拒絕：{app} 接進系統核心（firmlink），無法移除。" ;;
+        zh-Hans) echo "🔴 拒绝：{app} 已接入系统核心（firmlink），无法移除。" ;;
+        ko-KR) echo "🔴 거부: {app}은(는) 시스템에 연결되어 있어(firmlink) 제거할 수 없습니다." ;;
+        es-ES) echo "🔴 rechazado: {app} está integrada en el sistema (firmlink) y no se puede quitar." ;;
+        de-DE) echo "🔴 abgelehnt: {app} ist ins System verdrahtet (Firmlink) und kann nicht entfernt werden." ;;
+        fr-FR) echo "🔴 refus : {app} est ancrée dans le système (firmlink) et ne peut pas être retirée." ;;
+        pt-BR) echo "🔴 recusado: {app} está ligado ao sistema (firmlink) e não pode ser removido." ;;
         *)     echo "🔴 refusing: {app} is wired into the system (firmlink) and can't be removed." ;;
       esac ;;
 
@@ -284,60 +514,120 @@ t() {
       case "$SS_LANG" in
         ja-JP) echo "Homebrew formula: {name}   ·   バージョン: {ver}" ;;
         zh-TW) echo "Homebrew formula：{name}   ·   版本：{ver}" ;;
+        zh-Hans) echo "Homebrew formula：{name}   ·   版本：{ver}" ;;
+        ko-KR) echo "Homebrew formula: {name}   ·   버전: {ver}" ;;
+        es-ES) echo "Formula de Homebrew: {name}   ·   versión: {ver}" ;;
+        de-DE) echo "Homebrew-Formula: {name}   ·   Version: {ver}" ;;
+        fr-FR) echo "Formula Homebrew : {name}   ·   version : {ver}" ;;
+        pt-BR) echo "Formula do Homebrew: {name}   ·   versão: {ver}" ;;
         *)     echo "Homebrew formula: {name}   ·   version: {ver}" ;;
       esac ;;
     un_brew_deps)   # {name} {deps}
       case "$SS_LANG" in
         ja-JP) echo "🔴 拒否：インストール済みの formula が {name} に依存しています: {deps}— 削除すると壊れます。先にそちらを削除するか、そのままに。" ;;
         zh-TW) echo "🔴 拒絕：這些已安裝的 formula 依賴 {name}：{deps}——移掉會弄壞它們。要嘛先移除它們，要嘛都留著。" ;;
+        zh-Hans) echo "🔴 拒绝：这些已安装的 formula 依赖 {name}：{deps}——移掉会弄坏它们。要么先移除它们，要么都留着。" ;;
+        ko-KR) echo "🔴 거부: 설치된 formula가 {name}에 의존합니다: {deps}— 제거하면 함께 망가집니다. 그것들을 먼저 제거하거나, 모두 그대로 두세요." ;;
+        es-ES) echo "🔴 rechazado: hay formulas instaladas que dependen de {name}: {deps}— quitarla las rompería. Quita esas primero, o quédate con ambas." ;;
+        de-DE) echo "🔴 abgelehnt: installierte Formulas hängen von {name} ab: {deps}— es zu entfernen würde sie kaputt machen. Entferne erst jene, oder behalte beides." ;;
+        fr-FR) echo "🔴 refus : des formulas installées dépendent de {name} : {deps}— le retirer les casserait. Retirez-les d'abord, ou gardez tout." ;;
+        pt-BR) echo "🔴 recusado: formulas instaladas dependem de {name}: {deps}— removê-la as quebraria. Remova essas primeiro, ou fique com as duas." ;;
         *)     echo "🔴 refusing: installed formulae depend on {name}: {deps}— removing it would break them. Remove those first, or keep both." ;;
       esac ;;
     un_brew_cmd)
       case "$SS_LANG" in
         ja-JP) echo "この操作はツール自身のアンインストーラーを、表示のとおりに実行します:" ;;
         zh-TW) echo "這會執行工具自己的解除安裝器，一字不差如下：" ;;
+        zh-Hans) echo "这会运行工具自己的卸载器，一字不差如下：" ;;
+        ko-KR) echo "도구 자체의 제거 명령을 표시된 그대로 실행합니다:" ;;
+        es-ES) echo "Esto ejecuta el desinstalador propio de la herramienta, exactamente como se muestra:" ;;
+        de-DE) echo "Das führt den eigenen Deinstaller des Tools aus, genau wie angezeigt:" ;;
+        fr-FR) echo "Ceci exécute le désinstalleur propre à l'outil, exactement comme affiché :" ;;
+        pt-BR) echo "Isto executa o desinstalador do próprio programa, exatamente como mostrado:" ;;
         *)     echo "This runs the tool's own uninstaller, exactly as shown:" ;;
       esac ;;
     un_brew_config)   # {name}
       case "$SS_LANG" in
         ja-JP) echo "ℹ️ Homebrew が管理するのはツール本体のみ。{name} がホームに置いた設定（例: ~/.{name}）には触れません。" ;;
         zh-TW) echo "ℹ️ Homebrew 只管工具本體。{name} 若在家目錄留有設定（如 ~/.{name}），原封不動。" ;;
+        zh-Hans) echo "ℹ️ Homebrew 只管工具本体。{name} 若在主目录留有设置（如 ~/.{name}），原封不动。" ;;
+        ko-KR) echo "ℹ️ Homebrew는 도구 본체만 관리합니다. {name}이(가) 홈 폴더에 남긴 설정(예: ~/.{name})은 건드리지 않습니다." ;;
+        es-ES) echo "ℹ️ Homebrew solo gestiona la herramienta en sí. Los ajustes que {name} guardara en tu carpeta personal (p. ej. ~/.{name}) quedan intactos." ;;
+        de-DE) echo "ℹ️ Homebrew verwaltet nur das Tool selbst. Einstellungen, die {name} im Benutzerordner ablegte (z. B. ~/.{name}), bleiben unberührt." ;;
+        fr-FR) echo "ℹ️ Homebrew ne gère que l'outil lui-même. Les réglages que {name} garde dans votre dossier personnel (p. ex. ~/.{name}) restent intacts." ;;
+        pt-BR) echo "ℹ️ O Homebrew só cuida do programa em si. As configurações que o {name} guardou na sua pasta pessoal (ex.: ~/.{name}) ficam intactas." ;;
         *)     echo "ℹ️ Homebrew's receipt covers the tool itself. Any settings {name} kept in your home folder (e.g. ~/.{name}) are left untouched." ;;
       esac ;;
     un_brew_confirm)   # {name}
       case "$SS_LANG" in
         ja-JP) echo "上のコマンドを実行するには「{name}」と入力（それ以外でキャンセル）: " ;;
         zh-TW) echo "要執行上面那行指令，請輸入「{name}」（輸入其他則取消）：" ;;
+        zh-Hans) echo "要运行上面那行命令，请输入“{name}”（输入其他则取消）：" ;;
+        ko-KR) echo "위 명령을 실행하려면 '{name}'을(를) 입력하세요(다른 입력은 취소): " ;;
+        es-ES) echo "Escribe '{name}' para ejecutar el comando de arriba (cualquier otra cosa cancela): " ;;
+        de-DE) echo "Tippe '{name}', um den Befehl oben auszuführen (alles andere bricht ab): " ;;
+        fr-FR) echo "Saisissez '{name}' pour exécuter la commande ci-dessus (toute autre saisie annule) : " ;;
+        pt-BR) echo "Digite '{name}' para executar o comando acima (qualquer outra coisa cancela): " ;;
         *)     echo "Type '{name}' to run the command above (anything else cancels): " ;;
       esac ;;
     un_brew_done)   # {name}  ·  {ver}
       case "$SS_LANG" in
         ja-JP) echo "✅ {name} を Homebrew が削除しました。元に戻すには: brew install {name}（削除時のバージョン: {ver}）" ;;
         zh-TW) echo "✅ {name} 已由 Homebrew 移除。想要回來隨時：brew install {name}（移除時版本：{ver}）" ;;
+        zh-Hans) echo "✅ {name} 已由 Homebrew 移除。想要回来随时：brew install {name}（移除时版本：{ver}）" ;;
+        ko-KR) echo "✅ Homebrew가 {name}을(를) 제거했습니다. 언제든 되찾으려면: brew install {name} (제거 당시 버전: {ver})" ;;
+        es-ES) echo "✅ {name} eliminada por Homebrew. Recupérala cuando quieras con: brew install {name}   (versión eliminada: {ver})" ;;
+        de-DE) echo "✅ {name} von Homebrew entfernt. Jederzeit zurückholen mit: brew install {name}   (entfernte Version: {ver})" ;;
+        fr-FR) echo "✅ {name} retirée par Homebrew. Récupérez-la quand vous voulez avec : brew install {name}   (version retirée : {ver})" ;;
+        pt-BR) echo "✅ {name} removida pelo Homebrew. Traga de volta quando quiser com: brew install {name}   (versão removida: {ver})" ;;
         *)     echo "✅ {name} removed by Homebrew. Get it back anytime with: brew install {name}   (was version {ver})" ;;
       esac ;;
     un_brew_orphans)
       case "$SS_LANG" in
         ja-JP) echo "この削除で不要になった依存が残っています。一覧を確認して自分で実行を: brew autoremove" ;;
         zh-TW) echo "這次移除讓一些依賴變成孤兒。看過清單後自己執行：brew autoremove" ;;
+        zh-Hans) echo "这次移除让一些依赖成了孤儿。看过清单后自己运行：brew autoremove" ;;
+        ko-KR) echo "이번 제거로 일부 의존성이 고아가 되었습니다. 목록을 확인한 뒤 직접 실행하세요: brew autoremove" ;;
+        es-ES) echo "Esto dejó dependencias huérfanas. Revisa la lista y ejecuta tú mismo: brew autoremove" ;;
+        de-DE) echo "Dabei sind Abhängigkeiten verwaist. Sieh dir die Liste an und führe selbst aus: brew autoremove" ;;
+        fr-FR) echo "Cela a laissé des dépendances orphelines. Vérifiez la liste, puis lancez vous-même : brew autoremove" ;;
+        pt-BR) echo "Isso deixou dependências órfãs. Revise a lista e execute você mesmo: brew autoremove" ;;
         *)     echo "This left some dependencies orphaned. Review the list, then run: brew autoremove" ;;
       esac ;;
     un_bin_header)
       case "$SS_LANG" in
         ja-JP) echo "パッケージマネージャ管理外のバイナリ（手動インストール）:" ;;
         zh-TW) echo "沒有套件管理器認領的裸二進位（手動安裝）：" ;;
+        zh-Hans) echo "没有包管理器认领的二进制文件（手动安装）：" ;;
+        ko-KR) echo "패키지 관리자가 관리하지 않는 바이너리(수동 설치):" ;;
+        es-ES) echo "Binario sin gestor — ningún gestor de paquetes lo posee:" ;;
+        de-DE) echo "Unverwaltetes Binary — kein Paketmanager kennt es:" ;;
+        fr-FR) echo "Binaire non géré — aucun gestionnaire de paquets ne le possède :" ;;
+        pt-BR) echo "Binário sem dono — nenhum gerenciador de pacotes o gerencia:" ;;
         *)     echo "Unmanaged binary — no package manager owns it:" ;;
       esac ;;
     un_bin_note)
       case "$SS_LANG" in
         ja-JP) echo "ℹ️ 素のバイナリです — データをどこかに置いたかは作者のみが知ります。sheersweep はバイナリ本体だけをゴミ箱へ移動します。" ;;
         zh-TW) echo "ℹ️ 這是顆裸二進位——它有沒有在別處留資料，只有作者知道。sheersweep 只把本體移到垃圾桶。" ;;
+        zh-Hans) echo "ℹ️ 这是一个裸二进制文件——它有没有在别处留数据，只有作者知道。sheersweep 只把本体移到废纸篓。" ;;
+        ko-KR) echo "ℹ️ 순수 바이너리입니다 — 다른 곳에 데이터를 남겼는지는 만든 사람만 압니다. sheersweep은 바이너리 본체만 휴지통으로 옮깁니다." ;;
+        es-ES) echo "ℹ️ Es un binario suelto — solo su autor sabe si guardó datos en otro lugar. sheersweep mueve solo el binario a la Papelera." ;;
+        de-DE) echo "ℹ️ Es ist ein nacktes Binary — ob es woanders Daten ablegte, weiß nur sein Autor. sheersweep legt nur das Binary in den Papierkorb." ;;
+        fr-FR) echo "ℹ️ C'est un binaire nu — seul son auteur sait s'il a laissé des données ailleurs. sheersweep ne déplace que le binaire vers la Corbeille." ;;
+        pt-BR) echo "ℹ️ É um binário avulso — só o autor sabe se ele guardou dados em outro lugar. O sheersweep move apenas o binário para a Lixeira." ;;
         *)     echo "ℹ️ It's a bare binary — whether it kept data elsewhere, only its author knows. sheersweep moves just the binary to the Trash." ;;
       esac ;;
     un_bin_confirm)   # {name}
       case "$SS_LANG" in
         ja-JP) echo "「{name}」と入力すると上記をゴミ箱へ移動（それ以外でキャンセル）: " ;;
         zh-TW) echo "輸入「{name}」就把以上移到垃圾桶（輸入其他則取消）：" ;;
+        zh-Hans) echo "输入“{name}”就把以上移到废纸篓（输入其他则取消）：" ;;
+        ko-KR) echo "'{name}'을(를) 입력하면 위 항목을 휴지통으로 옮깁니다(다른 입력은 취소): " ;;
+        es-ES) echo "Escribe '{name}' para mover lo de arriba a la Papelera (cualquier otra cosa cancela): " ;;
+        de-DE) echo "Tippe '{name}', um das oben in den Papierkorb zu legen (alles andere bricht ab): " ;;
+        fr-FR) echo "Saisissez '{name}' pour déplacer ce qui précède vers la Corbeille (toute autre saisie annule) : " ;;
+        pt-BR) echo "Digite '{name}' para mover o item acima para a Lixeira (qualquer outra coisa cancela): " ;;
         *)     echo "Type '{name}' to move the above to the Trash (anything else cancels): " ;;
       esac ;;
 
@@ -346,54 +636,108 @@ t() {
       case "$SS_LANG" in
         ja-JP) echo "🧰 CLI ツールの棚卸し — 読み取り専用。何も変更しません。" ;;
         zh-TW) echo "🧰 CLI 工具盤點——唯讀，什麼都不會動。" ;;
+        zh-Hans) echo "🧰 CLI 工具盘点——只读，什么都不会动。" ;;
+        ko-KR) echo "🧰 CLI 도구 목록 — 읽기 전용. 아무것도 변경하지 않습니다." ;;
+        es-ES) echo "🧰 Inventario de herramientas CLI — solo lectura. No se cambia nada." ;;
+        de-DE) echo "🧰 CLI-Werkzeug-Inventur — nur lesend. Nichts wird verändert." ;;
+        fr-FR) echo "🧰 Inventaire des outils CLI — lecture seule. Rien n'est modifié." ;;
+        pt-BR) echo "🧰 Inventário de ferramentas CLI — somente leitura. Nada é alterado." ;;
         *)     echo "🧰 CLI tool inventory — read-only. Nothing is changed." ;;
       esac ;;
     tl_brew_header)
       case "$SS_LANG" in
         ja-JP) echo "自分で入れた Homebrew formula（leaves — 他の何にも必要とされていない）:" ;;
         zh-TW) echo "你自己裝的 Homebrew formula（leaves——沒有別的東西依賴它們）：" ;;
+        zh-Hans) echo "你自己装的 Homebrew formula（leaves——没有别的东西依赖它们）：" ;;
+        ko-KR) echo "직접 설치한 Homebrew formula(leaves — 다른 어떤 것도 의존하지 않음):" ;;
+        es-ES) echo "Formulas de Homebrew que instalaste tú (leaves — nada más depende de ellas):" ;;
+        de-DE) echo "Homebrew-Formulas, die du selbst installiert hast (leaves — nichts anderes hängt davon ab):" ;;
+        fr-FR) echo "Formulas Homebrew que vous avez installées (leaves — rien d'autre n'en dépend) :" ;;
+        pt-BR) echo "Formulas do Homebrew que você instalou (leaves — nada mais depende delas):" ;;
         *)     echo "Homebrew formulae you installed (leaves — nothing else depends on them):" ;;
       esac ;;
     tl_nobrew)
       case "$SS_LANG" in
         ja-JP) echo "（Homebrew が見つかりません — formula の棚卸しをスキップ）" ;;
         zh-TW) echo "（找不到 Homebrew——略過 formula 盤點）" ;;
+        zh-Hans) echo "（找不到 Homebrew——跳过 formula 盘点）" ;;
+        ko-KR) echo "(Homebrew를 찾을 수 없음 — formula 목록 건너뜀)" ;;
+        es-ES) echo "(Homebrew no encontrado — se omiten las formulas)" ;;
+        de-DE) echo "(Homebrew nicht gefunden — Formulas übersprungen)" ;;
+        fr-FR) echo "(Homebrew introuvable — formulas ignorées)" ;;
+        pt-BR) echo "(Homebrew não encontrado — formulas ignoradas)" ;;
         *)     echo "(Homebrew not found — skipping formulae)" ;;
       esac ;;
     tl_orphans_header)
       case "$SS_LANG" in
         ja-JP) echo "🧟 どの formula にも不要になった依存（brew autoremove が削除するもの）:" ;;
         zh-TW) echo "🧟 已經沒人需要的依賴孤兒（brew autoremove 會清掉的）：" ;;
+        zh-Hans) echo "🧟 已经没人需要的依赖孤儿（brew autoremove 会清掉的）：" ;;
+        ko-KR) echo "🧟 아무도 필요로 하지 않는 고아 의존성(brew autoremove가 제거할 항목):" ;;
+        es-ES) echo "🧟 Dependencias huérfanas que ya nada necesita (lo que brew autoremove quitaría):" ;;
+        de-DE) echo "🧟 Verwaiste Abhängigkeiten, die nichts mehr braucht (was brew autoremove entfernen würde):" ;;
+        fr-FR) echo "🧟 Dépendances orphelines dont plus rien n'a besoin (ce que brew autoremove retirerait) :" ;;
+        pt-BR) echo "🧟 Dependências órfãs de que nada mais precisa (o que o brew autoremove removeria):" ;;
         *)     echo "🧟 Orphaned dependencies nothing needs anymore (what brew autoremove would remove):" ;;
       esac ;;
     tl_orphans_none)
       case "$SS_LANG" in
         ja-JP) echo "✅ 孤児化した依存はありません。" ;;
         zh-TW) echo "✅ 沒有孤兒依賴。" ;;
+        zh-Hans) echo "✅ 没有孤儿依赖。" ;;
+        ko-KR) echo "✅ 고아 의존성이 없습니다." ;;
+        es-ES) echo "✅ Sin dependencias huérfanas." ;;
+        de-DE) echo "✅ Keine verwaisten Abhängigkeiten." ;;
+        fr-FR) echo "✅ Aucune dépendance orpheline." ;;
+        pt-BR) echo "✅ Nenhuma dependência órfã." ;;
         *)     echo "✅ No orphaned dependencies." ;;
       esac ;;
     tl_bins_header)
       case "$SS_LANG" in
         ja-JP) echo "手動インストールのバイナリ（マネージャ管理外 — ~/bin · ~/.local/bin · /usr/local/bin）:" ;;
         zh-TW) echo "手動裝的裸二進位（無管理器認領——~/bin・~/.local/bin・/usr/local/bin）：" ;;
+        zh-Hans) echo "手动装的二进制文件（无管理器认领——~/bin、~/.local/bin、/usr/local/bin）：" ;;
+        ko-KR) echo "직접 설치한 바이너리(관리자 없음 — ~/bin · ~/.local/bin · /usr/local/bin):" ;;
+        es-ES) echo "Binarios instalados a mano, sin gestor (~/bin · ~/.local/bin · /usr/local/bin):" ;;
+        de-DE) echo "Von Hand installierte Binaries ohne Verwalter (~/bin · ~/.local/bin · /usr/local/bin):" ;;
+        fr-FR) echo "Binaires installés à la main, sans gestionnaire (~/bin · ~/.local/bin · /usr/local/bin) :" ;;
+        pt-BR) echo "Binários instalados à mão, sem gerenciador (~/bin · ~/.local/bin · /usr/local/bin):" ;;
         *)     echo "Hand-installed binaries no manager owns (~/bin · ~/.local/bin · /usr/local/bin):" ;;
       esac ;;
     tl_bins_none)
       case "$SS_LANG" in
         ja-JP) echo "（なし）" ;;
         zh-TW) echo "（沒有）" ;;
+        zh-Hans) echo "（没有）" ;;
+        ko-KR) echo "(없음)" ;;
+        es-ES) echo "(ninguno)" ;;
+        de-DE) echo "(keine)" ;;
+        fr-FR) echo "(aucun)" ;;
+        pt-BR) echo "(nenhum)" ;;
         *)     echo "(none)" ;;
       esac ;;
     tl_chains_header)
       case "$SS_LANG" in
         ja-JP) echo "ツールチェーンのデータ（参考情報 — 消すなら各ツール自身の方法で）:" ;;
         zh-TW) echo "Toolchain 資料目錄（純資訊——要清請用各工具自己的方式）：" ;;
+        zh-Hans) echo "Toolchain 数据目录（纯信息——要清请用各工具自己的方式）：" ;;
+        ko-KR) echo "툴체인 데이터(참고용 — 지우려면 각 도구 자체의 방법으로):" ;;
+        es-ES) echo "Datos de toolchains (informativo — elimínalos con el método propio de cada herramienta):" ;;
+        de-DE) echo "Toolchain-Daten (informativ — entfernen nur mit der eigenen Methode des jeweiligen Tools):" ;;
+        fr-FR) echo "Données de toolchains (informatif — à retirer avec la méthode propre de chaque outil) :" ;;
+        pt-BR) echo "Dados de toolchains (informativo — remova com o método próprio de cada ferramenta):" ;;
         *)     echo "Toolchain data (informational — remove with each tool's own method):" ;;
       esac ;;
     tl_hint)
       case "$SS_LANG" in
         ja-JP) echo "formula やバイナリを削除: sheersweep uninstall <名前>（--dry-run で先にプレビュー）" ;;
         zh-TW) echo "要移除 formula 或裸二進位：sheersweep uninstall <名稱>（先加 --dry-run 預覽）" ;;
+        zh-Hans) echo "要移除 formula 或二进制文件：sheersweep uninstall <名称>（先加 --dry-run 预览）" ;;
+        ko-KR) echo "formula나 바이너리 제거: sheersweep uninstall <이름> (--dry-run으로 먼저 미리보기)" ;;
+        es-ES) echo "Quita una formula o un binario con: sheersweep uninstall <nombre>   (prueba antes con --dry-run)" ;;
+        de-DE) echo "Formula oder Binary entfernen mit: sheersweep uninstall <Name>   (erst mit --dry-run ansehen)" ;;
+        fr-FR) echo "Retirez une formula ou un binaire avec : sheersweep uninstall <nom>   (aperçu d'abord avec --dry-run)" ;;
+        pt-BR) echo "Remova uma formula ou binário com: sheersweep uninstall <nome>   (veja antes com --dry-run)" ;;
         *)     echo "Remove a formula or a bare binary with: sheersweep uninstall <name>   (preview first with --dry-run)" ;;
       esac ;;
 
@@ -402,48 +746,96 @@ t() {
       case "$SS_LANG" in
         ja-JP) echo "復元できるものがありません — アンインストールの記録が見つかりません。" ;;
         zh-TW) echo "沒有可還原的東西——找不到任何卸載紀錄。" ;;
+        zh-Hans) echo "没有可还原的内容——找不到任何卸载记录。" ;;
+        ko-KR) echo "복원할 것이 없습니다 — 제거 기록을 찾을 수 없습니다." ;;
+        es-ES) echo "Nada que restaurar — no hay recibos de desinstalación." ;;
+        de-DE) echo "Nichts wiederherzustellen — keine Deinstallations-Belege gefunden." ;;
+        fr-FR) echo "Rien à restaurer — aucun reçu de désinstallation trouvé." ;;
+        pt-BR) echo "Nada para restaurar — nenhum recibo de desinstalação encontrado." ;;
         *)     echo "Nothing to restore — no uninstall receipts found." ;;
       esac ;;
     rs_header)   # {app}  ·  {date}
       case "$SS_LANG" in
         ja-JP) echo "最後のアンインストールを復元: {app}   ·   {date}" ;;
         zh-TW) echo "要還原最後一次卸載：{app}   ·   {date}" ;;
+        zh-Hans) echo "要还原最近一次卸载：{app}   ·   {date}" ;;
+        ko-KR) echo "마지막 제거를 복원합니다: {app}   ·   {date}" ;;
+        es-ES) echo "Restaurando la última desinstalación: {app}   ·   {date}" ;;
+        de-DE) echo "Letzte Deinstallation wird wiederhergestellt: {app}   ·   {date}" ;;
+        fr-FR) echo "Restauration de la dernière désinstallation : {app}   ·   {date}" ;;
+        pt-BR) echo "Restaurando a última desinstalação: {app}   ·   {date}" ;;
         *)     echo "Restoring the last uninstall: {app}   ·   {date}" ;;
       esac ;;
     rs_confirm)
       case "$SS_LANG" in
         ja-JP) echo "上記をすべて元の場所へ戻しますか？ [y/N]: " ;;
         zh-TW) echo "把以上全部放回原處？ [y/N]：" ;;
+        zh-Hans) echo "把以上全部放回原处？ [y/N]：" ;;
+        ko-KR) echo "위 항목을 모두 원래 자리로 되돌릴까요? [y/N]: " ;;
+        es-ES) echo "¿Devolver todo lo anterior a su sitio? [y/N]: " ;;
+        de-DE) echo "Alles oben an seinen Ursprungsort zurücklegen? [y/N]: " ;;
+        fr-FR) echo "Remettre tout ce qui précède à sa place ? [y/N] : " ;;
+        pt-BR) echo "Devolver tudo acima para onde estava? [y/N]: " ;;
         *)     echo "Put all of the above back where they came from? [y/N]: " ;;
       esac ;;
     rs_restoring)
       case "$SS_LANG" in
         ja-JP) echo "復元" ;;
         zh-TW) echo "還原" ;;
+        zh-Hans) echo "还原" ;;
+        ko-KR) echo "복원" ;;
+        es-ES) echo "restaura" ;;
+        de-DE) echo "zurück" ;;
+        fr-FR) echo "restaure" ;;
+        pt-BR) echo "restaura" ;;
         *)     echo "restore" ;;
       esac ;;
     rs_skip)   # {path}
       case "$SS_LANG" in
         ja-JP) echo "スキップ（すでに存在）: {path}" ;;
         zh-TW) echo "略過（已存在）：{path}" ;;
+        zh-Hans) echo "跳过（已存在）：{path}" ;;
+        ko-KR) echo "건너뜀(이미 있음): {path}" ;;
+        es-ES) echo "omitido (ya existe): {path}" ;;
+        de-DE) echo "übersprungen (schon da): {path}" ;;
+        fr-FR) echo "ignoré (déjà là) : {path}" ;;
+        pt-BR) echo "pulado (já existe): {path}" ;;
         *)     echo "skip (already there): {path}" ;;
       esac ;;
     rs_fail)   # {path}
       case "$SS_LANG" in
         ja-JP) echo "⚠️ 復元できませんでした: {path}" ;;
         zh-TW) echo "⚠️ 無法還原：{path}" ;;
+        zh-Hans) echo "⚠️ 无法还原：{path}" ;;
+        ko-KR) echo "⚠️ 복원할 수 없습니다: {path}" ;;
+        es-ES) echo "⚠️ no se pudo restaurar: {path}" ;;
+        de-DE) echo "⚠️ konnte nicht wiederhergestellt werden: {path}" ;;
+        fr-FR) echo "⚠️ restauration impossible : {path}" ;;
+        pt-BR) echo "⚠️ não foi possível restaurar: {path}" ;;
         *)     echo "⚠️ could not restore: {path}" ;;
       esac ;;
     rs_done)   # {app}
       case "$SS_LANG" in
         ja-JP) echo "✅ {app} を元の場所へ復元しました。" ;;
         zh-TW) echo "✅ {app} 已放回原處。" ;;
+        zh-Hans) echo "✅ {app} 已放回原处。" ;;
+        ko-KR) echo "✅ {app}을(를) 원래 자리로 복원했습니다." ;;
+        es-ES) echo "✅ {app} restaurada a su sitio." ;;
+        de-DE) echo "✅ {app} an den alten Ort zurückgelegt." ;;
+        fr-FR) echo "✅ {app} remise à sa place." ;;
+        pt-BR) echo "✅ {app} de volta ao lugar." ;;
         *)     echo "✅ Restored {app} to where it was." ;;
       esac ;;
     rs_list_header)
       case "$SS_LANG" in
         ja-JP) echo "これまでのアンインストール（新しい順）:" ;;
         zh-TW) echo "歷次卸載（新到舊）：" ;;
+        zh-Hans) echo "历次卸载（从新到旧）：" ;;
+        ko-KR) echo "지난 제거 기록(최신순):" ;;
+        es-ES) echo "Desinstalaciones pasadas (recientes primero):" ;;
+        de-DE) echo "Bisherige Deinstallationen (neueste zuerst):" ;;
+        fr-FR) echo "Désinstallations passées (récentes d'abord) :" ;;
+        pt-BR) echo "Desinstalações anteriores (mais recentes primeiro):" ;;
         *)     echo "Past uninstalls (newest first):" ;;
       esac ;;
 
@@ -452,48 +844,96 @@ t() {
       case "$SS_LANG" in
         ja-JP) echo "残骸 — 削除済みアプリが残した起動項目（LaunchAgents / LaunchDaemons）:" ;;
         zh-TW) echo "孤兒殘骸——已刪除的 app 留下的開機／背景項目（LaunchAgents／Daemons）：" ;;
+        zh-Hans) echo "孤儿残留——已删除的 App 留下的启动／后台项目（LaunchAgents／Daemons）：" ;;
+        ko-KR) echo "잔재 — 삭제된 앱이 남긴 시작/백그라운드 항목(LaunchAgents/Daemons):" ;;
+        es-ES) echo "Restos — ítems de arranque/segundo plano de apps que ya no están:" ;;
+        de-DE) echo "Überbleibsel — Start-/Hintergrund-Einträge von Apps, die weg sind:" ;;
+        fr-FR) echo "Restes — éléments de démarrage/arrière-plan d'apps disparues :" ;;
+        pt-BR) echo "Sobras — itens de início/segundo plano de apps que já se foram:" ;;
         *)     echo "Leftovers — startup/background items left behind by apps that are gone:" ;;
       esac ;;
     lf_dead_header)
       case "$SS_LANG" in
         ja-JP) echo "🧟 死んでいる（起動する実行ファイルがもう存在しない）:" ;;
         zh-TW) echo "🧟 死的（要啟動的程式已經不存在）：" ;;
+        zh-Hans) echo "🧟 死的（要启动的程序已不存在）：" ;;
+        ko-KR) echo "🧟 죽음(실행할 프로그램이 더 이상 없음):" ;;
+        es-ES) echo "🧟 Muertos (el programa que lanzan ya no existe):" ;;
+        de-DE) echo "🧟 Tot (das Programm, das sie starten, existiert nicht mehr):" ;;
+        fr-FR) echo "🧟 Morts (le programme qu'ils lancent n'existe plus) :" ;;
+        pt-BR) echo "🧟 Mortos (o programa que eles iniciam não existe mais):" ;;
         *)     echo "🧟 Dead (the program they launch no longer exists):" ;;
       esac ;;
     lf_review_header)
       case "$SS_LANG" in
         ja-JP) echo "⚠️ 孤児の可能性（存在しないアプリを参照 — 要確認）:" ;;
         zh-TW) echo "⚠️ 可能孤兒（指向一個已不存在的 app——請自行確認）：" ;;
+        zh-Hans) echo "⚠️ 疑似孤儿（指向一个已不存在的 App——请自行确认）：" ;;
+        ko-KR) echo "⚠️ 고아로 추정(사라진 앱을 참조 — 직접 확인 필요):" ;;
+        es-ES) echo "⚠️ Probables huérfanos (referencian una app que ya no está — revísalos):" ;;
+        de-DE) echo "⚠️ Wahrscheinlich verwaist (sie verweisen auf eine App, die weg ist — prüfen):" ;;
+        fr-FR) echo "⚠️ Probablement orphelins (ils référencent une app disparue — à vérifier) :" ;;
+        pt-BR) echo "⚠️ Prováveis órfãos (referenciam um app que se foi — revise):" ;;
         *)     echo "⚠️ Likely orphans (they reference an app that's gone — review):" ;;
       esac ;;
     lf_kept)   # {n}
       case "$SS_LANG" in
         ja-JP) echo "✅ 稼働中の起動項目 {n} 件はそのまま（実行ファイルが存在 — 削除しません）。" ;;
         zh-TW) echo "✅ 另有 {n} 個還在用的項目原封不動（程式還在＝不是垃圾，別動它）。" ;;
+        zh-Hans) echo "✅ 另有 {n} 个仍在用的项目原封不动（程序还在＝不是垃圾，别动它）。" ;;
+        ko-KR) echo "✅ 아직 살아 있는 항목 {n}개는 그대로 두었습니다(프로그램이 존재 = 쓰레기가 아님)." ;;
+        es-ES) echo "✅ {n} ítem(s) vivos quedaron intactos — su programa aún existe (no es basura)." ;;
+        de-DE) echo "✅ {n} lebende Einträge blieben unberührt — ihr Programm existiert noch (kein Müll)." ;;
+        fr-FR) echo "✅ {n} élément(s) vivants laissés intacts — leur programme existe encore (pas des déchets)." ;;
+        pt-BR) echo "✅ {n} item(ns) vivos ficaram intactos — o programa deles ainda existe (não é lixo)." ;;
         *)     echo "✅ Kept {n} live item(s) untouched — their program still exists (not junk)." ;;
       esac ;;
     lf_clean)
       case "$SS_LANG" in
         ja-JP) echo "✅ 残骸はありません — すべての起動項目が実在するものを指しています。" ;;
         zh-TW) echo "✅ 沒有孤兒殘骸——每個開機項目都指向真實存在的東西。" ;;
+        zh-Hans) echo "✅ 没有孤儿残留——每个启动项都指向真实存在的东西。" ;;
+        ko-KR) echo "✅ 잔재 없음 — 모든 시작 항목이 실제로 존재하는 대상을 가리킵니다." ;;
+        es-ES) echo "✅ Sin restos — cada ítem de arranque apunta a algo real." ;;
+        de-DE) echo "✅ Keine Überbleibsel — jeder Starteintrag zeigt auf etwas Echtes." ;;
+        fr-FR) echo "✅ Aucun reste — chaque élément de démarrage pointe vers quelque chose de réel." ;;
+        pt-BR) echo "✅ Sem sobras — todo item de início aponta para algo real." ;;
         *)     echo "✅ No leftovers — every startup item points to something real." ;;
       esac ;;
     lf_dry_note)
       case "$SS_LANG" in
         ja-JP) echo "🧪 プレビュー — 何も移動していません。--dry-run なしで実行すると削除できます。" ;;
         zh-TW) echo "🧪 預覽——什麼都沒動。拿掉 --dry-run 再執行才會清。" ;;
+        zh-Hans) echo "🧪 预览——什么都没动。去掉 --dry-run 再运行才会清理。" ;;
+        ko-KR) echo "🧪 미리보기 — 아무것도 옮기지 않았습니다. 정리하려면 --dry-run 없이 실행하세요." ;;
+        es-ES) echo "🧪 vista previa — no se movió nada. Ejecuta sin --dry-run para limpiar." ;;
+        de-DE) echo "🧪 Vorschau — nichts wurde bewegt. Ohne --dry-run ausführen, um aufzuräumen." ;;
+        fr-FR) echo "🧪 aperçu — rien n'a bougé. Relancez sans --dry-run pour nettoyer." ;;
+        pt-BR) echo "🧪 prévia — nada foi movido. Execute sem --dry-run para limpar." ;;
         *)     echo "🧪 preview — nothing moved. Run without --dry-run to clean." ;;
       esac ;;
     lf_confirm)
       case "$SS_LANG" in
         ja-JP) echo "ゴミ箱へ移動: [yes＝死んでいるもののみ ／ all＝孤児候補も含む ／ それ以外でキャンセル]: " ;;
         zh-TW) echo "移到垃圾桶：[yes＝只清死的 ／ all＝連可能孤兒一起 ／ 其他則取消]：" ;;
+        zh-Hans) echo "移到废纸篓：[yes＝只清死的 ／ all＝连疑似孤儿一起 ／ 其他则取消]：" ;;
+        ko-KR) echo "휴지통으로 이동: [yes = 죽은 것만 · all = 고아 추정 포함 · 다른 입력은 취소]: " ;;
+        es-ES) echo "Mover a la Papelera: [yes = solo muertos · all = incluye probables huérfanos · otra cosa cancela]: " ;;
+        de-DE) echo "In den Papierkorb: [yes = nur tote · all = auch wahrscheinlich verwaiste · alles andere bricht ab]: " ;;
+        fr-FR) echo "Vers la Corbeille : [yes = morts seulement · all = orphelins probables inclus · autre saisie annule] : " ;;
+        pt-BR) echo "Mover para a Lixeira: [yes = só os mortos · all = inclui prováveis órfãos · outra coisa cancela]: " ;;
         *)     echo "Move to Trash: [yes = dead only · all = include likely-orphans · anything else cancels]: " ;;
       esac ;;
     lf_done)   # {n}
       case "$SS_LANG" in
         ja-JP) echo "✅ 残骸 {n} 件をゴミ箱へ移動。完全に反映されるのは次回ログイン／再起動後です。元に戻す: sheersweep restore" ;;
         zh-TW) echo "✅ 已把 {n} 個殘骸移到垃圾桶。下次登入／重開機後完全生效。想還原打：sheersweep restore" ;;
+        zh-Hans) echo "✅ 已把 {n} 个残留移到废纸篓。下次登录／重启后完全生效。想还原：sheersweep restore" ;;
+        ko-KR) echo "✅ 잔재 {n}개를 휴지통으로 옮겼습니다. 다음 로그인/재시동 후 완전히 적용됩니다. 되돌리기: sheersweep restore" ;;
+        es-ES) echo "✅ {n} resto(s) movidos a la Papelera. Surte efecto pleno tras el próximo inicio de sesión/reinicio. Deshacer: sheersweep restore" ;;
+        de-DE) echo "✅ {n} Überbleibsel in den Papierkorb gelegt. Voll wirksam nach dem nächsten Login/Neustart. Rückgängig: sheersweep restore" ;;
+        fr-FR) echo "✅ {n} reste(s) déplacé(s) vers la Corbeille. Pleinement effectif après la prochaine connexion/redémarrage. Annuler : sheersweep restore" ;;
+        pt-BR) echo "✅ {n} sobra(s) movida(s) para a Lixeira. Vale plenamente após o próximo login/reinício. Desfazer: sheersweep restore" ;;
         *)     echo "✅ Moved {n} leftover(s) to Trash. Fully takes effect after the next login/restart. Undo: sheersweep restore" ;;
       esac ;;
   esac
@@ -564,8 +1004,9 @@ CLI ツールの棚卸し（読み取り専用）
   Dropbox / クラウド同期フォルダ、画面収録、メール / メッセージ / キーチェーン、
   あらゆる git リポジトリ、あらゆる Obsidian vault。
 
-言語: SHEERSWEEP_LANG=en-US|ja-JP|zh-TW で上書き可。
+言語: SHEERSWEEP_LANG=en-US|ja-JP|zh-TW|zh-Hans|ko-KR|es-ES|de-DE|fr-FR|pt-BR で上書き可。
 全アカウントの掃除には管理者権限が必要なため sudo で再実行します（パスワードは一度）。
+--version / --help / tools には不要です。
 EOF
       ;;
     zh-TW) cat <<'EOF'
@@ -628,8 +1069,442 @@ CLI 工具盤點（唯讀）
   Dropbox / 雲端同步資料夾、螢幕錄影、Mail / Messages / 鑰匙圈、
   任何 git repo、任何 Obsidian vault。
 
-語言：可用 SHEERSWEEP_LANG=en-US|ja-JP|zh-TW 覆寫。
+語言：可用 SHEERSWEEP_LANG=en-US|ja-JP|zh-TW|zh-Hans|ko-KR|es-ES|de-DE|fr-FR|pt-BR 覆寫。
 清掃所有帳號需要管理員權限，因此會以 sudo 重新執行（只問一次密碼）。
+--version / --help / tools 則不需要。
+EOF
+      ;;
+    zh-Hans) cat <<'EOF'
+sheersweep — 你能读懂的 Mac 清理工具。
+
+用法
+  sheersweep [--dry-run]
+  sheersweep uninstall [App] [--dry-run]
+  sheersweep tools
+  sheersweep restore [--list]
+  sheersweep leftovers [--dry-run]
+  sheersweep --version | --help
+
+它做什么
+  • 对 /Users 下的 每一个 账户（现有与未来）：
+      Library/Caches、Library/Logs、~/.cache、~/.npm、
+      Xcode DerivedData / DeviceSupport、CoreSimulator 缓存、
+      Cargo/Gradle 缓存、残留的 Adobe 缓存/支持文件。
+  • 系统层（一次）：/Library/Caches、/.adobeTemp、`brew cleanup`。
+  • 释放本机 APFS（时间机器）快照——这是释放的空间真正回来的一步
+    （只删文件的话，快照仍占着空间就不会归还）。
+
+卸载一个 App（明确 opt-in 的危险操作）
+  sheersweep uninstall <App>
+  用 bundle id（不靠模糊文件名）跨「每一个账户」找出属于这个 App 的全部内容，
+  列出清单与大小，等你输入 App 名称确认后，把每一项移到「它所属账户的
+  废纸篓」（不是 rm，可恢复）。空间要等清空废纸篓才真正回来。--dry-run 只预览。
+  默认清理（不带子命令）「绝不碰真实文件」的承诺完全不变。
+  厂商嵌套的数据（如 Chrome 的 Google/Chrome）也用内置目录一并收走。
+  共用厂商文件夹（Google/＝下面还有 Google 云端硬盘的 DriveFS）绝不碰。
+  就算 App 本体已先被删掉，只要在目录里，照样能清掉它残留的数据。
+  CLI 工具用同一个动词：Homebrew formula 委托给 brew 自己——先确认没有东西
+  依赖它，把要执行的 `brew uninstall` 命令一字不差打印给你看，输入名称才执行
+  （还原＝brew install）。手动装的裸二进制文件（~/bin、~/.local/bin、
+  /usr/local/bin）则和 App 一样移到废纸篓。
+
+CLI 工具盘点（只读）
+  sheersweep tools            把这台 Mac 的 CLI 侧收成一张清单：你自己装的
+                              Homebrew formula（含大小）、孤儿依赖、无管理器
+                              认领的二进制文件、大型 toolchain 数据目录——每项
+                              附上它自己的移除方式。什么都不动、不用密码。
+
+还原上一次卸载
+  sheersweep restore          把上一次卸载从废纸篓放回原处
+  sheersweep restore --list   列出历次卸载记录
+
+清理孤儿残留（已删除 App 留下的启动项目）
+  sheersweep leftovers        找出孤儿化的 LaunchAgents/Daemons：把「死的」与
+                              「疑似孤儿」分开列出，还在用的项目绝不碰。确认后
+                              移到废纸篓（可用 restore 还原）。--dry-run 只预览。
+
+选项
+  --dry-run   列出每项会释放多少。不删除任何内容。
+  --version   打印版本后退出。
+  --help      显示本帮助后退出。
+
+🔴 绝不碰（这个脚本没有任何一行碰得到）
+  照片 / 文稿 / 桌面 / 影片 / 音乐、Clip Studio (CELSYS)、
+  App 的 Containers 与 Application Support（已卸载的 Adobe 除外）、
+  Dropbox / 云同步文件夹、屏幕录制、邮件 / 信息 / 钥匙串、
+  任何 git 仓库、任何 Obsidian 仓库。
+
+语言：可用 SHEERSWEEP_LANG=en-US|ja-JP|zh-TW|zh-Hans|ko-KR|es-ES|de-DE|fr-FR|pt-BR|zh-Hans|ko-KR|es-ES|de-DE|fr-FR|pt-BR 覆盖。
+清扫所有账户需要管理员权限，因此会以 sudo 重新运行（只问一次密码）。
+--version / --help / tools 则不需要。
+EOF
+      ;;
+    ko-KR) cat <<'EOF'
+sheersweep — 읽을 수 있는 Mac 클리너.
+
+사용법
+  sheersweep [--dry-run]
+  sheersweep uninstall [App] [--dry-run]
+  sheersweep tools
+  sheersweep restore [--list]
+  sheersweep leftovers [--dry-run]
+  sheersweep --version | --help
+
+하는 일
+  • /Users 아래 모든 계정(현재와 미래)에 대해:
+      Library/Caches, Library/Logs, ~/.cache, ~/.npm,
+      Xcode DerivedData / DeviceSupport, CoreSimulator 캐시,
+      Cargo/Gradle 캐시, 남은 Adobe 캐시/지원 파일.
+  • 시스템 전체(한 번): /Library/Caches, /.adobeTemp, `brew cleanup`.
+  • 로컬 APFS(타임머신) 스냅샷 해제 — 비운 공간이 실제로 돌아오는
+    유일한 단계(파일만 지우면 스냅샷이 공간을 계속 붙듭니다).
+
+앱 제거(옵트인, 본질적으로 위험한 작업)
+  sheersweep uninstall <App>
+  이 앱에 속한 모든 것을 bundle id로(모호한 이름이 아니라) 모든 계정에 걸쳐
+  찾아내 목록과 크기를 보여 주고, 앱 이름 입력을 기다립니다. 확인 후 각 항목을
+  「소유한 계정의 휴지통」으로 옮깁니다(rm이 아니라 = 복원 가능). 공간은
+  휴지통을 비워야 돌아옵니다. --dry-run은 미리보기만 합니다.
+  기본 청소(하위 명령 없음)의 「실제 파일은 건드리지 않는다」는 약속은 그대로입니다.
+  벤더 중첩 데이터(Chrome의 Google/Chrome 등)도 내장 카탈로그로 수거합니다.
+  공유 벤더 폴더(Google/ = Google Drive의 DriveFS 동거)는 절대 건드리지 않습니다.
+  본체를 먼저 지웠더라도 카탈로그에 있는 앱이면 남은 데이터를 정리할 수 있습니다.
+  CLI 도구도 같은 동사로: Homebrew formula는 brew 자신에게 위임 — 의존하는
+  것이 없는지 확인하고, 실행할 `brew uninstall` 명령을 그대로 보여 준 뒤
+  이름을 입력해야 실행합니다(복원 = brew install). 직접 설치한 바이너리
+  (~/bin, ~/.local/bin, /usr/local/bin)는 앱처럼 휴지통으로.
+
+CLI 도구 목록(읽기 전용)
+  sheersweep tools            이 Mac의 CLI 쪽을 한 화면에: 직접 설치한 Homebrew
+                              formula(크기 포함), 고아 의존성, 관리자 없는
+                              바이너리, 큰 툴체인 데이터 — 각각 고유의 제거
+                              방법과 함께. 아무것도 바꾸지 않고 암호도 필요 없습니다.
+
+마지막 제거 되돌리기
+  sheersweep restore          마지막 제거를 휴지통에서 원래 자리로
+  sheersweep restore --list   지난 제거 기록 보기
+
+잔재 정리(삭제된 앱이 남긴 시작 항목)
+  sheersweep leftovers        고아가 된 LaunchAgents/Daemons를 찾습니다. 「죽은 것」과
+                              「고아 추정」을 나눠 보여 주고, 살아 있는 항목은 절대
+                              건드리지 않습니다. 확인 후 휴지통으로(restore로 복원
+                              가능). --dry-run은 미리보기만.
+
+옵션
+  --dry-run   각 항목이 얼마나 비울지 표시. 아무것도 삭제하지 않음.
+  --version   버전을 출력하고 종료.
+  --help      이 도움말을 표시하고 종료.
+
+🔴 절대 건드리지 않음(이 스크립트의 어떤 줄도 닿을 수 없음)
+  사진 / 문서 / 데스크탑 / 동영상 / 음악, Clip Studio (CELSYS),
+  앱의 Containers 및 Application Support(이미 제거된 Adobe 제외),
+  Dropbox / 클라우드 동기화 폴더, 화면 기록, Mail / 메시지 / 키체인,
+  모든 git 저장소, 모든 Obsidian 보관함.
+
+언어: SHEERSWEEP_LANG=en-US|ja-JP|zh-TW|zh-Hans|ko-KR|es-ES|de-DE|fr-FR|pt-BR|zh-Hans|ko-KR|es-ES|de-DE|fr-FR|pt-BR 로 덮어쓸 수 있습니다.
+모든 계정을 청소하려면 관리자 권한이 필요해 sudo로 다시 실행합니다(암호는 한 번).
+--version / --help / tools 에는 필요 없습니다.
+EOF
+      ;;
+    es-ES) cat <<'EOF'
+sheersweep — el limpiador de Mac que puedes leer.
+
+USO
+  sheersweep [--dry-run]
+  sheersweep uninstall [App] [--dry-run]
+  sheersweep tools
+  sheersweep restore [--list]
+  sheersweep leftovers [--dry-run]
+  sheersweep --version | --help
+
+QUÉ HACE
+  • Para CADA cuenta bajo /Users (actuales y futuras):
+      Library/Caches, Library/Logs, ~/.cache, ~/.npm,
+      Xcode DerivedData / DeviceSupport, cachés de CoreSimulator,
+      cachés de Cargo/Gradle, restos de cachés/soporte de Adobe.
+  • A nivel de sistema, una vez: /Library/Caches, /.adobeTemp, `brew cleanup`.
+  • Libera las instantáneas locales de APFS (Time Machine) — el paso que de
+    verdad devuelve el espacio (borrar archivos no basta si una instantánea
+    los retiene).
+
+DESINSTALAR UNA APP (opt-in, peligroso por naturaleza)
+  sheersweep uninstall <App>
+  Encuentra todo lo que pertenece a una app — en TODAS las cuentas — por su
+  bundle id, nunca por un nombre difuso. Muestra la lista completa con tamaños
+  y espera a que escribas el nombre de la app. Al confirmar, MUEVE cada ítem
+  (nunca rm) a la Papelera de la cuenta dueña, así es recuperable; vaciar la
+  Papelera es lo que de verdad recupera el espacio. --dry-run solo previsualiza.
+  La promesa del barrido por defecto de «no tocar tus archivos reales» no cambia.
+  Los datos anidados por proveedor (p. ej. Google/Chrome) se alcanzan con un
+  catálogo integrado; una carpeta compartida de proveedor (Google/ — que también
+  guarda DriveFS de Google Drive) se rechaza siempre. Funciona incluso si la
+  .app ya fue borrada, si está en el catálogo — aún limpia los datos que dejó.
+  Las herramientas CLI usan el mismo verbo: una formula de Homebrew se DELEGA
+  a brew — sheersweep comprueba que nada instalado dependa de ella, imprime el
+  comando `brew uninstall` exacto y lo ejecuta solo cuando escribes el nombre
+  (restaurar = brew install). Un binario instalado a mano (~/bin, ~/.local/bin,
+  /usr/local/bin) va a la Papelera como una app.
+
+VER TUS HERRAMIENTAS CLI (solo lectura)
+  sheersweep tools            Una lista del lado CLI de este Mac: las formulas
+                              de Homebrew que TÚ elegiste (con tamaños),
+                              dependencias huérfanas, binarios sin gestor y las
+                              grandes carpetas de datos de toolchains — cada una
+                              con su método nativo de eliminación. No cambia
+                              nada; nunca pide contraseña.
+
+DESHACER LA ÚLTIMA DESINSTALACIÓN
+  sheersweep restore          devuelve la última desinstalación desde la Papelera
+  sheersweep restore --list   muestra tus desinstalaciones pasadas
+
+LIMPIAR RESTOS (ítems de arranque de apps que ya no están)
+  sheersweep leftovers        Busca LaunchAgents/Daemons huérfanos. Separa los
+                              «muertos» de los «probables huérfanos» y nunca toca
+                              un ítem vivo (un actualizador que funciona no es
+                              basura). Mueve los elegidos a la Papelera (deshaz
+                              con restore). --dry-run solo previsualiza.
+
+OPCIONES
+  --dry-run   Lista cuánto liberaría cada ítem. No borra nada.
+  --version   Imprime la versión y sale.
+  --help      Muestra esta ayuda y sale.
+
+🔴 NUNCA SE TOCA (ninguna línea de este script puede alcanzarlo)
+  Fotos / Documentos / Escritorio / Películas / Música, Clip Studio (CELSYS),
+  Containers y Application Support de las apps (salvo Adobe ya desinstalado),
+  Dropbox / carpetas de sincronización en la nube, grabaciones de pantalla,
+  Mail / Mensajes / Llaveros, cualquier repo git, cualquier bóveda de Obsidian.
+
+IDIOMA: fuérzalo con SHEERSWEEP_LANG=en-US|ja-JP|zh-TW|zh-Hans|ko-KR|es-ES|de-DE|fr-FR|pt-BR|zh-Hans|ko-KR|es-ES|de-DE|fr-FR|pt-BR.
+Limpiar todas las cuentas requiere permisos de administrador, así que sheersweep
+se relanza con sudo (una sola contraseña). --version / --help / tools nunca la piden.
+EOF
+      ;;
+    de-DE) cat <<'EOF'
+sheersweep — der Mac-Reiniger, den du lesen kannst.
+
+AUFRUF
+  sheersweep [--dry-run]
+  sheersweep uninstall [App] [--dry-run]
+  sheersweep tools
+  sheersweep restore [--list]
+  sheersweep leftovers [--dry-run]
+  sheersweep --version | --help
+
+WAS ES TUT
+  • Für JEDES Konto unter /Users (jetzige und künftige):
+      Library/Caches, Library/Logs, ~/.cache, ~/.npm,
+      Xcode DerivedData / DeviceSupport, CoreSimulator-Caches,
+      Cargo/Gradle-Caches, zurückgelassene Adobe-Caches/-Supportdateien.
+  • Systemweit, einmal: /Library/Caches, /.adobeTemp, `brew cleanup`.
+  • Gibt lokale APFS-(Time-Machine-)Schnappschüsse frei — der Schritt, der den
+    Platz wirklich zurückbringt (Dateien löschen reicht nicht, solange ein
+    Schnappschuss sie festhält).
+
+EINE APP DEINSTALLIEREN (Opt-in, von Natur aus gefährlich)
+  sheersweep uninstall <App>
+  Findet alles, was zu einer App gehört — über ALLE Konten — anhand ihrer
+  Bundle-ID, nie über einen unscharfen Namen. Zeigt die volle Liste mit Größen
+  und wartet, bis du den App-Namen tippst. Nach Bestätigung wird jedes Objekt
+  in den Papierkorb des besitzenden Kontos VERSCHOBEN (nie rm) — also
+  wiederherstellbar; erst das Leeren des Papierkorbs holt den Platz zurück.
+  --dry-run zeigt nur die Vorschau. Das Versprechen des Standard-Laufs, echte
+  Dateien nie anzurühren, bleibt unverändert.
+  Vendor-verschachtelte Daten (z. B. Chromes Google/Chrome) erreicht ein
+  eingebauter Katalog; ein geteilter Vendor-Ordner (Google/ — dort wohnt auch
+  DriveFS von Google Drive) wird immer verweigert. Funktioniert auch, wenn die
+  .app schon gelöscht wurde, solange sie im Katalog steht.
+  CLI-Tools nutzen dasselbe Verb: eine Homebrew-Formula wird an brew selbst
+  DELEGIERT — sheersweep prüft, dass nichts Installiertes von ihr abhängt,
+  druckt den exakten `brew uninstall`-Befehl und führt ihn erst aus, wenn du
+  den Namen tippst (Wiederherstellen = brew install). Ein von Hand
+  installiertes Binary (~/bin, ~/.local/bin, /usr/local/bin) wandert wie eine
+  App in den Papierkorb.
+
+DEINE CLI-TOOLS SEHEN (nur lesend)
+  sheersweep tools            Eine Liste für die CLI-Seite dieses Macs: die
+                              Homebrew-Formulas, die DU gewählt hast (mit
+                              Größen), verwaiste Abhängigkeiten, Binaries ohne
+                              Verwalter und die großen Toolchain-Datenordner —
+                              jede mit ihrer nativen Entfernmethode. Ändert
+                              nichts und fragt nie nach einem Passwort.
+
+DIE LETZTE DEINSTALLATION RÜCKGÄNGIG MACHEN
+  sheersweep restore          legt die letzte Deinstallation aus dem Papierkorb zurück
+  sheersweep restore --list   zeigt vergangene Deinstallationen
+
+ÜBERBLEIBSEL AUFRÄUMEN (Starteinträge verschwundener Apps)
+  sheersweep leftovers        Findet verwaiste LaunchAgents/Daemons. Zeigt tote
+                              und wahrscheinlich verwaiste getrennt und rührt
+                              lebende Einträge nie an (ein funktionierender
+                              Updater ist kein Müll). Verschiebt die gewählten
+                              in den Papierkorb (rückgängig mit restore).
+                              --dry-run zeigt nur die Vorschau.
+
+OPTIONEN
+  --dry-run   Zeigt, wie viel jedes Objekt freigeben WÜRDE. Löscht nichts.
+  --version   Gibt die Version aus und beendet.
+  --help      Zeigt diese Hilfe und beendet.
+
+🔴 NIE ANGERÜHRT (keine Zeile dieses Skripts kommt dort hin)
+  Fotos / Dokumente / Schreibtisch / Filme / Musik, Clip Studio (CELSYS),
+  Containers & Application Support der Apps (außer bereits deinstalliertem Adobe),
+  Dropbox / Cloud-Sync-Ordner, Bildschirmaufnahmen, Mail / Nachrichten /
+  Schlüsselbunde, jedes Git-Repo, jeder Obsidian-Vault.
+
+SPRACHE: überschreibbar mit SHEERSWEEP_LANG=en-US|ja-JP|zh-TW|zh-Hans|ko-KR|es-ES|de-DE|fr-FR|pt-BR|zh-Hans|ko-KR|es-ES|de-DE|fr-FR|pt-BR.
+Alle Konten zu reinigen braucht Administratorrechte, darum startet sheersweep
+sich mit sudo neu (eine Passwortabfrage). --version / --help / tools nie.
+EOF
+      ;;
+    fr-FR) cat <<'EOF'
+sheersweep — le nettoyeur Mac que vous pouvez lire.
+
+USAGE
+  sheersweep [--dry-run]
+  sheersweep uninstall [App] [--dry-run]
+  sheersweep tools
+  sheersweep restore [--list]
+  sheersweep leftovers [--dry-run]
+  sheersweep --version | --help
+
+CE QU'IL FAIT
+  • Pour CHAQUE compte sous /Users (actuels et futurs) :
+      Library/Caches, Library/Logs, ~/.cache, ~/.npm,
+      Xcode DerivedData / DeviceSupport, caches CoreSimulator,
+      caches Cargo/Gradle, restes de caches/support Adobe.
+  • Au niveau système, une fois : /Library/Caches, /.adobeTemp, `brew cleanup`.
+  • Libère les instantanés locaux APFS (Time Machine) — l'étape qui rend
+    vraiment l'espace (supprimer des fichiers ne suffit pas si un instantané
+    les retient).
+
+DÉSINSTALLER UNE APP (opt-in, dangereux par nature)
+  sheersweep uninstall <App>
+  Trouve tout ce qui appartient à une app — sur TOUS les comptes — par son
+  bundle id, jamais par un nom flou. Affiche la liste complète avec les
+  tailles, puis attend que vous tapiez le nom de l'app. À la confirmation,
+  chaque élément est DÉPLACÉ (jamais rm) vers la Corbeille du compte
+  propriétaire — donc récupérable ; vider la Corbeille est ce qui rend vraiment
+  l'espace. --dry-run ne fait qu'un aperçu. La promesse du nettoyage par défaut
+  de « ne jamais toucher vos vrais fichiers » reste inchangée.
+  Les données imbriquées par éditeur (p. ex. Google/Chrome) sont atteintes via
+  un catalogue intégré ; un dossier d'éditeur partagé (Google/ — qui héberge
+  aussi DriveFS de Google Drive) est toujours refusé. Fonctionne même si la
+  .app a déjà été supprimée, tant qu'elle est au catalogue.
+  Les outils CLI utilisent le même verbe : une formula Homebrew est DÉLÉGUÉE à
+  brew lui-même — sheersweep vérifie que rien d'installé n'en dépend, imprime
+  la commande `brew uninstall` exacte et ne l'exécute que lorsque vous tapez le
+  nom (restaurer = brew install). Un binaire installé à la main (~/bin,
+  ~/.local/bin, /usr/local/bin) part à la Corbeille comme une app.
+
+VOIR VOS OUTILS CLI (lecture seule)
+  sheersweep tools            Une liste pour le côté CLI de ce Mac : les
+                              formulas Homebrew que VOUS avez choisies (avec
+                              tailles), les dépendances orphelines, les binaires
+                              sans gestionnaire et les gros dossiers de données
+                              de toolchains — chacun avec sa méthode native de
+                              suppression. Ne change rien ; ne demande jamais
+                              de mot de passe.
+
+ANNULER LA DERNIÈRE DÉSINSTALLATION
+  sheersweep restore          remet la dernière désinstallation depuis la Corbeille
+  sheersweep restore --list   affiche les désinstallations passées
+
+NETTOYER LES RESTES (éléments de démarrage d'apps disparues)
+  sheersweep leftovers        Trouve les LaunchAgents/Daemons orphelins. Sépare
+                              les « morts » des « probablement orphelins » et ne
+                              touche jamais un élément vivant (un updater qui
+                              fonctionne n'est pas un déchet). Déplace les
+                              éléments choisis vers la Corbeille (annulable avec
+                              restore). --dry-run ne fait qu'un aperçu.
+
+OPTIONS
+  --dry-run   Liste combien chaque élément libérerait. Ne supprime rien.
+  --version   Affiche la version et quitte.
+  --help      Affiche cette aide et quitte.
+
+🔴 JAMAIS TOUCHÉ (aucune ligne de ce script ne peut y accéder)
+  Photos / Documents / Bureau / Vidéos / Musique, Clip Studio (CELSYS),
+  Containers & Application Support des apps (sauf Adobe déjà désinstallé),
+  Dropbox / dossiers de synchro cloud, enregistrements d'écran, Mail /
+  Messages / Trousseaux, tout dépôt git, tout coffre Obsidian.
+
+LANGUE : forcez avec SHEERSWEEP_LANG=en-US|ja-JP|zh-TW|zh-Hans|ko-KR|es-ES|de-DE|fr-FR|pt-BR|zh-Hans|ko-KR|es-ES|de-DE|fr-FR|pt-BR.
+Nettoyer tous les comptes demande les droits d'administrateur, donc sheersweep
+se relance avec sudo (un seul mot de passe). --version / --help / tools jamais.
+EOF
+      ;;
+    pt-BR) cat <<'EOF'
+sheersweep — o limpador de Mac que você consegue ler.
+
+USO
+  sheersweep [--dry-run]
+  sheersweep uninstall [App] [--dry-run]
+  sheersweep tools
+  sheersweep restore [--list]
+  sheersweep leftovers [--dry-run]
+  sheersweep --version | --help
+
+O QUE ELE FAZ
+  • Para CADA conta em /Users (atuais e futuras):
+      Library/Caches, Library/Logs, ~/.cache, ~/.npm,
+      Xcode DerivedData / DeviceSupport, caches do CoreSimulator,
+      caches de Cargo/Gradle, restos de caches/suporte da Adobe.
+  • No sistema, uma vez: /Library/Caches, /.adobeTemp, `brew cleanup`.
+  • Libera os instantâneos locais do APFS (Time Machine) — o passo que devolve
+    o espaço de verdade (apagar arquivos não basta se um instantâneo os segura).
+
+DESINSTALAR UM APP (opt-in, perigoso por natureza)
+  sheersweep uninstall <App>
+  Encontra tudo o que pertence a um app — em TODAS as contas — pelo bundle id,
+  nunca por nome vago. Mostra a lista completa com tamanhos e espera você
+  digitar o nome do app. Ao confirmar, MOVE cada item (nunca rm) para a Lixeira
+  da conta dona — recuperável; esvaziar a Lixeira é o que devolve o espaço.
+  --dry-run só mostra a prévia. A promessa da limpeza padrão de nunca tocar
+  seus arquivos de verdade continua intacta.
+  Dados aninhados por fabricante (ex.: Google/Chrome) são alcançados por um
+  catálogo embutido; uma pasta compartilhada de fabricante (Google/ — que
+  também guarda o DriveFS do Google Drive) é sempre recusada. Funciona mesmo
+  se o .app já foi apagado, desde que esteja no catálogo.
+  Ferramentas CLI usam o mesmo verbo: uma formula do Homebrew é DELEGADA ao
+  próprio brew — o sheersweep confere que nada instalado depende dela, imprime
+  o comando `brew uninstall` exato e só o executa quando você digita o nome
+  (restaurar = brew install). Um binário instalado à mão (~/bin, ~/.local/bin,
+  /usr/local/bin) vai para a Lixeira como um app.
+
+VER SUAS FERRAMENTAS CLI (somente leitura)
+  sheersweep tools            Uma lista do lado CLI deste Mac: as formulas do
+                              Homebrew que VOCÊ escolheu (com tamanhos),
+                              dependências órfãs, binários sem gerenciador e as
+                              grandes pastas de dados de toolchains — cada uma
+                              com seu método nativo de remoção. Não muda nada;
+                              nunca pede senha.
+
+DESFAZER A ÚLTIMA DESINSTALAÇÃO
+  sheersweep restore          devolve a última desinstalação da Lixeira
+  sheersweep restore --list   mostra as desinstalações anteriores
+
+LIMPAR SOBRAS (itens de início de apps que se foram)
+  sheersweep leftovers        Acha LaunchAgents/Daemons órfãos. Separa os
+                              "mortos" dos "prováveis órfãos" e nunca toca um
+                              item vivo (um atualizador funcionando não é lixo).
+                              Move os escolhidos para a Lixeira (desfaça com
+                              restore). --dry-run só mostra a prévia.
+
+OPÇÕES
+  --dry-run   Lista quanto cada item liberaria. Não apaga nada.
+  --version   Imprime a versão e sai.
+  --help      Mostra esta ajuda e sai.
+
+🔴 NUNCA TOCADO (nenhuma linha deste script chega lá)
+  Fotos / Documentos / Mesa / Filmes / Música, Clip Studio (CELSYS),
+  Containers & Application Support dos apps (exceto Adobe já desinstalado),
+  Dropbox / pastas de sincronização na nuvem, gravações de tela, Mail /
+  Mensagens / Chaves, qualquer repositório git, qualquer cofre do Obsidian.
+
+IDIOMA: force com SHEERSWEEP_LANG=en-US|ja-JP|zh-TW|zh-Hans|ko-KR|es-ES|de-DE|fr-FR|pt-BR|zh-Hans|ko-KR|es-ES|de-DE|fr-FR|pt-BR.
+Limpar todas as contas exige privilégios de administrador, então o sheersweep se
+reexecuta com sudo (uma senha só). --version / --help / tools nunca pedem.
 EOF
       ;;
     *) cat <<'EOF'
@@ -700,9 +1575,9 @@ OPTIONS
   Dropbox / cloud-sync folders, screen recordings, Mail / Messages / Keychains,
   any git repo, any Obsidian vault.
 
-LANGUAGE: override with SHEERSWEEP_LANG=en-US|ja-JP|zh-TW.
+LANGUAGE: override with SHEERSWEEP_LANG=en-US|ja-JP|zh-TW|zh-Hans|ko-KR|es-ES|de-DE|fr-FR|pt-BR.
 Sweeping all accounts needs admin rights, so sheersweep re-runs itself with
-sudo (one password prompt). --version / --help never need sudo.
+sudo (one password prompt). --version / --help / tools never need sudo.
 EOF
       ;;
   esac

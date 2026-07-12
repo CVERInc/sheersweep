@@ -356,18 +356,27 @@ else
 fi
 teardown
 
-# (i18n) locale resolution: ja and either Traditional-Chinese spelling map through;
-# Simplified Chinese and any other locale fall back to en-US (the stated policy).
-ja="$(SHEERSWEEP_LANG=ja_JP ss_resolve_lang)"
-tw="$(SHEERSWEEP_LANG=zh_TW ss_resolve_lang)"
-hant="$(SHEERSWEEP_LANG=zh-Hant ss_resolve_lang)"
-cn="$(SHEERSWEEP_LANG=zh_CN ss_resolve_lang)"
-fr="$(SHEERSWEEP_LANG=fr_FR ss_resolve_lang)"
-if [ "$ja" = "ja-JP" ] && [ "$tw" = "zh-TW" ] && [ "$hant" = "zh-TW" ] \
-   && [ "$cn" = "en-US" ] && [ "$fr" = "en-US" ]; then
-  pass "locale: ja / zh-Hant / zh-TW resolve; Simplified + others fall back to en-US"
+# (i18n) locale resolution: every supported locale maps through (including both
+# Chinese scripts — Traditional stays zh-TW, Simplified now gets zh-Hans instead
+# of the old English fallback), and an unsupported locale falls back to en-US.
+loc_ok=1
+chk() {   # $1 = input locale  $2 = expected resolution
+  local got; got="$(SHEERSWEEP_LANG=$1 ss_resolve_lang)"
+  [ "$got" = "$2" ] || { loc_ok=0; echo "     $1 → $got (want $2)"; }
+}
+chk ja_JP ja-JP
+chk zh_TW zh-TW;  chk zh-Hant zh-TW;  chk zh_HK zh-TW
+chk zh_CN zh-Hans; chk zh-Hans zh-Hans; chk zh_SG zh-Hans
+chk ko_KR ko-KR
+chk es_ES es-ES;  chk es_MX es-ES
+chk de_DE de-DE;  chk de_AT de-DE
+chk fr_FR fr-FR;  chk fr_CA fr-FR
+chk pt_BR pt-BR;  chk pt_PT pt-BR
+chk it_IT en-US;  chk "" en-US
+if [ "$loc_ok" -eq 1 ]; then
+  pass "locale: all 9 locales resolve (zh_CN → zh-Hans); unsupported falls back to en-US"
 else
-  fail "locale resolution wrong (ja=$ja tw=$tw hant=$hant cn=$cn fr=$fr)"
+  fail "locale resolution wrong"
 fi
 
 # (catalog) Vendor-nested data catalog: Chrome resolves to its PRODUCT subfolders
@@ -425,25 +434,25 @@ else
 fi
 teardown
 
-# (guard) every CLI-branch / tools string key must exist in ALL THREE locales —
-# the i18n rule is tiered (command lines stay raw) but a key that IS localized
-# may never silently fall back for one language, least of all a consent prompt.
+# (guard) EVERY t() key must exist in EVERY supported locale — the key list is
+# extracted from the script itself so a future key can't dodge the check. The
+# i18n rule is tiered (command lines stay raw) but a key that IS localized may
+# never silently fall back for one language, least of all a consent prompt.
 i18n_ok=1
-for key in un_brew_resolved un_brew_deps un_brew_cmd un_brew_config un_brew_confirm \
-           un_brew_done un_brew_orphans un_bin_header un_bin_note un_bin_confirm \
-           tl_banner tl_brew_header tl_nobrew tl_orphans_header tl_orphans_none \
-           tl_bins_header tl_bins_none tl_chains_header tl_hint; do
-  for loc in en-US ja-JP zh-TW; do
+all_keys="$(awk '/^t\(\) \{/,/^\}/' "$SCRIPT" | grep -oE '^    [a-z][a-z_0-9]*\)' | tr -d ' )')"
+n_keys="$(printf '%s\n' "$all_keys" | grep -c .)"
+for key in $all_keys; do
+  for loc in en-US ja-JP zh-TW zh-Hans ko-KR es-ES de-DE fr-FR pt-BR; do
     SS_LANG="$loc"   # read by the sourced t()
     [ -n "$(t "$key")" ] || { i18n_ok=0; echo "     missing: $key ($loc)"; }
   done
 done
 # shellcheck disable=SC2034  # read by the sourced library, not this file
 SS_LANG="en-US"
-if [ "$i18n_ok" -eq 1 ]; then
-  pass "i18n: all CLI/tools keys present in en-US · ja-JP · zh-TW"
+if [ "$i18n_ok" -eq 1 ] && [ "$n_keys" -ge 70 ]; then
+  pass "i18n: all $n_keys t() keys present in all 9 locales"
 else
-  fail "i18n: some CLI/tools keys are missing a locale"
+  fail "i18n: a key is missing a locale (or extraction broke: $n_keys keys)"
 fi
 
 echo "→ func-test done"

@@ -32,8 +32,15 @@ project adheres to [Semantic Versioning](https://semver.org/).
   never deletes a file except by moving it to the Trash — every other
   destructive action is a tool's *own* uninstaller, shown verbatim before it
   runs. (`brew cleanup` in the sweep already worked this way.)
-- **i18n is now tiered**: consent/judgment sentences stay fully localized
-  (en-US · ja-JP · zh-TW — a func-test enforces all three per key); command
+- **Nine languages** — the interface now speaks en-US · ja-JP · zh-TW ·
+  **zh-Hans** · ko-KR · es-ES · de-DE · fr-FR · pt-BR, auto-detected from the
+  system locale. Simplified Chinese resolves to zh-Hans instead of the old
+  English fallback; zh-HK joins zh-TW, zh-SG joins zh-Hans. All languages ship
+  **inside the single script** — a consent prompt must never depend on a
+  download — and a func-test extracts every `t()` key from the script itself
+  and enforces all nine locales per key, so a future string can't silently
+  fall back for one language.
+- **i18n is tiered**: consent/judgment sentences are fully localized; command
   lines, paths, sizes and table rows print raw — that vocabulary *is* the
   interface you copy, run, and search.
 - **Wider functional test coverage** (no behaviour change): `lf_scan`'s

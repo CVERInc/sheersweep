@@ -18,7 +18,7 @@ Open source, no subscription, no surprises.
 ## Why trust it
 
 - **You can read every line.** It's one `bash` script (see `wc -l sheersweep` for
-  the current line count) — more than half is its three-language strings; the logic
+  the current line count) — more than half is its nine-language strings; the logic
   fits on a few screens. sheersweep itself never deletes a file except two easy-to-find
   ways: the sweep's `find … -delete` runs solely on the cache paths listed below, and
   `uninstall` *moves* files to the Trash — it never calls `rm`. Every other
@@ -178,9 +178,12 @@ honest sweep and an explicit, recoverable uninstall — never a single broad
 
 ## Language
 
-The interface speaks **English (en-US), 日本語 (ja-JP), and 繁體中文 (zh-TW)**,
-auto-detected from your system locale (Traditional Chinese only — Simplified falls
-back to English). Force one with:
+The interface speaks **nine languages** — English (en-US), 日本語 (ja-JP),
+繁體中文 (zh-TW), 简体中文 (zh-Hans), 한국어 (ko-KR), Español (es-ES), Deutsch
+(de-DE), Français (fr-FR), and Português do Brasil (pt-BR) — auto-detected from
+your system locale. Consent prompts and judgments are fully localized; command
+lines, paths, and sizes stay raw, because that vocabulary *is* the interface you
+copy, run, and search. Force a language with:
 
 ```bash
 SHEERSWEEP_LANG=ja-JP ./sheersweep --dry-run
