@@ -441,18 +441,22 @@ teardown
 i18n_ok=1
 all_keys="$(awk '/^t\(\) \{/,/^\}/' "$SCRIPT" | grep -oE '^    [a-z][a-z_0-9]*\)' | tr -d ' )')"
 n_keys="$(printf '%s\n' "$all_keys" | grep -c .)"
+# the locale list is extracted from ss_resolve_lang too — a PR that adds a
+# language is enforced automatically, without touching this test.
+all_locs="$(awk '/^ss_resolve_lang\(\) \{/,/^\}/' "$SCRIPT" | grep -oE 'echo "[A-Za-z-]+"' | sed 's/echo //; s/"//g' | sort -u)"
+n_locs="$(printf '%s\n' "$all_locs" | grep -c .)"
 for key in $all_keys; do
-  for loc in en-US ja-JP zh-TW zh-Hans ko-KR es-ES de-DE fr-FR pt-BR; do
+  for loc in $all_locs; do
     SS_LANG="$loc"   # read by the sourced t()
     [ -n "$(t "$key")" ] || { i18n_ok=0; echo "     missing: $key ($loc)"; }
   done
 done
 # shellcheck disable=SC2034  # read by the sourced library, not this file
 SS_LANG="en-US"
-if [ "$i18n_ok" -eq 1 ] && [ "$n_keys" -ge 70 ]; then
-  pass "i18n: all $n_keys t() keys present in all 9 locales"
+if [ "$i18n_ok" -eq 1 ] && [ "$n_keys" -ge 70 ] && [ "$n_locs" -ge 9 ]; then
+  pass "i18n: all $n_keys t() keys present in all $n_locs locales"
 else
-  fail "i18n: a key is missing a locale (or extraction broke: $n_keys keys)"
+  fail "i18n: a key is missing a locale (or extraction broke: $n_keys keys / $n_locs locales)"
 fi
 
 echo "→ func-test done"

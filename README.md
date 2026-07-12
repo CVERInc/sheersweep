@@ -189,6 +189,14 @@ copy, run, and search. Force a language with:
 SHEERSWEEP_LANG=ja-JP ./sheersweep --dry-run
 ```
 
+**Adding a language is a welcome, self-contained PR.** Everything lives inside
+the one script, in three places: one `xx-XX) echo "…" ;;` line per string in
+`t()`, one help heredoc in `print_help`, and one detection line in
+`ss_resolve_lang`. Then run `scripts/test.sh` — it extracts every string key
+*and* every locale from the script itself and points at exactly what's missing,
+so a partial translation can't merge silently. Baseline translations are
+machine-grade; native-speaker refinements are gladly taken.
+
 ## Requirements
 
 **macOS only.** sheersweep is built for macOS and nothing else — it relies on
