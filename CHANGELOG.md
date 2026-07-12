@@ -4,6 +4,20 @@ All notable changes to sheersweep are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.7.2]
+
+### Changed — the orphan scan hides under your reading time
+
+- The picker used to print the app list, *then* announce the scan, then pause
+  for several seconds (maintainer field report: the notice "shouldn't show up
+  late — it should come out with the apps"). The scan now starts **first, in
+  the background**, with the 🔍 notice at the very top — by the time you've
+  browsed the app list, the 🧟 section is usually already waiting. Same scan,
+  same results; the wait just overlaps the seconds you were spending reading
+  anyway. (Results cross the subshell boundary via a temp file of TAB rows —
+  every field is id-shaped, so nothing needs escaping; if `mktemp` fails, the
+  scan simply runs inline as before.)
+
 ## [0.7.1]
 
 v0.7.0's discovery found the residue; v0.7.1 makes it *removable in one pass*.

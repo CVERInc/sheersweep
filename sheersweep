@@ -32,7 +32,7 @@
 #   each with the native way to remove it. Changes nothing; never needs sudo.
 set -u
 
-VERSION="0.7.1"
+VERSION="0.7.2"
 
 # ============================================================================
 # i18n — en-US · ja-JP · zh-TW · zh-Hans · ko-KR · es-ES · de-DE · fr-FR · pt-BR.
@@ -352,15 +352,15 @@ t() {
       esac ;;
     un_orphan_scan)
       case "$SS_LANG" in
-        ja-JP) echo "🔍 削除済みアプリの置き土産を探しています…（数秒かかります）" ;;
-        zh-TW) echo "🔍 正在掃描已移除 App 留下的資料…（需要幾秒）" ;;
-        zh-Hans) echo "🔍 正在扫描已移除 App 留下的数据…（需要几秒）" ;;
-        ko-KR) echo "🔍 제거된 앱이 남긴 데이터를 찾는 중… (몇 초 걸립니다)" ;;
-        es-ES) echo "🔍 buscando datos dejados por apps eliminadas… (unos segundos)" ;;
-        de-DE) echo "🔍 Suche nach Daten entfernter Apps… (ein paar Sekunden)" ;;
-        fr-FR) echo "🔍 recherche des données laissées par des apps supprimées… (quelques secondes)" ;;
-        pt-BR) echo "🔍 procurando dados deixados por apps removidos… (alguns segundos)" ;;
-        *)     echo "🔍 Scanning for data left behind by removed apps… (a few seconds)" ;;
+        ja-JP) echo "🔍 削除済みアプリの置き土産を探しています — 一覧を眺めている間も裏で続行中…" ;;
+        zh-TW) echo "🔍 正在掃描已移除 App 留下的資料——你看清單的同時它在背景繼續跑…" ;;
+        zh-Hans) echo "🔍 正在扫描已移除 App 留下的数据——你看列表的同时它在后台继续跑…" ;;
+        ko-KR) echo "🔍 제거된 앱이 남긴 데이터를 찾는 중 — 목록을 보는 동안 백그라운드에서 계속됩니다…" ;;
+        es-ES) echo "🔍 buscando datos dejados por apps eliminadas — sigue en segundo plano mientras miras la lista…" ;;
+        de-DE) echo "🔍 Suche nach Daten entfernter Apps — läuft im Hintergrund weiter, während du die Liste liest…" ;;
+        fr-FR) echo "🔍 recherche des données laissées par des apps supprimées — continue en arrière-plan pendant que vous lisez la liste…" ;;
+        pt-BR) echo "🔍 procurando dados deixados por apps removidos — continua em segundo plano enquanto você olha a lista…" ;;
+        *)     echo "🔍 Scanning for data left behind by removed apps — keeps running while you browse the list…" ;;
       esac ;;
     un_orphan_header)   # {n}
       case "$SS_LANG" in
@@ -2285,7 +2285,31 @@ orphan_row_id() {   # $1 = picker row number  $2 = app-row count → the orphan 
 # set APP_TARGET (single) or PICK_ORPHANS (multi). Apple/system apps are
 # filtered out. Returns with both unset on cancel / invalid input.
 pick_app() {
-  local apps=() appp base bid n choice m i hint odn
+  local apps=() appp base bid n choice m i hint odn scan_tmp="" scan_pid=""
+  # Kick the orphan scan off FIRST, in the background — it takes seconds, and
+  # the person is about to spend those same seconds reading the app list. By
+  # the time they've browsed it, the 🧟 section is usually ready: the wait
+  # hides under the reading. Results cross the process boundary via a temp
+  # file of TAB rows — every field is id-shaped/size text, so no escaping.
+  t un_orphan_scan
+  scan_tmp="$(mktemp "${TMPDIR:-/tmp}/sheersweep-scan.XXXXXX" 2>/dev/null)" || scan_tmp=""
+  if [ -n "$scan_tmp" ]; then
+    (
+      collect_claims
+      orphan_discover
+      if [ "${#OD_IDS[@]}" -gt 0 ]; then
+        for i in "${!OD_IDS[@]}"; do
+          printf 'M\t%s\t%s\t%s\n' "${OD_IDS[$i]}" "${OD_SIZE[$i]}" "${OD_HINT[$i]}"
+        done
+      fi
+      if [ "${#OD_TIDS[@]}" -gt 0 ]; then
+        for i in "${!OD_TIDS[@]}"; do
+          printf 'T\t%s\t%s\t%s\n' "${OD_TIDS[$i]}" "${OD_TSIZE[$i]}" "${OD_THINT[$i]}"
+        done
+      fi
+    ) > "$scan_tmp" 2>/dev/null &
+    scan_pid=$!
+  fi
   # Scan /Applications and ~/Applications, one folder deep (so apps nested in a
   # subfolder like "CLIP STUDIO 1.5/CLIP STUDIO.app" show up) — but NEVER descend
   # into a .app bundle (its embedded helper .apps aren't separate apps).
@@ -2318,9 +2342,24 @@ pick_app() {
   # ── second section: DISCOVERY — data left behind by apps already removed.
   # Numbered continuously with the apps above; picking one runs the exact same
   # footprint→preview→typed-confirm→Trash→receipt flow, keyed by the bundle id.
-  t un_orphan_scan
-  collect_claims
-  orphan_discover
+  # Join the background scan started at the top; if mktemp failed, scan inline.
+  if [ -n "$scan_tmp" ]; then
+    wait "$scan_pid" 2>/dev/null
+    OD_IDS=(); OD_SIZE=(); OD_HINT=(); OD_TIDS=(); OD_TSIZE=(); OD_THINT=()
+    local tier idv szv hv
+    while IFS=$'\t' read -r tier idv szv hv; do
+      case "$tier" in
+        M) OD_IDS+=("$idv");  OD_SIZE+=("$szv");  OD_HINT+=("$hv") ;;
+        T) OD_TIDS+=("$idv"); OD_TSIZE+=("$szv"); OD_THINT+=("$hv") ;;
+      esac
+    done < "$scan_tmp"
+    rm -f "$scan_tmp"
+    # note: the claim lists live only in that subshell — a single-orphan pick
+    # re-scans claims inside do_uninstall, which is guarded and correct.
+  else
+    collect_claims
+    orphan_discover
+  fi
   odn="${#OD_IDS[@]}"
   if [ "$odn" -gt 0 ]; then
     m="$(t un_orphan_header)"; echo "${m//\{n\}/$odn}"
