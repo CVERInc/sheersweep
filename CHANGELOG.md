@@ -6,6 +6,40 @@ project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [0.6.0]
 
+### Pre-release hardening (multi-agent cold-read review)
+
+- **Fixed: `uninstall <formula>` was dead on Apple Silicon.** After the sudo
+  re-exec, `brew_locate` searched a sanitized PATH and couldn't see
+  `/opt/homebrew/bin`, so every formula reported "no Homebrew." Now probes the
+  two standard prefixes by absolute path first. The sweep's `brew cleanup`
+  shared the same bug (silently skipped on Apple Silicon) and is fixed with it.
+- **Fixed: the never-touch promise was violated for Adobe.** The sweep cleared
+  `Application Support/Adobe` unconditionally — emptying a *live* Adobe install's
+  licensing/settings — despite a comment and docs claiming "only if Adobe was
+  uninstalled." Now gated by an actual "is any Adobe app still installed?" check;
+  it's cleared only when Adobe is truly gone.
+- **Hardened multi-account safety (root-run moves):** `to_trash` now refuses a
+  `.Trash` that is a symlink or is owned by someone other than the home's owner —
+  previously another local account could point its `~/.Trash` at a system dir and
+  make our root-run `mv` write *through* the link, outside their home (reliably
+  triggerable via `leftovers`). `restore` gets the same guard against a symlinked
+  parent.
+- **Consent-screen output injection closed:** cross-account filenames and plist
+  values are now stripped of terminal control bytes (ESC/CSI) before being
+  printed above the typed-confirm prompt, so a crafted name can't erase or forge
+  what you're about to approve. New `vis()` helper; applied in `uninstall`,
+  `leftovers`, and the picker.
+- **AppleScript injection closed:** a crafted `CFBundleIdentifier` is no longer
+  interpolated into the "quit the app" `osascript` — the bid is validated
+  (`[A-Za-z0-9.-]` only) or the best-effort quit is skipped.
+- **Localized the last English-only UI:** `restore --list` row count and the
+  `(restored)` mark now render in all 9 locales (new `rs_list_count` /
+  `rs_restored` keys). Picker: an invalid selection no longer prints a redundant
+  "Cancelled" and now exits non-zero.
+- **Docs made literally true:** the "never deletes except by moving to Trash"
+  line now notes the one `rm` it makes — discarding an empty receipt it wrote
+  itself, never your data.
+
 - New verb: **`sheersweep tools`** — a **read-only** inventory of the CLI side of
   the Mac, the list that never existed anywhere: the Homebrew formulae *you*
   chose (`brew leaves`, with sizes), orphaned dependencies (`brew autoremove`

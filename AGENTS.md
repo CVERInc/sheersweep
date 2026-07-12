@@ -81,8 +81,9 @@ Locale is auto-detected; force it with `SHEERSWEEP_LANG=en-US|ja-JP|zh-TW|zh-Han
 - `sheersweep --help` — the command surface, SSOT. Self-documents every mode.
 - [README.md](README.md) — why-trust-it, scope-on-purpose, the full never-touch rationale.
 - [CHANGELOG.md](CHANGELOG.md) — what changed and why.
-- The `sheersweep` script itself — it's readable end to end; sheersweep itself
-  only deletes via the sweep's `find … -delete` on the listed cache paths, or by
-  *moving* to the Trash (`uninstall`/`leftovers`). Anything else destructive is a
-  tool's own uninstaller (`brew uninstall`, `brew cleanup`), delegated and shown
-  verbatim before it runs.
+- The `sheersweep` script itself — it's readable end to end; it deletes *your*
+  files only via the sweep's `find … -delete` on the listed cache paths, or by
+  *moving* to the Trash (`uninstall`/`leftovers`). The one `rm` it makes is
+  discarding an empty receipt it just wrote itself — never your data. Anything
+  else destructive is a tool's own uninstaller (`brew uninstall`, `brew cleanup`),
+  delegated and shown verbatim before it runs.

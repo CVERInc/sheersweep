@@ -21,9 +21,10 @@
 #   the links; restore = `brew install`) — sheersweep first checks nothing
 #   depends on it, prints the exact command, and runs it only after a typed
 #   confirm. A hand-installed bare binary moves to the Trash like an app.
-#   sheersweep itself never deletes a file except by moving it to the Trash;
+#   sheersweep never deletes a file of YOURS except by moving it to the Trash;
 #   every other destructive action is a tool's OWN uninstaller, shown verbatim
-#   before it runs.
+#   before it runs. (The only rm it makes is discarding an empty receipt file it
+#   just wrote itself — never your data.)
 #
 # TOOLS (`sheersweep tools`) — a read-only inventory of the CLI side of the Mac:
 #   the Homebrew formulae you chose (with sizes), orphaned dependencies,
@@ -838,6 +839,30 @@ t() {
         pt-BR) echo "Desinstalações anteriores (mais recentes primeiro):" ;;
         *)     echo "Past uninstalls (newest first):" ;;
       esac ;;
+    rs_list_count)   # {n}
+      case "$SS_LANG" in
+        ja-JP) echo "{n} 項目" ;;
+        zh-TW) echo "{n} 項" ;;
+        zh-Hans) echo "{n} 项" ;;
+        ko-KR) echo "항목 {n}개" ;;
+        es-ES) echo "{n} elemento(s)" ;;
+        de-DE) echo "{n} Objekt(e)" ;;
+        fr-FR) echo "{n} élément(s)" ;;
+        pt-BR) echo "{n} item(ns)" ;;
+        *)     echo "{n} item(s)" ;;
+      esac ;;
+    rs_restored)
+      case "$SS_LANG" in
+        ja-JP) echo "（復元済み）" ;;
+        zh-TW) echo "（已還原）" ;;
+        zh-Hans) echo "（已还原）" ;;
+        ko-KR) echo " (복원됨)" ;;
+        es-ES) echo " (restaurado)" ;;
+        de-DE) echo " (wiederhergestellt)" ;;
+        fr-FR) echo " (restauré)" ;;
+        pt-BR) echo " (restaurado)" ;;
+        *)     echo " (restored)" ;;
+      esac ;;
 
     # ---- leftovers (orphaned background items from apps that are gone) ----
     lf_header)
@@ -1649,6 +1674,16 @@ fi
 human()  { du -sh "$1" 2>/dev/null | cut -f1; }
 free_kb() { df -k /System/Volumes/Data | awk '/Data$/{print $4}'; }
 
+# Strip terminal control bytes (C0 + DEL) from an untrusted string before it is
+# printed to the consent screen. A macOS filename or plist value may contain any
+# byte but '/' and NUL — including ESC/CSI — and these are printed just above the
+# typed-confirm prompt that the whole tool's safety rests on; without this, a
+# name from another account could erase the "Total:" line or forge reassuring
+# text. Display-only: the real path used for the move is the raw, unsanitized
+# value, so a control byte in a name never changes WHAT is trashed, only how the
+# preview reads. LC_ALL=C so the ranges are bytes, not multibyte-aware.
+vis() { LC_ALL=C tr -d '\000-\037\177'; }
+
 # Clear a directory's CONTENTS (keep the dir). Dry-run only reports the size.
 clean() {
   local p="$1" sz
@@ -1661,6 +1696,19 @@ clean() {
     printf '   %s %6s  %s\n' "$(t freeing)" "$sz" "$p"
     find "$p" -mindepth 1 -delete 2>/dev/null
   fi
+}
+
+# Is any Adobe app still installed? Adobe bundles are all named "Adobe *" in
+# /Applications (Creative Cloud also nests under Utilities). This gates the one
+# sweep path that touches Application Support: with Adobe present, that folder is
+# LIVE data (licensing/settings) — not regenerable junk — so the sweep must leave
+# it. Only when every Adobe app is gone is it the leftover the promise refers to.
+adobe_installed() {
+  local d a
+  for d in "/Applications" "/Applications/Utilities"; do
+    for a in "$d"/Adobe*; do [ -e "$a" ] && return 0; done
+  done
+  return 1
 }
 
 # ============================================================================
@@ -1798,22 +1846,22 @@ pick_app() {
       [ -d "$d" ] && find "$d" -maxdepth 2 -name '*.app' -not -path '*.app/*' -print0 2>/dev/null
     done | sort -z
   )
-  if [ "${#apps[@]}" -eq 0 ]; then t un_pick_none >&2; return 0; fi
+  if [ "${#apps[@]}" -eq 0 ]; then t un_pick_none >&2; return 3; fi
   printf '%s (%d)\n' "$(t un_pick_header)" "${#apps[@]}"   # show the full count → no hidden "next page"
   n=0
   for appp in "${apps[@]}"; do
     n=$((n + 1))
     base="$(basename "$appp")"; base="${base%.app}"
-    printf '  %3d) %s\n' "$n" "$base"
+    printf '  %3d) %s\n' "$n" "$(printf '%s' "$base" | vis)"
   done
   printf '%s' "$(t un_pick_prompt)"
   choice=""; read -r choice || true
   case "$choice" in
-    ''|q|Q)   return 0 ;;
-    *[!0-9]*) t un_pick_invalid >&2; return 0 ;;
+    ''|q|Q)   return 0 ;;                          # clean cancel → caller prints un_cancelled
+    *[!0-9]*) t un_pick_invalid >&2; return 2 ;;    # already messaged → caller must not re-print
   esac
   if [ "$choice" -lt 1 ] || [ "$choice" -gt "${#apps[@]}" ]; then
-    t un_pick_invalid >&2; return 0
+    t un_pick_invalid >&2; return 2
   fi
   APP_TARGET="${apps[$((choice - 1))]}"
 }
@@ -1822,19 +1870,29 @@ pick_app() {
 # Sets TRASH_DEST to the new location on success (empty if nothing moved), so the
 # caller can record a receipt that `restore` later reads to put things back.
 to_trash() {
-  local item="$1" owner_home="$2" tdir base dest stamp i uid gid
+  local item="$1" owner_home="$2" tdir base dest stamp i uid gid towner
   TRASH_DEST=""
   [ -e "$item" ] || return 0
   tdir="$owner_home/.Trash"
-  # Recreate a missing .Trash with the right OWNER and 0700 perms — a Trash owned
-  # by root (or world-readable) is one Finder can't empty and other users can peek
-  # into. Match the home folder's owner; mode mirrors a stock ~/.Trash.
+  uid="$(stat -f %u "$owner_home" 2>/dev/null)"
+  gid="$(stat -f %g "$owner_home" 2>/dev/null)"
+  # SECURITY: we run as root and mv INTO another account's ~/.Trash, which that
+  # account controls. If they replace it with a symlink (→ /Library/LaunchDaemons,
+  # say), a naive mv would follow the link and write our item OUTSIDE their home,
+  # as root. So refuse a .Trash that is a symlink, and refuse an existing real one
+  # not owned by the home's owner. (Residual: a same-account TOCTOU swap between
+  # this check and the mv is a sub-ms race, not the trivial static symlink it was.)
+  if [ -L "$tdir" ]; then return 0; fi
   if [ ! -d "$tdir" ]; then
+    # Recreate a missing .Trash with the right OWNER and 0700 perms — a Trash owned
+    # by root (or world-readable) is one Finder can't empty and other users can peek
+    # into. Match the home folder's owner; mode mirrors a stock ~/.Trash.
     mkdir -p "$tdir" 2>/dev/null || return 0
-    uid="$(stat -f %u "$owner_home" 2>/dev/null)"
-    gid="$(stat -f %g "$owner_home" 2>/dev/null)"
     [ -n "$uid" ] && [ -n "$gid" ] && chown "$uid:$gid" "$tdir" 2>/dev/null
     chmod 700 "$tdir" 2>/dev/null
+  else
+    towner="$(stat -f %u "$tdir" 2>/dev/null)"
+    [ -n "$uid" ] && [ -n "$towner" ] && [ "$towner" != "$uid" ] && return 0
   fi
   base="$(basename "$item")"
   dest="$tdir/$base"
@@ -1961,7 +2019,7 @@ do_uninstall() {
   local i last=""
   for i in "${!ITEM_PATH[@]}"; do
     if [ "${ITEM_SCOPE[$i]}" != "$last" ]; then echo "── ${ITEM_SCOPE[$i]} ──"; last="${ITEM_SCOPE[$i]}"; fi
-    printf '   %6s  %s\n' "$(human "${ITEM_PATH[$i]}")" "${ITEM_PATH[$i]}"
+    printf '   %6s  %s\n' "$(human "${ITEM_PATH[$i]}")" "$(printf '%s' "${ITEM_PATH[$i]}" | vis)"
   done
   local total
   total="$(du -sch "${ITEM_PATH[@]}" 2>/dev/null | tail -1 | cut -f1)"
@@ -1977,9 +2035,17 @@ do_uninstall() {
   local reply=""; read -r reply || true
   if [ "$reply" != "$name" ]; then t un_cancelled; return 0; fi
 
-  # ask the app to quit (best-effort, in the real user's GUI session)
+  # ask the app to quit (best-effort, in the real user's GUI session).
+  # SECURITY: $bid is read from the target's Info.plist — attacker-authored — and
+  # interpolated into an AppleScript string. A crafted CFBundleIdentifier could
+  # break out and run arbitrary AppleScript/shell as REAL_USER. A real bundle id
+  # is only [A-Za-z0-9.-]; if it has anything else, skip the (best-effort) quit
+  # rather than risk injection — the uninstall itself proceeds regardless.
   m="$(t un_quit)"; echo "${m//\{app\}/$name}"
-  sudo -u "$REAL_USER" osascript -e "tell application id \"$bid\" to quit" >/dev/null 2>&1 || true
+  case "$bid" in
+    ""|*[!A-Za-z0-9.-]*) ;;   # empty or unusual → don't feed it to osascript
+    *) sudo -u "$REAL_USER" osascript -e "tell application id \"$bid\" to quit" >/dev/null 2>&1 || true ;;
+  esac
 
   # write a receipt as we move, so `restore` can undo this exact uninstall later.
   # The data rows are NUL-delimited (dest \0 orig \0) so a path containing a TAB
@@ -2313,8 +2379,9 @@ do_restore() {
       app="$(receipt_header "$f" app)"
       date="$(receipt_header "$f" date)"
       local n; n="$(receipt_count "$f")"
-      local mark=""; case "$f" in *.restored) mark=" (restored)" ;; esac
-      printf '   %s   ·   %s   ·   %s item(s)%s\n' "$date" "$app" "$n" "$mark"
+      local mark=""; case "$f" in *.restored) mark="$(t rs_restored)" ;; esac
+      local nrow; nrow="$(t rs_list_count)"; nrow="${nrow//\{n\}/$n}"
+      printf '   %s   ·   %s   ·   %s%s\n' "$date" "$app" "$nrow" "$mark"
     done
     [ "$had" -eq 0 ] && t rs_none
     return 0
@@ -2350,6 +2417,12 @@ do_restore() {
   while IFS= read -r -d '' dest && IFS= read -r -d '' orig; do
     if [ ! -e "$dest" ]; then continue; fi
     if [ -e "$orig" ]; then m="$(t rs_skip)"; echo "   ${m//\{path\}/$orig}"; continue; fi
+    # SECURITY (same class as to_trash): the owner of orig's home could swap its
+    # parent for a symlink after the uninstall, redirecting this root-run mv to
+    # write outside their home. Refuse a symlinked parent rather than follow it.
+    if [ -L "$(dirname "$orig")" ]; then
+      m="$(t rs_fail)"; echo "   ${m//\{path\}/$orig}" >&2; failed=$((failed + 1)); continue
+    fi
     if ! mkdir -p "$(dirname "$orig")" 2>/dev/null; then
       m="$(t rs_fail)"; echo "   ${m//\{path\}/$orig}" >&2; failed=$((failed + 1)); continue
     fi
@@ -2448,13 +2521,13 @@ do_leftovers() {
   if [ "$ndead" -gt 0 ]; then
     echo "------------------------------------------------------------"; t lf_dead_header
     for i in "${!LF_DEAD_PATH[@]}"; do
-      printf '   %s\n        ↳ %s\n' "${LF_DEAD_PATH[$i]}" "${LF_DEAD_INFO[$i]}"
+      printf '   %s\n        ↳ %s\n' "$(printf '%s' "${LF_DEAD_PATH[$i]}" | vis)" "$(printf '%s' "${LF_DEAD_INFO[$i]}" | vis)"
     done
   fi
   if [ "$nrev" -gt 0 ]; then
     echo "------------------------------------------------------------"; t lf_review_header
     for i in "${!LF_REVIEW_PATH[@]}"; do
-      printf '   %s\n        ↳ %s\n' "${LF_REVIEW_PATH[$i]}" "${LF_REVIEW_INFO[$i]}"
+      printf '   %s\n        ↳ %s\n' "$(printf '%s' "${LF_REVIEW_PATH[$i]}" | vis)" "$(printf '%s' "${LF_REVIEW_INFO[$i]}" | vis)"
     done
   fi
   echo "------------------------------------------------------------"
@@ -2521,8 +2594,14 @@ do_leftovers() {
 if [ -n "${SHEERSWEEP_LIB:-}" ]; then return 0 2>/dev/null || exit 0; fi
 
 if [ "$MODE" = "uninstall" ]; then
-  [ -z "$APP_TARGET" ] && pick_app          # no app named → show the picker
-  if [ -z "$APP_TARGET" ]; then t un_cancelled; exit 0; fi
+  if [ -z "$APP_TARGET" ]; then
+    pick_app; pk=$?                          # no app named → show the picker
+    # A non-zero pick already printed its own message (invalid selection / no
+    # apps) — exit with it, don't also print "Cancelled". Only a clean q/blank
+    # cancel (return 0, empty target) gets the un_cancelled line.
+    [ "$pk" -ne 0 ] && exit "$pk"
+    [ -z "$APP_TARGET" ] && { t un_cancelled; exit 0; }
+  fi
   do_uninstall "$APP_TARGET"
   exit $?
 fi
@@ -2546,6 +2625,9 @@ echo "$(t free_before)$(df -h /System/Volumes/Data | awk '/Data$/{print $4}')"
 echo "============================================================"
 
 # ---- per-account safe caches (every real home under /Users) ----
+# Adobe apps live system-wide in /Applications, so resolve "is Adobe gone?" once
+# rather than per account (it gates the Application Support/Adobe clean below).
+adobe_gone=1; adobe_installed && adobe_gone=0
 for home in /Users/*; do
   [ -d "$home/Library" ] || continue
   case "$(basename "$home")" in Shared|Guest) continue ;; esac
@@ -2561,7 +2643,11 @@ for home in /Users/*; do
   clean "$home/Library/Developer/CoreSimulator/Caches"
   clean "$home/.cargo/registry/cache"
   clean "$home/.gradle/caches"
-  clean "$home/Library/Application Support/Adobe"   # only reached if Adobe uninstalled
+  # Application Support/Adobe is LIVE data while Adobe is installed — only clear
+  # it as leftover when every Adobe app is gone. Caches/Adobe is a genuine cache,
+  # always safe. (The old code cleared Application Support unconditionally, with a
+  # comment claiming otherwise — it would empty a working Adobe install's data.)
+  [ "$adobe_gone" -eq 1 ] && clean "$home/Library/Application Support/Adobe"
   clean "$home/Library/Caches/Adobe"
 done
 
@@ -2572,13 +2658,18 @@ clean "/.adobeTemp"
 # Deliberately NOT touching /private/var/folders — it's the live temp area; deleting
 # it while logged in can break running apps.
 
-# Homebrew old versions (brew refuses to run as root → use the real user)
-if sudo -u "$REAL_USER" sh -c 'command -v brew' >/dev/null 2>&1; then
+# Homebrew old versions. Reuse brew_locate/brew_run so this shares the uninstall
+# path's fixes: brew is found by absolute prefix (works on Apple Silicon under the
+# sanitized sudo PATH, where the old `command -v brew` silently found nothing), it
+# runs as the real user (brew refuses root), and HOMEBREW_NO_AUTO_UPDATE=1 keeps
+# even this cleanup off the network.
+brew_locate
+if [ -n "$BREW_BIN" ]; then
   m="$(t brew)"; echo "── ${m//\{user\}/$REAL_USER} ──"
   if [ "$DRY" -eq 1 ]; then
-    sudo -u "$REAL_USER" brew cleanup -n 2>/dev/null | tail -3
+    brew_run cleanup -n 2>/dev/null | tail -3
   else
-    sudo -u "$REAL_USER" brew cleanup 2>/dev/null | tail -3
+    brew_run cleanup 2>/dev/null | tail -3
   fi
 fi
 

@@ -411,6 +411,33 @@ else
   fail "extra_is_safe guard wrong — a vendor root was not refused (DriveFS at risk)"
 fi
 
+# (security) to_trash must REFUSE a .Trash that is a symlink — otherwise a hostile
+# account could point its own ~/.Trash at a system dir and make our root-run mv
+# write THROUGH the link outside their home. The item must stay put, TRASH_DEST empty.
+setup
+HOME_OWNER="$SBX/home"; mkdir -p "$HOME_OWNER" "$SBX/evil-target"
+ln -s "$SBX/evil-target" "$HOME_OWNER/.Trash"        # .Trash → attacker-chosen dir
+echo x > "$SBX/item"
+to_trash "$SBX/item" "$HOME_OWNER"
+if [ -z "$TRASH_DEST" ] && [ ! -e "$SBX/evil-target/item" ] && [ -e "$SBX/item" ]; then
+  pass "to_trash refuses a symlinked .Trash (no write through the link)"
+else
+  fail "to_trash followed a symlinked .Trash → wrote to $TRASH_DEST"
+fi
+teardown
+
+# (security) vis() must strip terminal control bytes from untrusted display
+# strings — a cross-account filename can embed ESC/CSI to forge the consent screen.
+setup
+raw="$(printf 'evil\033[2Kforged\ttab\r')"           # ESC + CSI + TAB + CR
+got="$(printf '%s' "$raw" | vis)"
+if printf '%s' "$got" | LC_ALL=C grep -q '[[:cntrl:]]'; then
+  fail "vis left a control byte in the output"
+else
+  pass "vis strips ESC/control bytes from untrusted display strings"
+fi
+teardown
+
 # (guard) unmanaged_bins must list only what has NO other uninstaller: a plain
 # executable is a candidate, but a symlink into a Homebrew keg or an .app bundle
 # is owned by brew / the app — trashing it would half-uninstall someone else's
