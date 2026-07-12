@@ -1134,7 +1134,7 @@ CLI 工具盘点（只读）
   Dropbox / 云同步文件夹、屏幕录制、邮件 / 信息 / 钥匙串、
   任何 git 仓库、任何 Obsidian 仓库。
 
-语言：可用 SHEERSWEEP_LANG=en-US|ja-JP|zh-TW|zh-Hans|ko-KR|es-ES|de-DE|fr-FR|pt-BR|zh-Hans|ko-KR|es-ES|de-DE|fr-FR|pt-BR 覆盖。
+语言：可用 SHEERSWEEP_LANG=en-US|ja-JP|zh-TW|zh-Hans|ko-KR|es-ES|de-DE|fr-FR|pt-BR 覆盖。
 清扫所有账户需要管理员权限，因此会以 sudo 重新运行（只问一次密码）。
 --version / --help / tools 则不需要。
 EOF
@@ -1201,7 +1201,7 @@ CLI 도구 목록(읽기 전용)
   Dropbox / 클라우드 동기화 폴더, 화면 기록, Mail / 메시지 / 키체인,
   모든 git 저장소, 모든 Obsidian 보관함.
 
-언어: SHEERSWEEP_LANG=en-US|ja-JP|zh-TW|zh-Hans|ko-KR|es-ES|de-DE|fr-FR|pt-BR|zh-Hans|ko-KR|es-ES|de-DE|fr-FR|pt-BR 로 덮어쓸 수 있습니다.
+언어: SHEERSWEEP_LANG=en-US|ja-JP|zh-TW|zh-Hans|ko-KR|es-ES|de-DE|fr-FR|pt-BR 로 덮어쓸 수 있습니다.
 모든 계정을 청소하려면 관리자 권한이 필요해 sudo로 다시 실행합니다(암호는 한 번).
 --version / --help / tools 에는 필요 없습니다.
 EOF
@@ -1275,7 +1275,7 @@ OPCIONES
   Dropbox / carpetas de sincronización en la nube, grabaciones de pantalla,
   Mail / Mensajes / Llaveros, cualquier repo git, cualquier bóveda de Obsidian.
 
-IDIOMA: fuérzalo con SHEERSWEEP_LANG=en-US|ja-JP|zh-TW|zh-Hans|ko-KR|es-ES|de-DE|fr-FR|pt-BR|zh-Hans|ko-KR|es-ES|de-DE|fr-FR|pt-BR.
+IDIOMA: fuérzalo con SHEERSWEEP_LANG=en-US|ja-JP|zh-TW|zh-Hans|ko-KR|es-ES|de-DE|fr-FR|pt-BR.
 Limpiar todas las cuentas requiere permisos de administrador, así que sheersweep
 se relanza con sudo (una sola contraseña). --version / --help / tools nunca la piden.
 EOF
@@ -1352,7 +1352,7 @@ OPTIONEN
   Dropbox / Cloud-Sync-Ordner, Bildschirmaufnahmen, Mail / Nachrichten /
   Schlüsselbunde, jedes Git-Repo, jeder Obsidian-Vault.
 
-SPRACHE: überschreibbar mit SHEERSWEEP_LANG=en-US|ja-JP|zh-TW|zh-Hans|ko-KR|es-ES|de-DE|fr-FR|pt-BR|zh-Hans|ko-KR|es-ES|de-DE|fr-FR|pt-BR.
+SPRACHE: überschreibbar mit SHEERSWEEP_LANG=en-US|ja-JP|zh-TW|zh-Hans|ko-KR|es-ES|de-DE|fr-FR|pt-BR.
 Alle Konten zu reinigen braucht Administratorrechte, darum startet sheersweep
 sich mit sudo neu (eine Passwortabfrage). --version / --help / tools nie.
 EOF
@@ -1429,7 +1429,7 @@ OPTIONS
   Dropbox / dossiers de synchro cloud, enregistrements d'écran, Mail /
   Messages / Trousseaux, tout dépôt git, tout coffre Obsidian.
 
-LANGUE : forcez avec SHEERSWEEP_LANG=en-US|ja-JP|zh-TW|zh-Hans|ko-KR|es-ES|de-DE|fr-FR|pt-BR|zh-Hans|ko-KR|es-ES|de-DE|fr-FR|pt-BR.
+LANGUE : forcez avec SHEERSWEEP_LANG=en-US|ja-JP|zh-TW|zh-Hans|ko-KR|es-ES|de-DE|fr-FR|pt-BR.
 Nettoyer tous les comptes demande les droits d'administrateur, donc sheersweep
 se relance avec sudo (un seul mot de passe). --version / --help / tools jamais.
 EOF
@@ -1502,7 +1502,7 @@ OPÇÕES
   Dropbox / pastas de sincronização na nuvem, gravações de tela, Mail /
   Mensagens / Chaves, qualquer repositório git, qualquer cofre do Obsidian.
 
-IDIOMA: force com SHEERSWEEP_LANG=en-US|ja-JP|zh-TW|zh-Hans|ko-KR|es-ES|de-DE|fr-FR|pt-BR|zh-Hans|ko-KR|es-ES|de-DE|fr-FR|pt-BR.
+IDIOMA: force com SHEERSWEEP_LANG=en-US|ja-JP|zh-TW|zh-Hans|ko-KR|es-ES|de-DE|fr-FR|pt-BR.
 Limpar todas as contas exige privilégios de administrador, então o sheersweep se
 reexecuta com sudo (uma senha só). --version / --help / tools nunca pedem.
 EOF
@@ -2031,9 +2031,22 @@ do_uninstall() {
 # Locate brew and run it AS THE HUMAN — brew refuses root, and sheersweep is
 # usually root by the time uninstall runs. Auto-update is pinned off so no
 # invocation ever touches the network. BREW_BIN empty = no Homebrew here.
+#
+# By the time `uninstall` reaches here we've re-exec'd under `sudo`, so PATH is
+# sudo's sanitized default — which on Apple Silicon does NOT contain
+# /opt/homebrew/bin, and a non-login `sh -c` won't source the profile that adds
+# it. So probe the two standard prefixes by absolute path FIRST (that's where
+# brew actually lives), and only fall back to a PATH lookup for a custom prefix.
+# Without this, `uninstall <formula>` silently reported "no Homebrew" on every
+# stock Apple Silicon Mac.
 brew_locate() {
+  local b
+  BREW_BIN=""
+  for b in /opt/homebrew/bin/brew /usr/local/bin/brew; do
+    [ -x "$b" ] && { BREW_BIN="$b"; return; }
+  done
   if [ "$(id -u)" -eq 0 ]; then
-    BREW_BIN="$(sudo -u "$REAL_USER" sh -c 'command -v brew' 2>/dev/null)"
+    BREW_BIN="$(sudo -u "$REAL_USER" -i sh -c 'command -v brew' 2>/dev/null)"
   else
     BREW_BIN="$(command -v brew 2>/dev/null)"
   fi
