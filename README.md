@@ -33,6 +33,10 @@ Open source, no subscription, no surprises.
   any git repo, any Obsidian vault.
 - **Only regenerable junk.** Everything it clears is a cache, a log, or temp that
   the OS and your apps recreate on next use.
+- **The safety model is written down.** [`SECURITY.md`](SECURITY.md) lays out the
+  full threat model in plain terms — the deletion surface, how the never-touch
+  list is unreachable by construction, and the multi-account hardening — and how
+  to report anything that overclaims.
 
 ## What it does
 
