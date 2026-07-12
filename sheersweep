@@ -717,6 +717,18 @@ t() {
         pt-BR) echo "Formulas do Homebrew que você instalou (leaves — nada mais depende delas):" ;;
         *)     echo "Homebrew formulae you installed (leaves — nothing else depends on them):" ;;
       esac ;;
+    tl_upgradable)   # {n}
+      case "$SS_LANG" in
+        ja-JP) echo "↑ {n} 件アップグレード可能（brew のローカル索引基準＝最後に brew update した時点）。" ;;
+        zh-TW) echo "↑ {n} 個可升級（依 brew 本地索引＝你上次 brew update 的時點）。" ;;
+        zh-Hans) echo "↑ {n} 个可升级（依 brew 本地索引＝你上次 brew update 的时间点）。" ;;
+        ko-KR) echo "↑ {n}개 업그레이드 가능(brew 로컬 색인 기준 = 마지막 brew update 시점)." ;;
+        es-ES) echo "↑ {n} actualizables (según el índice local de brew — tan fresco como tu último brew update)." ;;
+        de-DE) echo "↑ {n} aktualisierbar (laut brews lokalem Index — Stand deines letzten brew update)." ;;
+        fr-FR) echo "↑ {n} mises à jour possibles (selon l'index local de brew — daté de votre dernier brew update)." ;;
+        pt-BR) echo "↑ {n} atualizáveis (pelo índice local do brew — do seu último brew update)." ;;
+        *)     echo "↑ {n} upgradable (per brew's local index — as fresh as your last brew update)." ;;
+      esac ;;
     tl_nobrew)
       case "$SS_LANG" in
         ja-JP) echo "（Homebrew が見つかりません — formula の棚卸しをスキップ）" ;;
@@ -1068,7 +1080,9 @@ CLI ツールの棚卸し（読み取り専用）
                               formula（容量つき）、孤児化した依存、マネージャ
                               管理外のバイナリ、大きなツールチェーンデータ —
                               それぞれのネイティブな削除方法つき。何も変更せず、
-                              パスワードも要りません。
+                              パスワードも要りません。アップグレード可能な formula
+                              には印が付きます（brew のローカル索引を読むだけ。
+                              ネットワークには触れません）。
 
 直前のアンインストールを元に戻す
   sheersweep restore          直前のアンインストールをゴミ箱から元の場所へ戻す
@@ -1136,6 +1150,8 @@ CLI 工具盤點（唯讀）
                               Homebrew formula（含大小）、孤兒依賴、無管理器
                               認領的裸二進位、大型 toolchain 資料目錄——每項
                               附上它自己的移除方式。什麼都不動、不用密碼。
+                              可升級的 formula 會標示出來——只讀 brew 本地索引，
+                              一樣不碰網路。
 
 還原上一次卸載
   sheersweep restore          把上一次卸載從垃圾桶放回原處
@@ -1202,6 +1218,8 @@ CLI 工具盘点（只读）
                               Homebrew formula（含大小）、孤儿依赖、无管理器
                               认领的二进制文件、大型 toolchain 数据目录——每项
                               附上它自己的移除方式。什么都不动、不用密码。
+                              可升级的 formula 会标示出来——只读 brew 本地索引，
+                              一样不碰网络。
 
 还原上一次卸载
   sheersweep restore          把上一次卸载从废纸篓放回原处
@@ -1270,6 +1288,8 @@ CLI 도구 목록(읽기 전용)
                               formula(크기 포함), 고아 의존성, 관리자 없는
                               바이너리, 큰 툴체인 데이터 — 각각 고유의 제거
                               방법과 함께. 아무것도 바꾸지 않고 암호도 필요 없습니다.
+                              업그레이드 가능한 formula는 표시됩니다 — brew 로컬
+                              색인만 읽으며 네트워크는 건드리지 않습니다.
 
 마지막 제거 되돌리기
   sheersweep restore          마지막 제거를 휴지통에서 원래 자리로
@@ -1344,7 +1364,9 @@ VER TUS HERRAMIENTAS CLI (solo lectura)
                               dependencias huérfanas, binarios sin gestor y las
                               grandes carpetas de datos de toolchains — cada una
                               con su método nativo de eliminación. No cambia
-                              nada; nunca pide contraseña.
+                              nada; nunca pide contraseña. Las formulae
+                              actualizables se marcan — leyendo el índice local
+                              de brew; sigue sin tocar la red.
 
 DESHACER LA ÚLTIMA DESINSTALACIÓN
   sheersweep restore          devuelve la última desinstalación desde la Papelera
@@ -1423,6 +1445,8 @@ DEINE CLI-TOOLS SEHEN (nur lesend)
                               Verwalter und die großen Toolchain-Datenordner —
                               jede mit ihrer nativen Entfernmethode. Ändert
                               nichts und fragt nie nach einem Passwort.
+                              Aktualisierbare Formulas werden markiert — aus
+                              brews lokalem Index; weiterhin ohne Netzwerk.
 
 DIE LETZTE DEINSTALLATION RÜCKGÄNGIG MACHEN
   sheersweep restore          legt die letzte Deinstallation aus dem Papierkorb zurück
@@ -1501,7 +1525,9 @@ VOIR VOS OUTILS CLI (lecture seule)
                               sans gestionnaire et les gros dossiers de données
                               de toolchains — chacun avec sa méthode native de
                               suppression. Ne change rien ; ne demande jamais
-                              de mot de passe.
+                              de mot de passe. Les formulas à mettre à jour sont
+                              signalées — via l'index local de brew ; toujours
+                              sans réseau.
 
 ANNULER LA DERNIÈRE DÉSINSTALLATION
   sheersweep restore          remet la dernière désinstallation depuis la Corbeille
@@ -1577,7 +1603,9 @@ VER SUAS FERRAMENTAS CLI (somente leitura)
                               dependências órfãs, binários sem gerenciador e as
                               grandes pastas de dados de toolchains — cada uma
                               com seu método nativo de remoção. Não muda nada;
-                              nunca pede senha.
+                              nunca pede senha. Formulas atualizáveis são
+                              marcadas — lendo o índice local do brew; continua
+                              sem rede.
 
 DESFAZER A ÚLTIMA DESINSTALAÇÃO
   sheersweep restore          devolve a última desinstalação da Lixeira
@@ -1652,7 +1680,9 @@ SEE YOUR CLI TOOLS (read-only)
                               dependencies, hand-installed binaries no manager
                               owns, and the big toolchain data folders — each
                               with the native way to remove it. Changes nothing;
-                              never asks for a password.
+                              never asks for a password. Upgradable formulae are
+                              flagged — read from brew's local index; still no
+                              network.
 
 UNDO THE LAST UNINSTALL
   sheersweep restore          put the last uninstall back from the Trash
@@ -2624,7 +2654,7 @@ do_uninstall_bin() {
 # ever removes a CLI tool via `uninstall`, which delegates (see above).
 # ============================================================================
 do_tools() {
-  local line name vers sz cellar leaves orphans f n rel hint p
+  local line name vers sz cellar leaves orphans f n rel hint p outdated newv up=0
   echo "============================================================"
   t tl_banner
   echo "------------------------------------------------------------"
@@ -2638,13 +2668,28 @@ do_tools() {
     leaves="$(brew_run leaves 2>/dev/null)"
     if [ -n "$leaves" ]; then
       cellar="$(brew_run --cellar 2>/dev/null)"
+      # Upgrade nudges, DELEGATED and OFFLINE: `brew outdated` only compares
+      # installed kegs against brew's LOCAL index — whatever the last
+      # `brew update` fetched. No network is touched here; brew_run pins
+      # auto-update off. Freshness is honestly bounded by that index, and the
+      # summary line below says so.
+      outdated="$(brew_run outdated --formula --verbose 2>/dev/null)"
       # shellcheck disable=SC2086  # formula names never contain spaces; splitting is the point
       while IFS= read -r line; do
         [ -z "$line" ] && continue
         name="${line%% *}"; vers="${line#* }"
         sz="$(du -sh "$cellar/$name" 2>/dev/null | cut -f1)"
-        printf '   %6s  %-24s %s\n' "${sz:-?}" "$name" "$vers"
+        newv="$(printf '%s\n' "$outdated" | LC_ALL=C awk -v n="$name" '$1 == n {print $NF; exit}')"
+        if [ -n "$newv" ]; then
+          printf '   %6s  %-24s %-12s ↑ %-10s brew upgrade %s\n' "${sz:-?}" "$name" "$vers" "$newv" "$name"
+          up=$((up + 1))
+        else
+          printf '   %6s  %-24s %s\n' "${sz:-?}" "$name" "$vers"
+        fi
       done < <(brew_run list --formula --versions $leaves 2>/dev/null)
+      if [ "$up" -gt 0 ]; then
+        m="$(t tl_upgradable)"; echo "   ${m//\{n\}/$up}"
+      fi
     fi
     echo "------------------------------------------------------------"
     orphans="$(brew_run autoremove --dry-run 2>/dev/null)"

@@ -40,6 +40,15 @@ instead of one hard-coded vendor. Design notes: `docs/orphan-discovery-spec.md`.
   anything installed still claims, so it can never reach a live app's (or its
   helper's) data.
 
+### Added — `tools` flags upgradable formulae, still offline
+
+- Each Homebrew leaf that has a newer version is flagged inline with the exact
+  command (`apfel  1.5.0  ↑ 1.8.3  brew upgrade apfel`), plus a summary line.
+  This reads **brew's local index** (`brew outdated`, auto-update pinned off) —
+  no network call is added; freshness is your last `brew update`, and the
+  output says so. Delegation over reinvention: sheersweep points at the native
+  upgrade path, it doesn't build an updater.
+
 ### Changed — Adobe leaves the sweep
 
 - The sweep no longer touches `Application Support/Adobe` (and the v0.6.0

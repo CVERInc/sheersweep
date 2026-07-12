@@ -142,6 +142,10 @@ each with the **native** command that removes it. It changes nothing, needs no
 password, and never touches the network. Which to keep is your call — this verb
 just finally lets you *see* what you have; sheersweep gives evidence, not verdicts.
 
+Upgradable formulae are flagged inline (`apfel  1.5.0  ↑ 1.8.3  brew upgrade
+apfel`) — read from **brew's local index**, so even this stays offline: it's
+exactly as fresh as your last `brew update`, and the summary line says so.
+
 ## Clean up leftovers (opt-in)
 
 Apps you removed long ago often leave a **background item** behind — a
