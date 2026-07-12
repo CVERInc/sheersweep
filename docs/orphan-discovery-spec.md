@@ -1,7 +1,8 @@
 # Orphan-data discovery — folding "residue of removed software" into `uninstall`
 
-Status: **locked concept, not yet built** (maintainer decisions 2026-07-12).
-Target: v0.7.0.
+Status: **built and shipped in v0.7.0** (maintainer decisions 2026-07-12; built
+same day). Kept as the design record — "Field notes" at the bottom documents
+what building against a real Mac added to the concept.
 
 ## The original vision this serves
 
@@ -84,16 +85,13 @@ app owns a subfolder. So orphan caches already disappear. This feature targets
 exactly the **non-cache data layer** the sweep correctly never touches:
 Application Support, Containers, Preferences, Saved State, Group Containers, etc.
 
-## Open taste call (maintainer)
+## Taste call — resolved
 
-How to label a **nameless** provable orphan in the picker:
-- **(default, honest)** bundle id + size, e.g. `com.spotify.client  —  340 MB`,
-  optionally a dimmed hint derived from the id's last component (`spotify?`)
-  clearly marked as a guess.
-- vs. best-effort friendly name (risks implying a certainty we don't have).
-
-Leaning toward id-with-a-dimmed-hint: it's the identity we can prove, and the
-hint aids recognition without claiming a match.
+Label = bundle id + size + a parenthesized hint derived from the id's tail
+(`com.spotify.client  340M  (spotify?)`), the `?` marking it as a guess.
+Generic tail components (client/app/helper/…and TLDs) step back one label so
+`calibre-ebook.com` hints `(calibre-ebook?)`, not `(com?)`. No invented
+friendly names — the id is the only identity we can prove.
 
 ## Hard edges the enumeration MUST handle (cold re-read, 2026-07-12)
 
@@ -132,3 +130,31 @@ Same as every destructive verb: preview the full footprint with sizes → type t
 confirm → move to Trash (never rm) → receipt under `~/.sheersweep/uninstalls/` →
 `restore` puts it all back. Provable-orphan detection adds a *finder*, not a new
 deletion primitive.
+
+## Field notes — what building against a real Mac added (2026-07-12)
+
+Both "hard edges" above were confirmed live, and three more finder rules were
+forced by running discovery on the maintainer's actual machine:
+
+1. **Full-depth claim scan.** CLIP STUDIO PAINT.app sits THREE folders deep
+   (`/Applications/CLIP STUDIO 1.5/App/`), its helpers four — a maxdepth-2 scan
+   marked a live never-touch app's extension containers as orphans. The bundle
+   scan now walks any depth, pruned at each bundle.
+2. **/Library claim roots + launchd labels.** A live Wacom driver's daemons live
+   in `/Library/PrivilegedHelperTools` (as `.app` bundles!) and updaters in
+   `/Library/Application Support` — both are now scanned. Additionally, any
+   Launch Agent/Daemon whose program still exists claims its label — the same
+   live/dead line `leftovers` draws. Known residual, documented in SECURITY.md:
+   a driver's transient sandboxed XPC (`com.wacom.Wacom-Display-Settings`) owns
+   a container provable by nothing; the confirm gate is the floor.
+3. **The group.* namespace never nominates.** Apple's own Shortcuts owns
+   `group.is.workflow.*` with no matching bundle id anywhere — group membership
+   lives in entitlements, unscannable. Group entries can't nominate candidates
+   but a proven orphan's group container rides along with its footprint.
+4. **Application Support candidates must be directories.** SwiftData's
+   `default.store` (+ `-shm`/`-wal`) are id-shaped FILES naming a file format,
+   not an app.
+
+Result on the reference Mac: 9 surfaced orphans, all genuine (removed ChatGPT,
+LINE, Opera, Evernote extension, calibre …), 17 tiny leftovers folded into the
+count line, zero false "provable" claims, ~7 s scan.

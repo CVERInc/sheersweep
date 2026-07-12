@@ -461,6 +461,112 @@ else
 fi
 teardown
 
+# (guard) looks_like_bid gates what can EVER become an orphan candidate: only
+# the bundle-id shape passes, so a vendor-NAME folder (Adobe, Code) — the thing
+# we can't prove — can't even enter the pipeline.
+lb_ok=1
+for good in com.foo.bar org.x-y.z com.a.b.c.d zoom.us; do
+  looks_like_bid "$good" || { lb_ok=0; echo "     rejected good: $good"; }
+done
+for bad in Adobe Code ".hidden" "foo." "zoom us" "foo/bar" "com..~" "a b.c"; do
+  looks_like_bid "$bad" && { lb_ok=0; echo "     accepted bad: $bad"; }
+done
+if [ "$lb_ok" -eq 1 ]; then
+  pass "looks_like_bid: id shapes pass; names/paths/dots-at-edges refused"
+else
+  fail "looks_like_bid misclassified (see above)"
+fi
+
+# (P1 guard) the claim scan must cover every way a LIVE app owns id-named data —
+# this is what keeps discovery from offering a living app's files as "orphans":
+#   • exact top-level id            • dot-prefix child (Chrome-helper style)
+#   • dot-prefix parent             • NESTED Info.plist with a DIVERGENT id
+#     (Teams-launcher style — no prefix relation to the app's own id)
+#   • the app's folder NAME (zoom.us.app names its data "zoom.us")
+#   • com.apple.* never surfaces at all
+# Only the genuinely unclaimed id may survive the filter.
+setup
+plist() {   # $1=path $2=bundle id
+  mkdir -p "$(dirname "$1")"
+  printf '<?xml version="1.0" encoding="UTF-8"?>\n<plist version="1.0"><dict><key>CFBundleIdentifier</key><string>%s</string></dict></plist>\n' "$2" > "$1"
+}
+APPS="$SBX/Apps"
+plist "$APPS/Live.app/Contents/Info.plist" "com.vendor.live"
+plist "$APPS/Live.app/Contents/Library/LoginItems/Launcher.app/Contents/Info.plist" "com.divergent.launcher"
+plist "$APPS/zoom.us.app/Contents/Info.plist" "us.zoom.xos"
+# vendors nest apps deep (CLIP STUDIO PAINT is 3 levels down, its helpers 4) —
+# the claim scan must be full-depth or a LIVE deep app reads as an orphan
+plist "$APPS/Suite 1.5/App/Deep.app/Contents/Info.plist" "com.suite.deep"
+collect_claims "$APPS"
+survivors="$(printf '%s\n' \
+  com.vendor.live com.vendor.live.helper com.vendor \
+  com.divergent.launcher zoom.us com.apple.anything \
+  com.suite.deep com.suite.deep.LipPreview com.gone.app \
+  | filter_unclaimed)"
+if [ "$survivors" = "com.gone.app" ]; then
+  pass "claims: exact/prefix-both-ways/nested-divergent/name/apple/deep-nested all kept; only true orphan survives"
+else
+  fail "claim filter wrong (survivors=[$survivors], want only com.gone.app)"
+fi
+teardown
+
+# (e2e) orphan_discover on a fixture home: a strong-family orphan surfaces even
+# when tiny; a big weak one surfaces by size; a tiny lone plist folds into
+# OD_SMALL; claimed and vendor-NAME data never appear. Largest first.
+setup
+plist "$SBX/Apps/Live.app/Contents/Info.plist" "com.vendor.live"
+H="$SBX/home"; L="$H/Library"
+mkdir -p "$L/Containers/com.gone.app" "$L/Application Support/Adobe" \
+         "$L/Application Support/com.vendor.live" "$L/Preferences" \
+         "$L/Group Containers/group.is.workflow.my.app" \
+         "$L/Application Scripts/group.is.workflow.my.app"
+echo data > "$L/Containers/com.gone.app/state"
+dd if=/dev/zero of="$L/Preferences/com.big.tool.plist" bs=1024 count=1500 2>/dev/null
+echo tiny > "$L/Preferences/com.tiny.left.plist"
+# a loose id-ish FILE in the Application Support root (SwiftData's default
+# store) names a file format, not an app — it must never become a candidate
+echo sqlite > "$L/Application Support/default.store"
+collect_claims "$SBX/Apps"
+orphan_discover "$H"
+od_list="$(printf '%s ' "${OD_IDS[@]-}")"
+if [ "${#OD_IDS[@]}" -eq 2 ] && [ "${OD_IDS[0]}" = "com.big.tool" ] \
+   && [ "${OD_IDS[1]}" = "com.gone.app" ] && [ "$OD_SMALL" -eq 1 ]; then
+  pass "orphan_discover: strong+big surfaced (largest first), tiny folded; claimed/name-dirs/AS-files/group.* never appear"
+else
+  fail "orphan_discover wrong (ids=[$od_list] small=$OD_SMALL)"
+fi
+# …but a PROVEN orphan's group container still rides along with its footprint
+mkdir -p "$L/Group Containers/group.com.gone.app"
+gc_seen=0
+while IFS= read -r -d '' p; do
+  [ "$p" = "$L/Group Containers/group.com.gone.app" ] && gc_seen=1
+done < <(orphan_paths_home "com.gone.app" "$H")
+if [ "$gc_seen" -eq 1 ]; then
+  pass "group container can't nominate, but a proven orphan's group data rides along"
+else
+  fail "proven orphan's group container missing from its footprint"
+fi
+# the hint is derived, generic last components step back one, and it's lowercase
+h1="$(orphan_hint com.spotify.client)"; h2="$(orphan_hint com.gone.app)"
+h3="$(orphan_hint org.MacVim)"; h4="$(orphan_hint calibre-ebook.com)"
+if [ "$h1" = "spotify" ] && [ "$h2" = "gone" ] && [ "$h3" = "macvim" ] && [ "$h4" = "calibre-ebook" ]; then
+  pass "orphan_hint: generic tail steps back (client/app/TLD), lowercased"
+else
+  fail "orphan_hint wrong ($h1/$h2/$h3/$h4)"
+fi
+teardown
+
+# (regression) Adobe has LEFT the sweep entirely — no vendor name in the sweep's
+# clean list, no installed-check machinery, no help-text carve-out. The residue
+# story now lives in uninstall's discovery, where it belongs.
+if ! grep -q 'Application Support/Adobe' "$SCRIPT" \
+   && ! grep -q 'Caches/Adobe' "$SCRIPT" \
+   && ! grep -q 'adobe_installed' "$SCRIPT"; then
+  pass "sweep names no vendor: Application Support/Adobe + guard are gone"
+else
+  fail "Adobe still referenced by the sweep/help"
+fi
+
 # (guard) EVERY t() key must exist in EVERY supported locale — the key list is
 # extracted from the script itself so a future key can't dodge the check. The
 # i18n rule is tiered (command lines stay raw) but a key that IS localized may

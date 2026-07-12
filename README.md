@@ -28,9 +28,8 @@ Open source, no subscription, no surprises.
   free and deletes nothing. Run it, read it, then decide.
 - **🔴 Never-touch list — no line in the script can reach these:**
   Photos / Documents / Desktop / Movies / Music, Clip Studio (CELSYS), app
-  Containers & Application Support (except already-uninstalled Adobe leftovers),
-  Dropbox / cloud-sync folders, screen recordings, Mail / Messages / Keychains,
-  any git repo, any Obsidian vault.
+  Containers & Application Support, Dropbox / cloud-sync folders, screen
+  recordings, Mail / Messages / Keychains, any git repo, any Obsidian vault.
 - **Only regenerable junk.** Everything it clears is a cache, a log, or temp that
   the OS and your apps recreate on next use.
 - **The safety model is written down.** [`SECURITY.md`](SECURITY.md) lays out the
@@ -42,9 +41,12 @@ Open source, no subscription, no surprises.
 
 - For **every account** under `/Users` (current *and* future):
   `Library/Caches`, `Library/Logs`, `~/.cache`, `~/.npm`, Xcode
-  `DerivedData` / `DeviceSupport`, CoreSimulator caches, Cargo/Gradle caches,
-  and leftover Adobe caches/support.
+  `DerivedData` / `DeviceSupport`, CoreSimulator caches, and Cargo/Gradle caches.
 - System-wide, once: `/Library/Caches`, `/.adobeTemp`, `brew cleanup`.
+- **The sweep names no vendor.** It clears only regenerable cache/log/temp
+  locations — never a vendor's application data. (Adobe's residue, once a
+  hard-coded special case here, is now found honestly by `uninstall`'s
+  discovery below.)
 - **Releases local APFS (Time Machine) snapshots** — the step most cleaners skip
   and most users never hear about: deleting files won't return the space if a
   snapshot still pins it. sheersweep frees it *and* tells you.
@@ -78,6 +80,31 @@ It's held to the same trust rules as the sweep:
   (`/System/*`) and the firmlinked Safari are off limits — not even `root` can
   remove them, and deleting them wouldn't free space. But **removable Apple apps in
   `/Applications`** (iMovie, GarageBand, the iWork suite, Xcode…) are fair game.
+
+### It also *discovers* what removed apps left behind
+
+Delete an app by dragging it to the Trash and its data stays — Containers,
+Application Support, preferences — sometimes for years. Run the picker and
+sheersweep shows you, unprompted:
+
+```
+🧟 Already removed — leftover data found (4):
+  64) com.spotify.client                    340M  (spotify?)
+  65) com.wacom.UpgradeHelper               128K  (upgradehelper?)
+  …
+```
+
+This stays inside the same identity rule that governs everything else: a large
+share of app data is named **by bundle id**, and an id is surfaced only when
+**nothing installed claims it** — the claim scan reads every installed app's
+bundle ids (including every helper/XPC nested inside, at any folder depth),
+driver and updater bundles under `/Library`, and every Launch Agent/Daemon
+whose program still exists. No name-guessing anywhere: the `(spotify?)` hint is
+explicitly a guess derived from the id; the id is the identity. Picking one
+runs the same preview → typed-confirm → Trash → receipt flow, so
+`sheersweep restore` undoes it too. Small lone preference files are counted in
+one line rather than listed; clean one directly with
+`sheersweep uninstall <bundle-id>` (add `--dry-run` to preview headlessly).
 
 ### CLI tools use the same verb — removed the way each restores best
 

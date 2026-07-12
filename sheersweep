@@ -32,7 +32,7 @@
 #   each with the native way to remove it. Changes nothing; never needs sudo.
 set -u
 
-VERSION="0.6.0"
+VERSION="0.7.0"
 
 # ============================================================================
 # i18n — en-US · ja-JP · zh-TW · zh-Hans · ko-KR · es-ES · de-DE · fr-FR · pt-BR.
@@ -349,6 +349,66 @@ t() {
         fr-FR) echo "ℹ️ l'app {app} n'est plus là — le catalogue sert à nettoyer seulement les données restantes." ;;
         pt-BR) echo "ℹ️ o app {app} já se foi — usando o catálogo para limpar só os dados que ficaram." ;;
         *)     echo "ℹ️ {app}'s app bundle is already gone — using the catalog to clean up just the data it left behind." ;;
+      esac ;;
+    un_orphan_scan)
+      case "$SS_LANG" in
+        ja-JP) echo "🔍 削除済みアプリの置き土産を探しています…（数秒かかります）" ;;
+        zh-TW) echo "🔍 正在掃描已移除 App 留下的資料…（需要幾秒）" ;;
+        zh-Hans) echo "🔍 正在扫描已移除 App 留下的数据…（需要几秒）" ;;
+        ko-KR) echo "🔍 제거된 앱이 남긴 데이터를 찾는 중… (몇 초 걸립니다)" ;;
+        es-ES) echo "🔍 buscando datos dejados por apps eliminadas… (unos segundos)" ;;
+        de-DE) echo "🔍 Suche nach Daten entfernter Apps… (ein paar Sekunden)" ;;
+        fr-FR) echo "🔍 recherche des données laissées par des apps supprimées… (quelques secondes)" ;;
+        pt-BR) echo "🔍 procurando dados deixados por apps removidos… (alguns segundos)" ;;
+        *)     echo "🔍 Scanning for data left behind by removed apps… (a few seconds)" ;;
+      esac ;;
+    un_orphan_header)   # {n}
+      case "$SS_LANG" in
+        ja-JP) echo "🧟 削除済み — 残ったデータが見つかりました（{n} 件）:" ;;
+        zh-TW) echo "🧟 已移除——但留下了資料（{n} 個）：" ;;
+        zh-Hans) echo "🧟 已移除——但留下了数据（{n} 个）：" ;;
+        ko-KR) echo "🧟 이미 제거됨 — 남은 데이터 발견({n}개):" ;;
+        es-ES) echo "🧟 ya eliminadas — con datos abandonados ({n}):" ;;
+        de-DE) echo "🧟 schon entfernt — zurückgelassene Daten gefunden ({n}):" ;;
+        fr-FR) echo "🧟 déjà supprimées — données laissées derrière ({n}) :" ;;
+        pt-BR) echo "🧟 já removidos — dados deixados para trás ({n}):" ;;
+        *)     echo "🧟 Already removed — leftover data found ({n}):" ;;
+      esac ;;
+    un_orphan_small)   # {n}
+      case "$SS_LANG" in
+        ja-JP) echo "…ほかに小さな設定ファイルの残りが {n} 件（sheersweep uninstall <bundle-id> --dry-run でプレビュー）" ;;
+        zh-TW) echo "…另有 {n} 個零星的偏好設定殘檔（用 sheersweep uninstall <bundle-id> --dry-run 預覽）" ;;
+        zh-Hans) echo "…另有 {n} 个零星的偏好设置残留（用 sheersweep uninstall <bundle-id> --dry-run 预览）" ;;
+        ko-KR) echo "…그 외 작은 설정 파일 잔여물 {n}개 (sheersweep uninstall <bundle-id> --dry-run으로 미리보기)" ;;
+        es-ES) echo "…y {n} pequeños restos de preferencias (previsualiza uno con sheersweep uninstall <bundle-id> --dry-run)" ;;
+        de-DE) echo "…dazu {n} kleine übrig gebliebene Einstellungsdateien (Vorschau mit sheersweep uninstall <bundle-id> --dry-run)" ;;
+        fr-FR) echo "…plus {n} petits restes de préférences (aperçu avec sheersweep uninstall <bundle-id> --dry-run)" ;;
+        pt-BR) echo "…mais {n} pequenas sobras de preferências (veja uma com sheersweep uninstall <bundle-id> --dry-run)" ;;
+        *)     echo "…plus {n} small leftover preference files (preview one with sheersweep uninstall <bundle-id> --dry-run)" ;;
+      esac ;;
+    un_orphan)   # {bid}
+      case "$SS_LANG" in
+        ja-JP) echo "ℹ️ {bid} を名乗るインストール済みアプリはありません — 削除済みアプリの置き土産として扱います。この id を名前に持つファイルだけを照合します。" ;;
+        zh-TW) echo "ℹ️ 沒有任何已安裝的 App 認領 {bid}——視為已移除 App 留下的資料。只比對以這個 id 命名的檔案。" ;;
+        zh-Hans) echo "ℹ️ 没有任何已安装的 App 认领 {bid}——视为已移除 App 留下的数据。只匹配以这个 id 命名的文件。" ;;
+        ko-KR) echo "ℹ️ {bid}를 소유한 설치된 앱이 없습니다 — 제거된 앱이 남긴 데이터로 간주합니다. 이 id로 이름 지어진 파일만 대조합니다." ;;
+        es-ES) echo "ℹ️ ninguna app instalada reclama {bid} — se trata como datos dejados por una app eliminada. Solo se comparan archivos nombrados con este id exacto." ;;
+        de-DE) echo "ℹ️ keine installierte App beansprucht {bid} — behandelt als Daten einer entfernten App. Es zählen nur Dateien, die exakt nach dieser ID benannt sind." ;;
+        fr-FR) echo "ℹ️ aucune app installée ne revendique {bid} — traité comme des données laissées par une app supprimée. Seuls les fichiers nommés par cet id exact sont retenus." ;;
+        pt-BR) echo "ℹ️ nenhum app instalado reivindica {bid} — tratado como dados deixados por um app removido. Só entram arquivos nomeados por este id exato." ;;
+        *)     echo "ℹ️ No installed app claims {bid} — treating it as data left behind by a removed app. Only files named by this exact id are matched." ;;
+      esac ;;
+    un_orphan_installed)   # {bid}
+      case "$SS_LANG" in
+        ja-JP) echo "🔴 {bid} はまだインストール中の何かのものです。そのアプリ名で uninstall してください。" ;;
+        zh-TW) echo "🔴 {bid} 屬於還裝在機上的東西——請改用那個 App 的名稱來 uninstall。" ;;
+        zh-Hans) echo "🔴 {bid} 属于仍安装在机上的东西——请改用那个 App 的名称来 uninstall。" ;;
+        ko-KR) echo "🔴 {bid}는 아직 설치된 무언가의 것입니다 — 그 앱의 이름으로 uninstall 하세요." ;;
+        es-ES) echo "🔴 {bid} pertenece a algo aún instalado — desinstala esa app por su nombre." ;;
+        de-DE) echo "🔴 {bid} gehört zu etwas noch Installiertem — deinstalliere diese App über ihren Namen." ;;
+        fr-FR) echo "🔴 {bid} appartient à quelque chose d'encore installé — désinstallez cette app par son nom." ;;
+        pt-BR) echo "🔴 {bid} pertence a algo ainda instalado — desinstale esse app pelo nome." ;;
+        *)     echo "🔴 {bid} belongs to something still installed — uninstall that app by its name instead." ;;
       esac ;;
     un_refuse_apple)   # {app}
       case "$SS_LANG" in
@@ -981,7 +1041,7 @@ sheersweep — 読める Mac クリーナー。
   • /Users 配下の すべての アカウント（現在も将来も）に対して:
       Library/Caches, Library/Logs, ~/.cache, ~/.npm,
       Xcode DerivedData / DeviceSupport, CoreSimulator キャッシュ,
-      Cargo/Gradle キャッシュ, 残った Adobe キャッシュ/サポート。
+      Cargo/Gradle キャッシュ。
   • システム全体（一度）: /Library/Caches, /.adobeTemp, `brew cleanup`。
   • ローカル APFS（Time Machine）スナップショットを解放 — 解放した容量が
     実際に戻る唯一の手順（ファイル削除だけではスナップショットが容量を保持）。
@@ -995,7 +1055,9 @@ sheersweep — 読める Mac クリーナー。
   通常のクリーン（サブコマンドなし）の「実ファイルに触れない」約束は不変です。
   ベンダー入れ子のデータ（Chrome の Google/Chrome など）も内蔵カタログで回収。
   共有ベンダーフォルダ（Google/ ＝Google ドライブの DriveFS が同居）には触れません。
-  本体を先に削除済みでも、カタログ掲載アプリなら残りデータを掃除できます。
+  本体を先に削除済みでも掃除できます。名前なしで実行すると、昔削除したアプリが
+  残したデータ——どのインストール済みアプリのものでもない bundle id 名のデータ——
+  も一覧に載ります（名前では推測しません）。
   CLI ツールにも同じ動詞が使えます: Homebrew formula は brew 自身に委任 —
   依存されていないことを確認し、実行する `brew uninstall` コマンドをそのまま
   表示、名前を入力した時だけ実行します（復元 = brew install）。手動インストール
@@ -1025,7 +1087,7 @@ CLI ツールの棚卸し（読み取り専用）
 
 🔴 絶対に触れない（このスクリプトのどの行も到達しません）
   写真 / 書類 / デスクトップ / ムービー / ミュージック、Clip Studio (CELSYS)、
-  アプリの Containers と Application Support（アンインストール済み Adobe を除く）、
+  アプリの Containers と Application Support、
   Dropbox / クラウド同期フォルダ、画面収録、メール / メッセージ / キーチェーン、
   あらゆる git リポジトリ、あらゆる Obsidian vault。
 
@@ -1049,7 +1111,7 @@ sheersweep — 你讀得懂的 Mac 清理工具。
   • 對 /Users 底下的 每一個 帳號（現有與未來）：
       Library/Caches、Library/Logs、~/.cache、~/.npm、
       Xcode DerivedData / DeviceSupport、CoreSimulator 快取、
-      Cargo/Gradle 快取、殘留的 Adobe 快取/支援檔。
+      Cargo/Gradle 快取。
   • 系統層（一次）：/Library/Caches、/.adobeTemp、`brew cleanup`。
   • 釋放本機 APFS（Time Machine）快照——這是釋出空間真正會回來的一步
     （只刪檔案，若快照仍釘住就不會還空間）。
@@ -1062,7 +1124,8 @@ sheersweep — 你讀得懂的 Mac 清理工具。
   預設清理（不帶子命令）「永不碰真檔」的承諾完全不變。
   廠商巢狀的資料（如 Chrome 的 Google/Chrome）也用內建目錄一起收。
   共用廠商夾（Google/＝底下還有 Google 雲端硬碟的 DriveFS）絕不碰。
-  就算 App 本體已經先刪掉，只要在目錄裡，照樣能清掉它殘留的資料。
+  就算 App 本體早就刪了也能清：不帶名稱執行時，選單會一併列出「當年沒卸乾淨」
+  的殘留資料——沒有任何已安裝 App 認領的 bundle id 資料（永不用名稱猜）。
   CLI 工具用同一個動詞：Homebrew formula 委派給 brew 自己——先確認沒有東西
   依賴它，把要執行的 `brew uninstall` 指令一字不差印給你看，輸入名稱才執行
   （還原＝brew install）。手動裝的裸二進位（~/bin、~/.local/bin、
@@ -1090,7 +1153,7 @@ CLI 工具盤點（唯讀）
 
 🔴 絕不碰（這支腳本沒有任何一行碰得到）
   照片 / 文件 / 桌面 / 影片 / 音樂、Clip Studio (CELSYS)、
-  app 的 Containers 與 Application Support（已卸載的 Adobe 除外）、
+  app 的 Containers 與 Application Support、
   Dropbox / 雲端同步資料夾、螢幕錄影、Mail / Messages / 鑰匙圈、
   任何 git repo、任何 Obsidian vault。
 
@@ -1114,7 +1177,7 @@ sheersweep — 你能读懂的 Mac 清理工具。
   • 对 /Users 下的 每一个 账户（现有与未来）：
       Library/Caches、Library/Logs、~/.cache、~/.npm、
       Xcode DerivedData / DeviceSupport、CoreSimulator 缓存、
-      Cargo/Gradle 缓存、残留的 Adobe 缓存/支持文件。
+      Cargo/Gradle 缓存。
   • 系统层（一次）：/Library/Caches、/.adobeTemp、`brew cleanup`。
   • 释放本机 APFS（时间机器）快照——这是释放的空间真正回来的一步
     （只删文件的话，快照仍占着空间就不会归还）。
@@ -1127,7 +1190,8 @@ sheersweep — 你能读懂的 Mac 清理工具。
   默认清理（不带子命令）「绝不碰真实文件」的承诺完全不变。
   厂商嵌套的数据（如 Chrome 的 Google/Chrome）也用内置目录一并收走。
   共用厂商文件夹（Google/＝下面还有 Google 云端硬盘的 DriveFS）绝不碰。
-  就算 App 本体已先被删掉，只要在目录里，照样能清掉它残留的数据。
+  就算 App 本体早就删了也能清理：不带名称运行时，列表会一并列出「当年没卸干净」
+  的残留数据——没有任何已安装 App 认领的 bundle id 数据（绝不按名称猜测）。
   CLI 工具用同一个动词：Homebrew formula 委托给 brew 自己——先确认没有东西
   依赖它，把要执行的 `brew uninstall` 命令一字不差打印给你看，输入名称才执行
   （还原＝brew install）。手动装的裸二进制文件（~/bin、~/.local/bin、
@@ -1155,7 +1219,7 @@ CLI 工具盘点（只读）
 
 🔴 绝不碰（这个脚本没有任何一行碰得到）
   照片 / 文稿 / 桌面 / 影片 / 音乐、Clip Studio (CELSYS)、
-  App 的 Containers 与 Application Support（已卸载的 Adobe 除外）、
+  App 的 Containers 与 Application Support、
   Dropbox / 云同步文件夹、屏幕录制、邮件 / 信息 / 钥匙串、
   任何 git 仓库、任何 Obsidian 仓库。
 
@@ -1179,7 +1243,7 @@ sheersweep — 읽을 수 있는 Mac 클리너.
   • /Users 아래 모든 계정(현재와 미래)에 대해:
       Library/Caches, Library/Logs, ~/.cache, ~/.npm,
       Xcode DerivedData / DeviceSupport, CoreSimulator 캐시,
-      Cargo/Gradle 캐시, 남은 Adobe 캐시/지원 파일.
+      Cargo/Gradle 캐시.
   • 시스템 전체(한 번): /Library/Caches, /.adobeTemp, `brew cleanup`.
   • 로컬 APFS(타임머신) 스냅샷 해제 — 비운 공간이 실제로 돌아오는
     유일한 단계(파일만 지우면 스냅샷이 공간을 계속 붙듭니다).
@@ -1193,7 +1257,9 @@ sheersweep — 읽을 수 있는 Mac 클리너.
   기본 청소(하위 명령 없음)의 「실제 파일은 건드리지 않는다」는 약속은 그대로입니다.
   벤더 중첩 데이터(Chrome의 Google/Chrome 등)도 내장 카탈로그로 수거합니다.
   공유 벤더 폴더(Google/ = Google Drive의 DriveFS 동거)는 절대 건드리지 않습니다.
-  본체를 먼저 지웠더라도 카탈로그에 있는 앱이면 남은 데이터를 정리할 수 있습니다.
+  본체를 이미 지웠어도 정리할 수 있습니다. 이름 없이 실행하면 오래전에 제거한
+  앱이 남긴 데이터 — 어떤 설치된 앱의 것도 아닌 bundle id 이름의 데이터 — 도
+  목록에 나옵니다(이름으로 추측하지 않습니다).
   CLI 도구도 같은 동사로: Homebrew formula는 brew 자신에게 위임 — 의존하는
   것이 없는지 확인하고, 실행할 `brew uninstall` 명령을 그대로 보여 준 뒤
   이름을 입력해야 실행합니다(복원 = brew install). 직접 설치한 바이너리
@@ -1222,7 +1288,7 @@ CLI 도구 목록(읽기 전용)
 
 🔴 절대 건드리지 않음(이 스크립트의 어떤 줄도 닿을 수 없음)
   사진 / 문서 / 데스크탑 / 동영상 / 음악, Clip Studio (CELSYS),
-  앱의 Containers 및 Application Support(이미 제거된 Adobe 제외),
+  앱의 Containers 및 Application Support,
   Dropbox / 클라우드 동기화 폴더, 화면 기록, Mail / 메시지 / 키체인,
   모든 git 저장소, 모든 Obsidian 보관함.
 
@@ -1246,7 +1312,7 @@ QUÉ HACE
   • Para CADA cuenta bajo /Users (actuales y futuras):
       Library/Caches, Library/Logs, ~/.cache, ~/.npm,
       Xcode DerivedData / DeviceSupport, cachés de CoreSimulator,
-      cachés de Cargo/Gradle, restos de cachés/soporte de Adobe.
+      cachés de Cargo/Gradle.
   • A nivel de sistema, una vez: /Library/Caches, /.adobeTemp, `brew cleanup`.
   • Libera las instantáneas locales de APFS (Time Machine) — el paso que de
     verdad devuelve el espacio (borrar archivos no basta si una instantánea
@@ -1263,7 +1329,9 @@ DESINSTALAR UNA APP (opt-in, peligroso por naturaleza)
   Los datos anidados por proveedor (p. ej. Google/Chrome) se alcanzan con un
   catálogo integrado; una carpeta compartida de proveedor (Google/ — que también
   guarda DriveFS de Google Drive) se rechaza siempre. Funciona incluso si la
-  .app ya fue borrada, si está en el catálogo — aún limpia los datos que dejó.
+  .app ya fue borrada — sin nombre, el selector también lista los datos que
+  dejaron apps eliminadas hace tiempo: datos con bundle id que ninguna app
+  instalada reclama (nunca un nombre adivinado).
   Las herramientas CLI usan el mismo verbo: una formula de Homebrew se DELEGA
   a brew — sheersweep comprueba que nada instalado dependa de ella, imprime el
   comando `brew uninstall` exacto y lo ejecuta solo cuando escribes el nombre
@@ -1296,7 +1364,7 @@ OPCIONES
 
 🔴 NUNCA SE TOCA (ninguna línea de este script puede alcanzarlo)
   Fotos / Documentos / Escritorio / Películas / Música, Clip Studio (CELSYS),
-  Containers y Application Support de las apps (salvo Adobe ya desinstalado),
+  Containers y Application Support de las apps,
   Dropbox / carpetas de sincronización en la nube, grabaciones de pantalla,
   Mail / Mensajes / Llaveros, cualquier repo git, cualquier bóveda de Obsidian.
 
@@ -1320,7 +1388,7 @@ WAS ES TUT
   • Für JEDES Konto unter /Users (jetzige und künftige):
       Library/Caches, Library/Logs, ~/.cache, ~/.npm,
       Xcode DerivedData / DeviceSupport, CoreSimulator-Caches,
-      Cargo/Gradle-Caches, zurückgelassene Adobe-Caches/-Supportdateien.
+      Cargo/Gradle-Caches.
   • Systemweit, einmal: /Library/Caches, /.adobeTemp, `brew cleanup`.
   • Gibt lokale APFS-(Time-Machine-)Schnappschüsse frei — der Schritt, der den
     Platz wirklich zurückbringt (Dateien löschen reicht nicht, solange ein
@@ -1338,7 +1406,9 @@ EINE APP DEINSTALLIEREN (Opt-in, von Natur aus gefährlich)
   Vendor-verschachtelte Daten (z. B. Chromes Google/Chrome) erreicht ein
   eingebauter Katalog; ein geteilter Vendor-Ordner (Google/ — dort wohnt auch
   DriveFS von Google Drive) wird immer verweigert. Funktioniert auch, wenn die
-  .app schon gelöscht wurde, solange sie im Katalog steht.
+  .app schon gelöscht wurde — ohne Namen listet die Auswahl auch Daten längst
+  entfernter Apps: Bundle-ID-benannte Daten, die keine installierte App
+  beansprucht (nie ein geratener Name).
   CLI-Tools nutzen dasselbe Verb: eine Homebrew-Formula wird an brew selbst
   DELEGIERT — sheersweep prüft, dass nichts Installiertes von ihr abhängt,
   druckt den exakten `brew uninstall`-Befehl und führt ihn erst aus, wenn du
@@ -1373,7 +1443,7 @@ OPTIONEN
 
 🔴 NIE ANGERÜHRT (keine Zeile dieses Skripts kommt dort hin)
   Fotos / Dokumente / Schreibtisch / Filme / Musik, Clip Studio (CELSYS),
-  Containers & Application Support der Apps (außer bereits deinstalliertem Adobe),
+  Containers & Application Support der Apps,
   Dropbox / Cloud-Sync-Ordner, Bildschirmaufnahmen, Mail / Nachrichten /
   Schlüsselbunde, jedes Git-Repo, jeder Obsidian-Vault.
 
@@ -1397,7 +1467,7 @@ CE QU'IL FAIT
   • Pour CHAQUE compte sous /Users (actuels et futurs) :
       Library/Caches, Library/Logs, ~/.cache, ~/.npm,
       Xcode DerivedData / DeviceSupport, caches CoreSimulator,
-      caches Cargo/Gradle, restes de caches/support Adobe.
+      caches Cargo/Gradle.
   • Au niveau système, une fois : /Library/Caches, /.adobeTemp, `brew cleanup`.
   • Libère les instantanés locaux APFS (Time Machine) — l'étape qui rend
     vraiment l'espace (supprimer des fichiers ne suffit pas si un instantané
@@ -1415,7 +1485,9 @@ DÉSINSTALLER UNE APP (opt-in, dangereux par nature)
   Les données imbriquées par éditeur (p. ex. Google/Chrome) sont atteintes via
   un catalogue intégré ; un dossier d'éditeur partagé (Google/ — qui héberge
   aussi DriveFS de Google Drive) est toujours refusé. Fonctionne même si la
-  .app a déjà été supprimée, tant qu'elle est au catalogue.
+  .app a déjà été supprimée — sans nom, le sélecteur liste aussi les données
+  laissées par des apps retirées depuis longtemps : des données nommées par
+  bundle id qu'aucune app installée ne revendique (jamais un nom deviné).
   Les outils CLI utilisent le même verbe : une formula Homebrew est DÉLÉGUÉE à
   brew lui-même — sheersweep vérifie que rien d'installé n'en dépend, imprime
   la commande `brew uninstall` exacte et ne l'exécute que lorsque vous tapez le
@@ -1450,7 +1522,7 @@ OPTIONS
 
 🔴 JAMAIS TOUCHÉ (aucune ligne de ce script ne peut y accéder)
   Photos / Documents / Bureau / Vidéos / Musique, Clip Studio (CELSYS),
-  Containers & Application Support des apps (sauf Adobe déjà désinstallé),
+  Containers & Application Support des apps,
   Dropbox / dossiers de synchro cloud, enregistrements d'écran, Mail /
   Messages / Trousseaux, tout dépôt git, tout coffre Obsidian.
 
@@ -1474,7 +1546,7 @@ O QUE ELE FAZ
   • Para CADA conta em /Users (atuais e futuras):
       Library/Caches, Library/Logs, ~/.cache, ~/.npm,
       Xcode DerivedData / DeviceSupport, caches do CoreSimulator,
-      caches de Cargo/Gradle, restos de caches/suporte da Adobe.
+      caches de Cargo/Gradle.
   • No sistema, uma vez: /Library/Caches, /.adobeTemp, `brew cleanup`.
   • Libera os instantâneos locais do APFS (Time Machine) — o passo que devolve
     o espaço de verdade (apagar arquivos não basta se um instantâneo os segura).
@@ -1490,7 +1562,9 @@ DESINSTALAR UM APP (opt-in, perigoso por natureza)
   Dados aninhados por fabricante (ex.: Google/Chrome) são alcançados por um
   catálogo embutido; uma pasta compartilhada de fabricante (Google/ — que
   também guarda o DriveFS do Google Drive) é sempre recusada. Funciona mesmo
-  se o .app já foi apagado, desde que esteja no catálogo.
+  se o .app já foi apagado — sem nome, o seletor também lista dados deixados
+  por apps removidos há tempo: dados nomeados por bundle id que nenhum app
+  instalado reivindica (nunca um nome adivinhado).
   Ferramentas CLI usam o mesmo verbo: uma formula do Homebrew é DELEGADA ao
   próprio brew — o sheersweep confere que nada instalado depende dela, imprime
   o comando `brew uninstall` exato e só o executa quando você digita o nome
@@ -1523,7 +1597,7 @@ OPÇÕES
 
 🔴 NUNCA TOCADO (nenhuma linha deste script chega lá)
   Fotos / Documentos / Mesa / Filmes / Música, Clip Studio (CELSYS),
-  Containers & Application Support dos apps (exceto Adobe já desinstalado),
+  Containers & Application Support dos apps,
   Dropbox / pastas de sincronização na nuvem, gravações de tela, Mail /
   Mensagens / Chaves, qualquer repositório git, qualquer cofre do Obsidian.
 
@@ -1547,7 +1621,7 @@ WHAT IT DOES
   • For EVERY account under /Users (current and future):
       Library/Caches, Library/Logs, ~/.cache, ~/.npm,
       Xcode DerivedData / DeviceSupport, CoreSimulator caches,
-      Cargo/Gradle caches, leftover Adobe caches/support.
+      Cargo/Gradle caches.
   • System once: /Library/Caches, /.adobeTemp, `brew cleanup`.
   • Releases local APFS (Time Machine) snapshots — the step that actually
     returns the freed space (deleting files alone won't, if a snapshot pins them).
@@ -1562,8 +1636,10 @@ UNINSTALL AN APP (opt-in, dangerous by nature)
   "never touches your real files" promise is unchanged.
   Vendor-nested data (e.g. Chrome's Google/Chrome) is reached via a built-in
   catalog, while a shared vendor root (Google/ — which also holds Google Drive's
-  DriveFS) is always refused. Works even if the .app was already deleted, as long
-  as it's a catalog app — it still cleans up the data left behind.
+  DriveFS) is always refused. Works even if the .app was already deleted —
+  run it with no name and the picker also lists data left behind by apps you
+  removed long ago: id-named data no installed app claims (matched by bundle
+  id, never a guessed name).
   CLI tools use the same verb: a Homebrew formula is DELEGATED to brew itself —
   sheersweep first checks nothing installed depends on it, prints the exact
   `brew uninstall` command it will run, and runs it only after you type the
@@ -1596,7 +1672,7 @@ OPTIONS
 
 🔴 NEVER TOUCHED (no line in this script can reach these)
   Photos / Documents / Desktop / Movies / Music, Clip Studio (CELSYS),
-  app Containers & Application Support (except already-uninstalled Adobe),
+  app Containers & Application Support,
   Dropbox / cloud-sync folders, screen recordings, Mail / Messages / Keychains,
   any git repo, any Obsidian vault.
 
@@ -1696,19 +1772,6 @@ clean() {
     printf '   %s %6s  %s\n' "$(t freeing)" "$sz" "$p"
     find "$p" -mindepth 1 -delete 2>/dev/null
   fi
-}
-
-# Is any Adobe app still installed? Adobe bundles are all named "Adobe *" in
-# /Applications (Creative Cloud also nests under Utilities). This gates the one
-# sweep path that touches Application Support: with Adobe present, that folder is
-# LIVE data (licensing/settings) — not regenerable junk — so the sweep must leave
-# it. Only when every Adobe app is gone is it the leftover the promise refers to.
-adobe_installed() {
-  local d a
-  for d in "/Applications" "/Applications/Utilities"; do
-    for a in "$d"/Adobe*; do [ -e "$a" ] && return 0; done
-  done
-  return 1
 }
 
 # ============================================================================
@@ -1820,11 +1883,265 @@ extra_is_safe() {   # $1 = ~/Library-relative path → returns 0 = safe, 1 = ref
   return 0
 }
 
+# ── Orphan-data DISCOVERY: find what apps you removed long ago left behind ──
+# The sweep never touches app data, and uninstalling by name needs a name — so
+# data from an app deleted years ago just sits there forever. This finder closes
+# that gap while staying inside the "identity, never a guess" rule: a big share
+# of app data is named BY BUNDLE ID (Containers/<id>, Preferences/<id>.plist, …).
+# Enumerate every id that owns such data, subtract every id an installed app
+# claims, and what's left is PROVABLY orphaned — no fuzzy matching anywhere.
+# Application Support folders named after a VENDOR (Adobe, Spotify) can't be
+# proved and are never surfaced; those stay the hand-curated catalog's job.
+
+looks_like_bid() {   # $1 → 0 if it has the shape of a bundle id (com.vendor.app)
+  case "$1" in
+    *.*) ;; *) return 1 ;;                 # at least one dot
+  esac
+  case "$1" in
+    .*|*.) return 1 ;;                      # no leading/trailing dot
+    *[!A-Za-z0-9.-]*) return 1 ;;           # the id charset, nothing else
+  esac
+  return 0
+}
+
+# Every claim installed software makes on id-named data. Fills two lists:
+#   CLAIMED_IDS   — each CFBundleIdentifier found in installed bundles, INCLUDING
+#                   every Info.plist nested inside a non-Apple .app (XPC services,
+#                   login items, Electron helpers): a helper's Containers/<id> is
+#                   a live app's data even though no top-level id matches it, and
+#                   a dot-prefix rule alone can't prove that (com.adobe.acc.installer
+#                   shares no prefix with any Adobe app's own id).
+#                   Apple-id bundles aren't descended into — Xcode alone nests
+#                   thousands of Info.plists, all com.apple.*, and com.apple.* is
+#                   unconditionally kept anyway (see bid filtering below).
+#   CLAIMED_NAMES — each app's folder name: zoom.us.app names its Application
+#                   Support folder "zoom.us" — id-shaped, but claimed by NAME.
+# Args override the scan roots (for tests); default = every Applications folder.
+CLAIMS_READY=0
+# shellcheck disable=SC2120  # args are the test seam; production calls take the default
+collect_claims() {
+  CLAIMED_IDS=""; CLAIMED_NAMES=""
+  local roots=() sys=1 d appp base bid f nested lp prog
+  if [ "$#" -gt 0 ]; then roots=("$@"); sys=0; else
+    # beyond the Applications folders: driver/updater suites park their bundles
+    # in /Library — Wacom's helper apps live in /Library/PrivilegedHelperTools,
+    # Google's updater in /Library/Application Support — and missing those
+    # turned a LIVE driver's data into an "orphan" on a real Mac.
+    roots=("/Applications" "/Library/Application Support" "/Library/PrivilegedHelperTools")
+    for d in /Users/*/Applications; do [ -d "$d" ] && roots+=("$d"); done
+  fi
+  while IFS= read -r -d '' appp; do
+    [ -d "$appp" ] || continue
+    base="$(basename "$appp")"
+    CLAIMED_NAMES="$CLAIMED_NAMES${base%.app}"$'\n'
+    bid="$(bundle_id "$appp")"
+    [ -n "$bid" ] && CLAIMED_IDS="$CLAIMED_IDS$bid"$'\n'
+    case "$bid" in ""|com.apple.*) continue ;; esac
+    while IFS= read -r -d '' f; do
+      nested="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$f" 2>/dev/null)"
+      [ -n "$nested" ] && CLAIMED_IDS="$CLAIMED_IDS$nested"$'\n'
+    done < <(find "$appp" -name Info.plist -print0 2>/dev/null)
+  done < <(
+    for d in "${roots[@]}"; do
+      [ -d "$d" ] && find "$d" -name '*.app' -prune -print0 2>/dev/null
+    done
+  )
+  # Living background software claims its label too: a Launch Agent/Daemon whose
+  # program still EXISTS on disk is installed software, whether or not any
+  # bundle carries its id — some daemons are raw binaries with no .app at all.
+  # One whose program is GONE claims nothing: that corpse is exactly what
+  # `leftovers` hunts, and its data SHOULD surface here. Same live/dead line.
+  if [ "$sys" -eq 1 ]; then
+    for lp in /Library/LaunchDaemons/*.plist /Library/LaunchAgents/*.plist \
+              /Users/*/Library/LaunchAgents/*.plist; do
+      [ -f "$lp" ] || continue
+      prog="$(/usr/libexec/PlistBuddy -c 'Print :Program' "$lp" 2>/dev/null)"
+      [ -z "$prog" ] && prog="$(/usr/libexec/PlistBuddy -c 'Print :ProgramArguments:0' "$lp" 2>/dev/null)"
+      { [ -n "$prog" ] && [ -e "$prog" ]; } || continue
+      CLAIMED_IDS="$CLAIMED_IDS$(basename "$lp" .plist)"$'\n'
+    done
+  fi
+  CLAIMS_READY=1
+}
+# ^ that bundle scan is FULL depth, pruned at each bundle: vendors nest apps in
+# subfolders — /Applications/CLIP STUDIO 1.5/App/CLIP STUDIO PAINT.app is three
+# levels down, its helpers four — and a shallow scan here turned a LIVE app's
+# extension containers into "orphans" on a real Mac. Prune keeps it cheap:
+# nothing inside a bundle is walked twice; the per-app find handles the inside.
+# (Comment lives out here: bash 3.2 can't parse a parenthesis in a comment
+# inside process substitution.)
+
+# stdin: candidate ids, one per line → stdout: only the ones NO claim covers.
+# Every rule errs toward "claimed" (= kept): exact id, exact app-folder name,
+# dot-prefix in either direction (com.foo.Chrome.helper ↔ com.foo.Chrome), and
+# com.apple.* never surfaces at all — system components own ids with no .app.
+filter_unclaimed() {
+  # the lists ride the environment, not -v: BSD awk refuses newlines in -v
+  CLAIMS="$CLAIMED_IDS" NAMES="$CLAIMED_NAMES" LC_ALL=C awk '
+    BEGIN {
+      n = split(ENVIRON["CLAIMS"], C, "\n"); m = split(ENVIRON["NAMES"], N, "\n")
+      for (i = 1; i <= n; i++) if (C[i] != "") claimed[C[i]] = 1
+      for (i = 1; i <= m; i++) if (N[i] != "") byname[N[i]] = 1
+    }
+    {
+      if ($0 ~ /^com\.apple\./) next
+      if ($0 in claimed || $0 in byname) next
+      for (c in claimed) {
+        if (index($0, c ".") == 1) next      # candidate is a child of a claimed id
+        if (index(c, $0 ".") == 1) next      # candidate is a parent of a claimed id
+      }
+      print
+    }'
+}
+
+# Emit the id-shaped owners of data under one account's Library, one per line.
+# (Dupes fine — the caller sorts -u.) Vendor-NAME folders don't pass
+# looks_like_bid, so they can never become candidates. Two deliberate silences:
+#   • `group.*` entries (Group Containers, Application Scripts) NEVER nominate a
+#     candidate — an app group is a shared space, not an app's identity, and its
+#     membership lives in entitlements no Info.plist scan can prove (Apple's own
+#     Shortcuts owns group.is.workflow.* with no matching bundle id anywhere).
+#     A proven orphan's group data still rides along: orphan_paths_home and
+#     do_uninstall both match Group Containers by the already-proven id.
+#   • Application Support entries must be DIRECTORIES — the folder root also
+#     collects loose files with id-ish names (SwiftData's default.store) that
+#     name a file format, not an app.
+orphan_candidates() {   # $1 = home
+  local L="$1/Library" f b
+  for f in "$L/Containers"/* "$L/WebKit"/* "$L/HTTPStorages"/*; do
+    [ -e "$f" ] || continue
+    b="$(basename "$f")"; b="${b%.binarycookies}"
+    looks_like_bid "$b" && printf '%s\n' "$b"
+  done
+  for f in "$L/Application Support"/* ; do
+    [ -d "$f" ] || continue
+    b="$(basename "$f")"
+    looks_like_bid "$b" && printf '%s\n' "$b"
+  done
+  for f in "$L/Application Scripts"/*; do
+    [ -e "$f" ] || continue
+    b="$(basename "$f")"
+    case "$b" in group.*) continue ;; esac
+    looks_like_bid "$b" && printf '%s\n' "$b"
+  done
+  for f in "$L/Saved Application State"/*.savedState; do
+    [ -e "$f" ] || continue
+    b="$(basename "$f" .savedState)"
+    looks_like_bid "$b" && printf '%s\n' "$b"
+  done
+  for f in "$L/Preferences"/*.plist "$L/Cookies"/*.binarycookies; do
+    [ -e "$f" ] || continue
+    b="$(basename "$f")"; b="${b%.plist}"; b="${b%.binarycookies}"
+    looks_like_bid "$b" && printf '%s\n' "$b"
+  done
+}
+
+# All id-named paths <id> owns under <home>/Library — the same patterns
+# do_uninstall's footprint uses, id-anchored only (we have no trustworthy name).
+# NUL-delimited: a hostile sibling account controls these names.
+orphan_paths_home() {   # $1 = id  $2 = home
+  local id="$1" L="$2/Library" f
+  for f in "$L/Application Support/$id" "$L/Caches/$id" \
+           "$L/Containers/$id" "$L/Saved Application State/$id.savedState" \
+           "$L/WebKit/$id" "$L/Cookies/$id.binarycookies" \
+           "$L/Application Scripts/$id" "$L/Preferences/$id.plist"; do
+    [ -e "$f" ] && printf '%s\0' "$f"
+  done
+  for f in "$L/Preferences/$id".*.plist "$L/HTTPStorages/$id"* \
+           "$L/Group Containers/group.$id" "$L/LaunchAgents/$id"*.plist; do
+    [ -e "$f" ] && printf '%s\0' "$f"
+  done
+}
+
+# Does any id-named data exist for this id, in any real account?
+orphan_has_data() {   # $1 = id
+  local home
+  for home in /Users/*; do
+    [ -d "$home/Library" ] || continue
+    case "$(basename "$home")" in Shared|Guest) continue ;; esac
+    [ -n "$(orphan_paths_home "$1" "$home" | head -c1)" ] && return 0
+  done
+  return 1
+}
+
+# "Strong" data = the families worth a person's attention on their own
+# (Containers / Application Support / Group Containers / Saved State). A lone
+# 4 KB preferences plist is real but shouldn't crowd the picker — dozens of
+# those accumulate on any old Mac.
+orphan_is_strong() {   # $1 = id  $2… = homes
+  local id="$1" h f; shift
+  for h in "$@"; do
+    for f in "$h/Library/Containers/$id" "$h/Library/Application Support/$id" \
+             "$h/Library/Saved Application State/$id.savedState" \
+             "$h/Library/Group Containers/group.$id"; do
+      [ -e "$f" ] && return 0
+    done
+  done
+  return 1
+}
+
+# A recognition hint from the id itself — clearly marked as a guess by the
+# caller's "(…?)" wrapper, because the id is the only identity we can prove.
+orphan_hint() {   # $1 = id → one lowercase word, "" if nothing useful
+  local last prev
+  last="${1##*.}"; prev="${1%.*}"; prev="${prev##*.}"
+  case "$(printf '%s' "$last" | LC_ALL=C tr '[:upper:]' '[:lower:]')" in
+    client|app|mac|macos|osx|desktop|helper|agent|main|core|ui|gui|com|net|org) last="$prev" ;;
+  esac
+  printf '%s' "$last" | LC_ALL=C tr '[:upper:]' '[:lower:]'
+}
+
+od_human_kb() {   # KB → "12K" / "340M" / "1.2G" (matches du -h's vocabulary)
+  awk -v k="${1:-0}" 'BEGIN {
+    if (k >= 1048576)   printf "%.1fG", k / 1048576
+    else if (k >= 1024) printf "%.0fM", k / 1024
+    else                printf "%dK", k
+  }'
+}
+
+# The discovery driver. Requires collect_claims to have run. Fills, largest
+# first: OD_IDS / OD_SIZE / OD_HINT (surfaced: strong family or ≥ 1 MB) and
+# OD_SMALL (count of tiny id-only leftovers kept out of the list). Args
+# override the homes to scan (for tests); default = every real /Users home.
+# shellcheck disable=SC2120  # args are the test seam; production calls take the default
+orphan_discover() {
+  OD_IDS=(); OD_SIZE=(); OD_HINT=(); OD_SMALL=0
+  local homes=() home id kb rows="" paths=() p
+  if [ "$#" -gt 0 ]; then homes=("$@"); else
+    for home in /Users/*; do
+      [ -d "$home/Library" ] || continue
+      case "$(basename "$home")" in Shared|Guest) continue ;; esac
+      homes+=("$home")
+    done
+  fi
+  [ "${#homes[@]}" -eq 0 ] && return 0
+  while IFS= read -r id; do
+    [ -z "$id" ] && continue
+    paths=()
+    while IFS= read -r -d '' p; do paths+=("$p"); done < <(
+      for home in "${homes[@]}"; do orphan_paths_home "$id" "$home"; done)
+    [ "${#paths[@]}" -eq 0 ] && continue
+    kb="$(du -sk "${paths[@]}" 2>/dev/null | awk '{s += $1} END {print s + 0}')"
+    if orphan_is_strong "$id" "${homes[@]}" || [ "${kb:-0}" -ge 1024 ]; then
+      rows="$rows$kb $id"$'\n'
+    else
+      OD_SMALL=$((OD_SMALL + 1))
+    fi
+  done < <(
+    for home in "${homes[@]}"; do orphan_candidates "$home"; done \
+      | LC_ALL=C sort -u | filter_unclaimed
+  )
+  while read -r kb id; do
+    [ -z "$id" ] && continue
+    OD_IDS+=("$id"); OD_SIZE+=("$(od_human_kb "$kb")"); OD_HINT+=("$(orphan_hint "$id")")
+  done < <(printf '%s' "$rows" | LC_ALL=C sort -rn)
+}
+
 # Interactive picker (mole-style): list user-removable apps, read a number,
 # set APP_TARGET. Apple/system apps are filtered out. Returns with APP_TARGET
 # unset on cancel / invalid input.
 pick_app() {
-  local apps=() appp base bid n choice
+  local apps=() appp base bid n choice m i hint odn
   # Scan /Applications and ~/Applications, one folder deep (so apps nested in a
   # subfolder like "CLIP STUDIO 1.5/CLIP STUDIO.app" show up) — but NEVER descend
   # into a .app bundle (its embedded helper .apps aren't separate apps).
@@ -1854,16 +2171,38 @@ pick_app() {
     base="$(basename "$appp")"; base="${base%.app}"
     printf '  %3d) %s\n' "$n" "$(printf '%s' "$base" | vis)"
   done
+  # ── second section: DISCOVERY — data left behind by apps already removed.
+  # Numbered continuously with the apps above; picking one runs the exact same
+  # footprint→preview→typed-confirm→Trash→receipt flow, keyed by the bundle id.
+  t un_orphan_scan
+  collect_claims
+  orphan_discover
+  odn="${#OD_IDS[@]}"
+  if [ "$odn" -gt 0 ]; then
+    m="$(t un_orphan_header)"; echo "${m//\{n\}/$odn}"
+    for i in "${!OD_IDS[@]}"; do
+      n=$((n + 1))
+      hint="${OD_HINT[$i]}"; [ -n "$hint" ] && hint="  ($hint?)"
+      printf '  %3d) %-44s %6s%s\n' "$n" "${OD_IDS[$i]}" "${OD_SIZE[$i]}" "$hint"
+    done
+  fi
+  if [ "$OD_SMALL" -gt 0 ]; then
+    m="$(t un_orphan_small)"; echo "       ${m//\{n\}/$OD_SMALL}"
+  fi
   printf '%s' "$(t un_pick_prompt)"
   choice=""; read -r choice || true
   case "$choice" in
     ''|q|Q)   return 0 ;;                          # clean cancel → caller prints un_cancelled
     *[!0-9]*) t un_pick_invalid >&2; return 2 ;;    # already messaged → caller must not re-print
   esac
-  if [ "$choice" -lt 1 ] || [ "$choice" -gt "${#apps[@]}" ]; then
+  if [ "$choice" -lt 1 ] || [ "$choice" -gt "$n" ]; then
     t un_pick_invalid >&2; return 2
   fi
-  APP_TARGET="${apps[$((choice - 1))]}"
+  if [ "$choice" -le "${#apps[@]}" ]; then
+    APP_TARGET="${apps[$((choice - 1))]}"
+  else
+    APP_TARGET="${OD_IDS[$((choice - 1 - ${#apps[@]}))]}"
+  fi
 }
 
 # Move one path into a specific account's Trash (recoverable). $1=path $2=ownerHome
@@ -1911,7 +2250,10 @@ to_trash() {
 }
 
 do_uninstall() {
-  local target="$1" app bid name rc
+  local target="$1" app bid name rc orphan=0
+  # an empty target must die HERE: handed to the resolvers below, "" would match
+  # brew's whole Cellar listing and offer to uninstall the first formula in it
+  if [ -z "$target" ]; then t un_usage >&2; return 1; fi
   resolve_app "$target"
   app="$RESOLVED_APP"
   if [ -z "$app" ]; then
@@ -1931,13 +2273,39 @@ do_uninstall() {
       [ "$rc" -ne 2 ] && return "$rc"
       do_uninstall_bin "$q"; rc=$?
       [ "$rc" -ne 2 ] && return "$rc"
-      m="$(t un_notfound)"; echo "${m//\{app\}/$target}" >&2; return 1
+      # Not a tool either. If it has the SHAPE of a bundle id and owns id-named
+      # data, this is the DISCOVERY flow: an app removed long ago whose data was
+      # never cleaned up (how the picker's orphan rows land here). Refuse an id
+      # anything installed still claims — the same claim scan the picker uses —
+      # so `uninstall <bundle-id>` can never reach a live app's (or its
+      # helper's) data. Only id-named paths are matched: for a gone app the id
+      # is the one identity we can prove, and inventing a display name would be
+      # the fuzzy match this script refuses to do.
+      if looks_like_bid "$q" && orphan_has_data "$q"; then
+        [ "$CLAIMS_READY" -eq 1 ] || collect_claims
+        if [ -z "$(printf '%s\n' "$q" | filter_unclaimed)" ]; then
+          m="$(t un_orphan_installed)"; echo "${m//\{bid\}/$q}" >&2; return 1
+        fi
+        bid="$q"; name="$q"; orphan=1
+      else
+        m="$(t un_notfound)"; echo "${m//\{app\}/$target}" >&2; return 1
+      fi
     fi
-    name="$(catalog_name_for_bid "$bid")"; [ -z "$name" ] && name="$q"
+    if [ "$orphan" -eq 0 ]; then
+      name="$(catalog_name_for_bid "$bid")"; [ -z "$name" ] && name="$q"
+      # A catalog bid typed LITERALLY while its app is still installed must not
+      # slip into this already-gone flow (its Application Support is live data).
+      # resolve_app failed above only because "<bid>.app" isn't a folder name —
+      # so re-resolve by the catalog's display name and refuse on a hit.
+      resolve_app "$name"
+      if [ -n "$RESOLVED_APP" ]; then
+        m="$(t un_orphan_installed)"; echo "${m//\{bid\}/$bid}" >&2; return 1
+      fi
+      m="$(t un_appgone)"; echo "${m//\{app\}/$name}"
+    fi
     # app stays empty — that IS the "bundle already gone" state: the system-wide
     # `add "$app"` below no-ops on a missing path, so no .app is moved.
     app=""
-    m="$(t un_appgone)"; echo "${m//\{app\}/$name}"
   else
     # Refuse only what genuinely can't be removed — by WHERE it lives, not by who
     # made it. Apps on the sealed, read-only system volume (/System/*) are off
@@ -1972,10 +2340,12 @@ do_uninstall() {
     case "$(basename "$home")" in Shared|Guest) continue ;; esac
     u="$(basename "$home")"
     ascope="$(t acct)$u"
-    add "$home/Library/Application Support/$name"            "$home"
+    # name-anchored paths are skipped in the orphan (discovery) flow: there the
+    # "name" IS the bundle id — adding both would list the same path twice.
+    [ "$orphan" -eq 0 ] && add "$home/Library/Application Support/$name" "$home"
     add "$home/Library/Application Support/$bid"             "$home"
     add "$home/Library/Caches/$bid"                          "$home"
-    add "$home/Library/Caches/$name"                         "$home"
+    [ "$orphan" -eq 0 ] && add "$home/Library/Caches/$name"  "$home"
     add "$home/Library/Preferences/$bid.plist"              "$home"
     for f in "$home/Library/Preferences/$bid".*.plist;   do add "$f" "$home"; done
     add "$home/Library/Containers/$bid"                     "$home"
@@ -1985,7 +2355,7 @@ do_uninstall() {
     add "$home/Library/WebKit/$bid"                        "$home"
     add "$home/Library/Cookies/$bid.binarycookies"        "$home"
     add "$home/Library/Application Scripts/$bid"           "$home"
-    add "$home/Library/Logs/$name"                         "$home"
+    [ "$orphan" -eq 0 ] && add "$home/Library/Logs/$name"  "$home"
     for f in "$home/Library/LaunchAgents/$bid"*.plist;   do add "$f" "$home"; done
     # vendor-nested data the standard patterns above can't reach (Chrome's
     # Google/Chrome, Brave's BraveSoftware/Brave-Browser, …). extra_is_safe()
@@ -2000,7 +2370,7 @@ do_uninstall() {
   # system-wide bits + the .app itself → the running user's Trash (Finder-like)
   ascope="$(t system)"
   add "$app"                                                "$REAL_HOME"
-  add "/Library/Application Support/$name"                  "$REAL_HOME"
+  [ "$orphan" -eq 0 ] && add "/Library/Application Support/$name" "$REAL_HOME"
   add "/Library/Caches/$bid"                                "$REAL_HOME"
   for f in "/Library/LaunchAgents/$bid"*.plist;        do add "$f" "$REAL_HOME"; done
   for f in "/Library/LaunchDaemons/$bid"*.plist;       do add "$f" "$REAL_HOME"; done
@@ -2008,7 +2378,11 @@ do_uninstall() {
 
   # --- show what we found (always; this IS the product) -----------------------
   echo "============================================================"
-  m="$(t un_resolved)"; m="${m//\{app\}/${app:-$name}}"; echo "${m//\{bid\}/$bid}"
+  if [ "$orphan" -eq 1 ]; then
+    m="$(t un_orphan)"; echo "${m//\{bid\}/$bid}"
+  else
+    m="$(t un_resolved)"; m="${m//\{app\}/${app:-$name}}"; echo "${m//\{bid\}/$bid}"
+  fi
   echo "------------------------------------------------------------"
   if [ "${#ITEM_PATH[@]}" -eq 0 ]; then
     m="$(t un_empty)"; echo "${m//\{app\}/$name}"
@@ -2129,6 +2503,9 @@ brew_run() {
 # cancelled · 1 = refused/failed · 2 = not a brew formula (caller falls through).
 do_uninstall_brew() {
   local name vers deps keg sz cmd reply
+  name="$1"
+  # empty name would make `brew list --versions` dump EVERY installed formula
+  [ -z "$name" ] && return 2
   brew_locate
   [ -z "$BREW_BIN" ] && return 2
   name="$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')"   # formula names are lowercase
@@ -2625,9 +3002,6 @@ echo "$(t free_before)$(df -h /System/Volumes/Data | awk '/Data$/{print $4}')"
 echo "============================================================"
 
 # ---- per-account safe caches (every real home under /Users) ----
-# Adobe apps live system-wide in /Applications, so resolve "is Adobe gone?" once
-# rather than per account (it gates the Application Support/Adobe clean below).
-adobe_gone=1; adobe_installed && adobe_gone=0
 for home in /Users/*; do
   [ -d "$home/Library" ] || continue
   case "$(basename "$home")" in Shared|Guest) continue ;; esac
@@ -2643,12 +3017,6 @@ for home in /Users/*; do
   clean "$home/Library/Developer/CoreSimulator/Caches"
   clean "$home/.cargo/registry/cache"
   clean "$home/.gradle/caches"
-  # Application Support/Adobe is LIVE data while Adobe is installed — only clear
-  # it as leftover when every Adobe app is gone. Caches/Adobe is a genuine cache,
-  # always safe. (The old code cleared Application Support unconditionally, with a
-  # comment claiming otherwise — it would empty a working Adobe install's data.)
-  [ "$adobe_gone" -eq 1 ] && clean "$home/Library/Application Support/Adobe"
-  clean "$home/Library/Caches/Adobe"
 done
 
 # ---- system-wide, once ----

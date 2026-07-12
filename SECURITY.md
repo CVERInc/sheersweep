@@ -40,12 +40,13 @@ wrote — never your data.
 ## The never-touch list is unreachable by construction
 
 No line in the script can reach: Photos / Documents / Desktop / Movies / Music,
-Clip Studio (CELSYS), app Containers & Application Support (except an
-already-uninstalled Adobe's leftovers — gated by an actual "is Adobe still
-installed?" check, so a live install's data is never cleared), Dropbox / cloud-sync
+Clip Studio (CELSYS), app Containers & Application Support, Dropbox / cloud-sync
 folders, screen recordings, Mail / Messages / Keychains, any git repo, any
-Obsidian vault. The sweep operates on a hard-coded path list; it does not walk your
-home looking for things to delete.
+Obsidian vault. The sweep operates on a hard-coded path list — it names no
+vendor and does not walk your home looking for things to delete. (Before 0.7.0
+the sweep carried one vendor exception, already-uninstalled Adobe leftovers;
+that special case is gone — removed-app residue is now `uninstall`'s discovery
+job, behind its preview and typed confirmation.)
 
 ## `uninstall` matches by identity, never by a fuzzy name
 
@@ -56,6 +57,23 @@ receipt; a hand-installed bare binary by exact filename in `~/bin` / `~/.local/b
 / `/usr/local/bin` (symlinks owned by Homebrew or an `.app` are never touched —
 their owners uninstall them). Apps on the sealed system volume (`/System/*`) and
 the firmlinked Safari are refused.
+
+**Orphan discovery keeps the same anchor.** The picker's "already removed"
+section surfaces only data *named by a bundle id* that **nothing installed
+claims**. The claim scan errs toward keeping, on purpose: it collects every
+bundle id from every Applications folder at *full* depth (vendors nest apps
+several levels down), every Info.plist nested inside each non-Apple bundle
+(XPC services, login items, helpers with divergent ids that no prefix rule
+could prove), bundles under `/Library/Application Support` and
+`/Library/PrivilegedHelperTools` (where drivers and updaters live), each app's
+folder name, dot-prefix relations in both directions, and the label of every
+Launch Agent/Daemon whose program still exists on disk. `com.apple.*` never
+surfaces, and the `group.*` namespace can never *nominate* an orphan — an app
+group is a shared space whose membership lives in entitlements no plist scan
+can prove (a proven orphan's group container still rides along with its
+footprint). Vendor-name folders (`Application Support/Adobe`) are never
+auto-surfaced. Typing an id directly runs the same claim check in reverse:
+`uninstall <bundle-id>` refuses an id anything installed still claims.
 
 ## Multi-account hardening
 
@@ -94,6 +112,13 @@ never escalate and never need a password.
   that its own logic can't reach the never-touch list. It cannot guarantee an app
   it removed left nothing anywhere a name-based match can't safely see — where that
   applies (a bare binary's data directory), it says so out loud rather than guess.
+- Orphan discovery has one known residual, found by testing against a real,
+  lived-in Mac: a live driver's *transient sandboxed helper* can own a container
+  whose id appears in no Info.plist and no launchd label anywhere (observed with
+  a tablet driver's display-settings XPC). Such an id can still be listed as
+  orphaned. That is the honest platform bound — there is nothing left to scan —
+  and it is why every discovered item still goes through the full preview, the
+  typed confirmation, the Trash (never `rm`), and `restore`.
 - The multi-account guards above reduce the demonstrated attacks to races or
   refusals; they are the honest bound a shell script running as root can enforce,
   not a claim of formal isolation. On a single-user Mac none of this applies.

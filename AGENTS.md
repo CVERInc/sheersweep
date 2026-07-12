@@ -29,6 +29,8 @@ sheersweep uninstall <App>           # remove it → MOVES to Trash (never rm), 
 sheersweep uninstall <formula>       # a Homebrew formula → DELEGATED to `brew uninstall`,
                                      #   dependency-checked, exact command shown, typed confirm
 sheersweep uninstall <binary>        # a hand-installed bare binary → Trash, typed confirm
+sheersweep uninstall <bundle-id> --dry-run   # headless preview of a REMOVED app's leftover
+                                     #   data (refused if anything installed claims the id)
 sheersweep tools                     # read-only CLI inventory (formulae/orphans/binaries/
                                      #   toolchain data) — changes nothing, no sudo needed
 sheersweep leftovers --dry-run       # preview orphaned LaunchAgents/Daemons
@@ -51,20 +53,26 @@ Locale is auto-detected; force it with `SHEERSWEEP_LANG=en-US|ja-JP|zh-TW|zh-Han
    is not authorization.
 3. **The sweep only clears regenerable junk** (`Library/Caches`, `Library/Logs`,
    `~/.cache`, `~/.npm`, Xcode DerivedData/DeviceSupport, CoreSimulator/Cargo/Gradle
-   caches, already-uninstalled Adobe leftovers; system-wide `/Library/Caches`,
-   `/.adobeTemp`, `brew cleanup`). It will never grow an "aggressive"/"deep" mode.
-   Don't ask it to delete app data — that's what `uninstall` is for, on purpose.
+   caches; system-wide `/Library/Caches`, `/.adobeTemp`, `brew cleanup`). It names
+   no vendor and will never grow an "aggressive"/"deep" mode. Don't ask it to
+   delete app data — that's what `uninstall` is for, on purpose (removed-app
+   residue included: that's `uninstall`'s discovery section, not a sweep job).
 4. **Honor the 🔴 never-touch list — and never route around it.** No line can reach:
    Photos / Documents / Desktop / Movies / Music, Clip Studio (CELSYS), app
-   Containers & Application Support (except already-uninstalled Adobe), Dropbox /
-   cloud-sync folders, screen recordings, Mail / Messages / Keychains, any git repo,
-   any Obsidian vault. If the human wants one of these gone, that's a manual human
-   action, not a sheersweep job.
+   Containers & Application Support, Dropbox / cloud-sync folders, screen
+   recordings, Mail / Messages / Keychains, any git repo, any Obsidian vault. If
+   the human wants one of these gone, that's a manual human action, not a
+   sheersweep job.
 5. **`uninstall` matches by bundle id, plus exact display-name paths that macOS
    itself uses — never a fuzzy/substring match**, and only ever *moves*
    to the owning account's Trash (no `rm`). It refuses sealed-system (`/System/*`)
    and the firmlinked Safari. Emptying the Trash is the human's final, deliberate
    step to reclaim space — that's the recoverability, don't shortcut it.
+   The no-name picker also *discovers* data left behind by already-removed apps —
+   surfaced only when the bundle id is claimed by nothing installed (the claim
+   scan covers nested helper ids, `/Library` driver bundles, and live launchd
+   labels; `group.*` and `com.apple.*` never surface). Same flow, same receipt,
+   same `restore`.
    For CLI tools the anchor changes but the rule doesn't: a Homebrew formula is
    matched by brew's own receipt and removed by **delegating to `brew uninstall`**
    (dependency-checked, exact command shown first; restore = `brew install`); a

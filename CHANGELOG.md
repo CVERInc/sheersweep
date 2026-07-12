@@ -4,6 +4,64 @@ All notable changes to sheersweep are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.7.0]
+
+The original wish behind sheersweep was always "reliably clear the residue of
+software I already removed" — this release makes that a real, provable feature
+instead of one hard-coded vendor. Design notes: `docs/orphan-discovery-spec.md`.
+
+### Added — `uninstall` discovers what removed apps left behind
+
+- **The no-argument picker grows a second section:** `🧟 Already removed —
+  leftover data found (N)`, listing data that apps you removed long ago never
+  cleaned up — largest first, with sizes and a clearly-marked recognition guess
+  (`com.spotify.client  340M  (spotify?)`). Picking one runs the *existing*
+  footprint → preview → typed-confirm → Trash → receipt flow, so `restore`
+  undoes it like any uninstall. `sheersweep uninstall <bundle-id>` reaches the
+  same flow directly (works headless with `--dry-run`).
+- **Provable orphans only — identity, never a guess.** A large share of app data
+  is named by bundle id (`Containers/<id>`, `Preferences/<id>.plist`, …). An id
+  is surfaced only when *nothing installed claims it*; the claim scan covers
+  every Applications folder at full depth (vendors nest apps three levels down),
+  every Info.plist nested *inside* each non-Apple bundle (XPC services, login
+  items, Electron helpers — including divergent-id helpers no prefix rule can
+  prove), driver/updater bundles in `/Library/Application Support` and
+  `/Library/PrivilegedHelperTools`, each app's folder name, dot-prefix relations
+  in both directions, and the label of every Launch Agent/Daemon whose program
+  still exists — the same live/dead line `leftovers` draws. `com.apple.*` and
+  the `group.*` namespace never surface at all (a group is a shared space, not
+  an app's identity — though a proven orphan's group container still rides
+  along). Vendor-NAME folders (`Application Support/Adobe`) can't be proved and
+  are never auto-surfaced.
+- **Honest noise floor:** an orphan appears in the picker only with a strong
+  footprint (Containers / Application Support / Saved State) or ≥ 1 MB; the tiny
+  lone-plist tail folds into one count line instead of drowning the list.
+- **Guarded in reverse too:** `uninstall <bundle-id>` refuses an id that
+  anything installed still claims, so it can never reach a live app's (or its
+  helper's) data.
+
+### Changed — Adobe leaves the sweep
+
+- The sweep no longer touches `Application Support/Adobe` (and the v0.6.0
+  "is Adobe installed?" guard is gone with it): vendor application data was
+  never regenerable junk, and hard-coding one vendor into the sweep is exactly
+  what the discovery above replaces. `Caches/Adobe` also loses its dedicated
+  line — the sweep already clears all of `Library/Caches` wholesale, so it was
+  a no-op subset. Net: **the sweep names no vendor**, and the never-touch list's
+  Adobe carve-out disappears from `--help` (all nine locales), README,
+  SECURITY.md, and AGENTS.md. Adobe residue now shows up where it belongs: as a
+  discovered orphan in `uninstall`.
+
+### Honest scope
+
+- Discovery was tuned against a real, lived-in Mac: a live tablet driver's
+  transient sandboxed XPC can own a container that appears in **no** scannable
+  Info.plist or launchd label (observed: `com.wacom.Wacom-Display-Settings`,
+  32 KB, while the driver runs). Such an id can still surface — with its size,
+  its dimmed hint, and the typed-confirm + Trash + restore gate as the floor.
+  Every claim rule errs toward *keeping*; the confirm gate covers what no scan
+  can prove. SECURITY.md spells this out.
+
 ## [0.6.0]
 
 ### Pre-release hardening (multi-agent cold-read review)
