@@ -224,10 +224,10 @@ everything" button.
 
 ## Language
 
-The interface speaks **nine languages** — English (en-US), 日本語 (ja-JP),
-繁體中文 (zh-TW), 简体中文 (zh-Hans), 한국어 (ko-KR), Español (es-ES), Deutsch
-(de-DE), Français (fr-FR), and Português do Brasil (pt-BR) — auto-detected from
-your system locale. Consent prompts and judgments are fully localized; command
+The interface speaks **nine languages** — Deutsch (de-DE), English (en-US),
+Español (es-ES), Français (fr-FR), 日本語 (ja-JP), 한국어 (ko-KR), Português
+do Brasil (pt-BR), 简体中文 (zh-Hans), and 繁體中文 (zh-TW) — auto-detected
+from your system locale. Consent prompts and judgments are fully localized; command
 lines, paths, and sizes stay raw, because that vocabulary *is* the interface you
 copy, run, and search. Force a language with:
 

@@ -2890,7 +2890,8 @@ unmanaged_bins() {
   for d in "$home/bin" "$home/.local/bin" "/usr/local/bin"; do
     [ -d "$d" ] || continue
     for f in "$d"/*; do
-      [ -f "$f" ] && [ -x "$f" ] || continue    # follows symlinks; skips dirs and dangling links
+      [ -f "$f" ] || continue    # follows symlinks; skips dirs and dangling links
+      [ -x "$f" ] || continue    # (two lines: older shellcheck flags `A && B || C` as SC2015)
       [ -n "$q" ] && [ "$(basename "$f")" != "$q" ] && continue
       if [ -L "$f" ]; then
         tgt="$(readlink "$f")"
