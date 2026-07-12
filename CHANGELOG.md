@@ -4,6 +4,17 @@ All notable changes to sheersweep are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.7.3]
+
+### Changed — the menu arrives in one piece
+
+- 0.7.2 overlapped the orphan scan with reading the app list — but that meant
+  the 🧟 section arrived seconds after the apps: a menu in halves reads as a
+  stutter, and a late-growing list is exactly what a person starts typing
+  against. The apps are now *collected* during the scan but *printed* with it:
+  one announced wait up front (the 🔍 line says the menu arrives complete),
+  then everything at once. Same scan, same overlap, calmer screen.
+
 ## [0.7.2]
 
 ### Changed — the orphan scan hides under your reading time
