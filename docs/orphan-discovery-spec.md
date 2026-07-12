@@ -95,6 +95,37 @@ How to label a **nameless** provable orphan in the picker:
 Leaning toward id-with-a-dimmed-hint: it's the identity we can prove, and the
 hint aids recognition without claiming a match.
 
+## Hard edges the enumeration MUST handle (cold re-read, 2026-07-12)
+
+Two failure modes found by re-deriving the design against the v0.6.0 code. Both
+live in the *finder*, and both must be solved before the picker section ships:
+
+1. **Helper-bundle false orphans — the dangerous one.** "Enumerate every
+   installed `.app`'s bundle id" is under-specified. If it means top-level
+   `/Applications/*.app` ids only, every nested helper bundle with its own id —
+   XPC services, login items, Electron/Chromium helpers (`com.microsoft.teams2.launcher`
+   inside Teams, `com.google.Chrome.helper.*` inside Chrome) — owns a live
+   `Containers/<id>` that no top-level id claims. A naive subtract marks a
+   **running app's helper container** as a provable orphan. A `.`-prefix rule
+   doesn't close it either (vendors use divergent ids: `com.adobe.acc.installer`
+   shares no prefix with any installed Adobe app id). The honest anchor:
+   **an id is claimed if it appears as `CFBundleIdentifier` in ANY `Info.plist`
+   inside any installed bundle** (`find /Applications ~/Applications ... -name
+   Info.plist` within `.app`s — a few seconds, run once). And `com.apple.*` is
+   ✅ keep unconditionally — system components own ids with no `.app` at all.
+
+2. **Noise floor.** An old Mac carries dozens of orphan `Preferences/<id>.plist`
+   at a few KB each (every past utility leaves one). Listing 60 four-KB ids
+   drowns the discovery that matters — evidence becomes spam. Surface an orphan
+   in the picker only if it has a **strong-family** presence (Containers /
+   `Application Support/<bid>` / Group Containers / Saved State) **or** its
+   aggregate size clears a floor (~1 MB); fold the tiny lone-plist tail into one
+   dimmed count line (`…and N small preference files — shown with --all`).
+
+(Also noted: `Group Containers` entries are team-id/group-named — attribution in
+the discovery direction needs the same care as the wildcard match in
+`do_uninstall`, not a new looser rule.)
+
 ## Inherited safety (unchanged)
 
 Same as every destructive verb: preview the full footprint with sizes → type to
