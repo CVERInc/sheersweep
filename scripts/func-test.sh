@@ -637,6 +637,95 @@ else
   fail "Adobe still referenced by the sweep/help"
 fi
 
+# (P1 guard) reclaim's three gates — the conjunction is the safety story:
+# gitignored AND known pattern AND sibling manifest. Each gate alone must NOT
+# be enough, and an Obsidian vault is invisible even when all three hold.
+setup
+export SHEERSWEEP_LANG=en-US
+R="$SBX/roots"; REAL_HOME="$SBX/home"; mkdir -p "$REAL_HOME"
+mkrepo() {   # $1=dir — a git repo with one committed file
+  mkdir -p "$1"; git -C "$1" init -q
+  echo x > "$1/src.txt"; printf 'node_modules\ndist\ntarget\n.build\n' > "$1/.gitignore"
+  git -C "$1" -c user.email=t@t -c user.name=t add -A
+  git -C "$1" -c user.email=t@t -c user.name=t commit -qm init
+}
+# ① eligible: ignored + pattern + manifest
+mkrepo "$R/good"; echo '{}' > "$R/good/package.json"
+mkdir -p "$R/good/node_modules/dep"; echo j > "$R/good/node_modules/dep/i.js"
+# ② no manifest: a content folder literally named dist
+mkrepo "$R/nomanifest"; mkdir -p "$R/nomanifest/dist"; echo data > "$R/nomanifest/dist/mine.txt"
+# ③ not gitignored: pattern + manifest but git tracks it
+mkrepo "$R/tracked"; echo '{}' > "$R/tracked/package.json"
+mkdir -p "$R/tracked/node_modules"; echo j > "$R/tracked/node_modules/i.js"
+: > "$R/tracked/.gitignore"   # nothing ignored here
+# ④ no git repo at all
+mkdir -p "$R/norepo/node_modules"; echo '{}' > "$R/norepo/package.json"; echo j > "$R/norepo/node_modules/i.js"
+# ⑤ a vault: all three gates hold, but an ancestor carries .obsidian
+mkrepo "$R/vault"; mkdir -p "$R/vault/.obsidian"; echo '{}' > "$R/vault/package.json"
+mkdir -p "$R/vault/node_modules"; echo j > "$R/vault/node_modules/i.js"
+DRY=1; RC_ROOTS=("$R"); RC_STALE_DAYS=""
+: "reads for shellcheck — consumed in the sourced do_reclaim: $DRY ${RC_ROOTS[*]} $RC_STALE_DAYS"
+out="$(do_reclaim 2>&1)"
+ok1=0; case "$out" in *"good/node_modules"*|*"node_modules"*) ok1=1 ;; esac
+ok2=1; case "$out" in *nomanifest*) ok2=0 ;; esac
+ok3=1; case "$out" in *tracked*) ok3=0 ;; esac
+ok4=1; case "$out" in *norepo*) ok4=0 ;; esac
+ok5=1; case "$out" in *vault*) ok5=0 ;; esac
+if [ "$ok1$ok2$ok3$ok4$ok5" = "11111" ]; then
+  pass "reclaim gates: eligible found; no-manifest / tracked / repo-less / vault all invisible"
+else
+  fail "reclaim gates wrong (found=$ok1 nomanifest=$ok2 tracked=$ok3 norepo=$ok4 vault=$ok5)"
+fi
+
+# (guard) --stale honours max(commit, tracked mtime): an old repo passes the
+# filter; the same repo with ONE freshly-touched tracked file does not.
+old="202601010000"
+git -C "$R/good" -c user.email=t@t -c user.name=t commit -q --amend --no-edit --date="2026-01-01T00:00:00"
+GIT_COMMITTER_DATE="2026-01-01T00:00:00" git -C "$R/good" -c user.email=t@t -c user.name=t commit -q --amend --no-edit --date="2026-01-01T00:00:00"
+touch -t "$old" "$R/good/src.txt" "$R/good/.gitignore" "$R/good/package.json"
+RC_STALE_DAYS=30; : "$RC_STALE_DAYS"
+out="$(do_reclaim 2>&1)"
+case "$out" in *node_modules*) s1=1 ;; *) s1=0 ;; esac
+touch "$R/good/src.txt"                       # tracked file edited just now
+out="$(do_reclaim 2>&1)"
+case "$out" in *node_modules*) s2=0 ;; *) s2=1 ;; esac
+RC_STALE_DAYS=""; : "$RC_STALE_DAYS"
+if [ "$s1$s2" = "11" ]; then
+  pass "reclaim --stale: old repo passes; one fresh tracked edit shields it"
+else
+  fail "reclaim --stale wrong (old-in=$s1 fresh-out=$s2)"
+fi
+
+# (guard) the rebuild command follows the lockfile
+r1="$(rc_rebuild_for node_modules "$R/good")"
+touch "$R/good/pnpm-lock.yaml"; r2="$(rc_rebuild_for node_modules "$R/good")"
+rm "$R/good/pnpm-lock.yaml"; touch "$R/good/yarn.lock"; r3="$(rc_rebuild_for dist "$R/good")"
+r4="$(rc_rebuild_for .build "$R/good")"; r5="$(rc_rebuild_for target "$R/good")"
+if [ "$r1" = "npm install" ] && [ "$r2" = "pnpm install" ] && [ "$r3" = "yarn run build" ] \
+   && [ "$r4" = "swift build" ] && [ "$r5" = "cargo build" ]; then
+  pass "reclaim rebuild map: lockfile picks the package manager; swift/cargo mapped"
+else
+  fail "rebuild map wrong ($r1 / $r2 / $r3 / $r4 / $r5)"
+fi
+rm -f "$R/good/yarn.lock"
+
+# (e2e) real reclaim run: select all → typed count → Trash under the fixture
+# home → receipt carries kind=reclaim and the rebuild command → restore preview
+# surfaces the rebuild hint.
+DRY=0; : "$DRY"
+do_reclaim <<< $'all\n1' > "$SBX/rc.out" 2>&1
+RC_RECEIPT="$(find "$REAL_HOME/.sheersweep/uninstalls" -name "*-reclaim.tsv" 2>/dev/null | head -1)"
+e1=0; [ ! -e "$R/good/node_modules" ] && e1=1
+e2=0; [ -n "$RC_RECEIPT" ] && [ "$(receipt_header "$RC_RECEIPT" kind)" = "reclaim" ] && e2=1
+e3=0; receipt_header_all "$RC_RECEIPT" rebuild 2>/dev/null | grep -q "npm install" && e3=1
+e4=0; grep -q "✅" "$SBX/rc.out" && e4=1
+if [ "$e1$e2$e3$e4" = "1111" ]; then
+  pass "reclaim e2e: moved to Trash, receipt kind=reclaim with rebuild command, honest ✅"
+else
+  fail "reclaim e2e wrong (moved=$e1 kind=$e2 rebuild=$e3 done=$e4) $(tail -3 "$SBX/rc.out")"
+fi
+teardown
+
 # (guard) EVERY t() key must exist in EVERY supported locale — the key list is
 # extracted from the script itself so a future key can't dodge the check. The
 # i18n rule is tiered (command lines stay raw) but a key that IS localized may

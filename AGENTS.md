@@ -35,7 +35,13 @@ sheersweep tools                     # read-only CLI inventory (formulae/orphans
                                      #   toolchain data) — changes nothing, no sudo needed
 sheersweep leftovers --dry-run       # preview orphaned LaunchAgents/Daemons
 sheersweep leftovers                 # remove dead/orphan startup items → Trash, yes/no confirm
-sheersweep restore                   # undo the last uninstall/leftovers — put it all back
+sheersweep reclaim --dry-run         # preview build output in project folders — eligible ONLY
+                                     #   with 3 proofs: gitignored + known pattern + manifest
+sheersweep reclaim                   # interactive: pick rows, typed count → Trash + receipt
+                                     #   (receipt records the rebuild command per folder)
+sheersweep reclaim --stale 30d       # only repos untouched for 30+ days
+sheersweep restore                   # undo the last uninstall/leftovers/reclaim — put it all
+                                     #   back (a reclaim receipt also prints rebuild commands)
 sheersweep restore --list            # show past removals
 sheersweep --version                 # prints the current version; never needs sudo
 ```

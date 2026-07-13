@@ -43,7 +43,8 @@ Open source, no subscription, no surprises.
 
 - For **every account** under `/Users` (current *and* future):
   `Library/Caches`, `Library/Logs`, `~/.cache`, `~/.npm`, Xcode
-  `DerivedData` / `DeviceSupport`, CoreSimulator caches, and Cargo/Gradle caches.
+  `DerivedData` / `DeviceSupport`, CoreSimulator caches, Cargo/Gradle caches,
+  and Node's per-user compile cache.
 - System-wide, once: `/Library/Caches`, `/.adobeTemp`, `brew cleanup`.
 - **The sweep names no vendor.** It clears only regenerable cache/log/temp
   locations — never a vendor's application data. (Adobe's residue, once a
@@ -182,6 +183,44 @@ The point isn't finding *more* — it's being **honest about what's actually jun
 Chosen items move to the Trash and are logged, so **`sheersweep restore`** undoes a
 leftovers sweep too. The system list catches up after the next login/restart.
 
+## Reclaim build output (opt-in)
+
+Build output is the heaviest junk on a developer's Mac — `node_modules`, Swift
+`.build`, Cargo `target`, `dist` — tens of GB across a dozen repos, all
+rebuildable with one command. It is also exactly where black-box cleaners lose
+people's data. So `reclaim` refuses to guess: a folder is a candidate **only
+when three proofs hold at once** — git ignores it, its name is on a short
+allow-list, and a sibling manifest (`package.json`, `Cargo.toml`,
+`Package.swift`…) proves the build tool. A folder that merely *happens* to be
+called `dist` fails the manifest gate and stays invisible. The never-touch
+list still applies on top (an Obsidian vault is skipped outright).
+
+```bash
+sheersweep reclaim               # scan → grouped preview → pick → confirm → Trash
+sheersweep reclaim --dry-run     # preview only (headless-friendly)
+sheersweep reclaim --stale 30d   # only repos untouched for 30+ days
+```
+
+The preview is the anti-black-box payload made concrete — not "Junk: 3.8 GB —
+Clean", but:
+
+```
+♻️  ~/Developer/snapsift
+   1) app/.build           773M   rebuild: swift build    · 14d untouched
+♻️  ~/Developer/motifmint
+   2) node_modules         263M   rebuild: npm install    · 31d untouched
+```
+
+What it is, how to rebuild it, how stale it is — *you* judge alive vs dead;
+the machine never decides a repo is "done". Staleness is honest: the newer of
+the last commit and the newest **tracked-file** edit, so an actively-edited
+repo can never look stale. Selected folders move to the **Trash** — a
+same-volume rename, instant, no copying — under one receipt. `sheersweep
+restore` puts them back, and because the receipt records each **rebuild
+command**, it also shows the cleaner alternative: rebuild a fresh tree
+instead. Two undos, one promise. Design notes:
+[`docs/reclaim-spec.md`](docs/reclaim-spec.md).
+
 ## Install & use
 
 ```bash
@@ -193,7 +232,8 @@ cd sheersweep
 ./sheersweep uninstall        # pick an app — or removed apps' leftover data — to clear
 ./sheersweep tools            # read-only: your CLI tools, orphans, toolchain data
 ./sheersweep leftovers        # find orphaned startup items from apps that are gone
-./sheersweep restore          # undo the last uninstall/leftovers — put it all back
+./sheersweep reclaim          # build output in your repos — 3 proofs, then Trash
+./sheersweep restore          # undo the last uninstall/leftovers/reclaim — put it all back
 ./sheersweep --version
 ./sheersweep --help
 ```

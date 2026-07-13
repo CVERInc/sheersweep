@@ -23,11 +23,14 @@ read the risk:
    `/Library/Caches`, `/.adobeTemp`). These are regenerable — the OS and your apps
    rebuild them. There is no "aggressive" or "deep" mode, and there never will be.
 
-2. **`uninstall` / `leftovers` move to the Trash** — they call `mv` into the
-   owning account's `~/.Trash`, never `rm`. Every move is recorded in a plain-text
-   receipt under `~/.sheersweep/uninstalls/`, so `sheersweep restore` puts the
-   entire last removal back. Emptying the Trash — the only irreversible step — is
-   always your own deliberate action.
+2. **`uninstall` / `leftovers` / `reclaim` move to the Trash** — they call `mv`
+   into the owning account's `~/.Trash`, never `rm`. Every move is recorded in a
+   plain-text receipt under `~/.sheersweep/uninstalls/`, so `sheersweep restore`
+   puts the entire last removal back. Emptying the Trash — the only irreversible
+   step — is always your own deliberate action. `reclaim` may only even *see* a
+   folder when three proofs hold at once — git ignores it, its name is on a
+   short allow-list, and a sibling manifest proves the build tool — and its
+   receipt additionally records the rebuild command for every folder it moved.
 
 3. **Delegated uninstallers.** A Homebrew formula is removed by running
    `brew uninstall <name>` — the tool's own uninstaller — which sheersweep prints

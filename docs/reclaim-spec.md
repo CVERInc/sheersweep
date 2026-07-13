@@ -1,6 +1,9 @@
 # Spec: reclaiming build artifacts
 
-**Status:** Proposed (design only — not yet implemented).
+**Status:** Shipped in v0.8.0 (2026-07-13), as designed — kept as the design
+record. The open questions below were resolved at build time: explicit roots
+list (+ CLI path override), top-most candidate wins (find prunes at a match),
+and a distinct `kind=reclaim` receipt whose rebuild commands `restore` surfaces.
 **Scope:** Add the ability to reclaim space from *build output* (regenerable
 artifacts a build tool produces), without betraying the trust rules that make
 sheersweep the opposite of a black-box cleaner.

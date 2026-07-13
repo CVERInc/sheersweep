@@ -32,7 +32,7 @@
 #   each with the native way to remove it. Changes nothing; never needs sudo.
 set -u
 
-VERSION="0.7.5"
+VERSION="0.8.0"
 
 # ============================================================================
 # i18n — en-US · ja-JP · zh-TW · zh-Hans · ko-KR · es-ES · de-DE · fr-FR · pt-BR.
@@ -457,6 +457,162 @@ t() {
         fr-FR) echo "🔴 {bid} appartient à quelque chose d'encore installé — désinstallez cette app par son nom." ;;
         pt-BR) echo "🔴 {bid} pertence a algo ainda instalado — desinstale esse app pelo nome." ;;
         *)     echo "🔴 {bid} belongs to something still installed — uninstall that app by its name instead." ;;
+      esac ;;
+    rc_usage)
+      case "$SS_LANG" in
+        ja-JP) echo "reclaim の本実行は対話式です。ターミナルで実行するか、--dry-run でヘッドレスにプレビューしてください。" ;;
+        zh-TW) echo "reclaim 的真實執行是互動式的——請在終端機跑，或加 --dry-run 無頭預覽。" ;;
+        zh-Hans) echo "reclaim 的真实执行是交互式的——请在终端运行，或加 --dry-run 无头预览。" ;;
+        ko-KR) echo "reclaim의 실제 실행은 대화식입니다. 터미널에서 실행하거나 --dry-run으로 미리보기 하세요." ;;
+        es-ES) echo "la ejecución real de reclaim es interactiva — ejecútalo en una terminal, o previsualiza sin cabeza con --dry-run." ;;
+        de-DE) echo "der echte reclaim-Lauf ist interaktiv — im Terminal ausführen oder mit --dry-run headless ansehen." ;;
+        fr-FR) echo "l'exécution réelle de reclaim est interactive — lancez-la dans un terminal, ou prévisualisez sans tête avec --dry-run." ;;
+        pt-BR) echo "a execução real do reclaim é interativa — rode num terminal, ou visualize sem cabeça com --dry-run." ;;
+        *)     echo "reclaim's real run is interactive — run it on a terminal, or preview headless with --dry-run." ;;
+      esac ;;
+    rc_banner)
+      case "$SS_LANG" in
+        ja-JP) echo "♻️ ビルド産物の回収 — git が無視し、既知のパターン名で、マニフェストが証明したものだけ。" ;;
+        zh-TW) echo "♻️ 回收 build 產物——git 忽略＋已知模式＋manifest 佐證，三關全過才算，其餘一律看不見。" ;;
+        zh-Hans) echo "♻️ 回收 build 产物——git 忽略＋已知模式＋manifest 佐证，三关全过才算，其余一律看不见。" ;;
+        ko-KR) echo "♻️ 빌드 산출물 회수 — git이 무시하고, 알려진 패턴이며, 매니페스트가 증명한 것만." ;;
+        es-ES) echo "♻️ recuperar artefactos de build — ignorados por git + patrón conocido + manifiesto que lo prueba; nada más." ;;
+        de-DE) echo "♻️ Build-Artefakte zurückholen — von git ignoriert + bekanntes Muster + Manifest-Beweis; sonst nichts." ;;
+        fr-FR) echo "♻️ récupérer les artefacts de build — ignorés par git + motif connu + manifeste qui le prouve ; rien d'autre." ;;
+        pt-BR) echo "♻️ recuperar artefatos de build — ignorados pelo git + padrão conhecido + manifesto que prova; nada além." ;;
+        *)     echo "♻️ Reclaim build output — gitignored + known pattern + manifest-proven; nothing else is even visible." ;;
+      esac ;;
+    rc_noroots)
+      case "$SS_LANG" in
+        ja-JP) echo "スキャンするルートが見つかりません（各ホームの Developer/Projects/Code/src/repos/workspace を探しました）。フォルダを指定してください: sheersweep reclaim <パス>" ;;
+        zh-TW) echo "找不到可掃描的根目錄（找過各家目錄的 Developer/Projects/Code/src/repos/workspace）。請直接指定：sheersweep reclaim <路徑>" ;;
+        zh-Hans) echo "找不到可扫描的根目录（找过各主目录的 Developer/Projects/Code/src/repos/workspace）。请直接指定：sheersweep reclaim <路径>" ;;
+        ko-KR) echo "스캔할 루트를 찾지 못했습니다(각 홈의 Developer/Projects/Code/src/repos/workspace 확인). 폴더를 지정하세요: sheersweep reclaim <경로>" ;;
+        es-ES) echo "no se encontraron raíces para escanear (busqué Developer/Projects/Code/src/repos/workspace en cada home). Indica una carpeta: sheersweep reclaim <ruta>" ;;
+        de-DE) echo "keine Scan-Wurzeln gefunden (gesucht: Developer/Projects/Code/src/repos/workspace in jedem Home). Gib einen Ordner an: sheersweep reclaim <Pfad>" ;;
+        fr-FR) echo "aucune racine à scanner trouvée (cherché : Developer/Projects/Code/src/repos/workspace dans chaque home). Indiquez un dossier : sheersweep reclaim <chemin>" ;;
+        pt-BR) echo "nenhuma raiz de varredura encontrada (procurei Developer/Projects/Code/src/repos/workspace em cada home). Indique uma pasta: sheersweep reclaim <caminho>" ;;
+        *)     echo "No scan roots found (looked for Developer/Projects/Code/src/repos/workspace in each home). Point it somewhere: sheersweep reclaim <path>" ;;
+      esac ;;
+    rc_roots)
+      case "$SS_LANG" in
+        ja-JP) echo "スキャン対象:" ;;
+        zh-TW) echo "掃描範圍：" ;;
+        zh-Hans) echo "扫描范围：" ;;
+        ko-KR) echo "스캔 대상:" ;;
+        es-ES) echo "escaneando:" ;;
+        de-DE) echo "durchsucht:" ;;
+        fr-FR) echo "analyse :" ;;
+        pt-BR) echo "varrendo:" ;;
+        *)     echo "scanning:" ;;
+      esac ;;
+    rc_stale_note)   # {n}
+      case "$SS_LANG" in
+        ja-JP) echo "リポジトリが {n} 日以上触られていないものだけを表示します。" ;;
+        zh-TW) echo "只列出 repo 已 {n} 天以上沒動過的產物。" ;;
+        zh-Hans) echo "只列出 repo 已 {n} 天以上没动过的产物。" ;;
+        ko-KR) echo "저장소를 {n}일 이상 건드리지 않은 것만 표시합니다." ;;
+        es-ES) echo "solo artefactos cuyo repo lleva {n}+ días sin tocarse." ;;
+        de-DE) echo "nur Artefakte, deren Repo seit {n}+ Tagen unberührt ist." ;;
+        fr-FR) echo "seulement les artefacts dont le dépôt n'a pas été touché depuis {n}+ jours." ;;
+        pt-BR) echo "só artefatos cujo repo está sem toque há {n}+ dias." ;;
+        *)     echo "only artifacts whose repo has been untouched for {n}+ days." ;;
+      esac ;;
+    rc_scanning)
+      case "$SS_LANG" in
+        ja-JP) echo "🔍 ルートを歩いて候補を計量中…（du に少し時間がかかります）" ;;
+        zh-TW) echo "🔍 正在走訪根目錄並秤候選的重量…（du 需要一點時間）" ;;
+        zh-Hans) echo "🔍 正在走访根目录并称候选的重量…（du 需要一点时间）" ;;
+        ko-KR) echo "🔍 루트를 돌며 후보의 크기를 재는 중… (du에 시간이 조금 걸립니다)" ;;
+        es-ES) echo "🔍 recorriendo las raíces y pesando candidatos… (du tarda un poco)" ;;
+        de-DE) echo "🔍 gehe die Wurzeln durch und wiege Kandidaten… (du braucht einen Moment)" ;;
+        fr-FR) echo "🔍 parcours des racines et pesée des candidats… (du prend un instant)" ;;
+        pt-BR) echo "🔍 percorrendo as raízes e pesando candidatos… (du leva um momento)" ;;
+        *)     echo "🔍 walking the roots and weighing candidates… (du takes a moment)" ;;
+      esac ;;
+    rc_none)
+      case "$SS_LANG" in
+        ja-JP) echo "✨ 対象なし — git が無視し、マニフェストで証明できるビルド産物は見つかりませんでした。" ;;
+        zh-TW) echo "✨ 沒有可回收的——找不到「git 忽略＋manifest 佐證」的 build 產物。" ;;
+        zh-Hans) echo "✨ 没有可回收的——找不到「git 忽略＋manifest 佐证」的 build 产物。" ;;
+        ko-KR) echo "✨ 대상 없음 — git이 무시하고 매니페스트로 증명되는 빌드 산출물이 없습니다." ;;
+        es-ES) echo "✨ nada elegible — no hay artefactos de build ignorados por git y probados por manifiesto." ;;
+        de-DE) echo "✨ nichts qualifiziert — keine von git ignorierten, manifest-belegten Build-Artefakte gefunden." ;;
+        fr-FR) echo "✨ rien d'éligible — aucun artefact de build ignoré par git et prouvé par manifeste." ;;
+        pt-BR) echo "✨ nada elegível — nenhum artefato de build ignorado pelo git e provado por manifesto." ;;
+        *)     echo "✨ nothing eligible — no gitignored, manifest-proven build output found." ;;
+      esac ;;
+    rc_days)   # {n}
+      case "$SS_LANG" in
+        ja-JP) echo "{n} 日未使用" ;;
+        zh-TW) echo "{n} 天沒動" ;;
+        zh-Hans) echo "{n} 天没动" ;;
+        ko-KR) echo "{n}일 방치" ;;
+        es-ES) echo "{n} días sin tocar" ;;
+        de-DE) echo "{n} Tage unberührt" ;;
+        fr-FR) echo "{n} j sans toucher" ;;
+        pt-BR) echo "{n} dias sem toque" ;;
+        *)     echo "{n}d untouched" ;;
+      esac ;;
+    rc_dry_note)
+      case "$SS_LANG" in
+        ja-JP) echo "🧪 プレビュー — 何も移動していません。回収するには --dry-run なしで実行。" ;;
+        zh-TW) echo "🧪 預覽——什麼都沒動。要真的回收請拿掉 --dry-run 再執行。" ;;
+        zh-Hans) echo "🧪 预览——什么都没动。要真正回收请去掉 --dry-run 再运行。" ;;
+        ko-KR) echo "🧪 미리보기 — 아무것도 옮기지 않았습니다. 회수하려면 --dry-run 없이 실행하세요." ;;
+        es-ES) echo "🧪 vista previa — no se movió nada. Ejecuta sin --dry-run para recuperar." ;;
+        de-DE) echo "🧪 Vorschau — nichts wurde bewegt. Ohne --dry-run ausführen, um Platz zu holen." ;;
+        fr-FR) echo "🧪 aperçu — rien n'a bougé. Relancez sans --dry-run pour récupérer." ;;
+        pt-BR) echo "🧪 prévia — nada foi movido. Execute sem --dry-run para recuperar." ;;
+        *)     echo "🧪 preview — nothing moved. Run without --dry-run to reclaim." ;;
+      esac ;;
+    rc_multi_hint)
+      case "$SS_LANG" in
+        ja-JP) echo "行はまとめて選べます — 例: 1 3 5-8 · all で全部。" ;;
+        zh-TW) echo "可以一次選多列——例如 1 3 5-8；輸入 all 全選。" ;;
+        zh-Hans) echo "可以一次选多行——例如 1 3 5-8；输入 all 全选。" ;;
+        ko-KR) echo "여러 행을 한 번에 선택할 수 있습니다 — 예: 1 3 5-8 · all은 전부." ;;
+        es-ES) echo "puedes elegir varias filas — p. ej. 1 3 5-8 · all las toma todas." ;;
+        de-DE) echo "mehrere Zeilen auf einmal wählbar — z. B. 1 3 5-8 · all nimmt alle." ;;
+        fr-FR) echo "plusieurs lignes à la fois — p. ex. 1 3 5-8 · all les prend toutes." ;;
+        pt-BR) echo "escolha várias linhas de uma vez — ex.: 1 3 5-8 · all pega todas." ;;
+        *)     echo "Pick several rows at once — e.g. 1 3 5-8 · all takes every one." ;;
+      esac ;;
+    rc_confirm)   # {n} · {size}
+      case "$SS_LANG" in
+        ja-JP) echo "選んだビルドフォルダ {n} 件（{size}）をゴミ箱へ移動するには件数「{n}」を入力（それ以外でキャンセル）: " ;;
+        zh-TW) echo "要把選中的 {n} 個 build 資料夾（{size}）移到垃圾桶，請輸入條數「{n}」（輸入其他則取消）：" ;;
+        zh-Hans) echo "要把选中的 {n} 个 build 文件夹（{size}）移到废纸篓，请输入条数“{n}”（输入其他则取消）：" ;;
+        ko-KR) echo "선택한 빌드 폴더 {n}개({size})를 휴지통으로 옮기려면 개수 '{n}'을 입력하세요(다른 입력은 취소): " ;;
+        es-ES) echo "Escribe el número ({n}) para mover estas {n} carpetas de build ({size}) a la Papelera (otra cosa cancela): " ;;
+        de-DE) echo "Tippe die Anzahl ({n}), um diese {n} Build-Ordner ({size}) in den Papierkorb zu verschieben (alles andere bricht ab): " ;;
+        fr-FR) echo "Saisissez le nombre ({n}) pour déplacer ces {n} dossiers de build ({size}) vers la Corbeille (autre chose annule) : " ;;
+        pt-BR) echo "Digite a contagem ({n}) para mover estas {n} pastas de build ({size}) para a Lixeira (qualquer outra coisa cancela): " ;;
+        *)     echo "Type the count ({n}) to move these {n} build folders ({size}) to the Trash (anything else cancels): " ;;
+      esac ;;
+    rc_done)   # {n} · {size}
+      case "$SS_LANG" in
+        ja-JP) echo "✅ ビルドフォルダ {n} 件（{size}）をゴミ箱へ移動しました。再ビルドのコマンドはレシートに記録済み — sheersweep restore で表示できます。容量はゴミ箱を空にすると戻ります。" ;;
+        zh-TW) echo "✅ 已把 {n} 個 build 資料夾（{size}）移到垃圾桶。重建指令已寫進收據——打 sheersweep restore 隨時看得到；清空垃圾桶才會拿回空間。" ;;
+        zh-Hans) echo "✅ 已把 {n} 个 build 文件夹（{size}）移到废纸篓。重建命令已写进收据——输入 sheersweep restore 随时可见；清空废纸篓才会拿回空间。" ;;
+        ko-KR) echo "✅ 빌드 폴더 {n}개({size})를 휴지통으로 옮겼습니다. 재빌드 명령은 영수증에 기록됨 — sheersweep restore로 볼 수 있습니다. 공간은 휴지통을 비워야 돌아옵니다." ;;
+        es-ES) echo "✅ Movidas {n} carpetas de build ({size}) a la Papelera. Los comandos de rebuild quedaron en el recibo — míralos con sheersweep restore · vaciar la Papelera recupera el espacio." ;;
+        de-DE) echo "✅ {n} Build-Ordner ({size}) in den Papierkorb verschoben. Die Rebuild-Befehle stehen im Beleg — sieh sie mit sheersweep restore · erst das Leeren des Papierkorbs gibt den Platz frei." ;;
+        fr-FR) echo "✅ {n} dossiers de build ({size}) déplacés vers la Corbeille. Les commandes de rebuild sont dans le reçu — revoyez-les avec sheersweep restore · vider la Corbeille rend l'espace." ;;
+        pt-BR) echo "✅ {n} pastas de build ({size}) movidas para a Lixeira. Os comandos de rebuild ficaram no recibo — veja com sheersweep restore · esvaziar a Lixeira devolve o espaço." ;;
+        *)     echo "✅ Moved {n} build folders ({size}) to the Trash. The rebuild commands are in the receipt — see them with sheersweep restore · emptying the Trash reclaims the space." ;;
+      esac ;;
+    rs_rebuild_hint)
+      case "$SS_LANG" in
+        ja-JP) echo "♻️ 復元よりきれいな選択肢 — 再ビルド:" ;;
+        zh-TW) echo "♻️ 比還原更乾淨的路——直接重建：" ;;
+        zh-Hans) echo "♻️ 比恢复更干净的路——直接重建：" ;;
+        ko-KR) echo "♻️ 복원보다 깔끔한 길 — 다시 빌드:" ;;
+        es-ES) echo "♻️ la alternativa más limpia a restaurar — reconstruir:" ;;
+        de-DE) echo "♻️ die sauberere Alternative zum Wiederherstellen — neu bauen:" ;;
+        fr-FR) echo "♻️ l'alternative plus propre à la restauration — reconstruire :" ;;
+        pt-BR) echo "♻️ a alternativa mais limpa a restaurar — reconstruir:" ;;
+        *)     echo "♻️ The cleaner alternative to restoring — rebuild instead:" ;;
       esac ;;
     un_refuse_apple)   # {app}
       case "$SS_LANG" in
@@ -1131,13 +1287,14 @@ sheersweep — 読める Mac クリーナー。
   sheersweep tools
   sheersweep restore [--list]
   sheersweep leftovers [--dry-run]
+  sheersweep reclaim [--dry-run] [--stale <N>d] [path…]
   sheersweep --version | --help
 
 何をするか
   • /Users 配下の すべての アカウント（現在も将来も）に対して:
       Library/Caches, Library/Logs, ~/.cache, ~/.npm,
       Xcode DerivedData / DeviceSupport, CoreSimulator キャッシュ,
-      Cargo/Gradle キャッシュ。
+      Cargo/Gradle キャッシュ, Node のコンパイルキャッシュ。
   • システム全体（一度）: /Library/Caches, /.adobeTemp, `brew cleanup`。
   • ローカル APFS（Time Machine）スナップショットを解放 — 解放した容量が
     実際に戻る唯一の手順（ファイル削除だけではスナップショットが容量を保持）。
@@ -1178,6 +1335,18 @@ CLI ツールの棚卸し（読み取り専用）
                               手を出さない。確認後ゴミ箱へ移動（restore で復元可）。
                               --dry-run はプレビューのみ。
 
+ビルド産物の回収（明示的な opt-in — 通常のクリーンには決して混ざりません）
+  sheersweep reclaim          プロジェクトフォルダ内のビルド産物（node_modules、
+                              .build、target、dist、.next…）を探します。3 つの
+                              証拠が同時に成立した時だけ対象です: git が無視して
+                              いる＋名前が短い許可リストにある＋隣にマニフェスト
+                              （package.json、Cargo.toml…）がある。単に dist と
+                              名付けただけのフォルダは見えません。プレビューは
+                              リポジトリごとに容量・再ビルドコマンド・放置日数
+                              つき。行を選び、件数を入力→ゴミ箱＋レシート。
+                              restore で戻すか、記録済みコマンドで作り直すか。
+                              --stale 30d で 30 日以上触っていないリポジトリだけ。
+
 オプション
   --dry-run   各項目が解放する容量を表示。何も削除しません。
   --version   バージョンを表示して終了。
@@ -1203,13 +1372,14 @@ sheersweep — 你讀得懂的 Mac 清理工具。
   sheersweep tools
   sheersweep restore [--list]
   sheersweep leftovers [--dry-run]
+  sheersweep reclaim [--dry-run] [--stale <N>d] [path…]
   sheersweep --version | --help
 
 它做什麼
   • 對 /Users 底下的 每一個 帳號（現有與未來）：
       Library/Caches、Library/Logs、~/.cache、~/.npm、
       Xcode DerivedData / DeviceSupport、CoreSimulator 快取、
-      Cargo/Gradle 快取。
+      Cargo/Gradle 快取、Node 的編譯快取。
   • 系統層（一次）：/Library/Caches、/.adobeTemp、`brew cleanup`。
   • 釋放本機 APFS（Time Machine）快照——這是釋出空間真正會回來的一步
     （只刪檔案，若快照仍釘住就不會還空間）。
@@ -1246,6 +1416,17 @@ CLI 工具盤點（唯讀）
                               孤兒」分開列，還在用的項目絕不碰。確認後移到垃圾桶
                               （可用 restore 還原）。--dry-run 只預覽。
 
+回收 build 產物（明確 opt-in——永不併入預設清理）
+  sheersweep reclaim          在你的專案資料夾裡找 build 產物（node_modules、
+                              .build、target、dist、.next…），三個證據同時成立
+                              才算數：git 忽略它＋名稱在簡短白名單上＋旁邊有
+                              manifest（package.json、Cargo.toml…）佐證。只是
+                              取名叫 dist 的資料夾根本看不見。預覽按 repo 分組，
+                              附大小、重建指令與閒置天數；選列、輸入條數→移到
+                              垃圾桶＋寫收據。restore 可整批放回——或照收據裡
+                              的指令乾淨重建。--stale 30d 只列 30 天以上沒動的
+                              repo。
+
 選項
   --dry-run   列出每項會釋放多少。不刪除任何東西。
   --version   印出版本後結束。
@@ -1271,13 +1452,14 @@ sheersweep — 你能读懂的 Mac 清理工具。
   sheersweep tools
   sheersweep restore [--list]
   sheersweep leftovers [--dry-run]
+  sheersweep reclaim [--dry-run] [--stale <N>d] [path…]
   sheersweep --version | --help
 
 它做什么
   • 对 /Users 下的 每一个 账户（现有与未来）：
       Library/Caches、Library/Logs、~/.cache、~/.npm、
       Xcode DerivedData / DeviceSupport、CoreSimulator 缓存、
-      Cargo/Gradle 缓存。
+      Cargo/Gradle 缓存、Node 的编译缓存。
   • 系统层（一次）：/Library/Caches、/.adobeTemp、`brew cleanup`。
   • 释放本机 APFS（时间机器）快照——这是释放的空间真正回来的一步
     （只删文件的话，快照仍占着空间就不会归还）。
@@ -1314,6 +1496,17 @@ CLI 工具盘点（只读）
                               「疑似孤儿」分开列出，还在用的项目绝不碰。确认后
                               移到废纸篓（可用 restore 还原）。--dry-run 只预览。
 
+回收 build 产物（明确 opt-in——绝不并入默认清理）
+  sheersweep reclaim          在你的项目文件夹里找 build 产物（node_modules、
+                              .build、target、dist、.next…），三个证据同时成立
+                              才算数：git 忽略它＋名称在简短白名单上＋旁边有
+                              manifest（package.json、Cargo.toml…）佐证。只是
+                              取名叫 dist 的文件夹根本看不见。预览按 repo 分组，
+                              附大小、重建命令与闲置天数；选行、输入条数→移到
+                              废纸篓＋写收据。restore 可整批放回——或照收据里
+                              的命令干净重建。--stale 30d 只列 30 天以上没动的
+                              repo。
+
 选项
   --dry-run   列出每项会释放多少。不删除任何内容。
   --version   打印版本后退出。
@@ -1339,13 +1532,14 @@ sheersweep — 읽을 수 있는 Mac 클리너.
   sheersweep tools
   sheersweep restore [--list]
   sheersweep leftovers [--dry-run]
+  sheersweep reclaim [--dry-run] [--stale <N>d] [path…]
   sheersweep --version | --help
 
 하는 일
   • /Users 아래 모든 계정(현재와 미래)에 대해:
       Library/Caches, Library/Logs, ~/.cache, ~/.npm,
       Xcode DerivedData / DeviceSupport, CoreSimulator 캐시,
-      Cargo/Gradle 캐시.
+      Cargo/Gradle 캐시, Node 컴파일 캐시.
   • 시스템 전체(한 번): /Library/Caches, /.adobeTemp, `brew cleanup`.
   • 로컬 APFS(타임머신) 스냅샷 해제 — 비운 공간이 실제로 돌아오는
     유일한 단계(파일만 지우면 스냅샷이 공간을 계속 붙듭니다).
@@ -1385,6 +1579,18 @@ CLI 도구 목록(읽기 전용)
                               건드리지 않습니다. 확인 후 휴지통으로(restore로 복원
                               가능). --dry-run은 미리보기만.
 
+빌드 산출물 회수(명시적 opt-in — 기본 청소에 절대 섞이지 않음)
+  sheersweep reclaim          프로젝트 폴더 안의 빌드 산출물(node_modules,
+                              .build, target, dist, .next…)을 찾습니다. 세 가지
+                              증거가 동시에 성립할 때만 대상입니다: git이 무시
+                              하고 + 이름이 짧은 허용 목록에 있고 + 옆에 매니
+                              페스트(package.json, Cargo.toml…)가 있을 것.
+                              이름만 dist인 폴더는 보이지 않습니다. 미리보기는
+                              저장소별로 크기·재빌드 명령·방치 일수를 표시;
+                              행을 고르고 개수를 입력 → 휴지통 + 영수증.
+                              restore로 되돌리거나 기록된 명령으로 새로 빌드.
+                              --stale 30d는 30일 이상 안 건드린 저장소만.
+
 옵션
   --dry-run   각 항목이 얼마나 비울지 표시. 아무것도 삭제하지 않음.
   --version   버전을 출력하고 종료.
@@ -1410,13 +1616,14 @@ USO
   sheersweep tools
   sheersweep restore [--list]
   sheersweep leftovers [--dry-run]
+  sheersweep reclaim [--dry-run] [--stale <N>d] [path…]
   sheersweep --version | --help
 
 QUÉ HACE
   • Para CADA cuenta bajo /Users (actuales y futuras):
       Library/Caches, Library/Logs, ~/.cache, ~/.npm,
       Xcode DerivedData / DeviceSupport, cachés de CoreSimulator,
-      cachés de Cargo/Gradle.
+      cachés de Cargo/Gradle, caché de compilación de Node.
   • A nivel de sistema, una vez: /Library/Caches, /.adobeTemp, `brew cleanup`.
   • Libera las instantáneas locales de APFS (Time Machine) — el paso que de
     verdad devuelve el espacio (borrar archivos no basta si una instantánea
@@ -1463,6 +1670,20 @@ LIMPIAR RESTOS (ítems de arranque de apps que ya no están)
                               basura). Mueve los elegidos a la Papelera (deshaz
                               con restore). --dry-run solo previsualiza.
 
+RECUPERAR ARTEFACTOS DE BUILD (opt-in — nunca parte del barrido)
+  sheersweep reclaim          Busca artefactos de build dentro de tus carpetas
+                              de proyecto (node_modules, .build, target, dist,
+                              .next…) — solo cuando TRES pruebas se cumplen a
+                              la vez: git lo ignora + el nombre está en una
+                              lista corta + un manifiesto vecino (package.json,
+                              Cargo.toml…) lo demuestra. Una carpeta que solo
+                              se llama dist es invisible. Vista previa agrupada
+                              por repo con tamaño, comando de rebuild y días
+                              sin tocar; elige filas, escribe el número →
+                              Papelera + recibo. restore los devuelve — o
+                              reconstruye limpio con el comando registrado.
+                              --stale 30d: solo repos sin tocar 30+ días.
+
 OPCIONES
   --dry-run   Lista cuánto liberaría cada ítem. No borra nada.
   --version   Imprime la versión y sale.
@@ -1488,13 +1709,14 @@ AUFRUF
   sheersweep tools
   sheersweep restore [--list]
   sheersweep leftovers [--dry-run]
+  sheersweep reclaim [--dry-run] [--stale <N>d] [path…]
   sheersweep --version | --help
 
 WAS ES TUT
   • Für JEDES Konto unter /Users (jetzige und künftige):
       Library/Caches, Library/Logs, ~/.cache, ~/.npm,
       Xcode DerivedData / DeviceSupport, CoreSimulator-Caches,
-      Cargo/Gradle-Caches.
+      Cargo/Gradle-Caches, Nodes Compile-Cache.
   • Systemweit, einmal: /Library/Caches, /.adobeTemp, `brew cleanup`.
   • Gibt lokale APFS-(Time-Machine-)Schnappschüsse frei — der Schritt, der den
     Platz wirklich zurückbringt (Dateien löschen reicht nicht, solange ein
@@ -1544,6 +1766,20 @@ DIE LETZTE DEINSTALLATION RÜCKGÄNGIG MACHEN
                               in den Papierkorb (rückgängig mit restore).
                               --dry-run zeigt nur die Vorschau.
 
+BUILD-ARTEFAKTE ZURÜCKHOLEN (Opt-in — nie Teil des Standard-Laufs)
+  sheersweep reclaim          Findet Build-Artefakte in deinen Projektordnern
+                              (node_modules, .build, target, dist, .next…) —
+                              nur wenn DREI Beweise zugleich gelten: git
+                              ignoriert es + der Name steht auf einer kurzen
+                              Liste + ein Manifest daneben (package.json,
+                              Cargo.toml…) belegt das Build-Tool. Ein Ordner,
+                              der bloß dist heißt, bleibt unsichtbar. Vorschau
+                              gruppiert nach Repo mit Größe, Rebuild-Befehl und
+                              Tagen unberührt; Zeilen wählen, Anzahl tippen →
+                              Papierkorb + Beleg. restore holt alles zurück —
+                              oder frisch bauen mit dem notierten Befehl.
+                              --stale 30d: nur Repos, 30+ Tage unberührt.
+
 OPTIONEN
   --dry-run   Zeigt, wie viel jedes Objekt freigeben WÜRDE. Löscht nichts.
   --version   Gibt die Version aus und beendet.
@@ -1569,13 +1805,14 @@ USAGE
   sheersweep tools
   sheersweep restore [--list]
   sheersweep leftovers [--dry-run]
+  sheersweep reclaim [--dry-run] [--stale <N>d] [path…]
   sheersweep --version | --help
 
 CE QU'IL FAIT
   • Pour CHAQUE compte sous /Users (actuels et futurs) :
       Library/Caches, Library/Logs, ~/.cache, ~/.npm,
       Xcode DerivedData / DeviceSupport, caches CoreSimulator,
-      caches Cargo/Gradle.
+      caches Cargo/Gradle, cache de compilation de Node.
   • Au niveau système, une fois : /Library/Caches, /.adobeTemp, `brew cleanup`.
   • Libère les instantanés locaux APFS (Time Machine) — l'étape qui rend
     vraiment l'espace (supprimer des fichiers ne suffit pas si un instantané
@@ -1625,6 +1862,20 @@ NETTOYER LES RESTES (éléments de démarrage d'apps disparues)
                               éléments choisis vers la Corbeille (annulable avec
                               restore). --dry-run ne fait qu'un aperçu.
 
+RÉCUPÉRER LES ARTEFACTS DE BUILD (opt-in — jamais dans le nettoyage par défaut)
+  sheersweep reclaim          Trouve les artefacts de build dans vos dossiers
+                              de projet (node_modules, .build, target, dist,
+                              .next…) — seulement quand TROIS preuves tiennent
+                              à la fois : git l'ignore + le nom figure sur une
+                              courte liste + un manifeste voisin (package.json,
+                              Cargo.toml…) le prouve. Un dossier simplement
+                              nommé dist reste invisible. Aperçu groupé par
+                              dépôt avec taille, commande de rebuild et jours
+                              sans toucher ; choisissez des lignes, saisissez
+                              le nombre → Corbeille + reçu. restore les remet —
+                              ou reconstruisez proprement avec la commande
+                              notée. --stale 30d : dépôts intouchés 30+ jours.
+
 OPTIONS
   --dry-run   Liste combien chaque élément libérerait. Ne supprime rien.
   --version   Affiche la version et quitte.
@@ -1650,13 +1901,14 @@ USO
   sheersweep tools
   sheersweep restore [--list]
   sheersweep leftovers [--dry-run]
+  sheersweep reclaim [--dry-run] [--stale <N>d] [path…]
   sheersweep --version | --help
 
 O QUE ELE FAZ
   • Para CADA conta em /Users (atuais e futuras):
       Library/Caches, Library/Logs, ~/.cache, ~/.npm,
       Xcode DerivedData / DeviceSupport, caches do CoreSimulator,
-      caches de Cargo/Gradle.
+      caches de Cargo/Gradle, cache de compilação do Node.
   • No sistema, uma vez: /Library/Caches, /.adobeTemp, `brew cleanup`.
   • Libera os instantâneos locais do APFS (Time Machine) — o passo que devolve
     o espaço de verdade (apagar arquivos não basta se um instantâneo os segura).
@@ -1702,6 +1954,20 @@ LIMPAR SOBRAS (itens de início de apps que se foram)
                               Move os escolhidos para a Lixeira (desfaça com
                               restore). --dry-run só mostra a prévia.
 
+RECUPERAR ARTEFATOS DE BUILD (opt-in — nunca parte da limpeza padrão)
+  sheersweep reclaim          Acha artefatos de build nas suas pastas de
+                              projeto (node_modules, .build, target, dist,
+                              .next…) — só quando TRÊS provas valem ao mesmo
+                              tempo: o git ignora + o nome está numa lista
+                              curta + um manifesto vizinho (package.json,
+                              Cargo.toml…) comprova a ferramenta. Uma pasta
+                              apenas chamada dist fica invisível. A prévia
+                              agrupa por repo com tamanho, comando de rebuild
+                              e dias sem toque; escolha linhas, digite a
+                              contagem → Lixeira + recibo. restore devolve —
+                              ou reconstrua limpo com o comando anotado.
+                              --stale 30d: só repos sem toque há 30+ dias.
+
 OPÇÕES
   --dry-run   Lista quanto cada item liberaria. Não apaga nada.
   --version   Imprime a versão e sai.
@@ -1727,13 +1993,14 @@ USAGE
   sheersweep tools
   sheersweep restore [--list]
   sheersweep leftovers [--dry-run]
+  sheersweep reclaim [--dry-run] [--stale <N>d] [path…]
   sheersweep --version | --help
 
 WHAT IT DOES
   • For EVERY account under /Users (current and future):
       Library/Caches, Library/Logs, ~/.cache, ~/.npm,
       Xcode DerivedData / DeviceSupport, CoreSimulator caches,
-      Cargo/Gradle caches.
+      Cargo/Gradle caches, Node's compile cache.
   • System once: /Library/Caches, /.adobeTemp, `brew cleanup`.
   • Releases local APFS (Time Machine) snapshots — the step that actually
     returns the freed space (deleting files alone won't, if a snapshot pins them).
@@ -1779,6 +2046,20 @@ CLEAN UP LEFTOVERS (orphaned startup items from apps that are gone)
                               chosen ones to the Trash (undo with restore).
                               --dry-run only previews.
 
+RECLAIM BUILD OUTPUT (opt-in — never part of the sweep)
+  sheersweep reclaim          Finds build output inside your project folders
+                              (node_modules, .build, target, dist, .next…) —
+                              only when THREE proofs hold at once: git ignores
+                              it, the name is on a short allow-list, and a
+                              sibling manifest (package.json, Cargo.toml…)
+                              proves the build tool. A data folder merely
+                              named dist stays invisible. Preview groups by
+                              repo with size, rebuild command and staleness;
+                              pick rows, type the count → Trash + receipt.
+                              restore puts them back — or rebuild clean with
+                              the recorded command. --stale 30d keeps only
+                              repos untouched for 30+ days.
+
 OPTIONS
   --dry-run   List how much each item WOULD free. Deletes nothing.
   --version   Print version and exit.
@@ -1807,10 +2088,13 @@ APP_TARGET=""
 PICK_ORPHANS=()
 PICK_ROWS=()
 RESTORE_LIST=0
+RC_ROOTS=()
+RC_STALE_DAYS=""
 # SHEERSWEEP_LIB=1 lets the test harness `source` this file to reach the pure
 # functions below WITHOUT parsing args, escalating to sudo, or running a sweep.
 if [ -z "${SHEERSWEEP_LIB:-}" ]; then
   argi=0
+  stale_pending=0
   for arg in "$@"; do
     argi=$((argi + 1))
     if [ "$argi" -eq 1 ]; then
@@ -1819,27 +2103,53 @@ if [ -z "${SHEERSWEEP_LIB:-}" ]; then
         tools|cli)                MODE="tools";     continue ;;
         restore|undo)             MODE="restore";   continue ;;
         leftovers|orphans|cruft)  MODE="leftovers"; continue ;;
+        reclaim)                  MODE="reclaim";   continue ;;
       esac
+    fi
+    if [ "$stale_pending" -eq 1 ]; then      # the value after --stale (e.g. 30d)
+      stale_pending=0
+      RC_STALE_DAYS="${arg%d}"
+      case "$RC_STALE_DAYS" in ''|*[!0-9]*)
+        m="$(t unknown)"; echo "${m//\{opt\}/--stale $arg}" >&2; exit 2 ;;
+      esac
+      continue
     fi
     case "$arg" in
       --version|-v) echo "sheersweep $VERSION"; exit 0 ;;
       --help|-h)    print_help; exit 0 ;;
       --dry-run)    DRY=1 ;;
       --list)       RESTORE_LIST=1 ;;
+      --stale)      [ "$MODE" = "reclaim" ] || { m="$(t unknown)"; echo "${m//\{opt\}/$arg}" >&2; exit 2; }
+                    stale_pending=1 ;;
+      --stale=*)    [ "$MODE" = "reclaim" ] || { m="$(t unknown)"; echo "${m//\{opt\}/$arg}" >&2; exit 2; }
+                    RC_STALE_DAYS="${arg#--stale=}"; RC_STALE_DAYS="${RC_STALE_DAYS%d}"
+                    case "$RC_STALE_DAYS" in ''|*[!0-9]*)
+                      m="$(t unknown)"; echo "${m//\{opt\}/$arg}" >&2; exit 2 ;;
+                    esac ;;
       -*) m="$(t unknown)"; echo "${m//\{opt\}/$arg}" >&2; exit 2 ;;
       *)
         if [ "$MODE" = "uninstall" ] && [ -z "$APP_TARGET" ]; then
           APP_TARGET="$arg"
+        elif [ "$MODE" = "reclaim" ]; then
+          RC_ROOTS+=("$arg")               # explicit scan roots override the defaults
         else
           m="$(t unknown)"; echo "${m//\{opt\}/$arg}" >&2; exit 2
         fi ;;
     esac
   done
+  if [ "$stale_pending" -eq 1 ]; then        # --stale was the last word
+    m="$(t unknown)"; echo "${m//\{opt\}/--stale}" >&2; exit 2
+  fi
 
   # uninstall with no app name is fine on a terminal (we'll show a picker after
   # escalation). With no TTY there's nothing to pick from → fail before sudo.
   if [ "$MODE" = "uninstall" ] && [ -z "$APP_TARGET" ] && [ ! -t 0 ]; then
     t un_usage >&2; exit 2
+  fi
+  # reclaim's real run is interactive (select + typed confirm); its --dry-run
+  # is a pure report and stays headless-friendly.
+  if [ "$MODE" = "reclaim" ] && [ "$DRY" -eq 0 ] && [ ! -t 0 ]; then
+    t rc_usage >&2; exit 2
   fi
 
   # macOS-only: everything below assumes tmutil, APFS, the /Users home layout and
@@ -3073,6 +3383,18 @@ $hdr
 EOF
 }
 
+# Same, but EVERY value of a repeated key (a reclaim receipt carries one
+# `# rebuild=` line per build command).
+receipt_header_all() {
+  local hdr line
+  IFS= read -r -d '' hdr < "$1" 2>/dev/null || return 0
+  while IFS= read -r line; do
+    case "$line" in "# $2="*) printf '%s\n' "${line#"# $2="}" ;; esac
+  done <<EOF
+$hdr
+EOF
+}
+
 # Count the data pairs in a receipt (dest+orig per item), robust to TAB/NEWLINE
 # in paths: skip the header record, then count NUL-delimited fields and halve.
 receipt_count() {
@@ -3127,6 +3449,13 @@ do_restore() {
   while IFS= read -r -d '' dest && IFS= read -r -d '' orig; do
     printf '   %s\n' "$orig"
   done < <(receipt_data "$newest")
+  # a reclaim receipt knows how to REBUILD what it moved — surface that at the
+  # decision point, so "don't restore, rebuild clean" is a choice, not trivia
+  if [ "$(receipt_header "$newest" kind)" = "reclaim" ]; then
+    echo "------------------------------------------------------------"
+    t rs_rebuild_hint
+    receipt_header_all "$newest" rebuild | sed 's/^/   /'
+  fi
   echo "============================================================"
 
   printf '%s' "$(t rs_confirm)"
@@ -3304,6 +3633,263 @@ do_leftovers() {
   return 0
 }
 
+# ============================================================================
+# reclaim — build output inside project directories (docs/reclaim-spec.md).
+# Opt-in, never part of the sweep. A directory is a candidate ONLY when all
+# three gates hold — the conjunction is what lets us say "this is regenerable
+# output, not your data":
+#   ① git ignores it   ② its name is on the short build-pattern list
+#   ③ a sibling manifest proves the build tool (package.json, Cargo.toml, …)
+# A content folder literally named `dist` fails gate ③ and stays invisible.
+# Removal is the same primitive as every other verb: preview → typed confirm →
+# Trash (same-volume rename — instant, no copy) → receipt → restore. The
+# receipt additionally records each REBUILD command: after a reclaim you have
+# two undos — rebuild a clean tree (recommended) or put the files back.
+# ============================================================================
+
+# git, as the sweep runs it: root triggers "dubious ownership" on user repos,
+# and this is read-only interrogation — allow it per-invocation, globally off.
+rc_git() { git -c safe.directory='*' "$@"; }
+
+# Gate ② — the whole allow-list, short and auditable (like the never-touch list).
+RC_PATTERNS=".build node_modules target dist .next build .gradle Pods"
+
+# Gate ③ — the sibling manifest that proves each pattern's build tool.
+rc_manifest_ok() {   # $1 = candidate dir NAME  $2 = parent dir → 0 = proven
+  local p="$2" g
+  case "$1" in
+    .build)            [ -f "$p/Package.swift" ] && return 0
+                       for g in "$p"/*.xcodeproj; do [ -e "$g" ] && return 0; done ;;
+    node_modules|dist|.next)
+                       [ -f "$p/package.json" ] && return 0 ;;
+    target)            [ -f "$p/Cargo.toml" ] && return 0 ;;
+    Pods)              [ -f "$p/Podfile" ] && return 0 ;;
+    build|.gradle)     [ -f "$p/build.gradle" ] || [ -f "$p/build.gradle.kts" ] \
+                       || [ -f "$p/settings.gradle" ] || [ -f "$p/settings.gradle.kts" ] && return 0 ;;
+  esac
+  return 1
+}
+
+# The one command that rebuilds a candidate — printed in the preview and
+# recorded in the receipt. Node's package manager is read off the lockfile.
+rc_rebuild_for() {   # $1 = candidate dir NAME  $2 = parent dir
+  local pm="npm"
+  case "$1" in
+    node_modules|dist|.next)
+      if   [ -f "$2/pnpm-lock.yaml" ]; then pm="pnpm"
+      elif [ -f "$2/yarn.lock" ];      then pm="yarn"
+      elif [ -f "$2/bun.lockb" ] || [ -f "$2/bun.lock" ]; then pm="bun"; fi ;;
+  esac
+  case "$1" in
+    .build)        echo "swift build" ;;
+    node_modules)  echo "$pm install" ;;
+    dist|.next)    echo "$pm run build" ;;
+    target)        echo "cargo build" ;;
+    Pods)          echo "pod install" ;;
+    build|.gradle) echo "./gradlew build" ;;
+  esac
+}
+
+# Is any ancestor (candidate → scan root) an Obsidian vault? The never-touch
+# list applies on top of the gates; a vault keeps plugins in gitignored dirs
+# that can look exactly like build output.
+rc_in_vault() {   # $1 = start dir  $2 = stop-at dir → 0 = inside a vault
+  local d="$1"
+  while [ -n "$d" ] && [ "$d" != "/" ]; do
+    [ -d "$d/.obsidian" ] && return 0
+    [ "$d" = "$2" ] && break
+    d="${d%/*}"
+  done
+  return 1
+}
+
+# When was this repo last touched? max(last commit, newest TRACKED file mtime) —
+# commit time alone would call an actively-edited-but-uncommitted repo "stale"
+# and offer up the build you made this morning (the spec is explicit here).
+rc_repo_touched() {   # $1 = repo top → epoch (0 if unknowable)
+  local ct mt
+  ct="$(rc_git -C "$1" log -1 --format=%ct 2>/dev/null)"; ct="${ct:-0}"
+  mt="$(rc_git -C "$1" ls-files -z 2>/dev/null \
+        | (cd "$1" 2>/dev/null && xargs -0 stat -f %m 2>/dev/null) \
+        | LC_ALL=C sort -rn | head -1)"; mt="${mt:-0}"
+  if [ "$ct" -ge "$mt" ]; then echo "$ct"; else echo "$mt"; fi
+}
+
+# The default scan roots, per home: a short, readable list of common dev
+# folders — never a walk of the whole home. Explicit CLI paths override.
+rc_roots_for_home() {   # $1 = home → NUL-terminated roots that exist
+  local r
+  for r in Developer Projects projects Code code src repos workspace; do
+    [ -d "$1/$r" ] && printf '%s\0' "$1/$r"
+  done
+}
+
+# Scan one root: find candidate-named dirs, pruned — we never descend into a
+# match (top-most wins; nested node_modules stay inside their parent), never
+# into .git, and never into cloud-sync mirrors. The name tests are generated
+# from RC_PATTERNS so the allow-list truly lives in one line.
+rc_scan_root() {   # $1 = root → NUL paths of pattern-named dirs
+  local names=() p
+  for p in $RC_PATTERNS; do names+=(-o -name "$p"); done
+  find "$1" -maxdepth 6 \
+    \( -name .git -o -name "Mobile Documents" -o -name "Dropbox" \) -prune -o \
+    \( -type d \( "${names[@]:1}" \) -prune -print0 \) 2>/dev/null
+}
+
+do_reclaim() {
+  local roots=() home r c parent name repo cmd kb days now epoch i m
+  now="$(date +%s)"
+
+  # roots: explicit args verbatim, else the defaults from every real home
+  if [ "${#RC_ROOTS[@]}" -gt 0 ]; then
+    for r in "${RC_ROOTS[@]}"; do
+      [ -d "$r" ] && roots+=("$r")
+    done
+  else
+    for home in /Users/*; do
+      [ -d "$home" ] || continue
+      case "$(basename "$home")" in Shared|Guest) continue ;; esac
+      while IFS= read -r -d '' r; do roots+=("$r"); done < <(rc_roots_for_home "$home")
+    done
+  fi
+  echo "============================================================"
+  t rc_banner
+  if [ "${#roots[@]}" -eq 0 ]; then t rc_noroots; return 1; fi
+  printf '   %s ' "$(t rc_roots)"; printf '%s  ' "${roots[@]}"; echo
+  [ -n "$RC_STALE_DAYS" ] && { m="$(t rc_stale_note)"; echo "   ${m//\{n\}/$RC_STALE_DAYS}"; }
+  t rc_scanning
+  echo "------------------------------------------------------------"
+
+  # ---- gather candidates through the three gates -----------------------------
+  local CAND_PATH=() CAND_REPO=() CAND_CMD=() CAND_KB=() CAND_DAYS=() CAND_OWNER=()
+  local TREPO="" tline rows=""
+  for r in "${roots[@]}"; do
+    while IFS= read -r -d '' c; do
+      parent="${c%/*}"; name="${c##*/}"
+      rc_manifest_ok "$name" "$parent" || continue                       # gate ③
+      repo="$(rc_git -C "$parent" rev-parse --show-toplevel 2>/dev/null)"
+      [ -n "$repo" ] || continue                                         # no repo → gate ① can't hold
+      rc_git -C "$repo" check-ignore -q "$c" 2>/dev/null || continue     # gate ①
+      rc_in_vault "$parent" "$r" && continue                             # never-touch on top
+      case "$c" in */Documents/*|*/Desktop/*|*/Pictures/*) continue ;; esac
+      # last-touched, cached per repo (the tracked-mtime pass isn't free)
+      epoch=""
+      while IFS=$'\t' read -r tline; do
+        case "$tline" in "$repo"$'\t'*) epoch="${tline#*$'\t'}"; break ;; esac
+      done <<EOF
+$TREPO
+EOF
+      if [ -z "$epoch" ]; then
+        epoch="$(rc_repo_touched "$repo")"
+        TREPO="$TREPO$repo"$'\t'"$epoch"$'\n'
+      fi
+      days=$(( (now - epoch) / 86400 )); [ "$epoch" -eq 0 ] && days=-1
+      if [ -n "$RC_STALE_DAYS" ] && [ "$days" -ge 0 ] && [ "$days" -lt "$RC_STALE_DAYS" ]; then
+        continue                                                          # too recently touched
+      fi
+      kb="$(du -sk "$c" 2>/dev/null | cut -f1)"; kb="${kb:-0}"
+      [ "$kb" -eq 0 ] && continue
+      CAND_PATH+=("$c"); CAND_REPO+=("$repo"); CAND_KB+=("$kb"); CAND_DAYS+=("$days")
+      CAND_CMD+=("$(rc_rebuild_for "$name" "$parent")")
+      case "$c" in
+        /Users/*) home="${c#/Users/}"; CAND_OWNER+=("/Users/${home%%/*}") ;;
+        *)        CAND_OWNER+=("$REAL_HOME") ;;   # off-/Users root → runner's Trash
+      esac
+    done < <(rc_scan_root "$r")
+  done
+
+  if [ "${#CAND_PATH[@]}" -eq 0 ]; then t rc_none; echo "============================================================"; return 0; fi
+
+  # ---- grouped preview: repos ordered by their biggest find, items by size ---
+  # sort key: <repo-max-kb> <repo> <item-kb> <index>
+  for i in "${!CAND_PATH[@]}"; do
+    local best=0 j
+    for j in "${!CAND_PATH[@]}"; do
+      [ "${CAND_REPO[$j]}" = "${CAND_REPO[$i]}" ] && [ "${CAND_KB[$j]}" -gt "$best" ] && best="${CAND_KB[$j]}"
+    done
+    rows="$rows$best"$'\t'"${CAND_REPO[$i]}"$'\t'"${CAND_KB[$i]}"$'\t'"$i"$'\n'
+  done
+  local ORD=()
+  while IFS=$'\t' read -r _ _ _ i; do
+    [ -n "$i" ] && ORD+=("$i")
+  done < <(printf '%s' "$rows" | LC_ALL=C sort -t"$(printf '\t')" -k1,1rn -k2,2 -k3,3rn)
+
+  local n=0 last="" total_kb=0 stale_s
+  for i in "${ORD[@]}"; do
+    if [ "${CAND_REPO[$i]}" != "$last" ]; then
+      last="${CAND_REPO[$i]}"
+      printf '♻️  %s\n' "$(printf '%s' "$last" | vis)"
+    fi
+    n=$((n + 1))
+    stale_s=""
+    if [ "${CAND_DAYS[$i]}" -ge 0 ]; then
+      m="$(t rc_days)"; stale_s="   · ${m//\{n\}/${CAND_DAYS[$i]}}"
+    fi
+    printf '  %3d) %-28s %6s   rebuild: %-18s%s\n' "$n" \
+      "$(printf '%s' "${CAND_PATH[$i]#"$last"/}" | vis)" \
+      "$(od_human_kb "${CAND_KB[$i]}")" "${CAND_CMD[$i]}" "$stale_s"
+    total_kb=$((total_kb + CAND_KB[i]))
+  done
+  echo "------------------------------------------------------------"
+  echo "$(t un_total)$(od_human_kb "$total_kb")"
+  echo "============================================================"
+
+  if [ "$DRY" -eq 1 ]; then t rc_dry_note; return 0; fi
+
+  # ---- select (same grammar as the 🧟 picker: numbers, ranges, all) ----------
+  t rc_multi_hint
+  printf '%s' "$(t un_pick_prompt)"
+  local choice=""; read -r choice || true
+  case "$choice" in ''|q|Q) t un_cancelled; return 0 ;; esac
+  PICK_ROWS=()
+  if ! pick_parse "$choice" 0 "$n"; then
+    t un_pick_invalid >&2; return 2
+  fi
+
+  local SEL=() sel_kb=0 k
+  for k in "${PICK_ROWS[@]}"; do
+    SEL+=("${ORD[$((k - 1))]}")
+    sel_kb=$((sel_kb + CAND_KB[${ORD[$((k - 1))]}]))
+  done
+  m="$(t rc_confirm)"; m="${m//\{n\}/${#SEL[@]}}"
+  printf '%s' "${m//\{size\}/$(od_human_kb "$sel_kb")}"
+  local reply=""; read -r reply || true
+  if [ "$reply" != "${#SEL[@]}" ]; then t un_cancelled; return 0; fi
+
+  # ---- receipt (kind=reclaim carries the rebuild commands) + move ------------
+  local rdir rfile stamp MV_TRIED=0 MV_MOVED=0 MV_STUCK_CONT=0
+  rdir="$REAL_HOME/.sheersweep/uninstalls"
+  mkdir -p "$rdir" 2>/dev/null
+  stamp="$(date +%Y%m%d-%H%M%S)"
+  rfile="$rdir/$stamp-reclaim.tsv"
+  {
+    echo "# sheersweep uninstall receipt"
+    echo "# app=reclaim (${#SEL[@]} build dirs)"
+    echo "# bid=reclaim"
+    echo "# kind=reclaim"
+    echo "# date=$stamp"
+    local seen=$'\n'
+    for i in "${SEL[@]}"; do
+      tline="cd ${CAND_PATH[$i]%/*} && ${CAND_CMD[$i]}"
+      case "$seen" in *$'\n'"$tline"$'\n'*) ;; *)
+        echo "# rebuild=$tline"; seen="$seen$tline"$'\n' ;;
+      esac
+    done
+    echo "# format=nul-pairs"
+    printf '\0'
+  } > "$rfile" 2>/dev/null
+  for i in "${SEL[@]}"; do
+    trash_one "${CAND_PATH[$i]}" "${CAND_OWNER[$i]}" "$rfile"
+  done
+  chown -R "$(stat -f %u "$REAL_HOME" 2>/dev/null):$(stat -f %g "$REAL_HOME" 2>/dev/null)" "$REAL_HOME/.sheersweep" 2>/dev/null
+  [ "$MV_MOVED" -eq 0 ] && rm -f "$rfile" 2>/dev/null
+
+  echo "============================================================"
+  m="$(t rc_done)"; m="${m//\{n\}/$MV_MOVED}"
+  report_moves "${m//\{size\}/$(od_human_kb "$sel_kb")}"
+  return 0
+}
+
 # --- dispatch: uninstall / tools / restore / leftovers are verbs; default → sweep
 # When sourced as a library for tests (SHEERSWEEP_LIB=1) we stop here: the pure
 # functions above are now defined, but nothing is executed.
@@ -3338,6 +3924,10 @@ if [ "$MODE" = "leftovers" ]; then
   do_leftovers
   exit $?
 fi
+if [ "$MODE" = "reclaim" ]; then
+  do_reclaim
+  exit $?
+fi
 
 before="$(free_kb)"
 echo "============================================================"
@@ -3361,6 +3951,11 @@ for home in /Users/*; do
   clean "$home/Library/Developer/CoreSimulator/Caches"
   clean "$home/.cargo/registry/cache"
   clean "$home/.gradle/caches"
+  # Node's V8 compile cache lives in the account's confstr TMPDIR, not the home —
+  # resolve it AS that account. One NAMED dir inside the per-user temp area;
+  # this is not (and will never be) a wholesale /var/folders sweep.
+  utmp="$(sudo -u "$(basename "$home")" getconf DARWIN_USER_TEMP_DIR 2>/dev/null)"
+  [ -n "$utmp" ] && [ -d "$utmp/node-compile-cache" ] && clean "${utmp%/}/node-compile-cache"
 done
 
 # ---- system-wide, once ----

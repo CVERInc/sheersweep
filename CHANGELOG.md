@@ -4,6 +4,43 @@ All notable changes to sheersweep are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.8.0]
+
+The `reclaim` verb ships — the June 21 spec (`docs/reclaim-spec.md`), built as
+designed.
+
+### Added — `reclaim`: build output in your repos, three proofs or invisible
+
+- **`sheersweep reclaim [--dry-run] [--stale <N>d] [path…]`** finds build
+  output inside project folders (`node_modules`, `.build`, `target`, `dist`,
+  `.next`, `Pods`, gradle dirs) — but a folder is a candidate **only when
+  three proofs hold at once**: git ignores it, its name is on the short
+  allow-list, and a sibling manifest (`package.json`, `Cargo.toml`,
+  `Package.swift`/`.xcodeproj`, `Podfile`, gradle files) proves the build
+  tool. A data folder merely named `dist` fails the manifest gate and stays
+  invisible. Obsidian vaults and cloud-sync mirrors are skipped outright.
+- **The preview is the argument:** grouped by repo, each row carrying size,
+  the exact **rebuild command** (lockfile-aware — pnpm/yarn/bun/npm), and
+  honest staleness (the newer of last commit and newest *tracked-file* edit,
+  so an actively-edited-but-uncommitted repo can never look stale).
+  `--stale 30d` turns that column into a filter.
+- **Same primitive as every verb:** pick rows (`1 3 5-8` / `all`), type the
+  count, and folders move to the **Trash** — a same-volume rename, instant,
+  no copying — under one receipt with honest accounting. The receipt records
+  each rebuild command (`kind=reclaim`), so **`restore` offers two undos**:
+  put the files back, or rebuild a clean tree with the printed command.
+- Scan roots are an explicit, readable list (`Developer`, `Projects`, `Code`,
+  `src`, `repos`, `workspace` — whichever exist, in every account) or the
+  paths you pass; never a walk of the whole home.
+
+### Added — sweep: Node's per-user compile cache
+
+- The sweep now clears `node-compile-cache` inside each account's confstr
+  temp directory (resolved as that account) — one *named* cache dir; still
+  not, and never, a wholesale `/var/folders` sweep. The spec's other Layer-1
+  candidates were already covered wholesale (`Library/Caches/*`,
+  `brew cleanup`) and were deliberately not duplicated.
+
 ## [0.7.5]
 
 Housekeeping — no behavior change. The CI badge had been red since v0.6.0
