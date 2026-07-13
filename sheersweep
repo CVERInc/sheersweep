@@ -4030,32 +4030,45 @@ dg_scan_start() {
   [ -z "$DG_DIR" ] && return 0
   (
     # (a subshell, not a function — plain assignments; everything is isolated)
-    homes=(); roots=()
+    # The four finders run in PARALLEL, each landing its result file the moment
+    # it finishes — a slow finder can only cost its own line, never the others'.
+    # (Field lesson: sequential, the orphan scan starved the cheap finders past
+    # the grace window and a four-line digest arrived as one line.)
+    homes=()
     for home in /Users/*; do
       [ -d "$home/Library" ] || continue
       case "$(basename "$home")" in Shared|Guest) continue ;; esac
       homes+=("$home")
     done
-    # ♻️ build output (fastest big number first)
-    CAND_PATH=(); CAND_REPO=(); CAND_CMD=(); CAND_KB=(); CAND_DAYS=(); CAND_OWNER=()
-    RC_STALE_DAYS=""
-    while IFS= read -r -d '' r; do roots+=("$r"); done < <(rc_default_roots)
-    if [ "${#roots[@]}" -gt 0 ]; then
-      rc_collect "${roots[@]}"
-    fi
-    kb=0; for i in "${CAND_KB[@]-}"; do [ -n "$i" ] && kb=$((kb + i)); done
-    printf '%s %s\n' "${#CAND_PATH[@]}" "$kb" > "$DG_DIR/.rc" && mv "$DG_DIR/.rc" "$DG_DIR/rc"
-    # 🧟 orphaned app data
-    collect_claims
-    orphan_discover
-    n=$(( ${#OD_IDS[@]} + ${#OD_TIDS[@]} ))
-    kb=0
-    for i in "${OD_KB[@]-}" "${OD_TKB[@]-}"; do [ -n "$i" ] && kb=$((kb + i)); done
-    printf '%s %s\n' "$n" "$kb" > "$DG_DIR/.orph" && mv "$DG_DIR/.orph" "$DG_DIR/orph"
-    # ↑ outdated formulae
-    dg_outdated_n > "$DG_DIR/.brew" && mv "$DG_DIR/.brew" "$DG_DIR/brew"
-    # 🤖 AI-session archives
-    dg_ai_kb "${homes[@]}" > "$DG_DIR/.ai" && mv "$DG_DIR/.ai" "$DG_DIR/ai"
+    (
+      # ♻️ build output
+      CAND_PATH=(); CAND_REPO=(); CAND_CMD=(); CAND_KB=(); CAND_DAYS=(); CAND_OWNER=()
+      RC_STALE_DAYS=""; roots=()
+      while IFS= read -r -d '' r; do roots+=("$r"); done < <(rc_default_roots)
+      if [ "${#roots[@]}" -gt 0 ]; then
+        rc_collect "${roots[@]}"
+      fi
+      kb=0; for i in "${CAND_KB[@]-}"; do [ -n "$i" ] && kb=$((kb + i)); done
+      printf '%s %s\n' "${#CAND_PATH[@]}" "$kb" > "$DG_DIR/.rc" && mv "$DG_DIR/.rc" "$DG_DIR/rc"
+    ) &
+    (
+      # 🧟 orphaned app data (the slow one — claim scan + per-id weighing)
+      collect_claims
+      orphan_discover
+      n=$(( ${#OD_IDS[@]} + ${#OD_TIDS[@]} ))
+      kb=0
+      for i in "${OD_KB[@]-}" "${OD_TKB[@]-}"; do [ -n "$i" ] && kb=$((kb + i)); done
+      printf '%s %s\n' "$n" "$kb" > "$DG_DIR/.orph" && mv "$DG_DIR/.orph" "$DG_DIR/orph"
+    ) &
+    (
+      # ↑ outdated formulae
+      dg_outdated_n > "$DG_DIR/.brew" && mv "$DG_DIR/.brew" "$DG_DIR/brew"
+    ) &
+    (
+      # 🤖 AI-session archives
+      dg_ai_kb "${homes[@]}" > "$DG_DIR/.ai" && mv "$DG_DIR/.ai" "$DG_DIR/ai"
+    ) &
+    wait
   ) >/dev/null 2>&1 &
   DG_PID=$!
 }
