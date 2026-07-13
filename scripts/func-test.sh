@@ -737,7 +737,7 @@ printf '4\n'         > "$DG_DIR/brew"     # 4 outdated
 printf '204800\n'    > "$DG_DIR/ai"       # 200M ≥ threshold
 true & DG_PID=$!; wait "$DG_PID" 2>/dev/null   # a finished pid → zero grace wait
 out="$(dg_print)"
-g1=0; case "$out" in *"🧟"*3*1.0G*) g1=1 ;; esac
+g1=0; case "$out" in *"🧟"*1.0G*"(3)"*) g1=1 ;; esac
 g2=0; case "$out" in *"♻️"*2.0G*) g2=1 ;; esac
 g3=0; case "$out" in *"↑"*4*) g3=1 ;; esac
 g4=0; case "$out" in *"🤖"*200M*) g4=1 ;; esac

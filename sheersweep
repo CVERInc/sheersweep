@@ -476,11 +476,11 @@ t() {
         zh-TW) echo "🧟 {n} 個已移除的 App 留下了 {size} 的資料   → sheersweep uninstall" ;;
         zh-Hans) echo "🧟 {n} 个已移除的 App 留下了 {size} 的数据   → sheersweep uninstall" ;;
         ko-KR) echo "🧟 제거된 앱 {n}개가 {size}의 데이터를 남겼습니다   → sheersweep uninstall" ;;
-        es-ES) echo "🧟 {n} apps eliminadas dejaron {size} de datos   → sheersweep uninstall" ;;
-        de-DE) echo "🧟 {n} entfernte Apps ließen {size} an Daten zurück   → sheersweep uninstall" ;;
-        fr-FR) echo "🧟 {n} apps supprimées ont laissé {size} de données   → sheersweep uninstall" ;;
-        pt-BR) echo "🧟 {n} apps removidos deixaram {size} de dados   → sheersweep uninstall" ;;
-        *)     echo "🧟 {n} removed apps left {size} of data behind   → sheersweep uninstall" ;;
+        es-ES) echo "🧟 {size} de datos dejados por apps eliminadas ({n})   → sheersweep uninstall" ;;
+        de-DE) echo "🧟 {size} an Daten von entfernten Apps ({n})   → sheersweep uninstall" ;;
+        fr-FR) echo "🧟 {size} de données laissées par des apps supprimées ({n})   → sheersweep uninstall" ;;
+        pt-BR) echo "🧟 {size} de dados deixados por apps removidos ({n})   → sheersweep uninstall" ;;
+        *)     echo "🧟 {size} of data left behind by removed apps ({n})   → sheersweep uninstall" ;;
       esac ;;
     dg_reclaim)   # {n} · {size}
       case "$SS_LANG" in
@@ -488,11 +488,11 @@ t() {
         zh-TW) echo "♻️ 可重建的 build 產物共 {size}（{n} 個資料夾）   → sheersweep reclaim" ;;
         zh-Hans) echo "♻️ 可重建的 build 产物共 {size}（{n} 个文件夹）   → sheersweep reclaim" ;;
         ko-KR) echo "♻️ 다시 빌드 가능한 산출물 {size}({n}개 폴더)   → sheersweep reclaim" ;;
-        es-ES) echo "♻️ {size} de artefactos de build reconstruibles ({n} carpetas)   → sheersweep reclaim" ;;
-        de-DE) echo "♻️ {size} an neu baubaren Build-Artefakten ({n} Ordner)   → sheersweep reclaim" ;;
-        fr-FR) echo "♻️ {size} d'artefacts de build reconstructibles ({n} dossiers)   → sheersweep reclaim" ;;
-        pt-BR) echo "♻️ {size} de artefatos de build reconstruíveis ({n} pastas)   → sheersweep reclaim" ;;
-        *)     echo "♻️ {size} of rebuildable build output ({n} folders)   → sheersweep reclaim" ;;
+        es-ES) echo "♻️ {size} de artefactos de build reconstruibles ({n})   → sheersweep reclaim" ;;
+        de-DE) echo "♻️ {size} an neu baubaren Build-Artefakten ({n})   → sheersweep reclaim" ;;
+        fr-FR) echo "♻️ {size} d'artefacts de build reconstructibles ({n})   → sheersweep reclaim" ;;
+        pt-BR) echo "♻️ {size} de artefatos de build reconstruíveis ({n})   → sheersweep reclaim" ;;
+        *)     echo "♻️ {size} of rebuildable build output ({n})   → sheersweep reclaim" ;;
       esac ;;
     dg_outdated)   # {n}
       case "$SS_LANG" in
@@ -500,11 +500,11 @@ t() {
         zh-TW) echo "↑ {n} 個 Homebrew formula 有新版   → sheersweep tools" ;;
         zh-Hans) echo "↑ {n} 个 Homebrew formula 有新版   → sheersweep tools" ;;
         ko-KR) echo "↑ Homebrew formula {n}개에 업데이트가 있습니다   → sheersweep tools" ;;
-        es-ES) echo "↑ {n} formulas de Homebrew tienen actualización   → sheersweep tools" ;;
-        de-DE) echo "↑ {n} Homebrew-Formulas haben Updates   → sheersweep tools" ;;
-        fr-FR) echo "↑ {n} formulas Homebrew ont des mises à jour   → sheersweep tools" ;;
-        pt-BR) echo "↑ {n} formulas do Homebrew têm atualização   → sheersweep tools" ;;
-        *)     echo "↑ {n} Homebrew formulae have updates   → sheersweep tools" ;;
+        es-ES) echo "↑ actualizaciones de Homebrew disponibles: {n}   → sheersweep tools" ;;
+        de-DE) echo "↑ Homebrew-Updates verfügbar: {n}   → sheersweep tools" ;;
+        fr-FR) echo "↑ mises à jour Homebrew disponibles : {n}   → sheersweep tools" ;;
+        pt-BR) echo "↑ atualizações do Homebrew disponíveis: {n}   → sheersweep tools" ;;
+        *)     echo "↑ Homebrew formula updates available: {n}   → sheersweep tools" ;;
       esac ;;
     dg_ai)   # {size}
       case "$SS_LANG" in
@@ -4073,44 +4073,52 @@ dg_scan_start() {
   DG_PID=$!
 }
 
+# Render one finder's line ("" = it has nothing worth a line).
+dg_line() {   # $1 = result key
+  local n kb m
+  case "$1" in
+    orph) read -r n kb < "$DG_DIR/orph"
+          [ "${n:-0}" -gt 0 ] || return 0
+          m="$(t dg_orphans)"; m="${m//\{n\}/$n}"; printf '%s' "${m//\{size\}/$(od_human_kb "$kb")}" ;;
+    rc)   read -r n kb < "$DG_DIR/rc"
+          [ "${n:-0}" -gt 0 ] || return 0
+          m="$(t dg_reclaim)"; m="${m//\{n\}/$n}"; printf '%s' "${m//\{size\}/$(od_human_kb "$kb")}" ;;
+    brew) read -r n < "$DG_DIR/brew"
+          [ "${n:-0}" -gt 0 ] || return 0
+          m="$(t dg_outdated)"; printf '%s' "${m//\{n\}/$n}" ;;
+    ai)   read -r kb < "$DG_DIR/ai"
+          [ "${kb:-0}" -ge 102400 ] || return 0   # only worth a line from ~100 MB
+          m="$(t dg_ai)"; printf '%s' "${m//\{size\}/$(od_human_kb "$kb")}" ;;
+  esac
+}
+
 dg_print() {
   [ -z "$DG_DIR" ] && return 0
-  # bounded grace: on a real sweep the scans finished long ago (wait ≈ 0); on a
-  # very fast dry-run give them a few seconds — never an unbounded stall.
-  local waited=0
-  while kill -0 "$DG_PID" 2>/dev/null && [ "$waited" -lt 6 ]; do
+  # STREAMED, with a bounded grace: on a real sweep the finders finished long
+  # ago (everything prints at once, wait ≈ 0); on a fast dry-run each line
+  # surfaces the moment its finder lands — the wait reads as activity, not a
+  # hang — capped at ~10 s. A finder that misses the cap costs only its line.
+  local waited=0 hdr=0 done_keys=" " key line last_pass=0
+  while :; do
+    for key in orph rc brew ai; do
+      case "$done_keys" in *" $key "*) continue ;; esac
+      [ -f "$DG_DIR/$key" ] || continue
+      done_keys="$done_keys$key "
+      line="$(dg_line "$key")"
+      [ -z "$line" ] && continue
+      if [ "$hdr" -eq 0 ]; then echo "── $(t dg_header) ──"; hdr=1; fi
+      printf '   %s\n' "$line"
+    done
+    [ "$done_keys" = " orph rc brew ai " ] && break
+    [ "$last_pass" -eq 1 ] && break
+    if ! kill -0 "$DG_PID" 2>/dev/null; then
+      last_pass=1; continue   # job ended — one more pass for files that landed mid-loop
+    fi
+    [ "$waited" -ge 10 ] && break
     sleep 1; waited=$((waited + 1))
   done
-  local lines=() m n kb
-  if [ -f "$DG_DIR/orph" ]; then
-    read -r n kb < "$DG_DIR/orph"
-    if [ "${n:-0}" -gt 0 ]; then
-      m="$(t dg_orphans)"; m="${m//\{n\}/$n}"; lines+=("${m//\{size\}/$(od_human_kb "$kb")}")
-    fi
-  fi
-  if [ -f "$DG_DIR/rc" ]; then
-    read -r n kb < "$DG_DIR/rc"
-    if [ "${n:-0}" -gt 0 ]; then
-      m="$(t dg_reclaim)"; m="${m//\{n\}/$n}"; lines+=("${m//\{size\}/$(od_human_kb "$kb")}")
-    fi
-  fi
-  if [ -f "$DG_DIR/brew" ]; then
-    read -r n < "$DG_DIR/brew"
-    if [ "${n:-0}" -gt 0 ]; then
-      m="$(t dg_outdated)"; lines+=("${m//\{n\}/$n}")
-    fi
-  fi
-  if [ -f "$DG_DIR/ai" ]; then
-    read -r kb < "$DG_DIR/ai"
-    if [ "${kb:-0}" -ge 102400 ]; then   # only worth a line from ~100 MB
-      m="$(t dg_ai)"; lines+=("${m//\{size\}/$(od_human_kb "$kb")}")
-    fi
-  fi
   rm -rf "$DG_DIR"; DG_DIR=""
-  [ "${#lines[@]}" -eq 0 ] && return 0
-  echo "── $(t dg_header) ──"
-  local l
-  for l in "${lines[@]}"; do printf '   %s\n' "$l"; done
+  return 0
 }
 
 # --- dispatch: uninstall / tools / restore / leftovers are verbs; default → sweep
