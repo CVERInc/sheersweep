@@ -726,6 +726,42 @@ else
 fi
 teardown
 
+# (guard) the sweep digest is REPORT-only formatting over finder results: each
+# fabricated result renders its localized line, sub-threshold AI size and
+# zero-count finders contribute nothing, and an empty digest prints NOTHING.
+setup
+DG_DIR="$SBX/dg"; mkdir -p "$DG_DIR"
+printf '3 1048576\n' > "$DG_DIR/orph"     # 3 orphans · 1.0G
+printf '2 2097152\n' > "$DG_DIR/rc"       # 2 folders · 2.0G
+printf '4\n'         > "$DG_DIR/brew"     # 4 outdated
+printf '204800\n'    > "$DG_DIR/ai"       # 200M ≥ threshold
+true & DG_PID=$!; wait "$DG_PID" 2>/dev/null   # a finished pid → zero grace wait
+out="$(dg_print)"
+g1=0; case "$out" in *"🧟"*3*1.0G*) g1=1 ;; esac
+g2=0; case "$out" in *"♻️"*2.0G*) g2=1 ;; esac
+g3=0; case "$out" in *"↑"*4*) g3=1 ;; esac
+g4=0; case "$out" in *"🤖"*200M*) g4=1 ;; esac
+DG_DIR="$SBX/dg2"; mkdir -p "$DG_DIR"
+printf '0 0\n' > "$DG_DIR/orph"; printf '10240\n' > "$DG_DIR/ai"   # zero + sub-100M
+true & DG_PID=$!; wait "$DG_PID" 2>/dev/null
+out2="$(dg_print)"
+g5=0; [ -z "$out2" ] && g5=1
+if [ "$g1$g2$g3$g4$g5" = "11111" ]; then
+  pass "digest: four lines render localized; zero/sub-threshold finders silent; empty digest prints nothing"
+else
+  fail "digest wrong (orph=$g1 rc=$g2 brew=$g3 ai=$g4 empty=$g5) out=[$out] out2=[$out2]"
+fi
+# dg_ai_kb: named session dirs only, homes passed explicitly
+mkdir -p "$SBX/h1/.claude/projects" "$SBX/h1/.clikae/profiles/claude/l/projects"
+dd if=/dev/zero of="$SBX/h1/.claude/projects/s.jsonl" bs=1024 count=64 2>/dev/null
+kb="$(dg_ai_kb "$SBX/h1")"; kb0="$(dg_ai_kb "$SBX/empty-home")"
+if [ "${kb:-0}" -ge 64 ] && [ "${kb0:-x}" = "0" ]; then
+  pass "dg_ai_kb: measures named session dirs; empty home → 0"
+else
+  fail "dg_ai_kb wrong (kb=$kb kb0=$kb0)"
+fi
+teardown
+
 # (guard) EVERY t() key must exist in EVERY supported locale — the key list is
 # extracted from the script itself so a future key can't dodge the check. The
 # i18n rule is tiered (command lines stay raw) but a key that IS localized may

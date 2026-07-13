@@ -32,7 +32,7 @@
 #   each with the native way to remove it. Changes nothing; never needs sudo.
 set -u
 
-VERSION="0.8.0"
+VERSION="0.9.0"
 
 # ============================================================================
 # i18n — en-US · ja-JP · zh-TW · zh-Hans · ko-KR · es-ES · de-DE · fr-FR · pt-BR.
@@ -457,6 +457,66 @@ t() {
         fr-FR) echo "🔴 {bid} appartient à quelque chose d'encore installé — désinstallez cette app par son nom." ;;
         pt-BR) echo "🔴 {bid} pertence a algo ainda instalado — desinstale esse app pelo nome." ;;
         *)     echo "🔴 {bid} belongs to something still installed — uninstall that app by its name instead." ;;
+      esac ;;
+    dg_header)
+      case "$SS_LANG" in
+        ja-JP) echo "ついでに見えたもの（数字だけ。何も触っていません）" ;;
+        zh-TW) echo "順便看到的（只報數字，什麼都沒動）" ;;
+        zh-Hans) echo "顺便看到的（只报数字，什么都没动）" ;;
+        ko-KR) echo "겸사겸사 보인 것(숫자만, 아무것도 건드리지 않음)" ;;
+        es-ES) echo "También visto (solo números; no se tocó nada)" ;;
+        de-DE) echo "Nebenbei gesehen (nur Zahlen; nichts angefasst)" ;;
+        fr-FR) echo "Vu au passage (des chiffres, rien touché)" ;;
+        pt-BR) echo "Visto de passagem (só números; nada foi tocado)" ;;
+        *)     echo "Also seen (numbers only — nothing was touched)" ;;
+      esac ;;
+    dg_orphans)   # {n} · {size}
+      case "$SS_LANG" in
+        ja-JP) echo "🧟 削除済みアプリ {n} 件がデータ {size} を残しています   → sheersweep uninstall" ;;
+        zh-TW) echo "🧟 {n} 個已移除的 App 留下了 {size} 的資料   → sheersweep uninstall" ;;
+        zh-Hans) echo "🧟 {n} 个已移除的 App 留下了 {size} 的数据   → sheersweep uninstall" ;;
+        ko-KR) echo "🧟 제거된 앱 {n}개가 {size}의 데이터를 남겼습니다   → sheersweep uninstall" ;;
+        es-ES) echo "🧟 {n} apps eliminadas dejaron {size} de datos   → sheersweep uninstall" ;;
+        de-DE) echo "🧟 {n} entfernte Apps ließen {size} an Daten zurück   → sheersweep uninstall" ;;
+        fr-FR) echo "🧟 {n} apps supprimées ont laissé {size} de données   → sheersweep uninstall" ;;
+        pt-BR) echo "🧟 {n} apps removidos deixaram {size} de dados   → sheersweep uninstall" ;;
+        *)     echo "🧟 {n} removed apps left {size} of data behind   → sheersweep uninstall" ;;
+      esac ;;
+    dg_reclaim)   # {n} · {size}
+      case "$SS_LANG" in
+        ja-JP) echo "♻️ 再ビルド可能なビルド産物が {size}（{n} フォルダ）   → sheersweep reclaim" ;;
+        zh-TW) echo "♻️ 可重建的 build 產物共 {size}（{n} 個資料夾）   → sheersweep reclaim" ;;
+        zh-Hans) echo "♻️ 可重建的 build 产物共 {size}（{n} 个文件夹）   → sheersweep reclaim" ;;
+        ko-KR) echo "♻️ 다시 빌드 가능한 산출물 {size}({n}개 폴더)   → sheersweep reclaim" ;;
+        es-ES) echo "♻️ {size} de artefactos de build reconstruibles ({n} carpetas)   → sheersweep reclaim" ;;
+        de-DE) echo "♻️ {size} an neu baubaren Build-Artefakten ({n} Ordner)   → sheersweep reclaim" ;;
+        fr-FR) echo "♻️ {size} d'artefacts de build reconstructibles ({n} dossiers)   → sheersweep reclaim" ;;
+        pt-BR) echo "♻️ {size} de artefatos de build reconstruíveis ({n} pastas)   → sheersweep reclaim" ;;
+        *)     echo "♻️ {size} of rebuildable build output ({n} folders)   → sheersweep reclaim" ;;
+      esac ;;
+    dg_outdated)   # {n}
+      case "$SS_LANG" in
+        ja-JP) echo "↑ Homebrew formula {n} 件に更新があります   → sheersweep tools" ;;
+        zh-TW) echo "↑ {n} 個 Homebrew formula 有新版   → sheersweep tools" ;;
+        zh-Hans) echo "↑ {n} 个 Homebrew formula 有新版   → sheersweep tools" ;;
+        ko-KR) echo "↑ Homebrew formula {n}개에 업데이트가 있습니다   → sheersweep tools" ;;
+        es-ES) echo "↑ {n} formulas de Homebrew tienen actualización   → sheersweep tools" ;;
+        de-DE) echo "↑ {n} Homebrew-Formulas haben Updates   → sheersweep tools" ;;
+        fr-FR) echo "↑ {n} formulas Homebrew ont des mises à jour   → sheersweep tools" ;;
+        pt-BR) echo "↑ {n} formulas do Homebrew têm atualização   → sheersweep tools" ;;
+        *)     echo "↑ {n} Homebrew formulae have updates   → sheersweep tools" ;;
+      esac ;;
+    dg_ai)   # {size}
+      case "$SS_LANG" in
+        ja-JP) echo "🤖 AI セッションの記録が {size} — 会話履歴は再生成できないため、お使いの AI ツール自身の掃除機能で" ;;
+        zh-TW) echo "🤖 AI session 紀錄佔 {size}——對話史不可再生，請用你的 AI 工具自己的清理功能" ;;
+        zh-Hans) echo "🤖 AI session 记录占 {size}——对话史不可再生，请用你的 AI 工具自己的清理功能" ;;
+        ko-KR) echo "🤖 AI 세션 기록이 {size} — 대화 기록은 재생성할 수 없으니 AI 도구 자체의 정리 기능으로" ;;
+        es-ES) echo "🤖 los archivos de sesiones de IA ocupan {size} — el historial no es regenerable; usa la limpieza propia de tu herramienta de IA" ;;
+        de-DE) echo "🤖 KI-Sitzungsarchive belegen {size} — Verläufe sind nicht regenerierbar; nutze die eigene Aufräumfunktion deines KI-Tools" ;;
+        fr-FR) echo "🤖 les archives de sessions IA occupent {size} — l'historique n'est pas régénérable ; utilisez le nettoyage propre de votre outil IA" ;;
+        pt-BR) echo "🤖 arquivos de sessões de IA ocupam {size} — o histórico não é regenerável; use a limpeza da própria ferramenta de IA" ;;
+        *)     echo "🤖 AI session archives hold {size} — history isn't regenerable; use your AI tool's own cleanup" ;;
       esac ;;
     rc_usage)
       case "$SS_LANG" in
@@ -1298,6 +1358,8 @@ sheersweep — 読める Mac クリーナー。
   • システム全体（一度）: /Library/Caches, /.adobeTemp, `brew cleanup`。
   • ローカル APFS（Time Machine）スナップショットを解放 — 解放した容量が
     実際に戻る唯一の手順（ファイル削除だけではスナップショットが容量を保持）。
+  • 最後に読み取り専用のダイジェスト: uninstall / reclaim / tools が今
+    見えているもの — 数字と案内だけで、何も触りません。
 
 アプリのアンインストール（オプトインの危険な操作）
   sheersweep uninstall <App>
@@ -1383,6 +1445,8 @@ sheersweep — 你讀得懂的 Mac 清理工具。
   • 系統層（一次）：/Library/Caches、/.adobeTemp、`brew cleanup`。
   • 釋放本機 APFS（Time Machine）快照——這是釋出空間真正會回來的一步
     （只刪檔案，若快照仍釘住就不會還空間）。
+  • 結尾附一份唯讀 digest：uninstall／reclaim／tools 現在看得到什麼
+    ——只報數字和指路，什麼都不動。
 
 移除一個 App（明確 opt-in 的危險操作）
   sheersweep uninstall <App>
@@ -1463,6 +1527,8 @@ sheersweep — 你能读懂的 Mac 清理工具。
   • 系统层（一次）：/Library/Caches、/.adobeTemp、`brew cleanup`。
   • 释放本机 APFS（时间机器）快照——这是释放的空间真正回来的一步
     （只删文件的话，快照仍占着空间就不会归还）。
+  • 结尾附一份只读 digest：uninstall／reclaim／tools 现在看得到什么
+    ——只报数字和指路，什么都不动。
 
 卸载一个 App（明确 opt-in 的危险操作）
   sheersweep uninstall <App>
@@ -1543,6 +1609,8 @@ sheersweep — 읽을 수 있는 Mac 클리너.
   • 시스템 전체(한 번): /Library/Caches, /.adobeTemp, `brew cleanup`.
   • 로컬 APFS(타임머신) 스냅샷 해제 — 비운 공간이 실제로 돌아오는
     유일한 단계(파일만 지우면 스냅샷이 공간을 계속 붙듭니다).
+  • 끝에 읽기 전용 다이제스트: uninstall / reclaim / tools가 지금 볼 수
+    있는 것 — 숫자와 안내뿐, 아무것도 건드리지 않습니다.
 
 앱 제거(옵트인, 본질적으로 위험한 작업)
   sheersweep uninstall <App>
@@ -1628,6 +1696,8 @@ QUÉ HACE
   • Libera las instantáneas locales de APFS (Time Machine) — el paso que de
     verdad devuelve el espacio (borrar archivos no basta si una instantánea
     los retiene).
+  • Termina con un resumen de solo lectura: lo que uninstall / reclaim /
+    tools ven ahora mismo — números y señales, nada se toca.
 
 DESINSTALAR UNA APP (opt-in, peligroso por naturaleza)
   sheersweep uninstall <App>
@@ -1721,6 +1791,8 @@ WAS ES TUT
   • Gibt lokale APFS-(Time-Machine-)Schnappschüsse frei — der Schritt, der den
     Platz wirklich zurückbringt (Dateien löschen reicht nicht, solange ein
     Schnappschuss sie festhält).
+  • Endet mit einem Nur-Lese-Digest: was uninstall / reclaim / tools gerade
+    sehen — Zahlen und Wegweiser, nichts wird angefasst.
 
 EINE APP DEINSTALLIEREN (Opt-in, von Natur aus gefährlich)
   sheersweep uninstall <App>
@@ -1817,6 +1889,8 @@ CE QU'IL FAIT
   • Libère les instantanés locaux APFS (Time Machine) — l'étape qui rend
     vraiment l'espace (supprimer des fichiers ne suffit pas si un instantané
     les retient).
+  • Se termine par un résumé en lecture seule : ce que uninstall / reclaim /
+    tools voient en ce moment — des chiffres et des flèches, rien n'est touché.
 
 DÉSINSTALLER UNE APP (opt-in, dangereux par nature)
   sheersweep uninstall <App>
@@ -1912,6 +1986,8 @@ O QUE ELE FAZ
   • No sistema, uma vez: /Library/Caches, /.adobeTemp, `brew cleanup`.
   • Libera os instantâneos locais do APFS (Time Machine) — o passo que devolve
     o espaço de verdade (apagar arquivos não basta se um instantâneo os segura).
+  • Termina com um resumo somente leitura: o que uninstall / reclaim / tools
+    veem agora — números e setas, nada é tocado.
 
 DESINSTALAR UM APP (opt-in, perigoso por natureza)
   sheersweep uninstall <App>
@@ -2004,6 +2080,8 @@ WHAT IT DOES
   • System once: /Library/Caches, /.adobeTemp, `brew cleanup`.
   • Releases local APFS (Time Machine) snapshots — the step that actually
     returns the freed space (deleting files alone won't, if a snapshot pins them).
+  • Ends with a read-only digest: what uninstall / reclaim / tools can see
+    right now — numbers and pointers, nothing is touched.
 
 UNINSTALL AN APP (opt-in, dangerous by nature)
   sheersweep uninstall <App>
@@ -2544,8 +2622,8 @@ od_human_kb() {   # KB → "12K" / "340M" / "1.2G" (matches du -h's vocabulary)
 # override the homes to scan (for tests); default = every real /Users home.
 # shellcheck disable=SC2120  # args are the test seam; production calls take the default
 orphan_discover() {
-  OD_IDS=(); OD_SIZE=(); OD_HINT=()
-  OD_TIDS=(); OD_TSIZE=(); OD_THINT=()
+  OD_IDS=(); OD_SIZE=(); OD_HINT=(); OD_KB=()
+  OD_TIDS=(); OD_TSIZE=(); OD_THINT=(); OD_TKB=()
   local homes=() home id kb rows="" tail="" paths=() p
   if [ "$#" -gt 0 ]; then homes=("$@"); else
     for home in /Users/*; do
@@ -2573,11 +2651,11 @@ orphan_discover() {
   )
   while read -r kb id; do
     [ -z "$id" ] && continue
-    OD_IDS+=("$id"); OD_SIZE+=("$(od_human_kb "$kb")"); OD_HINT+=("$(orphan_hint "$id")")
+    OD_IDS+=("$id"); OD_SIZE+=("$(od_human_kb "$kb")"); OD_HINT+=("$(orphan_hint "$id")"); OD_KB+=("$kb")
   done < <(printf '%s' "$rows" | LC_ALL=C sort -rn)
   while read -r kb id; do
     [ -z "$id" ] && continue
-    OD_TIDS+=("$id"); OD_TSIZE+=("$(od_human_kb "$kb")"); OD_THINT+=("$(orphan_hint "$id")")
+    OD_TIDS+=("$id"); OD_TSIZE+=("$(od_human_kb "$kb")"); OD_THINT+=("$(orphan_hint "$id")"); OD_TKB+=("$kb")
   done < <(printf '%s' "$tail" | LC_ALL=C sort -rn)
 }
 
@@ -3736,34 +3814,25 @@ rc_scan_root() {   # $1 = root → NUL paths of pattern-named dirs
     \( -type d \( "${names[@]:1}" \) -prune -print0 \) 2>/dev/null
 }
 
-do_reclaim() {
-  local roots=() home r c parent name repo cmd kb days now epoch i m
+# The default scan roots across every real home, NUL-terminated.
+rc_default_roots() {
+  local home
+  for home in /Users/*; do
+    [ -d "$home" ] || continue
+    case "$(basename "$home")" in Shared|Guest) continue ;; esac
+    rc_roots_for_home "$home"
+  done
+}
+
+# Gather candidates through the three gates into the CALLER's CAND_* arrays
+# (declare them local first — bash dynamic scoping). Honors RC_STALE_DAYS.
+# Shared by do_reclaim and the sweep digest, so both always see with the
+# same eyes.
+rc_collect() {   # $@ = scan roots
+  local r c parent name repo kb days now epoch home
+  local TREPO="" tline
   now="$(date +%s)"
-
-  # roots: explicit args verbatim, else the defaults from every real home
-  if [ "${#RC_ROOTS[@]}" -gt 0 ]; then
-    for r in "${RC_ROOTS[@]}"; do
-      [ -d "$r" ] && roots+=("$r")
-    done
-  else
-    for home in /Users/*; do
-      [ -d "$home" ] || continue
-      case "$(basename "$home")" in Shared|Guest) continue ;; esac
-      while IFS= read -r -d '' r; do roots+=("$r"); done < <(rc_roots_for_home "$home")
-    done
-  fi
-  echo "============================================================"
-  t rc_banner
-  if [ "${#roots[@]}" -eq 0 ]; then t rc_noroots; return 1; fi
-  printf '   %s ' "$(t rc_roots)"; printf '%s  ' "${roots[@]}"; echo
-  [ -n "$RC_STALE_DAYS" ] && { m="$(t rc_stale_note)"; echo "   ${m//\{n\}/$RC_STALE_DAYS}"; }
-  t rc_scanning
-  echo "------------------------------------------------------------"
-
-  # ---- gather candidates through the three gates -----------------------------
-  local CAND_PATH=() CAND_REPO=() CAND_CMD=() CAND_KB=() CAND_DAYS=() CAND_OWNER=()
-  local TREPO="" tline rows=""
-  for r in "${roots[@]}"; do
+  for r in "$@"; do
     while IFS= read -r -d '' c; do
       parent="${c%/*}"; name="${c##*/}"
       rc_manifest_ok "$name" "$parent" || continue                       # gate ③
@@ -3797,6 +3866,30 @@ EOF
       esac
     done < <(rc_scan_root "$r")
   done
+}
+
+do_reclaim() {
+  local roots=() r kb days i m
+  # roots: explicit args verbatim, else the defaults from every real home
+  if [ "${#RC_ROOTS[@]}" -gt 0 ]; then
+    for r in "${RC_ROOTS[@]}"; do
+      [ -d "$r" ] && roots+=("$r")
+    done
+  else
+    while IFS= read -r -d '' r; do roots+=("$r"); done < <(rc_default_roots)
+  fi
+  echo "============================================================"
+  t rc_banner
+  if [ "${#roots[@]}" -eq 0 ]; then t rc_noroots; return 1; fi
+  printf '   %s ' "$(t rc_roots)"; printf '%s  ' "${roots[@]}"; echo
+  [ -n "$RC_STALE_DAYS" ] && { m="$(t rc_stale_note)"; echo "   ${m//\{n\}/$RC_STALE_DAYS}"; }
+  t rc_scanning
+  echo "------------------------------------------------------------"
+
+  # ---- gather candidates through the three gates (rc_collect) ----------------
+  local CAND_PATH=() CAND_REPO=() CAND_CMD=() CAND_KB=() CAND_DAYS=() CAND_OWNER=()
+  local rows=""
+  rc_collect "${roots[@]}"
 
   if [ "${#CAND_PATH[@]}" -eq 0 ]; then t rc_none; echo "============================================================"; return 0; fi
 
@@ -3890,6 +3983,123 @@ EOF
   return 0
 }
 
+# ============================================================================
+# The sweep digest (docs/digest-spec.md): a report-only tail on every sweep of
+# what the OTHER verbs can see right now — numbers and pointers, nothing is
+# touched. The scans run in the background WHILE the sweep works, each result
+# landing in its own file as it finishes (write tmp → mv = atomic); at digest
+# time we take a short bounded grace, then print whatever is ready. A finder
+# that found nothing contributes no line; an empty digest prints nothing.
+# ============================================================================
+
+DG_DIR=""
+DG_PID=""
+
+# AI-session archives: conversation history is NOT regenerable and never
+# sheersweep's to touch — the digest may report the size and point at the
+# owning tool, full stop. Named directories only.
+dg_ai_kb() {   # $@ = homes → total KB (0 if none)
+  local h d paths=()
+  for h in "$@"; do
+    for d in "$h/.claude/projects" "$h/.codex/sessions"; do
+      [ -d "$d" ] && paths+=("$d")
+    done
+    for d in "$h/.clikae/profiles"/*/*/projects; do
+      [ -d "$d" ] && paths+=("$d")
+    done
+  done
+  [ "${#paths[@]}" -eq 0 ] && { echo 0; return 0; }
+  du -sk "${paths[@]}" 2>/dev/null | awk '{s += $1} END {print s + 0}'
+}
+
+# Outdated formulae among the leaves — the same offline read `tools` flags.
+dg_outdated_n() {
+  brew_locate
+  [ -z "$BREW_BIN" ] && { echo 0; return 0; }
+  local lv od
+  lv="$(brew_run leaves 2>/dev/null)"
+  od="$(brew_run outdated --formula --quiet 2>/dev/null)"
+  if [ -z "$lv" ] || [ -z "$od" ]; then echo 0; return 0; fi
+  LC_ALL=C comm -12 \
+    <(printf '%s\n' "$lv" | LC_ALL=C sort) \
+    <(printf '%s\n' "$od" | LC_ALL=C sort) | grep -c . || true
+}
+
+dg_scan_start() {
+  DG_DIR="$(mktemp -d "${TMPDIR:-/tmp}/sheersweep-digest.XXXXXX" 2>/dev/null)" || DG_DIR=""
+  [ -z "$DG_DIR" ] && return 0
+  (
+    # (a subshell, not a function — plain assignments; everything is isolated)
+    homes=(); roots=()
+    for home in /Users/*; do
+      [ -d "$home/Library" ] || continue
+      case "$(basename "$home")" in Shared|Guest) continue ;; esac
+      homes+=("$home")
+    done
+    # ♻️ build output (fastest big number first)
+    CAND_PATH=(); CAND_REPO=(); CAND_CMD=(); CAND_KB=(); CAND_DAYS=(); CAND_OWNER=()
+    RC_STALE_DAYS=""
+    while IFS= read -r -d '' r; do roots+=("$r"); done < <(rc_default_roots)
+    if [ "${#roots[@]}" -gt 0 ]; then
+      rc_collect "${roots[@]}"
+    fi
+    kb=0; for i in "${CAND_KB[@]-}"; do [ -n "$i" ] && kb=$((kb + i)); done
+    printf '%s %s\n' "${#CAND_PATH[@]}" "$kb" > "$DG_DIR/.rc" && mv "$DG_DIR/.rc" "$DG_DIR/rc"
+    # 🧟 orphaned app data
+    collect_claims
+    orphan_discover
+    n=$(( ${#OD_IDS[@]} + ${#OD_TIDS[@]} ))
+    kb=0
+    for i in "${OD_KB[@]-}" "${OD_TKB[@]-}"; do [ -n "$i" ] && kb=$((kb + i)); done
+    printf '%s %s\n' "$n" "$kb" > "$DG_DIR/.orph" && mv "$DG_DIR/.orph" "$DG_DIR/orph"
+    # ↑ outdated formulae
+    dg_outdated_n > "$DG_DIR/.brew" && mv "$DG_DIR/.brew" "$DG_DIR/brew"
+    # 🤖 AI-session archives
+    dg_ai_kb "${homes[@]}" > "$DG_DIR/.ai" && mv "$DG_DIR/.ai" "$DG_DIR/ai"
+  ) >/dev/null 2>&1 &
+  DG_PID=$!
+}
+
+dg_print() {
+  [ -z "$DG_DIR" ] && return 0
+  # bounded grace: on a real sweep the scans finished long ago (wait ≈ 0); on a
+  # very fast dry-run give them a few seconds — never an unbounded stall.
+  local waited=0
+  while kill -0 "$DG_PID" 2>/dev/null && [ "$waited" -lt 6 ]; do
+    sleep 1; waited=$((waited + 1))
+  done
+  local lines=() m n kb
+  if [ -f "$DG_DIR/orph" ]; then
+    read -r n kb < "$DG_DIR/orph"
+    if [ "${n:-0}" -gt 0 ]; then
+      m="$(t dg_orphans)"; m="${m//\{n\}/$n}"; lines+=("${m//\{size\}/$(od_human_kb "$kb")}")
+    fi
+  fi
+  if [ -f "$DG_DIR/rc" ]; then
+    read -r n kb < "$DG_DIR/rc"
+    if [ "${n:-0}" -gt 0 ]; then
+      m="$(t dg_reclaim)"; m="${m//\{n\}/$n}"; lines+=("${m//\{size\}/$(od_human_kb "$kb")}")
+    fi
+  fi
+  if [ -f "$DG_DIR/brew" ]; then
+    read -r n < "$DG_DIR/brew"
+    if [ "${n:-0}" -gt 0 ]; then
+      m="$(t dg_outdated)"; lines+=("${m//\{n\}/$n}")
+    fi
+  fi
+  if [ -f "$DG_DIR/ai" ]; then
+    read -r kb < "$DG_DIR/ai"
+    if [ "${kb:-0}" -ge 102400 ]; then   # only worth a line from ~100 MB
+      m="$(t dg_ai)"; lines+=("${m//\{size\}/$(od_human_kb "$kb")}")
+    fi
+  fi
+  rm -rf "$DG_DIR"; DG_DIR=""
+  [ "${#lines[@]}" -eq 0 ] && return 0
+  echo "── $(t dg_header) ──"
+  local l
+  for l in "${lines[@]}"; do printf '   %s\n' "$l"; done
+}
+
 # --- dispatch: uninstall / tools / restore / leftovers are verbs; default → sweep
 # When sourced as a library for tests (SHEERSWEEP_LIB=1) we stop here: the pure
 # functions above are now defined, but nothing is executed.
@@ -3934,6 +4144,9 @@ echo "============================================================"
 if [ "$DRY" -eq 1 ]; then t dry_banner; else echo "🧹 sheersweep"; fi
 echo "$(t free_before)$(df -h /System/Volumes/Data | awk '/Data$/{print $4}')"
 echo "============================================================"
+
+# the digest's finders start now and work UNDER the sweep (docs/digest-spec.md)
+dg_scan_start
 
 # ---- per-account safe caches (every real home under /Users) ----
 for home in /Users/*; do
@@ -3999,6 +4212,9 @@ else
     t snap_fail >&2
   fi
 fi
+
+# ---- the digest: what the other verbs can see (report only, never acts) ----
+dg_print
 
 after="$(free_kb)"
 echo "============================================================"

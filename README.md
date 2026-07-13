@@ -53,6 +53,20 @@ Open source, no subscription, no surprises.
 - **Releases local APFS (Time Machine) snapshots** — the step most cleaners skip
   and most users never hear about: deleting files won't return the space if a
   snapshot still pins it. sheersweep frees it *and* tells you.
+- **Ends with a read-only digest** of what the *other* verbs can see right now —
+  scanned in the background while the sweep works, numbers and pointers only:
+
+  ```
+  ── Also seen (numbers only — nothing was touched) ──
+     🧟 24 removed apps left 1.6G of data behind   → sheersweep uninstall
+     ♻️ 4.5G of rebuildable build output (20 folders)   → sheersweep reclaim
+     ↑ 5 Homebrew formulae have updates   → sheersweep tools
+     🤖 AI session archives hold 512M — history isn't regenerable; use your AI tool's own cleanup
+  ```
+
+  Each line names its verb; the digest never acts. (AI session archives are
+  conversation history — not regenerable, so not sheersweep's to touch: it
+  reports the size and points at the owning tool, full stop.)
 
 It sweeps **all accounts** in one pass — handy on a shared or family Mac where
 every other tool only cleans the user running it.

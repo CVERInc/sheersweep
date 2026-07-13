@@ -4,6 +4,28 @@ All notable changes to sheersweep are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.9.0]
+
+### Added — the sweep digest: one habitual command surfaces everything
+
+- Every sweep (real or `--dry-run`) now ends with a **report-only digest** of
+  what the other verbs can see right now: data left behind by removed apps
+  (→ `uninstall`), rebuildable build output (→ `reclaim`), upgradable
+  formulae (→ `tools`, same offline read), and — from ~100 MB — the size of
+  AI-session archives, pointed at the owning tool (conversation history is
+  not regenerable and never sheersweep's to touch).
+- **Numbers and pointers, zero new deletion surface.** Each line is produced
+  by the same finder its verb uses; a finder that found nothing contributes
+  no line, and an empty digest prints nothing at all.
+- **No perceptible slowdown:** the finders run in the background *while* the
+  sweep works; at digest time there is a short bounded grace (a few seconds,
+  usually zero), then whatever is ready prints — a missing line, never a
+  stall. No new flags: the digest is part of what a sweep is now.
+- Why: a cleaner is reached for in moments, and the habitual moment is the
+  plain sweep. The digest hangs the rare, high-value verbs on the frequent
+  one — the tool argues for its own slot with evidence instead of marketing
+  (design record: `docs/digest-spec.md`).
+
 ## [0.8.0]
 
 The `reclaim` verb ships — the June 21 spec (`docs/reclaim-spec.md`), built as

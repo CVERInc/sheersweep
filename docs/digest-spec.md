@@ -1,6 +1,10 @@
 # Spec: the sweep digest — one habitual command surfaces everything
 
-**Status:** Locked concept (maintainer decision 2026-07-13). Target: v0.9.0.
+**Status:** Shipped in v0.9.0 (2026-07-13, same day as the lock) — kept as the
+design record. One amendment from the build: "skipped silently" gained a short
+**bounded grace** (a few seconds, usually zero) before skipping — a mostly-empty
+digest on a fast `--dry-run` (the recommended first run!) would have defeated
+the feature; a bounded wait is not a stall.
 
 ## The problem: the best verbs live in the rarest moments
 
