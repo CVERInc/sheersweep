@@ -315,4 +315,4 @@ step also degrades cleanly if `tmutil` is somehow absent.
 
 ## License
 
-Published by **CVER Inc.** · [cver.net](https://cver.net) · MIT License.
+Published by **CVER Inc.** · [cver.net](https://cver.net) · [more open-source tools](https://github.com/CVERInc) · MIT License.
