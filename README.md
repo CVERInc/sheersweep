@@ -120,11 +120,15 @@ whose program still exists. No name-guessing anywhere: the `(spotify?)` hint is
 explicitly a guess derived from the id; the id is the identity. Everything is
 listed — the small scraps too, numbered under a divider at the bottom, because
 you can't select what you can't see. Pick one and it runs the same preview →
-typed-confirm → Trash → receipt flow; pick **many** (`19 20 25-32`, or `all`)
-and you get one combined preview of every file, one confirmation (you type the
-count of ids shown), one receipt — and `sheersweep restore` undoes the whole
-batch. Years of residue, one pass. `sheersweep uninstall <bundle-id>` reaches
-a single one directly (add `--dry-run` to preview headlessly).
+typed-confirm → Trash → receipt flow; pick **many** (`5 7-8 19`, or `all` for
+every 🧟 row) and the selection may mix apps and leftovers freely — selection
+is batch, consent is not. Each selected **app** still walks its own preview and
+typed-name confirmation, one at a time (`all` never touches app rows); the 🧟
+rows then run as one batch: one combined preview of every file, one
+confirmation (you type the count of ids shown), one receipt — and
+`sheersweep restore` undoes the whole batch. Years of residue, one pass.
+`sheersweep uninstall <bundle-id>` reaches a single one directly (add
+`--dry-run` to preview headlessly).
 
 One more honesty rule: **the ✅ only appears if everything actually moved.**
 macOS protects app containers from other programs (even as root) unless your

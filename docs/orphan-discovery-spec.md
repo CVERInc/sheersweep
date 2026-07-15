@@ -164,3 +164,11 @@ forced by running discovery on the maintainer's actual machine:
 Result on the reference Mac: 9 surfaced orphans, all genuine (removed ChatGPT,
 LINE, Opera, Evernote extension, calibre …), 17 tiny leftovers folded into the
 count line, zero false "provable" claims, ~7 s scan.
+
+5. **(v0.9.1) Multi-select mixes apps and 🧟 rows.** The v0.7.1 multi-select
+   restricted a multi pick to orphan rows only; a field report showed a hand
+   typing `19-20 5 7 8` — leftovers *and* three live apps — and getting a
+   reasonless "Not a valid choice". The consent split was right, the selection
+   split was not. Locked as **batch selection, serial consent**: apps queue
+   through their unchanged one-at-a-time typed-name flow, 🧟 rows batch at the
+   end. `all` remains 🧟-only — one word must never mean "every installed app".

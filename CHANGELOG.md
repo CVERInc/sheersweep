@@ -4,6 +4,22 @@ All notable changes to sheersweep are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.9.1]
+
+### Changed — multi-select may now mix apps and 🧟 rows
+
+- A picker selection like `19-20 5 7 8` — live apps and leftovers together —
+  now just works. The parser used to refuse any multi pick containing an app
+  row, and refused it with a message that named no reason (a field report
+  caught it: someone followed the on-screen example and got "Not a valid
+  choice"). The rule is now **batch selection, serial consent**: every
+  selected app still walks its own preview → typed-name confirmation, one at
+  a time (a wrong name skips that app, the rest still come); the 🧟 rows then
+  run as one batch with the count-typed confirmation, one receipt.
+- `all` is still 🧟-only, deliberately: a one-word input must never be able
+  to mean "uninstall every installed app".
+- The hint line teaches the whole grammar now and shows on every menu.
+
 ## [0.9.0]
 
 ### Added — the sweep digest: one habitual command surfaces everything

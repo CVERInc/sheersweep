@@ -32,7 +32,7 @@
 #   each with the native way to remove it. Changes nothing; never needs sudo.
 set -u
 
-VERSION="0.9.0"
+VERSION="0.9.1"
 
 # ============================================================================
 # i18n — en-US · ja-JP · zh-TW · zh-Hans · ko-KR · es-ES · de-DE · fr-FR · pt-BR.
@@ -386,17 +386,17 @@ t() {
         pt-BR) echo "──── mais {n} sobras pequenas (preferências avulsas etc.) ────" ;;
         *)     echo "──── {n} more small leftovers (lone preference files and scraps) ────" ;;
       esac ;;
-    un_orphan_multi_hint)
+    un_pick_multi_hint)
       case "$SS_LANG" in
-        ja-JP) echo "🧟 行はまとめて選べます — 例: 19 20 25-32 · all で全部。" ;;
-        zh-TW) echo "🧟 列可以一次選多個——例如 19 20 25-32；輸入 all 全選。" ;;
-        zh-Hans) echo "🧟 行可以一次选多个——例如 19 20 25-32；输入 all 全选。" ;;
-        ko-KR) echo "🧟 행은 한 번에 여러 개 선택할 수 있습니다 — 예: 19 20 25-32 · all은 전부." ;;
-        es-ES) echo "Puedes elegir varias filas 🧟 a la vez — p. ej. 19 20 25-32 · all las toma todas." ;;
-        de-DE) echo "🧟-Zeilen lassen sich gebündelt wählen — z. B. 19 20 25-32 · all nimmt alle." ;;
-        fr-FR) echo "Les lignes 🧟 se choisissent en lot — p. ex. 19 20 25-32 · all les prend toutes." ;;
-        pt-BR) echo "Linhas 🧟 podem ser escolhidas em lote — ex.: 19 20 25-32 · all pega todas." ;;
-        *)     echo "Pick several 🧟 rows at once — e.g. 19 20 25-32 · all takes every one." ;;
+        ja-JP) echo "複数行をまとめて選べます — 例: 5 7-8 19 · all は 🧟 行を全部 · アプリは1つずつ名前で確認します。" ;;
+        zh-TW) echo "可以一次選多列——例如 5 7-8 19；all 全選 🧟 列；App 仍會逐個請你確認名稱。" ;;
+        zh-Hans) echo "可以一次选多行——例如 5 7-8 19；all 全选 🧟 行；App 仍会逐个请你确认名称。" ;;
+        ko-KR) echo "여러 행을 한 번에 선택할 수 있습니다 — 예: 5 7-8 19 · all은 🧟 행 전부 · 앱은 하나씩 이름으로 확인합니다." ;;
+        es-ES) echo "Puedes elegir varias filas a la vez — p. ej. 5 7-8 19 · all toma todas las 🧟 · cada app se confirma una a una por su nombre." ;;
+        de-DE) echo "Mehrere Zeilen auf einmal wählen — z. B. 5 7-8 19 · all nimmt alle 🧟-Zeilen · jede App wird einzeln per Name bestätigt." ;;
+        fr-FR) echo "Choisissez plusieurs lignes à la fois — p. ex. 5 7-8 19 · all prend toutes les lignes 🧟 · chaque app se confirme une à une par son nom." ;;
+        pt-BR) echo "Escolha várias linhas de uma vez — ex.: 5 7-8 19 · all pega todas as linhas 🧟 · cada app é confirmado um a um pelo nome." ;;
+        *)     echo "Pick several rows at once — e.g. 5 7-8 19 · all takes every 🧟 row · each app still confirms by name." ;;
       esac ;;
     un_orphans_header)   # {n}
       case "$SS_LANG" in
@@ -2163,6 +2163,7 @@ EOF
 DRY=0
 MODE="sweep"
 APP_TARGET=""
+PICK_APPS=()
 PICK_ORPHANS=()
 PICK_ROWS=()
 RESTORE_LIST=0
@@ -2659,12 +2660,13 @@ orphan_discover() {
   done < <(printf '%s' "$tail" | LC_ALL=C sort -rn)
 }
 
-# Parse a picker selection: one number, several ("19 20 25-32", commas ok), or
-# `all` (= every 🧟 orphan row). Fills PICK_ROWS with unique row numbers.
-# A MULTI selection may contain only orphan rows — removing a live app is
-# precise surgery and keeps its own one-at-a-time typed-name consent; removing
-# residue is housekeeping and gets batch consent (see do_uninstall_orphans).
-# Returns 0 = ok · 1 = invalid.
+# Parse a picker selection: one number, several ("5 7-8 19", commas ok), or
+# `all` (= every 🧟 orphan row — never the apps: "all" must not be able to
+# mean "uninstall everything installed"). Fills PICK_ROWS with unique rows.
+# A multi selection may MIX app and 🧟 rows: selection is batch, consent is
+# not — downstream, each app still gets its own one-at-a-time typed-name
+# confirmation (precise surgery), while 🧟 residue gets batch consent
+# (housekeeping; see do_uninstall_orphans). Returns 0 = ok · 1 = invalid.
 pick_parse() {   # $1 = input  $2 = app-row count  $3 = total row count
   local input="$1" napps="$2" total="$3" tok lo hi k seen=" "
   PICK_ROWS=()
@@ -2690,9 +2692,6 @@ pick_parse() {   # $1 = input  $2 = app-row count  $3 = total row count
     done
   done
   [ "${#PICK_ROWS[@]}" -eq 0 ] && return 1
-  if [ "${#PICK_ROWS[@]}" -gt 1 ]; then
-    for k in "${PICK_ROWS[@]}"; do [ "$k" -gt "$napps" ] || return 1; done
-  fi
   return 0
 }
 
@@ -2808,7 +2807,7 @@ pick_app() {
       printf '  %3d) %-44s %6s%s\n' "$n" "${OD_TIDS[$i]}" "${OD_TSIZE[$i]}" "$hint"
     done
   fi
-  [ "$n" -gt "${#apps[@]}" ] && t un_orphan_multi_hint
+  t un_pick_multi_hint   # multi works on app rows too now, so always teach it
   printf '%s' "$(t un_pick_prompt)"
   choice=""; read -r choice || true
   case "$choice" in
@@ -2825,9 +2824,16 @@ pick_app() {
       APP_TARGET="$(orphan_row_id "$choice" "${#apps[@]}")"
     fi
   else
+    # Mixed multi-select: batch SELECTION, serial CONSENT. App rows queue up
+    # for the normal one-at-a-time flow (each still confirms by typed name);
+    # 🧟 rows go to the batch flow with its count-typed consent.
     local k
     for k in "${PICK_ROWS[@]}"; do
-      PICK_ORPHANS+=("$(orphan_row_id "$k" "${#apps[@]}")")
+      if [ "$k" -le "${#apps[@]}" ]; then
+        PICK_APPS+=("${apps[$((k - 1))]}")
+      else
+        PICK_ORPHANS+=("$(orphan_row_id "$k" "${#apps[@]}")")
+      fi
     done
   fi
 }
@@ -4134,9 +4140,18 @@ if [ "$MODE" = "uninstall" ]; then
     # apps) — exit with it, don't also print "Cancelled". Only a clean q/blank
     # cancel (return 0, empty target) gets the un_cancelled line.
     [ "$pk" -ne 0 ] && exit "$pk"
-    if [ "${#PICK_ORPHANS[@]}" -gt 0 ]; then   # multi-select → batch orphan flow
-      do_uninstall_orphans "${PICK_ORPHANS[@]}"
-      exit $?
+    if [ "${#PICK_APPS[@]}" -gt 0 ] || [ "${#PICK_ORPHANS[@]}" -gt 0 ]; then
+      # multi-select → each app runs the full one-at-a-time flow (typed-name
+      # consent included; a wrong name skips THAT app, the rest still come),
+      # then whatever 🧟 rows were picked run as one batch at the end.
+      pk=0
+      if [ "${#PICK_APPS[@]}" -gt 0 ]; then
+        for arg in "${PICK_APPS[@]}"; do do_uninstall "$arg" || pk=$?; done
+      fi
+      if [ "${#PICK_ORPHANS[@]}" -gt 0 ]; then
+        do_uninstall_orphans "${PICK_ORPHANS[@]}" || pk=$?
+      fi
+      exit "$pk"
     fi
     [ -z "$APP_TARGET" ] && { t un_cancelled; exit 0; }
   fi

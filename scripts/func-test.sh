@@ -562,10 +562,12 @@ else
 fi
 teardown
 
-# (guard) pick_parse: the multi-select grammar. Multi selections may contain
-# ONLY orphan rows (apps keep one-at-a-time typed-name consent); ranges expand,
-# dupes collapse, `all` covers every orphan row, and anything malformed or
-# out of range is rejected as a whole — never a partial pick.
+# (guard) pick_parse: the multi-select grammar. A multi selection may MIX app
+# and orphan rows (batch selection, serial consent — apps still confirm one at
+# a time downstream); ranges expand, dupes collapse, `all` covers every orphan
+# row and NEVER an app row ("all" must not be able to mean "uninstall every
+# installed app"), and anything malformed or out of range is rejected as a
+# whole — never a partial pick.
 pp_ok=1
 pp() {   # $1=input $2=napps $3=total $4=expected rows ("-" = expect invalid)
   local got="-"
@@ -577,14 +579,16 @@ pp "5"           18 30 "5"             # single app row is fine alone
 pp "19 20,25-27" 18 30 "19 20 25 26 27"  # spaces+commas+range
 pp "19 19 19"    18 30 "19"            # dupes collapse
 pp "all"         18 21 "19 20 21"      # all = every orphan row
-pp "5 19"        18 30 "-"             # app row inside a multi pick → refused
-pp "18-20"       18 30 "-"             # range crossing into app rows → refused
+pp "5 19"        18 30 "5 19"          # apps MAY mix into a multi pick (v0.9.1)
+pp "19-20 5 7 8" 18 30 "19 20 5 7 8"   # the field report that unlocked this, verbatim
+pp "18-20"       18 30 "18 19 20"      # range may cross the app/orphan border
 pp "31"          18 30 "-"             # out of range
 pp "20-19"       18 30 "-"             # backwards range
 pp "19 x"        18 30 "-"             # junk token poisons the whole pick
 pp "all"         18 18 "-"             # no orphans → no all
+pp "all"         18 30 "19 20 21 22 23 24 25 26 27 28 29 30"  # all NEVER includes app rows
 if [ "$pp_ok" -eq 1 ]; then
-  pass "pick_parse: ranges/dupes/all ok; app rows never enter a multi pick; junk rejects whole"
+  pass "pick_parse: ranges/dupes/all ok; multi mixes apps+orphans; all is 🧟-only; junk rejects whole"
 else
   fail "pick_parse misparsed (see above)"
 fi
