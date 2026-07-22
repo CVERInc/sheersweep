@@ -32,7 +32,7 @@
 #   each with the native way to remove it. Changes nothing; never needs sudo.
 set -u
 
-VERSION="0.10.0"
+VERSION="0.10.1"
 
 # ============================================================================
 # i18n — en-US · ja-JP · zh-TW · zh-Hans · ko-KR · es-ES · de-DE · fr-FR · pt-BR.
@@ -532,15 +532,15 @@ t() {
       esac ;;
     rc_banner)
       case "$SS_LANG" in
-        ja-JP) echo "♻️ ビルド産物の回収 — git が無視し、既知のパターン名で、マニフェストが証明したものだけ。" ;;
-        zh-TW) echo "♻️ 回收 build 產物——git 忽略＋已知模式＋manifest 佐證，三關全過才算，其餘一律看不見。" ;;
-        zh-Hans) echo "♻️ 回收 build 产物——git 忽略＋已知模式＋manifest 佐证，三关全过才算，其余一律看不见。" ;;
-        ko-KR) echo "♻️ 빌드 산출물 회수 — git이 무시하고, 알려진 패턴이며, 매니페스트가 증명한 것만." ;;
-        es-ES) echo "♻️ recuperar artefactos de build — ignorados por git + patrón conocido + manifiesto que lo prueba; nada más." ;;
-        de-DE) echo "♻️ Build-Artefakte zurückholen — von git ignoriert + bekanntes Muster + Manifest-Beweis; sonst nichts." ;;
-        fr-FR) echo "♻️ récupérer les artefacts de build — ignorés par git + motif connu + manifeste qui le prouve ; rien d'autre." ;;
-        pt-BR) echo "♻️ recuperar artefatos de build — ignorados pelo git + padrão conhecido + manifesto que prova; nada além." ;;
-        *)     echo "♻️ Reclaim build output — gitignored + known pattern + manifest-proven; nothing else is even visible." ;;
+        ja-JP) echo "♻️ ビルド産物の回収 — 証明済み（git 無視＋既知パターン＋マニフェスト）、加えて識別できない巨大な gitignored フォルダ（あなたが判断）。" ;;
+        zh-TW) echo "♻️ 回收 build 產物——已證的（git 忽略＋已知模式＋manifest），外加又肥又證不了的 gitignored 資料夾（你決定）。" ;;
+        zh-Hans) echo "♻️ 回收 build 产物——已证的（git 忽略＋已知模式＋manifest），外加又大又证不了的 gitignored 文件夹（你决定）。" ;;
+        ko-KR) echo "♻️ 빌드 산출물 회수 — 증명된 것(git 무시+알려진 패턴+매니페스트), 그리고 식별 못 하는 거대한 gitignored 폴더(당신이 판단)." ;;
+        es-ES) echo "♻️ recuperar artefactos de build — probados (git + patrón + manifiesto), más carpetas gitignored grandes que no puede identificar (tú decides)." ;;
+        de-DE) echo "♻️ Build-Artefakte zurückholen — bewiesen (git + Muster + Manifest), plus große gitignored Ordner, die es nicht identifizieren kann (du entscheidest)." ;;
+        fr-FR) echo "♻️ récupérer les artefacts de build — prouvés (git + motif + manifeste), plus de gros dossiers gitignored qu'il ne peut identifier (vous décidez)." ;;
+        pt-BR) echo "♻️ recuperar artefatos de build — provados (git + padrão + manifesto), mais pastas gitignored grandes que não consegue identificar (você decide)." ;;
+        *)     echo "♻️ Reclaim build output — proven (gitignored + known pattern + manifest), plus heavy gitignored folders it can't identify (you decide)." ;;
       esac ;;
     rc_noroots)
       case "$SS_LANG" in
@@ -592,15 +592,15 @@ t() {
       esac ;;
     rc_none)
       case "$SS_LANG" in
-        ja-JP) echo "✨ 対象なし — git が無視し、マニフェストで証明できるビルド産物は見つかりませんでした。" ;;
-        zh-TW) echo "✨ 沒有可回收的——找不到「git 忽略＋manifest 佐證」的 build 產物。" ;;
-        zh-Hans) echo "✨ 没有可回收的——找不到「git 忽略＋manifest 佐证」的 build 产物。" ;;
-        ko-KR) echo "✨ 대상 없음 — git이 무시하고 매니페스트로 증명되는 빌드 산출물이 없습니다." ;;
-        es-ES) echo "✨ nada elegible — no hay artefactos de build ignorados por git y probados por manifiesto." ;;
-        de-DE) echo "✨ nichts qualifiziert — keine von git ignorierten, manifest-belegten Build-Artefakte gefunden." ;;
-        fr-FR) echo "✨ rien d'éligible — aucun artefact de build ignoré par git et prouvé par manifeste." ;;
-        pt-BR) echo "✨ nada elegível — nenhum artefato de build ignorado pelo git e provado por manifesto." ;;
-        *)     echo "✨ nothing eligible — no gitignored, manifest-proven build output found." ;;
+        ja-JP) echo "✨ 対象なし — マニフェストで証明できるビルド産物も、識別できない巨大フォルダもありません。" ;;
+        zh-TW) echo "✨ 沒有可回收的——沒有 manifest 佐證的 build 產物，也沒有又肥又證不了的資料夾。" ;;
+        zh-Hans) echo "✨ 没有可回收的——没有 manifest 佐证的 build 产物，也没有又大又证不了的文件夹。" ;;
+        ko-KR) echo "✨ 대상 없음 — 매니페스트로 증명되는 빌드 산출물도, 식별 못 하는 거대 폴더도 없습니다." ;;
+        es-ES) echo "✨ nada elegible — ni artefactos de build probados por manifiesto, ni carpetas grandes sin identificar." ;;
+        de-DE) echo "✨ nichts qualifiziert — keine manifest-belegten Build-Artefakte und keine großen, nicht identifizierbaren Ordner." ;;
+        fr-FR) echo "✨ rien d'éligible — ni artefacts de build prouvés par manifeste, ni gros dossiers non identifiés." ;;
+        pt-BR) echo "✨ nada elegível — nem artefatos de build provados por manifesto, nem pastas grandes não identificadas." ;;
+        *)     echo "✨ nothing eligible — no manifest-proven build output, and nothing heavy it couldn't identify." ;;
       esac ;;
     rc_days)   # {n}
       case "$SS_LANG" in

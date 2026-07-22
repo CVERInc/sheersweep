@@ -4,6 +4,17 @@ All notable changes to sheersweep are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.10.1]
+
+### Fixed — the reclaim banner still claimed "nothing else is even visible"
+
+v0.10.0 added the unidentified tier and moved the promise in the help, README, and
+AGENTS.md — but missed the two lines printed by `reclaim` itself: the top banner
+(`rc_banner`) still said "manifest-proven; nothing else is even visible", and the
+empty-state (`rc_none`) only mentioned proven output. Both now tell the truth in all
+nine languages: `reclaim` also surfaces heavy gitignored folders it can't identify.
+No behaviour change — the tier already worked; the words it prints now match it.
+
 ## [0.10.0]
 
 ### Added — `reclaim` now also surfaces the heavy folders it *can't* prove
