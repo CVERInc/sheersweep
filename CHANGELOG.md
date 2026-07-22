@@ -4,6 +4,34 @@ All notable changes to sheersweep are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.10.0]
+
+### Added — `reclaim` now also surfaces the heavy folders it *can't* prove
+
+`reclaim`'s three gates (gitignored + known name + sibling manifest) deliberately
+hide anything they can't prove is regenerable. The cost of that conservatism was a
+blind spot: the folder that actually balloons a disk — a big gitignored crawl, an
+export, a model cache, with no manifest and an off-list name — stayed invisible and
+was never offered. Hiding the fat unprovable folder is the one thing a cleaner you
+trust shouldn't do; the person who knows what it is never got asked.
+
+So `reclaim` now shows a second, clearly-separated **unidentified** tier: gitignored
++ heavy (≥512 MB, override with `SHEERSWEEP_SUSPECT_MIN_MB`) + in a cold repo, minus
+whatever the proven scan already listed. It proves nothing and says so — the label is
+`unidentified`, never "dangerous" (the tool can't prove either). These are **never
+auto-selected and never batch-deleted**: each is confirmed one at a time by typing its
+name (the same friction as `uninstall`), with a peek at its biggest contents so you
+can recognise it. Everything still moves to the Trash, lands in the same receipt, and
+is undone by `restore`.
+
+### Changed — the `reclaim` promise, to match
+
+The proven tier is unchanged: still three gates, still the typed-count batch, still a
+recorded rebuild command. But `reclaim` no longer claims "a folder it can't prove
+stays invisible" — it now surfaces those for you to judge. The behaviour and the words
+moved together (help / AGENTS.md / README), because a cleaner that says one thing and
+does another is the exact black box this tool exists not to be.
+
 ## [0.9.1]
 
 ### Changed — multi-select may now mix apps and 🧟 rows

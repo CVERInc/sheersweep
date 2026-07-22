@@ -206,15 +206,25 @@ leftovers sweep too. The system list catches up after the next login/restart.
 Build output is the heaviest junk on a developer's Mac — `node_modules`, Swift
 `.build`, Cargo `target`, `dist` — tens of GB across a dozen repos, all
 rebuildable with one command. It is also exactly where black-box cleaners lose
-people's data. So `reclaim` refuses to guess: a folder is a candidate **only
-when three proofs hold at once** — git ignores it, its name is on a short
-allow-list, and a sibling manifest (`package.json`, `Cargo.toml`,
-`Package.swift`…) proves the build tool. A folder that merely *happens* to be
-called `dist` fails the manifest gate and stays invisible. The never-touch
-list still applies on top (an Obsidian vault is skipped outright).
+people's data. So `reclaim` splits what it finds by how sure it can be. The
+**proven** tier is a candidate **only when three proofs hold at once** — git
+ignores it, its name is on a short allow-list, and a sibling manifest
+(`package.json`, `Cargo.toml`, `Package.swift`…) proves the build tool; these
+show a rebuild command and clear in one typed-count batch.
+
+But the folder that actually balloons a disk is often the one it *can't* prove
+— a big gitignored crawl or export, no manifest, an off-list name. Hiding that
+is the one thing a cleaner you trust shouldn't do, so `reclaim` also surfaces an
+**unidentified** tier: heavy (≥512 MB, override `SHEERSWEEP_SUSPECT_MIN_MB`),
+gitignored, in a cold repo. It proves nothing and says so — labelled
+`unidentified`, never "dangerous" (it can't prove either), **never auto-picked**,
+removed one at a time only if you type its name (the same friction as
+`uninstall`), with a peek at its contents so you can recognise it. What git was
+never told to ignore is never offered. The never-touch list still applies on top
+(an Obsidian vault is skipped outright).
 
 ```bash
-sheersweep reclaim               # scan → grouped preview → pick → confirm → Trash
+sheersweep reclaim               # proven → typed-count batch, then unidentified → typed-name each
 sheersweep reclaim --dry-run     # preview only (headless-friendly)
 sheersweep reclaim --stale 30d   # only repos untouched for 30+ days
 ```

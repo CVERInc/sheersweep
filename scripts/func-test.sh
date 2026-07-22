@@ -730,6 +730,41 @@ else
 fi
 teardown
 
+# (unidentified tier) a heavy, gitignored, off-list, no-manifest folder is
+# SURFACED in the separate 🔺 section; a proven dir is NOT double-listed there;
+# a below-floor dir and — critically — a heavy NOT-gitignored folder (possible
+# unsaved work) are never shown. The last is the safety line: the tier only ever
+# offers what the owner already told git to ignore.
+setup
+export SHEERSWEEP_LANG=en-US
+R="$SBX/roots"; REAL_HOME="$SBX/home"; mkdir -p "$REAL_HOME"
+mkdir -p "$R/proj"; git -C "$R/proj" init -q
+echo x > "$R/proj/src.txt"
+printf '.harvest/\nnode_modules/\ntiny/\n' > "$R/proj/.gitignore"
+git -C "$R/proj" -c user.email=t@t -c user.name=t add -A
+git -C "$R/proj" -c user.email=t@t -c user.name=t commit -qm init
+mkdir -p "$R/proj/.harvest";       dd if=/dev/zero of="$R/proj/.harvest/blob" bs=1024 count=200 2>/dev/null   # ~200K off-list no-manifest
+echo '{}' > "$R/proj/package.json"
+mkdir -p "$R/proj/node_modules/d"; dd if=/dev/zero of="$R/proj/node_modules/d/x" bs=1024 count=200 2>/dev/null # proven (pattern+manifest)
+mkdir -p "$R/proj/tiny"; echo z > "$R/proj/tiny/z"                                                            # below the floor
+mkdir -p "$R/proj/work";           dd if=/dev/zero of="$R/proj/work/big" bs=1024 count=200 2>/dev/null         # heavy but NOT gitignored
+RC_UNID_MIN_KB=64
+DRY=1; RC_ROOTS=("$R"); RC_STALE_DAYS=""
+: "reads for shellcheck — consumed in the sourced do_reclaim: $DRY ${RC_ROOTS[*]} $RC_STALE_DAYS $RC_UNID_MIN_KB"
+out="$(do_reclaim 2>&1)"
+unid_lines="$(printf '%s\n' "$out" | grep '🔺' || true)"
+u1=0; printf '%s\n' "$unid_lines" | grep -q '\.harvest'    && u1=1   # surfaced as unidentified
+u2=1; printf '%s\n' "$unid_lines" | grep -q 'node_modules' && u2=0   # proven → not double-listed here
+u3=1; case "$out" in *"proj/tiny"*) u3=0 ;; esac                     # below floor → hidden
+u4=1; case "$out" in *"proj/work"*) u4=0 ;; esac                     # not gitignored → hidden (unsaved-work safety)
+RC_UNID_MIN_KB=$(( 512 * 1024 ))
+if [ "$u1$u2$u3$u4" = "1111" ]; then
+  pass "reclaim unidentified: heavy off-list gitignored surfaced; proven not double-listed; below-floor & non-ignored hidden"
+else
+  fail "reclaim unidentified wrong (harvest=$u1 dedup=$u2 tiny=$u3 work=$u4)"
+fi
+teardown
+
 # (guard) the sweep digest is REPORT-only formatting over finder results: each
 # fabricated result renders its localized line, sub-threshold AI size and
 # zero-count finders contribute nothing, and an empty digest prints NOTHING.

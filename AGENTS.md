@@ -35,11 +35,16 @@ sheersweep tools                     # read-only CLI inventory (formulae/orphans
                                      #   toolchain data) — changes nothing, no sudo needed
 sheersweep leftovers --dry-run       # preview orphaned LaunchAgents/Daemons
 sheersweep leftovers                 # remove dead/orphan startup items → Trash, yes/no confirm
-sheersweep reclaim --dry-run         # preview build output in project folders — eligible ONLY
-                                     #   with 3 proofs: gitignored + known pattern + manifest
-sheersweep reclaim                   # interactive: pick rows, typed count → Trash + receipt
-                                     #   (receipt records the rebuild command per folder)
-sheersweep reclaim --stale 30d       # only repos untouched for 30+ days
+sheersweep reclaim --dry-run         # preview build output — PROVEN tier eligible ONLY with 3
+                                     #   proofs: gitignored + known pattern + manifest. ALSO
+                                     #   previews an "unidentified" tier (below).
+sheersweep reclaim                   # PROVEN: pick rows, typed count → Trash + receipt (records
+                                     #   the rebuild command per folder). Then UNIDENTIFIED, one at
+                                     #   a time: a heavy (≥512 MB) gitignored folder it CANNOT prove
+                                     #   regenerable — never auto-picked, removed only if you type
+                                     #   its name (uninstall-style). Same Trash + restore.
+sheersweep reclaim --stale 30d       # only repos untouched for 30+ days (both tiers). Unidentified
+                                     #   floor: SHEERSWEEP_SUSPECT_MIN_MB (default 512).
 sheersweep restore                   # undo the last uninstall/leftovers/reclaim — put it all
                                      #   back (a reclaim receipt also prints rebuild commands)
 sheersweep restore --list            # show past removals

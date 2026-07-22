@@ -32,7 +32,7 @@
 #   each with the native way to remove it. Changes nothing; never needs sudo.
 set -u
 
-VERSION="0.9.1"
+VERSION="0.10.0"
 
 # ============================================================================
 # i18n — en-US · ja-JP · zh-TW · zh-Hans · ko-KR · es-ES · de-DE · fr-FR · pt-BR.
@@ -649,6 +649,66 @@ t() {
         fr-FR) echo "Saisissez le nombre ({n}) pour déplacer ces {n} dossiers de build ({size}) vers la Corbeille (autre chose annule) : " ;;
         pt-BR) echo "Digite a contagem ({n}) para mover estas {n} pastas de build ({size}) para a Lixeira (qualquer outra coisa cancela): " ;;
         *)     echo "Type the count ({n}) to move these {n} build folders ({size}) to the Trash (anything else cancels): " ;;
+      esac ;;
+    rc_unid_header)
+      case "$SS_LANG" in
+        ja-JP) echo "🔺 未識別 — 大きく、git が無視、でも安全に消せるとは証明できません。" ;;
+        zh-TW) echo "🔺 未識別——又肥又被 git 忽略，但我證不了它們能安全刪除。" ;;
+        zh-Hans) echo "🔺 未识别——又大又被 git 忽略，但我证不了它们能安全删除。" ;;
+        ko-KR) echo "🔺 미확인 — 크고 git이 무시하지만, 안전하게 지울 수 있다고 증명할 수 없습니다." ;;
+        es-ES) echo "🔺 Sin identificar — grandes, ignoradas por git, y no puedo probar que sea seguro borrarlas." ;;
+        de-DE) echo "🔺 Nicht identifiziert — groß, von git ignoriert, und ich kann nicht beweisen, dass sie sicher zu löschen sind." ;;
+        fr-FR) echo "🔺 Non identifié — volumineux, ignorés par git, et je ne peux pas prouver qu'ils sont sûrs à supprimer." ;;
+        pt-BR) echo "🔺 Não identificado — grandes, ignoradas pelo git, e não posso provar que é seguro removê-las." ;;
+        *)     echo "🔺 Unidentified — heavy, gitignored, and I can't prove these are safe to remove." ;;
+      esac ;;
+    rc_unid_note)   # {min}
+      case "$SS_LANG" in
+        ja-JP) echo "各 {min} 以上。私には識別できません — あなたにはできます。名前を入力したものだけ、1 つずつ移動します。" ;;
+        zh-TW) echo "每個 ≥{min}。我認不出它們——你認得。逐個處理，打出名字才會移除。" ;;
+        zh-Hans) echo "每个 ≥{min}。我认不出它们——你认得。逐个处理，打出名字才会移除。" ;;
+        ko-KR) echo "각 {min} 이상. 저는 식별할 수 없지만 당신은 압니다. 이름을 입력한 것만 하나씩 제거합니다." ;;
+        es-ES) echo "≥{min} cada una. No puedo identificarlas — tú sí. Se quitan de una en una, solo si escribes su nombre." ;;
+        de-DE) echo "je ≥{min}. Ich kann sie nicht identifizieren — du schon. Einzeln entfernt, nur wenn du den Namen tippst." ;;
+        fr-FR) echo "≥{min} chacun. Je ne peux pas les identifier — vous si. Retirés un par un, seulement si vous tapez leur nom." ;;
+        pt-BR) echo "≥{min} cada. Não consigo identificá-las — você sim. Removidas uma a uma, só se você digitar o nome." ;;
+        *)     echo "≥{min} each. I can't identify these — you can. Removed one at a time, only if you type its name." ;;
+      esac ;;
+    rc_unid_contains)
+      case "$SS_LANG" in
+        ja-JP) echo "        中身：" ;;
+        zh-TW) echo "        裡面有：" ;;
+        zh-Hans) echo "        里面有：" ;;
+        ko-KR) echo "        내용물:" ;;
+        es-ES) echo "        contiene:" ;;
+        de-DE) echo "        enthält:" ;;
+        fr-FR) echo "        contient :" ;;
+        pt-BR) echo "        contém:" ;;
+        *)     echo "        contains:" ;;
+      esac ;;
+    rc_unid_confirm)   # {name} · {size}
+      case "$SS_LANG" in
+        ja-JP) echo "未識別 — 安全とは証明できません。ゴミ箱へ移動（{size}）するには「{name}」と入力（それ以外はスキップ）: " ;;
+        zh-TW) echo "未識別——我證不了它安全。要把它（{size}）移到垃圾桶，請打出「{name}」（輸入其他則略過）：" ;;
+        zh-Hans) echo "未识别——我证不了它安全。要把它（{size}）移到废纸篓，请打出“{name}”（输入其他则略过）：" ;;
+        ko-KR) echo "미확인 — 안전하다고 증명할 수 없습니다. 휴지통으로 옮기려면({size}) '{name}'을 입력하세요(다른 입력은 건너뜀): " ;;
+        es-ES) echo "Sin identificar — no puedo probar que sea seguro. Escribe '{name}' para moverla ({size}) a la Papelera (otra cosa la omite): " ;;
+        de-DE) echo "Nicht identifiziert — ich kann die Sicherheit nicht beweisen. Tippe '{name}', um ihn ({size}) in den Papierkorb zu verschieben (alles andere überspringt): " ;;
+        fr-FR) echo "Non identifié — je ne peux pas prouver que c'est sûr. Tapez '{name}' pour le déplacer ({size}) vers la Corbeille (autre chose l'ignore) : " ;;
+        pt-BR) echo "Não identificado — não posso provar que é seguro. Digite '{name}' para movê-la ({size}) para a Lixeira (qualquer outra coisa pula): " ;;
+        *)     echo "Unidentified — I can't prove this is safe. Type '{name}' to move it ({size}) to the Trash, anything else skips: " ;;
+      esac ;;
+    rc_unid_skip)
+      case "$SS_LANG" in
+        ja-JP) echo "        ↳ スキップ — そのまま残しました。" ;;
+        zh-TW) echo "        ↳ 略過——原地保留。" ;;
+        zh-Hans) echo "        ↳ 略过——原地保留。" ;;
+        ko-KR) echo "        ↳ 건너뜀 — 그대로 두었습니다." ;;
+        es-ES) echo "        ↳ omitida — se deja en su lugar." ;;
+        de-DE) echo "        ↳ übersprungen — bleibt an Ort und Stelle." ;;
+        fr-FR) echo "        ↳ ignoré — laissé en place." ;;
+        pt-BR) echo "        ↳ pulada — mantida no lugar." ;;
+        *)     echo "        ↳ skipped — kept in place." ;;
       esac ;;
     rc_done)   # {n} · {size}
       case "$SS_LANG" in
@@ -1402,9 +1462,12 @@ CLI ツールの棚卸し（読み取り専用）
                               .build、target、dist、.next…）を探します。3 つの
                               証拠が同時に成立した時だけ対象です: git が無視して
                               いる＋名前が短い許可リストにある＋隣にマニフェスト
-                              （package.json、Cargo.toml…）がある。単に dist と
-                              名付けただけのフォルダは見えません。プレビューは
-                              リポジトリごとに容量・再ビルドコマンド・放置日数
+                              （package.json、Cargo.toml…）がある。証明できない
+                              もの（dist という名前だけで manifest なし、または
+                              git が無視する巨大な暫定フォルダ）はもう隠さず、
+                              「未識別」として別枠で表示します: 自動選択はせず、
+                              名前を入力したものだけ 1 つずつ移動。プレビューは
+                              証明済みをリポジトリごとに容量・再ビルドコマンド・放置日数
                               つき。行を選び、件数を入力→ゴミ箱＋レシート。
                               restore で戻すか、記録済みコマンドで作り直すか。
                               --stale 30d で 30 日以上触っていないリポジトリだけ。
@@ -1484,9 +1547,11 @@ CLI 工具盤點（唯讀）
   sheersweep reclaim          在你的專案資料夾裡找 build 產物（node_modules、
                               .build、target、dist、.next…），三個證據同時成立
                               才算數：git 忽略它＋名稱在簡短白名單上＋旁邊有
-                              manifest（package.json、Cargo.toml…）佐證。只是
-                              取名叫 dist 的資料夾根本看不見。預覽按 repo 分組，
-                              附大小、重建指令與閒置天數；選列、輸入條數→移到
+                              manifest（package.json、Cargo.toml…）佐證。證不了
+                              的（只是取名叫 dist、沒 manifest，或又肥又被 git
+                              忽略的爬蟲暫存）不再藏起來：另列成「未識別」一區，
+                              絕不自動選，逐個打出名字才移除。預覽把已證的按 repo
+                              分組，附大小、重建指令與閒置天數；選列、輸入條數→移到
                               垃圾桶＋寫收據。restore 可整批放回——或照收據裡
                               的指令乾淨重建。--stale 30d 只列 30 天以上沒動的
                               repo。
@@ -1566,9 +1631,11 @@ CLI 工具盘点（只读）
   sheersweep reclaim          在你的项目文件夹里找 build 产物（node_modules、
                               .build、target、dist、.next…），三个证据同时成立
                               才算数：git 忽略它＋名称在简短白名单上＋旁边有
-                              manifest（package.json、Cargo.toml…）佐证。只是
-                              取名叫 dist 的文件夹根本看不见。预览按 repo 分组，
-                              附大小、重建命令与闲置天数；选行、输入条数→移到
+                              manifest（package.json、Cargo.toml…）佐证。证不了
+                              的（只是取名叫 dist、没 manifest，或又大又被 git
+                              忽略的爬虫暂存）不再藏起来：另列成「未识别」一区，
+                              绝不自动选，逐个打出名字才移除。预览把已证的按 repo
+                              分组，附大小、重建命令与闲置天数；选行、输入条数→移到
                               废纸篓＋写收据。restore 可整批放回——或照收据里
                               的命令干净重建。--stale 30d 只列 30 天以上没动的
                               repo。
@@ -1653,8 +1720,11 @@ CLI 도구 목록(읽기 전용)
                               증거가 동시에 성립할 때만 대상입니다: git이 무시
                               하고 + 이름이 짧은 허용 목록에 있고 + 옆에 매니
                               페스트(package.json, Cargo.toml…)가 있을 것.
-                              이름만 dist인 폴더는 보이지 않습니다. 미리보기는
-                              저장소별로 크기·재빌드 명령·방치 일수를 표시;
+                              증명할 수 없는 것(이름만 dist이고 매니페스트가
+                              없거나, git이 무시하는 거대한 폴더)은 이제 숨기지
+                              않고 '미확인'으로 따로 보여 줍니다: 자동 선택은
+                              없고, 이름을 입력한 것만 하나씩 옮깁니다. 미리보기는
+                              증명된 것을 저장소별로 크기·재빌드 명령·방치 일수를 표시;
                               행을 고르고 개수를 입력 → 휴지통 + 영수증.
                               restore로 되돌리거나 기록된 명령으로 새로 빌드.
                               --stale 30d는 30일 이상 안 건드린 저장소만.
@@ -1746,8 +1816,12 @@ RECUPERAR ARTEFACTOS DE BUILD (opt-in — nunca parte del barrido)
                               .next…) — solo cuando TRES pruebas se cumplen a
                               la vez: git lo ignora + el nombre está en una
                               lista corta + un manifiesto vecino (package.json,
-                              Cargo.toml…) lo demuestra. Una carpeta que solo
-                              se llama dist es invisible. Vista previa agrupada
+                              Cargo.toml…) lo demuestra. Lo que NO puede probar
+                              (una carpeta llamada dist sin manifiesto, o un
+                              gran rastreo ignorado por git) ya no se oculta:
+                              se lista aparte como «sin identificar», nunca se
+                              autoselecciona, se quita de una en una escribiendo
+                              su nombre. Vista previa agrupa las probadas
                               por repo con tamaño, comando de rebuild y días
                               sin tocar; elige filas, escribe el número →
                               Papelera + recibo. restore los devuelve — o
@@ -1844,9 +1918,14 @@ BUILD-ARTEFAKTE ZURÜCKHOLEN (Opt-in — nie Teil des Standard-Laufs)
                               nur wenn DREI Beweise zugleich gelten: git
                               ignoriert es + der Name steht auf einer kurzen
                               Liste + ein Manifest daneben (package.json,
-                              Cargo.toml…) belegt das Build-Tool. Ein Ordner,
-                              der bloß dist heißt, bleibt unsichtbar. Vorschau
-                              gruppiert nach Repo mit Größe, Rebuild-Befehl und
+                              Cargo.toml…) belegt das Build-Tool. Was es NICHT
+                              beweisen kann (ein Ordner namens dist ohne
+                              Manifest, oder ein großer, von git ignorierter
+                              Crawl) bleibt nicht mehr verborgen: separat als
+                              „nicht identifiziert“ gelistet, nie automatisch
+                              gewählt, einzeln per Namenseingabe entfernt.
+                              Vorschau gruppiert die bewiesenen
+                              nach Repo mit Größe, Rebuild-Befehl und
                               Tagen unberührt; Zeilen wählen, Anzahl tippen →
                               Papierkorb + Beleg. restore holt alles zurück —
                               oder frisch bauen mit dem notierten Befehl.
@@ -1942,8 +2021,12 @@ RÉCUPÉRER LES ARTEFACTS DE BUILD (opt-in — jamais dans le nettoyage par déf
                               .next…) — seulement quand TROIS preuves tiennent
                               à la fois : git l'ignore + le nom figure sur une
                               courte liste + un manifeste voisin (package.json,
-                              Cargo.toml…) le prouve. Un dossier simplement
-                              nommé dist reste invisible. Aperçu groupé par
+                              Cargo.toml…) le prouve. Ce qu'il NE peut PAS
+                              prouver (un dossier nommé dist sans manifeste, ou
+                              un gros crawl ignoré par git) n'est plus caché :
+                              listé à part comme « non identifié », jamais
+                              présélectionné, retiré un par un en tapant son
+                              nom. Aperçu groupe les prouvés par
                               dépôt avec taille, commande de rebuild et jours
                               sans toucher ; choisissez des lignes, saisissez
                               le nombre → Corbeille + reçu. restore les remet —
@@ -2036,9 +2119,13 @@ RECUPERAR ARTEFATOS DE BUILD (opt-in — nunca parte da limpeza padrão)
                               .next…) — só quando TRÊS provas valem ao mesmo
                               tempo: o git ignora + o nome está numa lista
                               curta + um manifesto vizinho (package.json,
-                              Cargo.toml…) comprova a ferramenta. Uma pasta
-                              apenas chamada dist fica invisível. A prévia
-                              agrupa por repo com tamanho, comando de rebuild
+                              Cargo.toml…) comprova a ferramenta. O que ele NÃO
+                              consegue provar (uma pasta chamada dist sem
+                              manifesto, ou um grande crawl ignorado pelo git)
+                              não fica mais oculto: é listado à parte como
+                              «não identificado», nunca autosselecionado,
+                              removido um a um digitando o nome. A prévia
+                              agrupa os provados por repo com tamanho, comando de rebuild
                               e dias sem toque; escolha linhas, digite a
                               contagem → Lixeira + recibo. restore devolve —
                               ou reconstrua limpo com o comando anotado.
@@ -2130,8 +2217,12 @@ RECLAIM BUILD OUTPUT (opt-in — never part of the sweep)
                               only when THREE proofs hold at once: git ignores
                               it, the name is on a short allow-list, and a
                               sibling manifest (package.json, Cargo.toml…)
-                              proves the build tool. A data folder merely
-                              named dist stays invisible. Preview groups by
+                              proves the build tool. What it CAN'T prove — a
+                              folder named dist with no manifest, or a big
+                              gitignored crawl — is no longer hidden: it's
+                              listed separately as "unidentified", never
+                              auto-picked, cleared one at a time by typing
+                              its name. Preview groups the proven rows by
                               repo with size, rebuild command and staleness;
                               pick rows, type the count → Trash + receipt.
                               restore puts them back — or rebuild clean with
@@ -2245,7 +2336,7 @@ if [ -z "${SHEERSWEEP_LIB:-}" ]; then
   # to run as root anyway → it must NOT demand a password.
   if [ "$(id -u)" -ne 0 ] && [ "$MODE" != "tools" ]; then
     t escalate
-    exec sudo SHEERSWEEP_LANG="$SS_LANG" "$0" "$@"
+    exec sudo SHEERSWEEP_LANG="$SS_LANG" SHEERSWEEP_SUSPECT_MIN_MB="${SHEERSWEEP_SUSPECT_MIN_MB:-}" "$0" "$@"
   fi
   REAL_USER="${SUDO_USER:-$(id -un)}"
   REAL_HOME="$(dscl . -read "/Users/$REAL_USER" NFSHomeDirectory 2>/dev/null | awk '{print $2}')"
@@ -3738,6 +3829,12 @@ rc_git() { git -c safe.directory='*' "$@"; }
 # Gate ② — the whole allow-list, short and auditable (like the never-touch list).
 RC_PATTERNS=".build node_modules target dist .next build .gradle Pods"
 
+# The floor for the UNIDENTIFIED tier (below): only surface a heavy gitignored
+# folder we CAN'T prove — small ones are noise (a stray .env, an editor cache),
+# and the whole point of this tier is the fat thing you forgot. Default 512 MB;
+# override with SHEERSWEEP_SUSPECT_MIN_MB for a tighter or looser floor.
+RC_UNID_MIN_KB=$(( ${SHEERSWEEP_SUSPECT_MIN_MB:-512} * 1024 ))
+
 # Gate ③ — the sibling manifest that proves each pattern's build tool.
 rc_manifest_ok() {   # $1 = candidate dir NAME  $2 = parent dir → 0 = proven
   local p="$2" g
@@ -3874,8 +3971,78 @@ EOF
   done
 }
 
+# ── The UNIDENTIFIED tier ────────────────────────────────────────────────────
+# The three gates deliberately hide anything they can't PROVE regenerable — so
+# the folders that actually balloon a disk (a big gitignored crawl/export/cache
+# with no manifest and an off-list name) stay invisible, and never get offered.
+# This tier surfaces exactly those: gitignored + heavy + in a cold repo, minus
+# whatever the proven scan already claimed. It proves NOTHING — it can't say the
+# folder is safe, only that it's fat and the owner already told git to ignore it.
+# So it is never auto-selected and never batch-deleted: each one is confirmed the
+# uninstall way (type its name), because here the human is the only one who knows
+# what it is. Label is honest: "unidentified", never "dangerous" (we can't prove
+# either — see docs/reclaim-unidentified-spec.md).
+
+# The repo tops under the given scan roots, NUL-terminated and de-duplicated.
+rc_unid_repos() {   # $@ = scan roots → NUL repo tops
+  local root g seen=$'\n' top
+  for root in "$@"; do
+    while IFS= read -r -d '' g; do
+      top="${g%/.git}"
+      case "$seen" in *$'\n'"$top"$'\n'*) continue ;; esac
+      seen="$seen$top"$'\n'
+      printf '%s\0' "$top"
+    done < <(find "$root" -maxdepth 6 -type d -name .git -prune -print0 2>/dev/null)
+  done
+}
+
+# A peek at a candidate's biggest immediate children — shown at the confirm
+# prompt so the human can recognise what an unidentified folder actually is.
+rc_peek() {   # $1 = dir
+  du -sk "$1"/* 2>/dev/null | LC_ALL=C sort -rn | head -3 \
+  | while IFS=$'\t' read -r kb path; do
+      printf '        %7s  %s\n' "$(od_human_kb "$kb")" "$(basename "$path")"
+    done
+}
+
+# Gather UNIDENTIFIED candidates into the CALLER's UNID_* arrays (dynamic scope,
+# like rc_collect). Reads the caller's CAND_PATH to skip anything the proven
+# scan already listed. git status --ignored collapses a wholly-ignored dir to a
+# single entry, so a 6 GB gitignored tree costs one stat, not a walk of it.
+rc_collect_unid() {   # $@ = scan roots
+  local repo rel full name kb epoch days now entry home hit p
+  now="$(date +%s)"
+  while IFS= read -r -d '' repo; do
+    epoch="$(rc_repo_touched "$repo")"
+    days=$(( (now - epoch) / 86400 )); [ "$epoch" -eq 0 ] && days=-1
+    if [ -n "$RC_STALE_DAYS" ] && [ "$days" -ge 0 ] && [ "$days" -lt "$RC_STALE_DAYS" ]; then
+      continue                                                            # too recently touched
+    fi
+    while IFS= read -r -d '' entry; do
+      case "$entry" in "!! "*) ;; *) continue ;; esac                    # ignored rows only
+      rel="${entry#!! }"
+      case "$rel" in */) ;; *) continue ;; esac                          # collapsed dirs only
+      full="$repo/${rel%/}"; name="${full##*/}"
+      hit=0                                                               # skip what proven already listed
+      if [ "${#CAND_PATH[@]}" -gt 0 ]; then                              # bash 3.2: guard empty-array under set -u
+        for p in "${CAND_PATH[@]}"; do [ "$p" = "$full" ] && { hit=1; break; }; done
+      fi
+      [ "$hit" -eq 1 ] && continue
+      rc_in_vault "$full" "$repo" && continue                            # never-touch on top
+      case "$full" in */Documents/*|*/Desktop/*|*/Pictures/*) continue ;; esac
+      kb="$(du -sk "$full" 2>/dev/null | cut -f1)"; kb="${kb:-0}"
+      [ "$kb" -lt "$RC_UNID_MIN_KB" ] && continue                        # below the heavy floor
+      UNID_PATH+=("$full"); UNID_REPO+=("$repo"); UNID_KB+=("$kb"); UNID_DAYS+=("$days")
+      case "$full" in
+        /Users/*) home="${full#/Users/}"; UNID_OWNER+=("/Users/${home%%/*}") ;;
+        *)        UNID_OWNER+=("$REAL_HOME") ;;
+      esac
+    done < <(rc_git -C "$repo" status --ignored --porcelain -z 2>/dev/null)
+  done < <(rc_unid_repos "$@")
+}
+
 do_reclaim() {
-  local roots=() r kb days i m
+  local roots=() r i m
   # roots: explicit args verbatim, else the defaults from every real home
   if [ "${#RC_ROOTS[@]}" -gt 0 ]; then
     for r in "${RC_ROOTS[@]}"; do
@@ -3892,100 +4059,155 @@ do_reclaim() {
   t rc_scanning
   echo "------------------------------------------------------------"
 
-  # ---- gather candidates through the three gates (rc_collect) ----------------
+  # ---- gather PROVEN candidates through the three gates (rc_collect) ----------
   local CAND_PATH=() CAND_REPO=() CAND_CMD=() CAND_KB=() CAND_DAYS=() CAND_OWNER=()
-  local rows=""
   rc_collect "${roots[@]}"
+  # ---- gather UNIDENTIFIED candidates: heavy + gitignored + cold, unprovable --
+  local UNID_PATH=() UNID_REPO=() UNID_KB=() UNID_DAYS=() UNID_OWNER=()
+  rc_collect_unid "${roots[@]}"
 
-  if [ "${#CAND_PATH[@]}" -eq 0 ]; then t rc_none; echo "============================================================"; return 0; fi
+  if [ "${#CAND_PATH[@]}" -eq 0 ] && [ "${#UNID_PATH[@]}" -eq 0 ]; then
+    t rc_none; echo "============================================================"; return 0
+  fi
 
-  # ---- grouped preview: repos ordered by their biggest find, items by size ---
+  # ---- PROVEN preview: repos ordered by their biggest find, items by size ----
   # sort key: <repo-max-kb> <repo> <item-kb> <index>
-  for i in "${!CAND_PATH[@]}"; do
-    local best=0 j
-    for j in "${!CAND_PATH[@]}"; do
-      [ "${CAND_REPO[$j]}" = "${CAND_REPO[$i]}" ] && [ "${CAND_KB[$j]}" -gt "$best" ] && best="${CAND_KB[$j]}"
+  local ORD=() n=0 total_kb=0
+  if [ "${#CAND_PATH[@]}" -gt 0 ]; then
+    local rows="" best j last="" stale_s
+    for i in "${!CAND_PATH[@]}"; do
+      best=0
+      for j in "${!CAND_PATH[@]}"; do
+        [ "${CAND_REPO[$j]}" = "${CAND_REPO[$i]}" ] && [ "${CAND_KB[$j]}" -gt "$best" ] && best="${CAND_KB[$j]}"
+      done
+      rows="$rows$best"$'\t'"${CAND_REPO[$i]}"$'\t'"${CAND_KB[$i]}"$'\t'"$i"$'\n'
     done
-    rows="$rows$best"$'\t'"${CAND_REPO[$i]}"$'\t'"${CAND_KB[$i]}"$'\t'"$i"$'\n'
-  done
-  local ORD=()
-  while IFS=$'\t' read -r _ _ _ i; do
-    [ -n "$i" ] && ORD+=("$i")
-  done < <(printf '%s' "$rows" | LC_ALL=C sort -t"$(printf '\t')" -k1,1rn -k2,2 -k3,3rn)
+    while IFS=$'\t' read -r _ _ _ i; do
+      [ -n "$i" ] && ORD+=("$i")
+    done < <(printf '%s' "$rows" | LC_ALL=C sort -t"$(printf '\t')" -k1,1rn -k2,2 -k3,3rn)
+    for i in "${ORD[@]}"; do
+      if [ "${CAND_REPO[$i]}" != "$last" ]; then
+        last="${CAND_REPO[$i]}"
+        printf '♻️  %s\n' "$(printf '%s' "$last" | vis)"
+      fi
+      n=$((n + 1))
+      stale_s=""
+      if [ "${CAND_DAYS[$i]}" -ge 0 ]; then
+        m="$(t rc_days)"; stale_s="   · ${m//\{n\}/${CAND_DAYS[$i]}}"
+      fi
+      printf '  %3d) %-28s %6s   rebuild: %-18s%s\n' "$n" \
+        "$(printf '%s' "${CAND_PATH[$i]#"$last"/}" | vis)" \
+        "$(od_human_kb "${CAND_KB[$i]}")" "${CAND_CMD[$i]}" "$stale_s"
+      total_kb=$((total_kb + CAND_KB[i]))
+    done
+    echo "------------------------------------------------------------"
+    echo "$(t un_total)$(od_human_kb "$total_kb")"
+  fi
 
-  local n=0 last="" total_kb=0 stale_s
-  for i in "${ORD[@]}"; do
-    if [ "${CAND_REPO[$i]}" != "$last" ]; then
-      last="${CAND_REPO[$i]}"
-      printf '♻️  %s\n' "$(printf '%s' "$last" | vis)"
-    fi
-    n=$((n + 1))
-    stale_s=""
-    if [ "${CAND_DAYS[$i]}" -ge 0 ]; then
-      m="$(t rc_days)"; stale_s="   · ${m//\{n\}/${CAND_DAYS[$i]}}"
-    fi
-    printf '  %3d) %-28s %6s   rebuild: %-18s%s\n' "$n" \
-      "$(printf '%s' "${CAND_PATH[$i]#"$last"/}" | vis)" \
-      "$(od_human_kb "${CAND_KB[$i]}")" "${CAND_CMD[$i]}" "$stale_s"
-    total_kb=$((total_kb + CAND_KB[i]))
-  done
-  echo "------------------------------------------------------------"
-  echo "$(t un_total)$(od_human_kb "$total_kb")"
+  # ---- UNIDENTIFIED preview: its own section, sorted by size, no auto-select --
+  local UORD=()
+  if [ "${#UNID_PATH[@]}" -gt 0 ]; then
+    local urows="" ustale
+    for i in "${!UNID_PATH[@]}"; do urows="$urows${UNID_KB[$i]}"$'\t'"$i"$'\n'; done
+    while IFS=$'\t' read -r _ i; do [ -n "$i" ] && UORD+=("$i"); done \
+      < <(printf '%s' "$urows" | LC_ALL=C sort -t"$(printf '\t')" -k1,1rn)
+    echo "------------------------------------------------------------"
+    t rc_unid_header
+    m="$(t rc_unid_note)"; echo "   ${m//\{min\}/$(od_human_kb "$RC_UNID_MIN_KB")}"
+    for i in "${UORD[@]}"; do
+      ustale=""
+      if [ "${UNID_DAYS[$i]}" -ge 0 ]; then m="$(t rc_days)"; ustale="   · ${m//\{n\}/${UNID_DAYS[$i]}}"; fi
+      printf '  🔺 %-40s %7s%s\n' "$(printf '%s' "${UNID_PATH[$i]}" | vis)" \
+        "$(od_human_kb "${UNID_KB[$i]}")" "$ustale"
+    done
+  fi
   echo "============================================================"
 
   if [ "$DRY" -eq 1 ]; then t rc_dry_note; return 0; fi
 
-  # ---- select (same grammar as the 🧟 picker: numbers, ranges, all) ----------
-  t rc_multi_hint
-  printf '%s' "$(t un_pick_prompt)"
-  local choice=""; read -r choice || true
-  case "$choice" in ''|q|Q) t un_cancelled; return 0 ;; esac
-  PICK_ROWS=()
-  if ! pick_parse "$choice" 0 "$n"; then
-    t un_pick_invalid >&2; return 2
+  # ---- PROVEN select: numbers/ranges/all, one typed-count confirm (batch) ----
+  local SEL=() sel_kb=0
+  if [ "${#CAND_PATH[@]}" -gt 0 ]; then
+    t rc_multi_hint
+    printf '%s' "$(t un_pick_prompt)"
+    local choice=""; read -r choice || true
+    case "$choice" in
+      ''|q|Q) t un_cancelled ;;
+      *)
+        PICK_ROWS=()
+        if ! pick_parse "$choice" 0 "$n"; then
+          t un_pick_invalid >&2
+        else
+          local k reply
+          for k in "${PICK_ROWS[@]}"; do
+            SEL+=("${ORD[$((k - 1))]}")
+            sel_kb=$((sel_kb + CAND_KB[${ORD[$((k - 1))]}]))
+          done
+          m="$(t rc_confirm)"; m="${m//\{n\}/${#SEL[@]}}"
+          printf '%s' "${m//\{size\}/$(od_human_kb "$sel_kb")}"
+          reply=""; read -r reply || true
+          if [ "$reply" != "${#SEL[@]}" ]; then SEL=(); sel_kb=0; t un_cancelled; fi
+        fi
+        ;;
+    esac
   fi
 
-  local SEL=() sel_kb=0 k
-  for k in "${PICK_ROWS[@]}"; do
-    SEL+=("${ORD[$((k - 1))]}")
-    sel_kb=$((sel_kb + CAND_KB[${ORD[$((k - 1))]}]))
-  done
-  m="$(t rc_confirm)"; m="${m//\{n\}/${#SEL[@]}}"
-  printf '%s' "${m//\{size\}/$(od_human_kb "$sel_kb")}"
-  local reply=""; read -r reply || true
-  if [ "$reply" != "${#SEL[@]}" ]; then t un_cancelled; return 0; fi
+  # ---- UNIDENTIFIED select: one at a time, typed-name (uninstall-style) -------
+  local USEL=() usel_kb=0
+  if [ "${#UNID_PATH[@]}" -gt 0 ]; then
+    local uname ureply
+    for i in "${UORD[@]}"; do
+      uname="${UNID_PATH[$i]##*/}"
+      echo "------------------------------------------------------------"
+      printf '  🔺 %s   %s\n' "$(printf '%s' "${UNID_PATH[$i]}" | vis)" "$(od_human_kb "${UNID_KB[$i]}")"
+      t rc_unid_contains
+      rc_peek "${UNID_PATH[$i]}"
+      m="$(t rc_unid_confirm)"; m="${m//\{name\}/$uname}"
+      printf '%s' "${m//\{size\}/$(od_human_kb "${UNID_KB[$i]}")}"
+      ureply=""; read -r ureply || true
+      if [ "$ureply" = "$uname" ]; then
+        USEL+=("$i"); usel_kb=$((usel_kb + UNID_KB[i]))
+      else
+        t rc_unid_skip
+      fi
+    done
+  fi
 
-  # ---- receipt (kind=reclaim carries the rebuild commands) + move ------------
-  local rdir rfile stamp MV_TRIED=0 MV_MOVED=0 MV_STUCK_CONT=0
+  if [ "${#SEL[@]}" -eq 0 ] && [ "${#USEL[@]}" -eq 0 ]; then
+    echo "============================================================"; return 0
+  fi
+
+  # ---- one receipt for the run (kind=reclaim); PROVEN rows carry rebuild cmds -
+  local rdir rfile stamp tline MV_TRIED=0 MV_MOVED=0 MV_STUCK_CONT=0
   rdir="$REAL_HOME/.sheersweep/uninstalls"
   mkdir -p "$rdir" 2>/dev/null
   stamp="$(date +%Y%m%d-%H%M%S)"
   rfile="$rdir/$stamp-reclaim.tsv"
   {
     echo "# sheersweep uninstall receipt"
-    echo "# app=reclaim (${#SEL[@]} build dirs)"
+    echo "# app=reclaim ($(( ${#SEL[@]} + ${#USEL[@]} )) dirs)"
     echo "# bid=reclaim"
     echo "# kind=reclaim"
     echo "# date=$stamp"
     local seen=$'\n'
-    for i in "${SEL[@]}"; do
+    if [ "${#SEL[@]}" -gt 0 ]; then for i in "${SEL[@]}"; do
       tline="cd ${CAND_PATH[$i]%/*} && ${CAND_CMD[$i]}"
       case "$seen" in *$'\n'"$tline"$'\n'*) ;; *)
         echo "# rebuild=$tline"; seen="$seen$tline"$'\n' ;;
       esac
-    done
+    done; fi
     echo "# format=nul-pairs"
     printf '\0'
   } > "$rfile" 2>/dev/null
-  for i in "${SEL[@]}"; do
-    trash_one "${CAND_PATH[$i]}" "${CAND_OWNER[$i]}" "$rfile"
-  done
+  # bash 3.2: expanding an empty array under set -u errors, so guard each loop.
+  if [ "${#SEL[@]}"  -gt 0 ]; then for i in "${SEL[@]}";  do trash_one "${CAND_PATH[$i]}" "${CAND_OWNER[$i]}" "$rfile"; done; fi
+  if [ "${#USEL[@]}" -gt 0 ]; then for i in "${USEL[@]}"; do trash_one "${UNID_PATH[$i]}" "${UNID_OWNER[$i]}" "$rfile"; done; fi
   chown -R "$(stat -f %u "$REAL_HOME" 2>/dev/null):$(stat -f %g "$REAL_HOME" 2>/dev/null)" "$REAL_HOME/.sheersweep" 2>/dev/null
   [ "$MV_MOVED" -eq 0 ] && rm -f "$rfile" 2>/dev/null
 
   echo "============================================================"
   m="$(t rc_done)"; m="${m//\{n\}/$MV_MOVED}"
-  report_moves "${m//\{size\}/$(od_human_kb "$sel_kb")}"
+  report_moves "${m//\{size\}/$(od_human_kb "$((sel_kb + usel_kb))")}"
   return 0
 }
 
