@@ -4,6 +4,17 @@ All notable changes to sheersweep are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.10.3]
+
+### Changed — the unidentified confirm prompt is now terse
+
+The per-item 🔺 prompt led with "Unidentified — I can't prove this is safe." every
+time. But a wordy confirmation trains the exact reflex a safety gate exists to stop:
+faced with a wall of text, a human just agrees. The honesty already lives — once — in
+the section header; the real gate is having to type the folder's own name, which you
+can't rubber-stamp. So the prompt is now just `Type '{name}' to move it ({size}) to
+the Trash, anything else skips:` in all nine languages. Less to read, same gate.
+
 ## [0.10.2]
 
 ### Changed — reclaim now picks both tiers from ONE numbered list (uninstall model)

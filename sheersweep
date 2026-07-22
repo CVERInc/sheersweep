@@ -32,7 +32,7 @@
 #   each with the native way to remove it. Changes nothing; never needs sudo.
 set -u
 
-VERSION="0.10.2"
+VERSION="0.10.3"
 
 # ============================================================================
 # i18n — en-US · ja-JP · zh-TW · zh-Hans · ko-KR · es-ES · de-DE · fr-FR · pt-BR.
@@ -686,17 +686,17 @@ t() {
         pt-BR) echo "        contém:" ;;
         *)     echo "        contains:" ;;
       esac ;;
-    rc_unid_confirm)   # {name} · {size}
+    rc_unid_confirm)   # {name} · {size} — kept terse on purpose: a wordy gate trains rubber-stamping
       case "$SS_LANG" in
-        ja-JP) echo "未識別 — 安全とは証明できません。ゴミ箱へ移動（{size}）するには「{name}」と入力（それ以外はスキップ）: " ;;
-        zh-TW) echo "未識別——我證不了它安全。要把它（{size}）移到垃圾桶，請打出「{name}」（輸入其他則略過）：" ;;
-        zh-Hans) echo "未识别——我证不了它安全。要把它（{size}）移到废纸篓，请打出“{name}”（输入其他则略过）：" ;;
-        ko-KR) echo "미확인 — 안전하다고 증명할 수 없습니다. 휴지통으로 옮기려면({size}) '{name}'을 입력하세요(다른 입력은 건너뜀): " ;;
-        es-ES) echo "Sin identificar — no puedo probar que sea seguro. Escribe '{name}' para moverla ({size}) a la Papelera (otra cosa la omite): " ;;
-        de-DE) echo "Nicht identifiziert — ich kann die Sicherheit nicht beweisen. Tippe '{name}', um ihn ({size}) in den Papierkorb zu verschieben (alles andere überspringt): " ;;
-        fr-FR) echo "Non identifié — je ne peux pas prouver que c'est sûr. Tapez '{name}' pour le déplacer ({size}) vers la Corbeille (autre chose l'ignore) : " ;;
-        pt-BR) echo "Não identificado — não posso provar que é seguro. Digite '{name}' para movê-la ({size}) para a Lixeira (qualquer outra coisa pula): " ;;
-        *)     echo "Unidentified — I can't prove this is safe. Type '{name}' to move it ({size}) to the Trash, anything else skips: " ;;
+        ja-JP) echo "「{name}」と入力でゴミ箱へ（{size}）、それ以外はスキップ: " ;;
+        zh-TW) echo "打出「{name}」把它（{size}）移到垃圾桶，其他則略過：" ;;
+        zh-Hans) echo "打出“{name}”把它（{size}）移到废纸篓，其他则略过：" ;;
+        ko-KR) echo "'{name}' 입력 시 휴지통으로({size}), 다른 입력은 건너뜀: " ;;
+        es-ES) echo "Escribe '{name}' para moverla ({size}) a la Papelera; otra cosa la omite: " ;;
+        de-DE) echo "Tippe '{name}', um ihn ({size}) in den Papierkorb zu verschieben; sonst überspringen: " ;;
+        fr-FR) echo "Tapez '{name}' pour le déplacer ({size}) vers la Corbeille ; sinon ignorer : " ;;
+        pt-BR) echo "Digite '{name}' para movê-la ({size}) para a Lixeira; senão pula: " ;;
+        *)     echo "Type '{name}' to move it ({size}) to the Trash, anything else skips: " ;;
       esac ;;
     rc_unid_skip)
       case "$SS_LANG" in
