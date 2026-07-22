@@ -32,7 +32,7 @@
 #   each with the native way to remove it. Changes nothing; never needs sudo.
 set -u
 
-VERSION="0.10.1"
+VERSION="0.10.2"
 
 # ============================================================================
 # i18n — en-US · ja-JP · zh-TW · zh-Hans · ko-KR · es-ES · de-DE · fr-FR · pt-BR.
@@ -628,15 +628,15 @@ t() {
       esac ;;
     rc_multi_hint)
       case "$SS_LANG" in
-        ja-JP) echo "行はまとめて選べます — 例: 1 3 5-8 · all で全部。" ;;
-        zh-TW) echo "可以一次選多列——例如 1 3 5-8；輸入 all 全選。" ;;
-        zh-Hans) echo "可以一次选多行——例如 1 3 5-8；输入 all 全选。" ;;
-        ko-KR) echo "여러 행을 한 번에 선택할 수 있습니다 — 예: 1 3 5-8 · all은 전부." ;;
-        es-ES) echo "puedes elegir varias filas — p. ej. 1 3 5-8 · all las toma todas." ;;
-        de-DE) echo "mehrere Zeilen auf einmal wählbar — z. B. 1 3 5-8 · all nimmt alle." ;;
-        fr-FR) echo "plusieurs lignes à la fois — p. ex. 1 3 5-8 · all les prend toutes." ;;
-        pt-BR) echo "escolha várias linhas de uma vez — ex.: 1 3 5-8 · all pega todas." ;;
-        *)     echo "Pick several rows at once — e.g. 1 3 5-8 · all takes every one." ;;
+        ja-JP) echo "番号で選択 — 例: 1 3 9 · all は証明済みの全行。🔺 の行は名前の入力で確認します。" ;;
+        zh-TW) echo "用號碼選——例如 1 3 9；all＝所有已證那批。🔺 那幾行要打出名字才移除。" ;;
+        zh-Hans) echo "用号码选——例如 1 3 9；all＝所有已证那批。🔺 那几行要打出名字才移除。" ;;
+        ko-KR) echo "번호로 선택 — 예: 1 3 9 · all은 증명된 모든 행. 🔺 행은 이름을 입력해 확인합니다." ;;
+        es-ES) echo "elige por número — p. ej. 1 3 9 · all = cada fila probada. Las filas 🔺 piden su nombre." ;;
+        de-DE) echo "per Nummer wählen — z. B. 1 3 9 · all = jede bewiesene Zeile. 🔺-Zeilen verlangen ihren Namen." ;;
+        fr-FR) echo "choisissez par numéro — p. ex. 1 3 9 · all = chaque ligne prouvée. Les lignes 🔺 demandent leur nom." ;;
+        pt-BR) echo "escolha por número — ex.: 1 3 9 · all = cada linha provada. As linhas 🔺 pedem o nome." ;;
+        *)     echo "Pick by number — e.g. 1 3 9 · all = every proven row. 🔺 rows each ask for their name." ;;
       esac ;;
     rc_confirm)   # {n} · {size}
       case "$SS_LANG" in
@@ -4104,20 +4104,24 @@ do_reclaim() {
     echo "$(t un_total)$(od_human_kb "$total_kb")"
   fi
 
-  # ---- UNIDENTIFIED preview: its own section, sorted by size, no auto-select --
+  # ---- UNIDENTIFIED preview: a NUMBERED continuation of the same list --------
+  # Proven rows are 1..n; the unidentified ones continue n+1.. so BOTH tiers are
+  # picked from the one number prompt (the uninstall model) — the tiers differ
+  # only in how a pick is CONFIRMED (proven: batch count; 🔺: type its name).
   local UORD=()
   if [ "${#UNID_PATH[@]}" -gt 0 ]; then
-    local urows="" ustale
+    local urows="" ustale un
     for i in "${!UNID_PATH[@]}"; do urows="$urows${UNID_KB[$i]}"$'\t'"$i"$'\n'; done
     while IFS=$'\t' read -r _ i; do [ -n "$i" ] && UORD+=("$i"); done \
       < <(printf '%s' "$urows" | LC_ALL=C sort -t"$(printf '\t')" -k1,1rn)
     echo "------------------------------------------------------------"
     t rc_unid_header
     m="$(t rc_unid_note)"; echo "   ${m//\{min\}/$(od_human_kb "$RC_UNID_MIN_KB")}"
+    un="$n"
     for i in "${UORD[@]}"; do
-      ustale=""
+      un=$((un + 1)); ustale=""
       if [ "${UNID_DAYS[$i]}" -ge 0 ]; then m="$(t rc_days)"; ustale="   · ${m//\{n\}/${UNID_DAYS[$i]}}"; fi
-      printf '  🔺 %-40s %7s%s\n' "$(printf '%s' "${UNID_PATH[$i]}" | vis)" \
+      printf '  %3d) 🔺 %-36s %7s%s\n' "$un" "$(printf '%s' "${UNID_PATH[$i]}" | vis)" \
         "$(od_human_kb "${UNID_KB[$i]}")" "$ustale"
     done
   fi
@@ -4125,48 +4129,56 @@ do_reclaim() {
 
   if [ "$DRY" -eq 1 ]; then t rc_dry_note; return 0; fi
 
-  # ---- PROVEN select: numbers/ranges/all, one typed-count confirm (batch) ----
-  local SEL=() sel_kb=0
-  if [ "${#CAND_PATH[@]}" -gt 0 ]; then
-    t rc_multi_hint
-    printf '%s' "$(t un_pick_prompt)"
-    local choice=""; read -r choice || true
-    case "$choice" in
-      ''|q|Q) t un_cancelled ;;
-      *)
-        PICK_ROWS=()
-        if ! pick_parse "$choice" 0 "$n"; then
-          t un_pick_invalid >&2
-        else
-          local k reply
-          for k in "${PICK_ROWS[@]}"; do
-            SEL+=("${ORD[$((k - 1))]}")
-            sel_kb=$((sel_kb + CAND_KB[${ORD[$((k - 1))]}]))
-          done
-          m="$(t rc_confirm)"; m="${m//\{n\}/${#SEL[@]}}"
-          printf '%s' "${m//\{size\}/$(od_human_kb "$sel_kb")}"
-          reply=""; read -r reply || true
-          if [ "$reply" != "${#SEL[@]}" ]; then SEL=(); sel_kb=0; t un_cancelled; fi
-        fi
-        ;;
-    esac
+  # ---- ONE numbered pick over both tiers -------------------------------------
+  # `all` takes the PROVEN batch only — the careful 🔺 rows stay opt-in by number.
+  t rc_multi_hint
+  printf '%s' "$(t un_pick_prompt)"
+  local choice=""; read -r choice || true
+  case "$choice" in ''|q|Q) echo "============================================================"; return 0 ;; esac
+  PICK_ROWS=()
+  case "$choice" in
+    all|ALL) local rr; for ((rr = 1; rr <= n; rr++)); do PICK_ROWS+=("$rr"); done ;;
+    *) if ! pick_parse "$choice" 0 "$(( n + ${#UORD[@]} ))"; then
+         t un_pick_invalid >&2; echo "============================================================"; return 2
+       fi ;;
+  esac
+
+  # split the picks: row ≤ n → PROVEN (ORD); row > n → UNIDENTIFIED (UORD)
+  local SEL=() sel_kb=0 UPICK=() k
+  if [ "${#PICK_ROWS[@]}" -gt 0 ]; then
+    for k in "${PICK_ROWS[@]}"; do
+      if [ "$k" -le "$n" ]; then
+        SEL+=("${ORD[$((k - 1))]}"); sel_kb=$((sel_kb + CAND_KB[${ORD[$((k - 1))]}]))
+      else
+        UPICK+=("${UORD[$((k - 1 - n))]}")
+      fi
+    done
   fi
 
-  # ---- UNIDENTIFIED select: one at a time, typed-name (uninstall-style) -------
+  # PROVEN picks: one typed-count confirm for the whole batch
+  if [ "${#SEL[@]}" -gt 0 ]; then
+    local reply
+    m="$(t rc_confirm)"; m="${m//\{n\}/${#SEL[@]}}"
+    printf '%s' "${m//\{size\}/$(od_human_kb "$sel_kb")}"
+    reply=""; read -r reply || true
+    if [ "$reply" != "${#SEL[@]}" ]; then SEL=(); sel_kb=0; t un_cancelled; fi
+  fi
+
+  # UNIDENTIFIED picks: each confirmed by typing its own name (the safety gate)
   local USEL=() usel_kb=0
-  if [ "${#UNID_PATH[@]}" -gt 0 ]; then
-    local uname ureply
-    for i in "${UORD[@]}"; do
-      uname="${UNID_PATH[$i]##*/}"
+  if [ "${#UPICK[@]}" -gt 0 ]; then
+    local ui uname ureply
+    for ui in "${UPICK[@]}"; do
+      uname="${UNID_PATH[$ui]##*/}"
       echo "------------------------------------------------------------"
-      printf '  🔺 %s   %s\n' "$(printf '%s' "${UNID_PATH[$i]}" | vis)" "$(od_human_kb "${UNID_KB[$i]}")"
+      printf '  🔺 %s   %s\n' "$(printf '%s' "${UNID_PATH[$ui]}" | vis)" "$(od_human_kb "${UNID_KB[$ui]}")"
       t rc_unid_contains
-      rc_peek "${UNID_PATH[$i]}"
+      rc_peek "${UNID_PATH[$ui]}"
       m="$(t rc_unid_confirm)"; m="${m//\{name\}/$uname}"
-      printf '%s' "${m//\{size\}/$(od_human_kb "${UNID_KB[$i]}")}"
+      printf '%s' "${m//\{size\}/$(od_human_kb "${UNID_KB[$ui]}")}"
       ureply=""; read -r ureply || true
       if [ "$ureply" = "$uname" ]; then
-        USEL+=("$i"); usel_kb=$((usel_kb + UNID_KB[i]))
+        USEL+=("$ui"); usel_kb=$((usel_kb + UNID_KB[ui]))
       else
         t rc_unid_skip
       fi

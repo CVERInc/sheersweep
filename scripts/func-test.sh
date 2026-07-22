@@ -765,6 +765,35 @@ else
 fi
 teardown
 
+# (unified pick) proven and unidentified share ONE numbered list. Picking a 🔺
+# row by its number, then confirming by TYPING ITS NAME, moves only that folder —
+# the proven rows (not picked) stay put. This is the uninstall model: number to
+# select, type-name to confirm.
+setup
+export SHEERSWEEP_LANG=en-US
+R="$SBX/roots"; REAL_HOME="$SBX/home"; mkdir -p "$REAL_HOME"
+mkdir -p "$R/proj"; git -C "$R/proj" init -q
+echo x > "$R/proj/src.txt"
+printf 'node_modules/\ncrawl/\n' > "$R/proj/.gitignore"
+git -C "$R/proj" -c user.email=t@t -c user.name=t add -A
+git -C "$R/proj" -c user.email=t@t -c user.name=t commit -qm init
+echo '{}' > "$R/proj/package.json"
+mkdir -p "$R/proj/node_modules/d"; dd if=/dev/zero of="$R/proj/node_modules/d/x" bs=1024 count=200 2>/dev/null # proven → row 1
+mkdir -p "$R/proj/crawl";          dd if=/dev/zero of="$R/proj/crawl/blob"      bs=1024 count=200 2>/dev/null # unidentified → row 2
+RC_UNID_MIN_KB=64; DRY=0; RC_ROOTS=("$R"); RC_STALE_DAYS=""
+: "reads for shellcheck: $RC_UNID_MIN_KB $DRY ${RC_ROOTS[*]} $RC_STALE_DAYS"
+do_reclaim <<< $'2\ncrawl' > "$SBX/u.out" 2>&1     # pick the 🔺 row (2), confirm by name
+RC_UNID_MIN_KB=$(( 512 * 1024 ))
+p1=0; [ ! -e "$R/proj/crawl" ] && p1=1                                                # picked 🔺 moved
+p2=0; [ -e "$R/proj/node_modules" ] && p2=1                                           # unpicked proven kept
+p3=0; find "$REAL_HOME/.Trash" -name crawl 2>/dev/null | grep -q . && p3=1            # landed in Trash
+if [ "$p1$p2$p3" = "111" ]; then
+  pass "reclaim unified pick: a 🔺 row picked by number + typed name moves only it; proven untouched"
+else
+  fail "reclaim unified pick wrong (crawl_gone=$p1 nm_kept=$p2 trashed=$p3) $(tail -3 "$SBX/u.out")"
+fi
+teardown
+
 # (guard) the sweep digest is REPORT-only formatting over finder results: each
 # fabricated result renders its localized line, sub-threshold AI size and
 # zero-count finders contribute nothing, and an empty digest prints NOTHING.

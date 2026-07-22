@@ -4,6 +4,22 @@ All notable changes to sheersweep are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.10.2]
+
+### Changed — reclaim now picks both tiers from ONE numbered list (uninstall model)
+
+v0.10.0 numbered only the proven rows; the unidentified 🔺 rows had no number and
+were force-marched one-by-one after the proven pick. That was confusing — you
+naturally try to pick a 🔺 row by "its number", there wasn't one, and the per-item
+prompts then marched in size order regardless of what you wanted (field-reported).
+
+Now proven (1..n) and unidentified (n+1..) share **one numbered list and one pick
+prompt** — exactly like `uninstall`. Selection is unified (pick any rows by number);
+confirmation still scales with confidence: a proven pick clears in the one typed-count
+batch, and each picked 🔺 row asks you to type its name (with a peek at its contents)
+before it moves. `all` still means the proven batch only — the careful 🔺 rows stay
+opt-in by number. Nothing is auto-selected; nothing skips the type-to-confirm gate.
+
 ## [0.10.1]
 
 ### Fixed — the reclaim banner still claimed "nothing else is even visible"
