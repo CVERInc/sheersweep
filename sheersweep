@@ -1387,27 +1387,27 @@ t() {
     # ---- leftovers (orphaned background items from apps that are gone) ----
     lf_header)
       case "$SS_LANG" in
-        ja-JP) echo "残骸 — 削除済みアプリが残した起動項目（LaunchAgents / LaunchDaemons）:" ;;
-        zh-TW) echo "孤兒殘骸——已刪除的 app 留下的開機／背景項目（LaunchAgents／Daemons）：" ;;
-        zh-Hans) echo "孤儿残留——已删除的 App 留下的启动／后台项目（LaunchAgents／Daemons）：" ;;
-        ko-KR) echo "잔재 — 삭제된 앱이 남긴 시작/백그라운드 항목(LaunchAgents/Daemons):" ;;
-        es-ES) echo "Restos — ítems de arranque/segundo plano de apps que ya no están:" ;;
-        de-DE) echo "Überbleibsel — Start-/Hintergrund-Einträge von Apps, die weg sind:" ;;
-        fr-FR) echo "Restes — éléments de démarrage/arrière-plan d'apps disparues :" ;;
-        pt-BR) echo "Sobras — itens de início/segundo plano de apps que já se foram:" ;;
-        *)     echo "Leftovers — startup/background items left behind by apps that are gone:" ;;
+        ja-JP) echo "▸ 残骸 — 削除済みアプリが残した起動項目（LaunchAgents / LaunchDaemons）:" ;;
+        zh-TW) echo "▸ 孤兒殘骸——已刪除的 app 留下的開機／背景項目（LaunchAgents／Daemons）：" ;;
+        zh-Hans) echo "▸ 孤儿残留——已删除的 App 留下的启动／后台项目（LaunchAgents／Daemons）：" ;;
+        ko-KR) echo "▸ 잔재 — 삭제된 앱이 남긴 시작/백그라운드 항목(LaunchAgents/Daemons):" ;;
+        es-ES) echo "▸ Restos — ítems de arranque/segundo plano de apps que ya no están:" ;;
+        de-DE) echo "▸ Überbleibsel — Start-/Hintergrund-Einträge von Apps, die weg sind:" ;;
+        fr-FR) echo "▸ Restes — éléments de démarrage/arrière-plan d'apps disparues :" ;;
+        pt-BR) echo "▸ Sobras — itens de início/segundo plano de apps que já se foram:" ;;
+        *)     echo "▸ Leftovers — startup/background items left behind by apps that are gone:" ;;
       esac ;;
     lf_dead_header)
       case "$SS_LANG" in
-        ja-JP) echo "🧟 死んでいる（起動する実行ファイルがもう存在しない）:" ;;
-        zh-TW) echo "🧟 死的（要啟動的程式已經不存在）：" ;;
-        zh-Hans) echo "🧟 死的（要启动的程序已不存在）：" ;;
-        ko-KR) echo "🧟 죽음(실행할 프로그램이 더 이상 없음):" ;;
-        es-ES) echo "🧟 Muertos (el programa que lanzan ya no existe):" ;;
-        de-DE) echo "🧟 Tot (das Programm, das sie starten, existiert nicht mehr):" ;;
-        fr-FR) echo "🧟 Morts (le programme qu'ils lancent n'existe plus) :" ;;
-        pt-BR) echo "🧟 Mortos (o programa que eles iniciam não existe mais):" ;;
-        *)     echo "🧟 Dead (the program they launch no longer exists):" ;;
+        ja-JP) echo "▸ 死んでいる（起動する実行ファイルがもう存在しない）:" ;;
+        zh-TW) echo "▸ 死的（要啟動的程式已經不存在）：" ;;
+        zh-Hans) echo "▸ 死的（要启动的程序已不存在）：" ;;
+        ko-KR) echo "▸ 죽음(실행할 프로그램이 더 이상 없음):" ;;
+        es-ES) echo "▸ Muertos (el programa que lanzan ya no existe):" ;;
+        de-DE) echo "▸ Tot (das Programm, das sie starten, existiert nicht mehr):" ;;
+        fr-FR) echo "▸ Morts (le programme qu'ils lancent n'existe plus) :" ;;
+        pt-BR) echo "▸ Mortos (o programa que eles iniciam não existe mais):" ;;
+        *)     echo "▸ Dead (the program they launch no longer exists):" ;;
       esac ;;
     lf_review_header)
       case "$SS_LANG" in
@@ -3841,30 +3841,26 @@ do_leftovers() {
   lf_scan "/Library/LaunchDaemons" "$REAL_HOME"
 
   local ndead="${#LF_DEAD_PATH[@]}" nrev="${#LF_REVIEW_PATH[@]}"
-  echo "============================================================"
   t lf_header
   if [ "$ndead" -eq 0 ] && [ "$nrev" -eq 0 ]; then
-    echo "------------------------------------------------------------"
-    t lf_clean
-    m="$(t lf_kept)"; echo "${m//\{n\}/$LF_KEPT}"
-    echo "============================================================"
+    echo "   $(t lf_clean)"
+    m="$(t lf_kept)"; echo "   ${m//\{n\}/$LF_KEPT}"
     return 0
   fi
   if [ "$ndead" -gt 0 ]; then
-    echo "------------------------------------------------------------"; t lf_dead_header
+    printf '\n'; t lf_dead_header
     for i in "${!LF_DEAD_PATH[@]}"; do
       printf '   %s\n        ↳ %s\n' "$(printf '%s' "${LF_DEAD_PATH[$i]}" | vis)" "$(printf '%s' "${LF_DEAD_INFO[$i]}" | vis)"
     done
   fi
   if [ "$nrev" -gt 0 ]; then
-    echo "------------------------------------------------------------"; t lf_review_header
+    printf '\n'; t lf_review_header
     for i in "${!LF_REVIEW_PATH[@]}"; do
       printf '   %s\n        ↳ %s\n' "$(printf '%s' "${LF_REVIEW_PATH[$i]}" | vis)" "$(printf '%s' "${LF_REVIEW_INFO[$i]}" | vis)"
     done
   fi
-  echo "------------------------------------------------------------"
-  m="$(t lf_kept)"; echo "${m//\{n\}/$LF_KEPT}"
-  echo "============================================================"
+  printf '\n'
+  m="$(t lf_kept)"; echo "   ${m//\{n\}/$LF_KEPT}"
 
   if [ "$DRY" -eq 1 ]; then t lf_dry_note; return 0; fi
 
@@ -3905,7 +3901,7 @@ do_leftovers() {
   chown -R "$(stat -f %u "$REAL_HOME" 2>/dev/null):$(stat -f %g "$REAL_HOME" 2>/dev/null)" "$REAL_HOME/.sheersweep" 2>/dev/null
   [ "$MV_MOVED" -eq 0 ] && rm -f "$rfile" 2>/dev/null
 
-  echo "============================================================"
+  printf '\n'
   m="$(t lf_done)"; report_moves "${m//\{n\}/$MV_MOVED}"
   return 0
 }
