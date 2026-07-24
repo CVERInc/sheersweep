@@ -243,9 +243,11 @@ fi
 # own-home-first: the roots array puts $REAL_HOME/Applications ahead of the
 # /Users/* glob, and the loop returns on first hit — so a name present in the
 # invoker's home never resolves to another account's copy.
+# shellcheck disable=SC2016  # matching the LITERAL string "$rh" as it appears in the source
 grep -q 'roots=("/Applications" "/Applications/Utilities" "$rh/Applications")' "$SCRIPT" \
-  && pass "resolve_app: own home is first in the search order" \
-  || fail "resolve_app: own-home-first ordering changed — re-check precedence"
+  && rc_ok=1 || rc_ok=0
+if [ "$rc_ok" = 1 ]; then pass "resolve_app: own home is first in the search order"
+else fail "resolve_app: own-home-first ordering changed — re-check precedence"; fi
 teardown
 
 # (5d) regression: resolve_app must not assume REAL_HOME is already set. Called
@@ -886,6 +888,7 @@ teardown
 #   2. the largest-consumer line must never invent a line out of an empty walk.
 setup
 stat_out="$(dg_disk_stat)"
+# shellcheck disable=SC2086  # intentional word-split: "pct used free" → $1 $2 $3
 set -- $stat_out
 if [ "$#" -eq 3 ] && [ "$1" -ge 0 ] 2>/dev/null && [ "$1" -le 100 ] && [ "$2" -gt 0 ]; then
   pass "dg_disk_stat: returns pct/used/free from the DATA volume (pct=$1%)"
@@ -900,8 +903,8 @@ line_full="$(dg_line disk)"
 printf '40 80000000 120000000\n' > "$DG_DIR/disk"
 line_roomy="$(dg_line disk)"
 case "$line_full" in
-  *95*) [ -z "$line_roomy" ] && pass "dg_line disk: speaks at 95%, silent at 40%" \
-                             || fail "dg_line disk: spoke on a roomy disk ('$line_roomy')" ;;
+  *95*) if [ -z "$line_roomy" ]; then pass "dg_line disk: speaks at 95%, silent at 40%"
+        else fail "dg_line disk: spoke on a roomy disk ('$line_roomy')"; fi ;;
   *)    fail "dg_line disk: no line at 95% ('$line_full')" ;;
 esac
 
@@ -924,9 +927,11 @@ setup
 # (Real measurement is verified by the separate dg_heavy_measure test + a real
 # dry-run; forcing dg_heavy_print through a real du here made the suite take 30 s
 # and depend on the dev disk's fullness.)
+# shellcheck disable=SC2329  # invoked indirectly by dg_heavy_print (stub override)
 dg_disk_stat() { echo "92 96000000 8000000"; }        # pretend: 92% full, used=96e6 KB
 # stub the measure: emit the kb<TAB>label<TAB>arrow rows to stdout (consumed for the
 # total) AND the ticks to stderr, mirroring the real one. total_seen = 61+54 = 115e6.
+# shellcheck disable=SC2329  # invoked indirectly by dg_heavy_print (stub override)
 dg_heavy_measure() {
   printf '61000000\ttin\tact\n54000000\tchodaict\tfloor\n30000000\t/Library\tsystem\n'
   printf '...' >&2                                  # heartbeat dots
@@ -943,6 +948,7 @@ else
   fail "dg_heavy_print wrong (notice=$g_notice act=$g_actgrp sys=$g_sysgrp floor=$g_floorgrp) [$map_out]"
 fi
 # unreadable-by-subtraction: used well above measured → a positive remainder tick
+# shellcheck disable=SC2329  # invoked indirectly by dg_heavy_print (stub override)
 dg_disk_stat() { echo "92 200000000 8000000"; }     # used=200e6, seen=145e6 → positive remainder
 unread_out="$(dg_heavy_print 2>/dev/null)"           # the map (incl. beyond group) → STDOUT
 floor_hdr="$(t dg_group_floor)"
@@ -951,11 +957,16 @@ case "$unread_out" in
   *"$floor_hdr"*SIP*) pass "dg_heavy_print: SIP remainder lands under the 'here to stay' group" ;;
   *)                  fail "dg_heavy_print: no floor group when used >> measured [$unread_out]" ;;
 esac
+# shellcheck disable=SC2329  # invoked indirectly by dg_heavy_print (stub override)
 dg_disk_stat() { echo "40 40000000 60000000"; }        # pretend: 40% — roomy
 out_roomy="$(dg_heavy_print 2>&1)"
-[ -z "$out_roomy" ] && pass "dg_heavy_print: silent on a roomy disk (never runs the du)" \
-                    || fail "dg_heavy_print: spoke on a roomy disk [$out_roomy]"
-unset -f dg_disk_stat dg_heavy_measure                 # restore the real ones
+if [ -z "$out_roomy" ]; then pass "dg_heavy_print: silent on a roomy disk (never runs the du)"
+else fail "dg_heavy_print: spoke on a roomy disk [$out_roomy]"; fi
+# Re-source to RESTORE the real dg_disk_stat / dg_heavy_measure — `unset -f`
+# removes a stubbed function entirely (it does NOT reveal the original), so
+# without this the real ones stay gone for later tests. The re-source is required,
+# not redundant.
+# shellcheck source=/dev/null
 source "$SCRIPT"
 teardown
 
