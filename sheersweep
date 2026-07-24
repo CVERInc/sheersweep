@@ -84,41 +84,29 @@ t() {
         pt-BR) echo "🧪 SIMULAÇÃO (dry-run) — nada será apagado" ;;
         *)     echo "🧪 DRY-RUN — nothing will be deleted" ;;
       esac ;;
-    free_before)
+    sweep_result_real)   # {gb} freed · {before}% → {after}% full
       case "$SS_LANG" in
-        ja-JP) echo "クリーン前の空き容量：" ;;
-        zh-TW) echo "清理前可用：" ;;
-        zh-Hans) echo "清理前可用：" ;;
-        ko-KR) echo "청소 전 여유 공간: " ;;
-        es-ES) echo "Libre antes:   " ;;
-        de-DE) echo "Frei vorher:  " ;;
-        fr-FR) echo "Libre avant :  " ;;
-        pt-BR) echo "Livre antes:  " ;;
-        *)     echo "Free before: " ;;
+        ja-JP) echo "✅ {gb} GB を解放 · 使用率 {before}% → {after}%" ;;
+        zh-TW) echo "✅ 釋出 {gb} GB · 使用率 {before}% → {after}%" ;;
+        zh-Hans) echo "✅ 释出 {gb} GB · 使用率 {before}% → {after}%" ;;
+        ko-KR) echo "✅ {gb} GB 확보 · 사용률 {before}% → {after}%" ;;
+        es-ES) echo "✅ {gb} GB liberados · {before}% → {after}% lleno" ;;
+        de-DE) echo "✅ {gb} GB frei gemacht · {before}% → {after}% belegt" ;;
+        fr-FR) echo "✅ {gb} GB libérés · {before}% → {after}% plein" ;;
+        pt-BR) echo "✅ {gb} GB liberados · {before}% → {after}% cheio" ;;
+        *)     echo "✅ freed {gb} GB · {before}% → {after}% full" ;;
       esac ;;
-    free_after)
+    sweep_result_dry)   # a preview freed nothing — no invented delta
       case "$SS_LANG" in
-        ja-JP) echo "クリーン後の空き容量：" ;;
-        zh-TW) echo "清理後可用：" ;;
-        zh-Hans) echo "清理后可用：" ;;
-        ko-KR) echo "청소 후 여유 공간: " ;;
-        es-ES) echo "Libre después: " ;;
-        de-DE) echo "Frei nachher: " ;;
-        fr-FR) echo "Libre après :  " ;;
-        pt-BR) echo "Livre depois: " ;;
-        *)     echo "Free after:  " ;;
-      esac ;;
-    reclaimed)
-      case "$SS_LANG" in
-        ja-JP) echo "回収した容量：" ;;
-        zh-TW) echo "本輪回收：" ;;
-        zh-Hans) echo "本轮回收：" ;;
-        ko-KR) echo "회수한 공간: " ;;
-        es-ES) echo "Recuperado:    " ;;
-        de-DE) echo "Freigegeben:  " ;;
-        fr-FR) echo "Récupéré :     " ;;
-        pt-BR) echo "Recuperado:   " ;;
-        *)     echo "Reclaimed:   " ;;
+        ja-JP) echo "🧪 プレビュー — 何も削除していません。上の [preview] が対象です。" ;;
+        zh-TW) echo "🧪 預覽——什麼都沒刪。上面標 [preview] 的就是會清的。" ;;
+        zh-Hans) echo "🧪 预览——什么都没删。上面标 [preview] 的就是会清的。" ;;
+        ko-KR) echo "🧪 미리보기 — 아무것도 지우지 않았습니다. 위 [preview] 항목이 대상입니다." ;;
+        es-ES) echo "🧪 vista previa — no se borró nada. Lo marcado [preview] arriba es lo que se limpiaría." ;;
+        de-DE) echo "🧪 Vorschau — nichts gelöscht. Die [preview]-Zeilen oben zeigen, was bereinigt würde." ;;
+        fr-FR) echo "🧪 aperçu — rien supprimé. Les lignes [preview] ci-dessus montrent ce qui serait nettoyé." ;;
+        pt-BR) echo "🧪 prévia — nada foi apagado. As linhas [preview] acima mostram o que seria limpo." ;;
+        *)     echo "🧪 preview — nothing deleted. The [preview] lines above are what would be cleaned." ;;
       esac ;;
     acct)
       case "$SS_LANG" in
@@ -4694,10 +4682,8 @@ if [ "$MODE" = "reclaim" ]; then
 fi
 
 before="$(free_kb)"
-echo "============================================================"
+read -r pct_before _ _ < <(dg_disk_stat)     # capture the fullness % to close the loop at the end
 if [ "$DRY" -eq 1 ]; then t dry_banner; else echo "🧹 sheersweep"; fi
-echo "$(t free_before)$(df -h /System/Volumes/Data | awk '/Data$/{print $4}')"
-echo "============================================================"
 
 # the digest's finders start now and work UNDER the sweep (docs/digest-spec.md)
 dg_scan_start
@@ -4771,10 +4757,20 @@ fi
 dg_print
 dg_heavy_print
 
-after="$(free_kb)"
-echo "============================================================"
-echo "$(t free_after)$(df -h /System/Volumes/Data | awk '/Data$/{print $4}')"
-if [ "$DRY" -eq 0 ]; then
-  awk -v b="$before" -v a="$after" -v L="$(t reclaimed)" 'BEGIN{printf "%s~%.1f GB\n", L, (a-b)/1024/1024}'
+printf '\n'
+if [ "$DRY" -eq 1 ]; then
+  # A dry-run freed nothing, so it CAN'T honestly report a delta or a new %. The
+  # per-item [preview] lines above already showed what it WOULD touch; anything
+  # more here would be an invented number. Just name it a preview. Flush-left, so
+  # it reads as the whole run's closing line — not another indented map entry.
+  printf '%s\n' "$(t sweep_result_dry)"
+else
+  # Real run: now the numbers are true. Lead with the delta (what you ran this
+  # for), then close the loop the digest opened at the top ("92% full" → this).
+  after="$(free_kb)"
+  read -r pct_after _ _ < <(dg_disk_stat)
+  gb="$(awk -v b="$before" -v a="$after" 'BEGIN{printf "%.1f", (a-b)/1024/1024}')"
+  m="$(t sweep_result_real)"
+  m="${m//\{gb\}/$gb}"; m="${m//\{before\}/$pct_before}"; m="${m//\{after\}/$pct_after}"
+  printf '%s\n' "$m"
 fi
-echo "============================================================"
