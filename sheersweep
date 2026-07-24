@@ -812,15 +812,15 @@ t() {
       esac ;;
     rs_rebuild_hint)
       case "$SS_LANG" in
-        ja-JP) echo "♻️ 復元よりきれいな選択肢 — 再ビルド:" ;;
-        zh-TW) echo "♻️ 比還原更乾淨的路——直接重建：" ;;
-        zh-Hans) echo "♻️ 比恢复更干净的路——直接重建：" ;;
-        ko-KR) echo "♻️ 복원보다 깔끔한 길 — 다시 빌드:" ;;
-        es-ES) echo "♻️ la alternativa más limpia a restaurar — reconstruir:" ;;
-        de-DE) echo "♻️ die sauberere Alternative zum Wiederherstellen — neu bauen:" ;;
-        fr-FR) echo "♻️ l'alternative plus propre à la restauration — reconstruire :" ;;
-        pt-BR) echo "♻️ a alternativa mais limpa a restaurar — reconstruir:" ;;
-        *)     echo "♻️ The cleaner alternative to restoring — rebuild instead:" ;;
+        ja-JP) echo "▸ 復元よりきれいな選択肢 — 再ビルド:" ;;
+        zh-TW) echo "▸ 比還原更乾淨的路——直接重建：" ;;
+        zh-Hans) echo "▸ 比恢复更干净的路——直接重建：" ;;
+        ko-KR) echo "▸ 복원보다 깔끔한 길 — 다시 빌드:" ;;
+        es-ES) echo "▸ la alternativa más limpia a restaurar — reconstruir:" ;;
+        de-DE) echo "▸ die sauberere Alternative zum Wiederherstellen — neu bauen:" ;;
+        fr-FR) echo "▸ l'alternative plus propre à la restauration — reconstruire :" ;;
+        pt-BR) echo "▸ a alternativa mais limpa a restaurar — reconstruir:" ;;
+        *)     echo "▸ The cleaner alternative to restoring — rebuild instead:" ;;
       esac ;;
     un_refuse_apple)   # {app}
       case "$SS_LANG" in
@@ -1277,15 +1277,15 @@ t() {
       esac ;;
     rs_header)   # {app}  ·  {date}
       case "$SS_LANG" in
-        ja-JP) echo "最後のアンインストールを復元: {app}   ·   {date}" ;;
-        zh-TW) echo "要還原最後一次移除：{app}   ·   {date}" ;;
-        zh-Hans) echo "要还原最近一次卸载：{app}   ·   {date}" ;;
-        ko-KR) echo "마지막 제거를 복원합니다: {app}   ·   {date}" ;;
-        es-ES) echo "Restaurando la última desinstalación: {app}   ·   {date}" ;;
-        de-DE) echo "Letzte Deinstallation wird wiederhergestellt: {app}   ·   {date}" ;;
-        fr-FR) echo "Restauration de la dernière désinstallation : {app}   ·   {date}" ;;
-        pt-BR) echo "Restaurando a última desinstalação: {app}   ·   {date}" ;;
-        *)     echo "Restoring the last uninstall: {app}   ·   {date}" ;;
+        ja-JP) echo "▸ 最後のアンインストールを復元: {app}   ·   {date}" ;;
+        zh-TW) echo "▸ 要還原最後一次移除：{app}   ·   {date}" ;;
+        zh-Hans) echo "▸ 要还原最近一次卸载：{app}   ·   {date}" ;;
+        ko-KR) echo "▸ 마지막 제거를 복원합니다: {app}   ·   {date}" ;;
+        es-ES) echo "▸ Restaurando la última desinstalación: {app}   ·   {date}" ;;
+        de-DE) echo "▸ Letzte Deinstallation wird wiederhergestellt: {app}   ·   {date}" ;;
+        fr-FR) echo "▸ Restauration de la dernière désinstallation : {app}   ·   {date}" ;;
+        pt-BR) echo "▸ Restaurando a última desinstalação: {app}   ·   {date}" ;;
+        *)     echo "▸ Restoring the last uninstall: {app}   ·   {date}" ;;
       esac ;;
     rs_confirm)
       case "$SS_LANG" in
@@ -3707,20 +3707,17 @@ do_restore() {
 
   app="$(receipt_header "$newest" app)"
   date="$(receipt_header "$newest" date)"
-  echo "============================================================"
   m="$(t rs_header)"; m="${m//\{app\}/$app}"; echo "${m//\{date\}/$date}"
-  echo "------------------------------------------------------------"
   while IFS= read -r -d '' dest && IFS= read -r -d '' orig; do
     printf '   %s\n' "$orig"
   done < <(receipt_data "$newest")
   # a reclaim receipt knows how to REBUILD what it moved — surface that at the
   # decision point, so "don't restore, rebuild clean" is a choice, not trivia
   if [ "$(receipt_header "$newest" kind)" = "reclaim" ]; then
-    echo "------------------------------------------------------------"
+    printf '\n'
     t rs_rebuild_hint
     receipt_header_all "$newest" rebuild | sed 's/^/   /'
   fi
-  echo "============================================================"
 
   printf '%s' "$(t rs_confirm)"
   local reply=""; read -r reply || true
@@ -3757,7 +3754,7 @@ do_restore() {
 
   mv "$claimed" "$newest.restored" 2>/dev/null
   chown -R "$(stat -f %u "$REAL_HOME" 2>/dev/null):$(stat -f %g "$REAL_HOME" 2>/dev/null)" "$REAL_HOME/.sheersweep" 2>/dev/null
-  echo "============================================================"
+  printf '\n'
   m="$(t rs_done)"; echo "${m//\{app\}/$app}"
   [ "$failed" -gt 0 ] && return 1
   return 0
@@ -4142,7 +4139,6 @@ do_reclaim() {
   else
     while IFS= read -r -d '' r; do roots+=("$r"); done < <(rc_default_roots)
   fi
-  echo "============================================================"
   t rc_banner
   if [ "${#roots[@]}" -eq 0 ]; then t rc_noroots; return 1; fi
   printf '   %s ' "$(t rc_roots)"; printf '%s  ' "${roots[@]}"; echo
@@ -4157,7 +4153,7 @@ do_reclaim() {
   rc_collect_unid "${roots[@]}"
 
   if [ "${#CAND_PATH[@]}" -eq 0 ] && [ "${#UNID_PATH[@]}" -eq 0 ]; then
-    t rc_none; echo "============================================================"; return 0
+    t rc_none; return 0
   fi
 
   # ---- PROVEN preview: repos ordered by their biggest find, items by size ----
@@ -4220,21 +4216,20 @@ do_reclaim() {
         "$(od_human_kb "${UNID_KB[$i]}")" "$(printf '%s' "${UNID_PATH[$i]}" | vis)" "$ustale"
     done
   fi
-  echo "============================================================"
 
-  if [ "$DRY" -eq 1 ]; then t rc_dry_note; return 0; fi
+  if [ "$DRY" -eq 1 ]; then printf '\n'; t rc_dry_note; return 0; fi
 
   # ---- ONE numbered pick over both tiers -------------------------------------
   # `all` takes the PROVEN batch only — the careful ⚠️ rows stay opt-in by number.
   t rc_multi_hint
   printf '%s' "$(t un_pick_prompt)"
   local choice=""; read -r choice || true
-  case "$choice" in ''|q|Q) echo "============================================================"; return 0 ;; esac
+  case "$choice" in ''|q|Q) return 0 ;; esac
   PICK_ROWS=()
   case "$choice" in
     all|ALL) local rr; for ((rr = 1; rr <= n; rr++)); do PICK_ROWS+=("$rr"); done ;;
     *) if ! pick_parse "$choice" 0 "$(( n + ${#UORD[@]} ))"; then
-         t un_pick_invalid >&2; echo "============================================================"; return 2
+         t un_pick_invalid >&2; return 2
        fi ;;
   esac
 
@@ -4281,7 +4276,7 @@ do_reclaim() {
   fi
 
   if [ "${#SEL[@]}" -eq 0 ] && [ "${#USEL[@]}" -eq 0 ]; then
-    echo "============================================================"; return 0
+    return 0
   fi
 
   # ---- one receipt for the run (kind=reclaim); PROVEN rows carry rebuild cmds -
@@ -4312,7 +4307,7 @@ do_reclaim() {
   chown -R "$(stat -f %u "$REAL_HOME" 2>/dev/null):$(stat -f %g "$REAL_HOME" 2>/dev/null)" "$REAL_HOME/.sheersweep" 2>/dev/null
   [ "$MV_MOVED" -eq 0 ] && rm -f "$rfile" 2>/dev/null
 
-  echo "============================================================"
+  printf '\n'
   m="$(t rc_done)"; m="${m//\{n\}/$MV_MOVED}"
   report_moves "${m//\{size\}/$(od_human_kb "$((sel_kb + usel_kb))")}"
   return 0
