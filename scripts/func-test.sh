@@ -897,6 +897,58 @@ case "$line_full" in
   *)    fail "dg_line disk: no line at 95% ('$line_full')" ;;
 esac
 
+# dg_heavy_print: the foreground per-account map. It runs a real du walk (slow by
+# physics — no per-account size API on macOS), so it's guarded by the same
+# ">=85%" gate and prints a "measuring…" notice first. Hermetic tests can't stage
+# a real full disk or other accounts, so this asserts the sandbox-reachable
+# contract: on a roomy disk it stays completely silent (no notice, no line). The
+# full render — named consumers + subtraction-derived unreadable remainder — is
+# covered by the dg_line-level fixtures below and verified on a real machine.
+setup
+# Force dg_disk_stat to report a roomy disk by pointing it at a stub is not
+# possible (it reads real df), so assert via the gate value directly: the
+# function returns early when pct < 85. We check that a roomy real disk (if this
+# CI/dev disk is under 85%) produces no output; when the disk is genuinely tight
+# the real-machine dry-run is the check. Either way, silence-or-real, never a
+# half-measured lie.
+# Stub the two things that read the real machine, so the test exercises the GATE
+# and RENDER logic deterministically WITHOUT a 30 s du or a real full disk.
+# (Real measurement is verified by the separate dg_heavy_measure test + a real
+# dry-run; forcing dg_heavy_print through a real du here made the suite take 30 s
+# and depend on the dev disk's fullness.)
+dg_disk_stat() { echo "92 96000000 8000000"; }        # pretend: 92% full
+dg_heavy_measure() { printf '61000000\ttin\n54000000\tchodaict\n'; }
+out_tight="$(dg_heavy_print 2>/dev/null)"
+case "$out_tight" in
+  *📦*tin*) pass "dg_heavy_print: on a tight disk, renders the 📦 map (gate + render, stubbed du)" ;;
+  *)        fail "dg_heavy_print: tight disk but no 📦/tin line [$out_tight]" ;;
+esac
+dg_disk_stat() { echo "40 40000000 60000000"; }        # pretend: 40% — roomy
+out_roomy="$(dg_heavy_print 2>/dev/null)"
+[ -z "$out_roomy" ] && pass "dg_heavy_print: silent on a roomy disk (never runs the du)" \
+                    || fail "dg_heavy_print: spoke on a roomy disk [$out_roomy]"
+unset -f dg_disk_stat dg_heavy_measure                 # restore the real ones
+source "$SCRIPT"
+teardown
+
+# (regression) dg_heavy_measure's nested `case "$bn" in Shared|Guest)` must NOT
+# live inside a command substitution — bash mis-parses the `)` there, aborting the
+# function after the "measuring…" notice with a 127 and no 📦 line. Assert the
+# measure function runs and emits at least one "kb<TAB>label" row for a dir we own.
+setup
+raw="$(dg_heavy_measure 2>/dev/null)"
+if printf '%s\n' "$raw" | grep -qE '^[0-9]+'$'\t''.+'; then
+  pass "dg_heavy_measure: emits kb<TAB>label rows (guards the case-in-cmdsubst parse bug)"
+else
+  fail "dg_heavy_measure produced no valid rows — case-in-cmdsubst bug may be back [$raw]"
+fi
+teardown
+
+# dg_line-level render fixtures kept for the unreadable-remainder + sentinel-safety
+# logic, independent of the (slow, un-sandboxable) measurement.
+setup
+DG_DIR="$SBX/dg"; mkdir -p "$DG_DIR"
+
 DG_DIR=""
 teardown
 

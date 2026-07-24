@@ -19,11 +19,18 @@ above only clears regenerable junk`. It reads nothing but `df`, so it's instant
 and always accurate, and it stays silent on a disk with room — no noise when
 there's no problem.
 
-A companion "largest consumers" breakdown was built and then cut: measuring it
-meant a ~47-second walk of every account (past the digest's grace window, so it
-usually never showed), and everything it would have listed — other accounts, a
-photo library — is data sheersweep neither can nor should touch. A
-look-but-don't-touch list is worse than the one honest line that replaced it.
+Below it, when the disk is tight, a `📦` line maps where the space actually went —
+every account by name (`sudo` already grants the read, so nothing is masked), the
+big system roots, and, by subtraction, an `unreadable even to root` figure for the
+SIP regions no tool can total. It only ever *shows*; it never adds a thing to
+delete, and it says outright that what it lists — other accounts, a photo library
+— is data sheersweep can't and doesn't touch.
+
+A per-account size on macOS means walking every inode (no quotas), so on a full
+disk this is slow — which is exactly when it runs. Rather than promise a duration
+we can't honestly keep (a fuller disk is slower), it prints a notice and then
+names each target as it finishes: proof-of-life instead of a spinner, and you see
+what it's weighing as it goes.
 
 ### Fixed — `uninstall <name>` now sees every account, matching what it can remove
 
