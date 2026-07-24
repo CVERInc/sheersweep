@@ -278,6 +278,54 @@ ln -s "$PWD/sheersweep" /usr/local/bin/sheersweep
 Sweeping every account needs admin rights, so sheersweep re-runs itself with
 `sudo` (one password prompt). `--version` / `--help` / `tools` never need it.
 
+## Putting the verbs together
+
+sheersweep has no "clean everything" button and no scenario-specific modes —
+just a few verbs that each do one thing. The interesting tasks are combinations,
+the way `ls | grep | wc` is. A few that come up, so the shape is easy to picture:
+
+**Inheriting a Mac — clear the previous owner's apps, keep their account.**
+Someone hands you a machine; you have admin but not the old login. Remove what
+they installed without deleting the account itself (so their login picture and
+home folder stay).
+
+```bash
+sudo sheersweep uninstall SomeApp        # names resolve across every account's ~/Applications
+sudo sheersweep uninstall /Users/prev/Applications/SomeApp.app   # or point straight at it
+sudo sheersweep leftovers                # orphaned startup items from apps now gone
+```
+
+The account's **shell** — its home folder, login picture, documents — is left
+alone, because no verb reaches it. "Keep the account, clear its apps" isn't a
+mode: it's simply what remains when you only remove what you name. To delete the
+account *itself*, that's macOS's job — System Settings › Users & Groups. sheersweep
+clears contents; it doesn't create or destroy accounts.
+
+**Handing a Mac to the next person — wipe your traces, leave the OS pristine.**
+Uninstall the apps you added, clear their startup leftovers, then sweep the
+regenerable junk. Everything an app removal touches goes to the Trash, so you can
+walk it back until you empty it.
+
+```bash
+sudo sheersweep uninstall AppA && sudo sheersweep uninstall AppB
+sudo sheersweep leftovers
+sudo sheersweep                          # the sweep: caches/logs/temp the OS rebuilds
+```
+
+**Reclaiming a dev machine's disk — build output first, then the rest.**
+The heavy, regenerable stuff (`node_modules`, `target/`, `.next`…) is its own
+verb because removing it is safe *only* when it's provably rebuildable.
+
+```bash
+sudo sheersweep reclaim --stale 30d      # build output in repos untouched for a month
+sudo sheersweep                          # then the ordinary cache/log sweep
+```
+
+Each line above is a verb you can run on its own, preview with `--dry-run`, and
+undo with `sheersweep restore` (for the ones that move to the Trash). Nothing
+here is a special path through the code — it's the same handful of verbs, ordered
+by you.
+
 ## Scope, on purpose
 
 The default **sweep** clears **only** safe, regenerable junk. It will never grow

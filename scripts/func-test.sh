@@ -223,6 +223,31 @@ else
 fi
 teardown
 
+# (5c) resolve_app now searches EVERY account's ~/Applications, not just the
+# invoker's — so `uninstall <name>` can see what it can already delete (the
+# footprint collector always swept `for home in /Users/*`). This asserts the
+# sandbox-testable half: an app in REAL_HOME resolves, and REAL_HOME is searched
+# FIRST so a same-named app resolves to yours, not a stranger's. The cross-account
+# reach itself walks the real /Users/* and is verified on a real machine with
+# `sudo sheersweep uninstall <other-account-app> --dry-run` (hermetic tests can't
+# create real accounts) — noted here so the gap is visible, not silently skipped.
+setup
+REAL_HOME="$SBX/home"; mkdir -p "$REAL_HOME/Applications/Mine.app/Contents"
+RESOLVED_APP=""
+resolve_app "Mine"
+if [ "$RESOLVED_APP" = "$REAL_HOME/Applications/Mine.app" ]; then
+  pass "resolve_app: finds an app in the invoker's own ~/Applications"
+else
+  fail "resolve_app missed own-home app (RESOLVED_APP=[$RESOLVED_APP])"
+fi
+# own-home-first: the roots array puts $REAL_HOME/Applications ahead of the
+# /Users/* glob, and the loop returns on first hit — so a name present in the
+# invoker's home never resolves to another account's copy.
+grep -q 'roots=("/Applications" "/Applications/Utilities" "\$REAL_HOME/Applications")' "$SCRIPT" \
+  && pass "resolve_app: own home is first in the search order" \
+  || fail "resolve_app: own-home-first ordering changed — re-check precedence"
+teardown
+
 # (L1) leftovers classification: lf_scan must sort launchd plists into DEAD (the
 # launched binary is gone), REVIEW (interpreter that references a now-missing
 # /Applications app), and KEPT (program exists, OR Apple's own job, OR an

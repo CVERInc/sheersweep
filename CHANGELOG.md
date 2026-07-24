@@ -25,6 +25,22 @@ usually never showed), and everything it would have listed — other accounts, a
 photo library — is data sheersweep neither can nor should touch. A
 look-but-don't-touch list is worse than the one honest line that replaced it.
 
+### Fixed — `uninstall <name>` now sees every account, matching what it can remove
+
+The footprint collector always swept `for home in /Users/*`, but the name
+resolver only looked in the invoker's own `~/Applications` — so an app installed
+only under *another* account (inheriting a Mac, a departed user) could be deleted
+by explicit path but not found by name. The resolver now searches every account's
+`~/Applications`, the invoker's first so a same-named app still resolves to yours.
+What you can sweep, you can now see — the gap this tool exists to close.
+
+### Docs — a "Putting the verbs together" section
+
+Scenario recipes (inheriting a Mac, handing one on, reclaiming a dev disk) shown
+as *combinations of the existing verbs*, not new modes — the Unix way. "Keep the
+account, clear its apps" is documented as what remains when you only remove what
+you name, not as a feature to build.
+
 ## [0.10.3]
 
 ### Changed — the unidentified confirm prompt is now terse

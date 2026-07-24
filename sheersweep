@@ -2396,8 +2396,19 @@ resolve_app() {
     /*) [ -d "$q" ] && RESOLVED_APP="$q"; return ;;   # explicit path wins
   esac
   base="$q"; case "$base" in *.app) ;; *) base="$base.app" ;; esac
-  local d
-  for d in "/Applications" "/Applications/Utilities" "$REAL_HOME/Applications"; do
+  # Search roots: the shared locations plus EVERY account's ~/Applications, not
+  # just the invoker's. The footprint collector already sweeps `for home in
+  # /Users/*`, so a name that could be DELETED across accounts must also be
+  # RESOLVABLE across them — otherwise `uninstall <name>` sees less than it can
+  # remove (the sheer < sweep gap this tool exists to close). Inheriting a Mac:
+  # the previous owner's app lives only under their home, and naming it must find
+  # it. Own home first so a same-named app resolves to yours before a stranger's.
+  local d roots=("/Applications" "/Applications/Utilities" "$REAL_HOME/Applications")
+  for d in /Users/*/Applications; do
+    case "$d" in "$REAL_HOME/Applications") continue ;; esac   # already first
+    [ -d "$d" ] && roots+=("$d")
+  done
+  for d in "${roots[@]}"; do
     if [ -d "$d/$base" ]; then RESOLVED_APP="$d/$base"; return; fi
   done
   # case-insensitive fallback (Spotlight-free). Match by name and read the first
@@ -2406,7 +2417,7 @@ resolve_app() {
   while IFS= read -r -d '' hit; do
     [ -d "$hit" ] || continue
     RESOLVED_APP="$hit"; break
-  done < <(find "/Applications" "$REAL_HOME/Applications" -maxdepth 2 -iname "$base" -not -path '*.app/*' -print0 2>/dev/null)
+  done < <(find "${roots[@]}" -maxdepth 2 -iname "$base" -not -path '*.app/*' -print0 2>/dev/null)
 }
 
 # Read CFBundleIdentifier from an .app (empty if unreadable).
