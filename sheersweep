@@ -518,41 +518,93 @@ t() {
         pt-BR) echo "🤖 arquivos de sessões de IA ocupam {size} — o histórico não é regenerável; use a limpeza da própria ferramenta de IA" ;;
         *)     echo "🤖 AI session archives hold {size} — history isn't regenerable; use your AI tool's own cleanup" ;;
       esac ;;
+    dg_group_act)
+      case "$SS_LANG" in
+        ja-JP) echo "▸ あなたが動かせるもの" ;;
+        zh-TW) echo "▸ 你能處理的" ;;
+        zh-Hans) echo "▸ 你能处理的" ;;
+        ko-KR) echo "▸ 직접 처리할 수 있는 것" ;;
+        es-ES) echo "▸ Lo que puedes gestionar" ;;
+        de-DE) echo "▸ Was du angehen kannst" ;;
+        fr-FR) echo "▸ Ce que vous pouvez gérer" ;;
+        pt-BR) echo "▸ O que você pode resolver" ;;
+        *)     echo "▸ Yours to act on" ;;
+      esac ;;
+    dg_group_system)
+      case "$SS_LANG" in
+        ja-JP) echo "▸ システム — 触らない" ;;
+        zh-TW) echo "▸ 系統——別動" ;;
+        zh-Hans) echo "▸ 系统——别动" ;;
+        ko-KR) echo "▸ 시스템 — 건드리지 마세요" ;;
+        es-ES) echo "▸ Sistema — no tocar" ;;
+        de-DE) echo "▸ System — nicht anfassen" ;;
+        fr-FR) echo "▸ Système — ne pas toucher" ;;
+        pt-BR) echo "▸ Sistema — não mexer" ;;
+        *)     echo "▸ System — leave it" ;;
+      esac ;;
+    dg_group_floor)   # your own live login + the SIP regions: present, big, immovable
+      case "$SS_LANG" in
+        ja-JP) echo "▸ ここに残るもの" ;;
+        zh-TW) echo "▸ 就是會佔著" ;;
+        zh-Hans) echo "▸ 就是会占着" ;;
+        ko-KR) echo "▸ 그대로 남는 것" ;;
+        es-ES) echo "▸ Aquí se queda" ;;
+        de-DE) echo "▸ Bleibt einfach" ;;
+        fr-FR) echo "▸ C'est là pour rester" ;;
+        pt-BR) echo "▸ Fica por aqui" ;;
+        *)     echo "▸ Here to stay" ;;
+      esac ;;
+    dg_this_login)   # parenthetical for your own account in the "here to stay" group
+      case "$SS_LANG" in
+        ja-JP) echo "現在のログイン" ;;
+        zh-TW) echo "目前登入" ;;
+        zh-Hans) echo "当前登录" ;;
+        ko-KR) echo "현재 로그인" ;;
+        es-ES) echo "sesión actual" ;;
+        de-DE) echo "aktuelle Anmeldung" ;;
+        fr-FR) echo "session actuelle" ;;
+        pt-BR) echo "login atual" ;;
+        *)     echo "this login" ;;
+      esac ;;
+    dg_arrow_other)
+      case "$SS_LANG" in
+        ja-JP) echo "→ システム設定 › ユーザ" ;;
+        zh-TW) echo "→ 系統設定 › 使用者" ;;
+        zh-Hans) echo "→ 系统设置 › 用户" ;;
+        ko-KR) echo "→ 시스템 설정 › 사용자" ;;
+        es-ES) echo "→ Ajustes › Usuarios" ;;
+        de-DE) echo "→ Systemeinstellungen › Benutzer" ;;
+        fr-FR) echo "→ Réglages › Utilisateurs" ;;
+        pt-BR) echo "→ Ajustes › Usuários" ;;
+        *)     echo "→ System Settings › Users" ;;
+      esac ;;
+    dg_arrow_apps)
+      echo "→ sheersweep uninstall" ;;
+    dg_arrow_tools)
+      echo "→ sheersweep tools" ;;
     dg_heavy_scanning)   # notice; the per-target ticks below are the proof-of-life
       case "$SS_LANG" in
-        ja-JP) echo "🔍 各アカウントの容量を測定中 — 少し時間がかかります。数え終えたものから表示します：" ;;
-        zh-TW) echo "🔍 正在測量各帳戶的空間用量——需要一點時間，數完一個就列一個：" ;;
-        zh-Hans) echo "🔍 正在测量各账户的空间用量——需要一点时间，数完一个就列一个：" ;;
-        ko-KR) echo "🔍 각 계정의 용량을 측정하는 중 — 잠시 걸립니다. 끝난 것부터 표시합니다:" ;;
-        es-ES) echo "🔍 midiendo el espacio de cada cuenta — tarda un poco; van apareciendo a medida que terminan:" ;;
-        de-DE) echo "🔍 messe die Speichernutzung aller Konten — dauert einen Moment; jedes erscheint, sobald es fertig ist:" ;;
-        fr-FR) echo "🔍 mesure de l'espace de chaque compte — cela prend un moment ; chacun apparaît dès qu'il est prêt :" ;;
-        pt-BR) echo "🔍 medindo o espaço de cada conta — leva um momento; cada um aparece assim que termina:" ;;
-        *)     echo "🔍 measuring where the space went across every account — this takes a moment; each shows as it lands:" ;;
+        ja-JP) echo "🔍 各アカウントの容量を測定中 — フルのディスクでは少し時間がかかります：" ;;
+        zh-TW) echo "🔍 正在測量各帳戶的空間用量——磁碟滿時需要一點時間：" ;;
+        zh-Hans) echo "🔍 正在测量各账户的空间用量——磁盘满时需要一点时间：" ;;
+        ko-KR) echo "🔍 각 계정의 용량을 측정하는 중 — 가득 찬 디스크에서는 잠시 걸립니다:" ;;
+        es-ES) echo "🔍 midiendo el espacio de cada cuenta — en un disco lleno tarda un poco:" ;;
+        de-DE) echo "🔍 messe die Speichernutzung aller Konten — auf einer vollen Platte dauert es einen Moment:" ;;
+        fr-FR) echo "🔍 mesure de l'espace de chaque compte — sur un disque plein cela prend un moment :" ;;
+        pt-BR) echo "🔍 medindo o espaço de cada conta — em um disco cheio leva um momento:" ;;
+        *)     echo "🔍 measuring where the space went across every account — this takes a moment on a full disk:" ;;
       esac ;;
-    dg_heavy_line)   # {list}
+    dg_unreadable)   # {size} — printed under the "beyond reach" group header
       case "$SS_LANG" in
-        ja-JP) echo "📦 このディスクで大きいもの（未掃除、見えるように）：{list}" ;;
-        zh-TW) echo "📦 此磁碟上最大的幾項（未清理、僅供你看見）：{list}" ;;
-        zh-Hans) echo "📦 此磁盘上最大的几项（未清理、仅供你看见）：{list}" ;;
-        ko-KR) echo "📦 이 디스크에서 큰 항목(정리 안 함, 볼 수 있도록): {list}" ;;
-        es-ES) echo "📦 lo más grande en este disco (sin limpiar, solo para verlo): {list}" ;;
-        de-DE) echo "📦 das Größte auf diesem Datenträger (nicht bereinigt, nur zur Ansicht): {list}" ;;
-        fr-FR) echo "📦 les plus volumineux sur ce disque (non nettoyés, juste pour voir) : {list}" ;;
-        pt-BR) echo "📦 os maiores neste disco (não limpos, apenas para ver): {list}" ;;
-        *)     echo "📦 Largest on this disk (not swept — just so you can see): {list}" ;;
-      esac ;;
-    dg_unreadable)   # {size}
-      case "$SS_LANG" in
-        ja-JP) echo "{size} は root でも読み取り不可（SIP：バージョン DB、Spotlight）——計測できません" ;;
-        zh-TW) echo "{size} 即使 root 也讀不到（SIP：版本資料庫、Spotlight）——無工具可計量" ;;
-        zh-Hans) echo "{size} 即使 root 也读不到（SIP：版本资料库、Spotlight）——无工具可计量" ;;
-        ko-KR) echo "{size}는 root로도 읽을 수 없음(SIP: 버전 DB, Spotlight) — 어떤 도구도 계산 불가" ;;
-        es-ES) echo "{size} ilegible incluso para root (SIP: version DB, Spotlight) — ninguna herramienta puede medirlo" ;;
-        de-DE) echo "{size} nicht lesbar, sogar für root (SIP: Versions-DB, Spotlight) — kein Tool kann es erfassen" ;;
-        fr-FR) echo "{size} illisible même pour root (SIP : version DB, Spotlight) — aucun outil ne peut le totaliser" ;;
-        pt-BR) echo "{size} ilegível mesmo para root (SIP: versão DB, Spotlight) — nenhuma ferramenta pode totalizá-lo" ;;
-        *)     echo "{size} unreadable even to root (SIP: version DB, Spotlight) — no tool can total it" ;;
+        ja-JP) echo "{size}（SIP：バージョン DB、Spotlight）" ;;
+        zh-TW) echo "{size}（SIP：版本資料庫、Spotlight）" ;;
+        zh-Hans) echo "{size}（SIP：版本资料库、Spotlight）" ;;
+        ko-KR) echo "{size} (SIP: 버전 DB, Spotlight)" ;;
+        es-ES) echo "{size} (SIP: version DB, Spotlight)" ;;
+        de-DE) echo "{size} (SIP: Versions-DB, Spotlight)" ;;
+        fr-FR) echo "{size} (SIP : version DB, Spotlight)" ;;
+        pt-BR) echo "{size} (SIP: versão DB, Spotlight)" ;;
+        *)     echo "{size} (SIP: version DB, Spotlight)" ;;
       esac ;;
     dg_disk)   # {pct} · {used} · {free}
       case "$SS_LANG" in
@@ -4466,49 +4518,121 @@ dg_print() {
 # that names what it's weighing as it goes never looks hung. We deliberately don't
 # promise a duration (a fuller disk is slower — a number is the one thing we can't
 # honestly commit to); we show progress instead.
-dg_heavy_measure() {   # stdout: kb<TAB>label ; stderr: live ticks
-  local d kb bn
-  _dgm_one() {   # $1 = path  $2 = label
+dg_heavy_measure() {   # stdout: kb<TAB>label<TAB>group  (group: act|system|floor)
+  # The du walk. Slow on a full disk (per-account size = every inode; no macOS
+  # quotas). Grouped by what you can DO, so all rows are gathered before printing;
+  # one dot per finished target ticks to stderr as proof-of-life (a byte, not an
+  # animation). Groups: act = you can remove/manage it · system = OS-owned, leave
+  # it · floor = present, large, but immovable (your OWN live login can't be
+  # deleted while you're in it, and your real data isn't sheersweep's to take).
+  local d kb bn brew_prefix="" rh; rh="${REAL_HOME:-$HOME}"
+  brew_locate
+  [ -n "$BREW_BIN" ] && brew_prefix="$(cd "$(dirname "$BREW_BIN")/.." 2>/dev/null && pwd)"
+  _dgm_one() {   # $1 = path  $2 = label  $3 = group
     kb="$(du -kx -d 0 "$1" 2>/dev/null | awk '{print $1}')"
     [ -n "$kb" ] || return 0
-    printf '%s\t%s\n' "$kb" "$2"                                   # data → stdout
-    printf '   · %s %s\n' "$2" "$(od_human_kb "$kb")" >&2           # tick → stderr
+    printf '%s\t%s\t%s\n' "$kb" "$2" "$3"
+    printf '.' >&2
   }
   for d in /Users/*; do
     [ -d "$d/Library" ] || continue
     bn="$(basename "$d")"
     case "$bn" in Shared|Guest) continue ;; esac
-    _dgm_one "$d" "$bn"
+    if [ "$d" = "$rh" ]; then _dgm_one "$d" "$bn" floor    # your own login: immovable
+    else                      _dgm_one "$d" "$bn" act; fi  # another account: Settings
   done
+  if [ -n "$brew_prefix" ] && [ -d "$brew_prefix" ]; then
+    _dgm_one "$brew_prefix" "$brew_prefix" act
+  fi
   for d in /Applications /Library /opt /private/var; do
     [ -d "$d" ] || continue
-    _dgm_one "$d" "$d"
+    case "$d" in "$brew_prefix") continue ;; esac
+    case "$brew_prefix" in
+      "$d"/*)
+        local others; others="$(find "$d" -mindepth 1 -maxdepth 1 ! -path "$brew_prefix" 2>/dev/null | head -1)"
+        [ -z "$others" ] && continue ;;
+    esac
+    case "$d" in
+      /Applications) _dgm_one "$d" "$d" act ;;
+      *)             _dgm_one "$d" "$d" system ;;
+    esac
   done
+  printf '\n' >&2
 }
 
 dg_heavy_print() {
-  local pct used total_seen=0 kb label line unread hpiece
+  local pct used total_seen=0 kb label grp unread brew_prefix="" rh
   read -r pct used _ < <(dg_disk_stat)
   [ "${pct:-0}" -ge 85 ] || return 0
+  rh="${REAL_HOME:-$HOME}"
+  brew_locate
+  [ -n "$BREW_BIN" ] && brew_prefix="$(cd "$(dirname "$BREW_BIN")/.." 2>/dev/null && pwd)"
 
-  t dg_heavy_scanning >&2    # notice → stderr, like the ticks (progress, not data)
+  t dg_heavy_scanning >&2                 # notice, then a dotted heartbeat during the walk
   local raw; raw="$(dg_heavy_measure | sort -rn -k1,1)"
-  while IFS=$'\t' read -r kb label; do [ -n "$kb" ] && total_seen=$((total_seen + kb)); done <<EOF
+
+  # The next-step action for a row (empty for none). Never a guess — only what
+  # sheersweep can assert: another account → Settings; the brew prefix (from
+  # brew_locate) → tools; /Applications → uninstall.
+  _act() {   # $1 = label
+    if   [ -d "/Users/$1" ] && [ "$1" != "$(basename "$rh")" ]; then t dg_arrow_other
+    elif [ "$1" = "$brew_prefix" ];  then t dg_arrow_tools
+    elif [ "$1" = "/Applications" ]; then t dg_arrow_apps
+    fi
+  }
+  # The parenthetical: full path for accounts (matches /Users/tin), a note for
+  # your own live login, the raw label otherwise.
+  _disp() {   # $1 = label
+    if [ -d "/Users/$1" ]; then
+      if [ "$1" = "$(basename "$rh")" ]; then printf '/Users/%s, %s' "$1" "$(t dg_this_login)"
+      else printf '/Users/%s' "$1"; fi
+    else printf '%s' "$1"; fi
+  }
+  # Emit one group's rows in the two-line shape: "· size (label)" then, for
+  # actionable rows, an indented "→ action" beneath it, with a blank line between
+  # entries so each stands on its own.
+  _emit_group() {   # $1 = header key  $2 = the group tag to match
+    local shown=0 first=1
+    while IFS=$'\t' read -r kb label grp; do
+      [ "$grp" = "$2" ] || continue
+      [ -n "$kb" ] || continue
+      if [ "$shown" -eq 0 ]; then printf '\n   %s\n' "$(t "$1")"; shown=1; fi
+      local a; a="$(_act "$label")"
+      # blank line BETWEEN entries only when they're two-line (have an action) —
+      # single-line rows read tighter packed together.
+      [ "$first" -eq 0 ] && [ -n "$a" ] && printf '\n'; first=0
+      printf '   · %s (%s)\n' "$(od_human_kb "$kb")" "$(printf '%s' "$(_disp "$label")" | vis)"
+      [ -n "$a" ] && printf '     %s\n' "$a"
+    done <<EOF
 $raw
 EOF
+    return "$shown"
+  }
 
-  local list=""
-  while IFS=$'\t' read -r kb label; do
-    [ -n "$kb" ] || continue
-    list="${list:+$list · }$(printf '%s' "$label" | vis) $(od_human_kb "$kb")"
-  done < <(printf '%s\n' "$raw" | head -3)
+  while IFS=$'\t' read -r kb label grp; do
+    [ -n "$kb" ] && total_seen=$((total_seen + kb))
+  done <<EOF
+$raw
+EOF
   unread=$(( used - total_seen ))
+
+  # Order: what you can't touch first (scrolls up), what you CAN act on last —
+  # nearest the prompt, where you'll act from.
+  _emit_group dg_group_system system || true
+  # "here to stay" group = own login (floor rows) + the SIP remainder
+  local shown_floor=0
+  while IFS=$'\t' read -r kb label grp; do
+    [ "$grp" = "floor" ] && [ -n "$kb" ] || continue
+    if [ "$shown_floor" -eq 0 ]; then printf '\n   %s\n' "$(t dg_group_floor)"; shown_floor=1; fi
+    printf '   · %s (%s)\n' "$(od_human_kb "$kb")" "$(printf '%s' "$(_disp "$label")" | vis)"
+  done <<EOF
+$raw
+EOF
   if [ "$unread" -gt 1048576 ]; then
-    hpiece="$(t dg_unreadable)"; hpiece="${hpiece//\{size\}/$(od_human_kb "$unread")}"
-    list="${list:+$list · }$hpiece"
+    [ "$shown_floor" -eq 0 ] && printf '\n   %s\n' "$(t dg_group_floor)"
+    local frag; frag="$(t dg_unreadable)"; printf '   · %s\n' "${frag//\{size\}/$(od_human_kb "$unread")}"
   fi
-  [ -n "$list" ] || return 0
-  line="$(t dg_heavy_line)"; printf '   %s\n' "${line//\{list\}/$list}"
+  _emit_group dg_group_act act || true
 }
 
 # --- dispatch: uninstall / tools / restore / leftovers are verbs; default → sweep

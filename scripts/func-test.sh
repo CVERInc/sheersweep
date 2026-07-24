@@ -916,15 +916,35 @@ setup
 # (Real measurement is verified by the separate dg_heavy_measure test + a real
 # dry-run; forcing dg_heavy_print through a real du here made the suite take 30 s
 # and depend on the dev disk's fullness.)
-dg_disk_stat() { echo "92 96000000 8000000"; }        # pretend: 92% full
-dg_heavy_measure() { printf '61000000\ttin\n54000000\tchodaict\n'; }
-out_tight="$(dg_heavy_print 2>/dev/null)"
-case "$out_tight" in
-  *📦*tin*) pass "dg_heavy_print: on a tight disk, renders the 📦 map (gate + render, stubbed du)" ;;
-  *)        fail "dg_heavy_print: tight disk but no 📦/tin line [$out_tight]" ;;
+dg_disk_stat() { echo "92 96000000 8000000"; }        # pretend: 92% full, used=96e6 KB
+# stub the measure: emit the kb<TAB>label<TAB>arrow rows to stdout (consumed for the
+# total) AND the ticks to stderr, mirroring the real one. total_seen = 61+54 = 115e6.
+dg_heavy_measure() {
+  printf '61000000\ttin\tact\n54000000\tchodaict\tfloor\n30000000\t/Library\tsystem\n'
+  printf '...' >&2                                  # heartbeat dots
+}
+map_out="$(dg_heavy_print 2>/dev/null)"            # the grouped map → STDOUT
+notice_out="$(dg_heavy_print 2>&1 1>/dev/null)"    # notice + heartbeat → STDERR
+g_notice=0;   case "$notice_out" in *🔍*) g_notice=1 ;; esac
+g_actgrp=0;   case "$map_out" in *"$(t dg_group_act)"*tin*) g_actgrp=1 ;; esac
+g_sysgrp=0;   case "$map_out" in *"$(t dg_group_system)"*/Library*) g_sysgrp=1 ;; esac
+g_floorgrp=0; case "$map_out" in *"$(t dg_group_floor)"*chodaict*) g_floorgrp=1 ;; esac
+if [ "$g_notice$g_actgrp$g_sysgrp$g_floorgrp" = "1111" ]; then
+  pass "dg_heavy_print: notice→stderr; three groups on stdout (act · system · here-to-stay)"
+else
+  fail "dg_heavy_print wrong (notice=$g_notice act=$g_actgrp sys=$g_sysgrp floor=$g_floorgrp) [$map_out]"
+fi
+# unreadable-by-subtraction: used well above measured → a positive remainder tick
+dg_disk_stat() { echo "92 200000000 8000000"; }     # used=200e6, seen=145e6 → positive remainder
+unread_out="$(dg_heavy_print 2>/dev/null)"           # the map (incl. beyond group) → STDOUT
+floor_hdr="$(t dg_group_floor)"
+[ -n "$floor_hdr" ] || fail "dg_group_floor key is empty — a renamed key would make the next check pass vacuously"
+case "$unread_out" in
+  *"$floor_hdr"*SIP*) pass "dg_heavy_print: SIP remainder lands under the 'here to stay' group" ;;
+  *)                  fail "dg_heavy_print: no floor group when used >> measured [$unread_out]" ;;
 esac
 dg_disk_stat() { echo "40 40000000 60000000"; }        # pretend: 40% — roomy
-out_roomy="$(dg_heavy_print 2>/dev/null)"
+out_roomy="$(dg_heavy_print 2>&1)"
 [ -z "$out_roomy" ] && pass "dg_heavy_print: silent on a roomy disk (never runs the du)" \
                     || fail "dg_heavy_print: spoke on a roomy disk [$out_roomy]"
 unset -f dg_disk_stat dg_heavy_measure                 # restore the real ones

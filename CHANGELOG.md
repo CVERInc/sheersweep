@@ -19,18 +19,24 @@ above only clears regenerable junk`. It reads nothing but `df`, so it's instant
 and always accurate, and it stays silent on a disk with room — no noise when
 there's no problem.
 
-Below it, when the disk is tight, a `📦` line maps where the space actually went —
-every account by name (`sudo` already grants the read, so nothing is masked), the
-big system roots, and, by subtraction, an `unreadable even to root` figure for the
-SIP regions no tool can total. It only ever *shows*; it never adds a thing to
-delete, and it says outright that what it lists — other accounts, a photo library
-— is data sheersweep can't and doesn't touch.
+Below it, when the disk is tight, a whole-disk **map** shows where the space
+actually went, in three groups by what you can do about it:
 
-A per-account size on macOS means walking every inode (no quotas), so on a full
-disk this is slow — which is exactly when it runs. Rather than promise a duration
-we can't honestly keep (a fuller disk is slower), it prints a notice and then
-names each target as it finishes: proof-of-life instead of a spinner, and you see
-what it's weighing as it goes.
+- **System — leave it** — OS-owned roots (`/Library`, `/private/var`).
+- **Here to stay** — your own live login (you can't delete the account you're in,
+  and your real data isn't sheersweep's to take) plus, by subtraction, the SIP
+  regions (version DB, Spotlight) *unreadable even to root* — no tool can total them.
+- **Yours to act on** — another account (→ System Settings), the Homebrew prefix
+  (→ `sheersweep tools`, taken from where brew actually is, so it's right on both
+  Apple Silicon and Intel and blank when brew isn't installed), apps (→ `uninstall`).
+  This group comes **last**, nearest the prompt, where you'll act from.
+
+It only ever *shows* — it adds visibility, never a new thing to delete — and every
+next-step pointer is a fact sheersweep can assert, never a guess (an unrecognised
+path simply gets none). A per-account size on macOS means walking every inode (no
+quotas), so on a full disk — exactly when this runs — it's slow. Rather than
+promise a duration we can't honestly keep (a fuller disk is slower), it prints a
+notice and a heartbeat while it measures. Read-only, and silent on a disk with room.
 
 ### Fixed — `uninstall <name>` now sees every account, matching what it can remove
 
