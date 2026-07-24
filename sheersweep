@@ -2403,9 +2403,12 @@ resolve_app() {
   # remove (the sheer < sweep gap this tool exists to close). Inheriting a Mac:
   # the previous owner's app lives only under their home, and naming it must find
   # it. Own home first so a same-named app resolves to yours before a stranger's.
-  local d roots=("/Applications" "/Applications/Utilities" "$REAL_HOME/Applications")
+  # Don't assume REAL_HOME is already set — resolve_app must be correct called on
+  # its own, not only after the uninstall preamble that fills it.
+  local rh="${REAL_HOME:-$HOME}"
+  local d roots=("/Applications" "/Applications/Utilities" "$rh/Applications")
   for d in /Users/*/Applications; do
-    case "$d" in "$REAL_HOME/Applications") continue ;; esac   # already first
+    case "$d" in "$rh/Applications") continue ;; esac   # already first
     [ -d "$d" ] && roots+=("$d")
   done
   for d in "${roots[@]}"; do

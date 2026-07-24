@@ -243,9 +243,24 @@ fi
 # own-home-first: the roots array puts $REAL_HOME/Applications ahead of the
 # /Users/* glob, and the loop returns on first hit — so a name present in the
 # invoker's home never resolves to another account's copy.
-grep -q 'roots=("/Applications" "/Applications/Utilities" "\$REAL_HOME/Applications")' "$SCRIPT" \
+grep -q 'roots=("/Applications" "/Applications/Utilities" "$rh/Applications")' "$SCRIPT" \
   && pass "resolve_app: own home is first in the search order" \
   || fail "resolve_app: own-home-first ordering changed — re-check precedence"
+teardown
+
+# (5d) regression: resolve_app must not assume REAL_HOME is already set. Called
+# standalone (as tests and any future caller do), a bare $REAL_HOME under `set -u`
+# aborted the function — found by a real cross-account run, not a fixture. It now
+# falls back to $HOME. Guard it: unset REAL_HOME entirely and confirm no crash.
+setup
+( unset REAL_HOME
+  HOME="$SBX/home"; mkdir -p "$HOME/Applications/Solo.app/Contents"
+  RESOLVED_APP=""
+  if resolve_app "Solo" 2>/dev/null && [ "$RESOLVED_APP" = "$HOME/Applications/Solo.app" ]; then
+    pass "resolve_app: works with REAL_HOME unset (falls back to HOME, no set -u crash)"
+  else
+    fail "resolve_app crashed or missed with REAL_HOME unset (RESOLVED_APP=[$RESOLVED_APP])"
+  fi )
 teardown
 
 # (L1) leftovers classification: lf_scan must sort launchd plists into DEAD (the
