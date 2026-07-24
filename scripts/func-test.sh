@@ -803,6 +803,7 @@ printf '3 1048576\n' > "$DG_DIR/orph"     # 3 orphans · 1.0G
 printf '2 2097152\n' > "$DG_DIR/rc"       # 2 folders · 2.0G
 printf '4\n'         > "$DG_DIR/brew"     # 4 outdated
 printf '204800\n'    > "$DG_DIR/ai"       # 200M ≥ threshold
+printf '40 1 1\n'    > "$DG_DIR/disk"     # roomy disk → must stay silent
 true & DG_PID=$!; wait "$DG_PID" 2>/dev/null   # a finished pid → zero grace wait
 out="$(dg_print)"
 g1=0; case "$out" in *"🧟"*1.0G*"(3)"*) g1=1 ;; esac
@@ -811,11 +812,12 @@ g3=0; case "$out" in *"↑"*4*) g3=1 ;; esac
 g4=0; case "$out" in *"🤖"*200M*) g4=1 ;; esac
 DG_DIR="$SBX/dg2"; mkdir -p "$DG_DIR"
 printf '0 0\n' > "$DG_DIR/orph"; printf '10240\n' > "$DG_DIR/ai"   # zero + sub-100M
+printf '40 1 1\n' > "$DG_DIR/disk"                                # silent
 true & DG_PID=$!; wait "$DG_PID" 2>/dev/null
 out2="$(dg_print)"
 g5=0; [ -z "$out2" ] && g5=1
 if [ "$g1$g2$g3$g4$g5" = "11111" ]; then
-  pass "digest: four lines render localized; zero/sub-threshold finders silent; empty digest prints nothing"
+  pass "digest: four lines render localized; zero/sub-threshold/roomy-disk finders silent; empty digest prints nothing"
 else
   fail "digest wrong (orph=$g1 rc=$g2 brew=$g3 ai=$g4 empty=$g5) out=[$out] out2=[$out2]"
 fi
@@ -828,6 +830,34 @@ if [ "${kb:-0}" -ge 64 ] && [ "${kb0:-x}" = "0" ]; then
 else
   fail "dg_ai_kb wrong (kb=$kb kb0=$kb0)"
 fi
+teardown
+
+# dg_disk_stat / dg_heavy_list / dg_line: whole-disk context.
+# Regression guards for the two ways this feature can lie:
+#   1. the summary must only speak up on a genuinely tight disk (< 85% = silent),
+#   2. the largest-consumer line must never invent a line out of an empty walk.
+setup
+stat_out="$(dg_disk_stat)"
+set -- $stat_out
+if [ "$#" -eq 3 ] && [ "$1" -ge 0 ] 2>/dev/null && [ "$1" -le 100 ] && [ "$2" -gt 0 ]; then
+  pass "dg_disk_stat: returns pct/used/free from the DATA volume (pct=$1%)"
+else
+  fail "dg_disk_stat wrong (got '$stat_out')"
+fi
+
+# dg_line reads its finders' result files out of $DG_DIR — fake them.
+DG_DIR="$SBX/dg"; mkdir -p "$DG_DIR"
+printf '95 184000000 12000000\n' > "$DG_DIR/disk"
+line_full="$(dg_line disk)"
+printf '40 80000000 120000000\n' > "$DG_DIR/disk"
+line_roomy="$(dg_line disk)"
+case "$line_full" in
+  *95*) [ -z "$line_roomy" ] && pass "dg_line disk: speaks at 95%, silent at 40%" \
+                             || fail "dg_line disk: spoke on a roomy disk ('$line_roomy')" ;;
+  *)    fail "dg_line disk: no line at 95% ('$line_full')" ;;
+esac
+
+DG_DIR=""
 teardown
 
 # (guard) EVERY t() key must exist in EVERY supported locale — the key list is

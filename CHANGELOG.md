@@ -4,6 +4,27 @@ All notable changes to sheersweep are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.11.0]
+
+### Added — the sweep now tells you when it's a drop in the bucket
+
+The sweep only ever clears regenerable junk, which is a feature — but on a
+nearly-full disk that honesty has a blind spot: you clean, reclaim a few dozen
+megabytes, and you're still at 92%, with no idea why. The numbers were there
+(`Free before` / `Free after`) but never the context.
+
+The `Also seen` digest now carries one more line when the disk is genuinely
+tight (≥ 85% full): `📊 Disk is 92% full (181.9G used, 17.9G free) — the sweep
+above only clears regenerable junk`. It reads nothing but `df`, so it's instant
+and always accurate, and it stays silent on a disk with room — no noise when
+there's no problem.
+
+A companion "largest consumers" breakdown was built and then cut: measuring it
+meant a ~47-second walk of every account (past the digest's grace window, so it
+usually never showed), and everything it would have listed — other accounts, a
+photo library — is data sheersweep neither can nor should touch. A
+look-but-don't-touch list is worse than the one honest line that replaced it.
+
 ## [0.10.3]
 
 ### Changed — the unidentified confirm prompt is now terse
