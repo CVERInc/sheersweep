@@ -388,15 +388,15 @@ t() {
       esac ;;
     un_orphans_header)   # {n}
       case "$SS_LANG" in
-        ja-JP) echo "🧟 削除済みアプリ {n} 件の置き土産 — 以下すべてゴミ箱へ移動します（復元可能）:" ;;
-        zh-TW) echo "🧟 {n} 個已移除 App 的殘留資料——以下全部會移到垃圾桶（可救回）：" ;;
-        zh-Hans) echo "🧟 {n} 个已移除 App 的残留数据——以下全部会移到废纸篓（可恢复）：" ;;
-        ko-KR) echo "🧟 제거된 앱 {n}개가 남긴 데이터 — 아래 전부 휴지통으로 이동합니다(복원 가능):" ;;
-        es-ES) echo "🧟 datos dejados por {n} apps eliminadas — todo lo de abajo se mueve a la Papelera (recuperable):" ;;
-        de-DE) echo "🧟 Daten von {n} entfernten Apps — alles Folgende wandert in den Papierkorb (wiederherstellbar):" ;;
-        fr-FR) echo "🧟 données laissées par {n} apps supprimées — tout ce qui suit part à la Corbeille (récupérable) :" ;;
-        pt-BR) echo "🧟 dados deixados por {n} apps removidos — tudo abaixo vai para a Lixeira (recuperável):" ;;
-        *)     echo "🧟 Leftover data of {n} removed apps — everything below moves to the Trash (recoverable):" ;;
+        ja-JP) echo "▸ 削除済みアプリ {n} 件の置き土産 — 以下すべてゴミ箱へ移動します（復元可能）:" ;;
+        zh-TW) echo "▸ {n} 個已移除 App 的殘留資料——以下全部會移到垃圾桶（可救回）：" ;;
+        zh-Hans) echo "▸ {n} 个已移除 App 的残留数据——以下全部会移到废纸篓（可恢复）：" ;;
+        ko-KR) echo "▸ 제거된 앱 {n}개가 남긴 데이터 — 아래 전부 휴지통으로 이동합니다(복원 가능):" ;;
+        es-ES) echo "▸ datos dejados por {n} apps eliminadas — todo lo de abajo se mueve a la Papelera (recuperable):" ;;
+        de-DE) echo "▸ Daten von {n} entfernten Apps — alles Folgende wandert in den Papierkorb (wiederherstellbar):" ;;
+        fr-FR) echo "▸ données laissées par {n} apps supprimées — tout ce qui suit part à la Corbeille (récupérable) :" ;;
+        pt-BR) echo "▸ dados deixados por {n} apps removidos — tudo abaixo vai para a Lixeira (recuperável):" ;;
+        *)     echo "▸ Leftover data of {n} removed apps — everything below moves to the Trash (recoverable):" ;;
       esac ;;
     un_orphans_confirm)   # {n}
       case "$SS_LANG" in
@@ -848,27 +848,27 @@ t() {
       esac ;;
     un_resolved)   # {app}  ·  {bid}
       case "$SS_LANG" in
-        ja-JP) echo "アプリ: {app}   ·   bundle id: {bid}" ;;
-        zh-TW) echo "App：{app}   ·   bundle id：{bid}" ;;
-        zh-Hans) echo "App：{app}   ·   bundle id：{bid}" ;;
-        ko-KR) echo "앱: {app}   ·   bundle id: {bid}" ;;
-        es-ES) echo "App: {app}   ·   bundle id: {bid}" ;;
-        de-DE) echo "App: {app}   ·   Bundle-ID: {bid}" ;;
-        fr-FR) echo "App : {app}   ·   bundle id : {bid}" ;;
-        pt-BR) echo "App: {app}   ·   bundle id: {bid}" ;;
-        *)     echo "App: {app}   ·   bundle id: {bid}" ;;
+        ja-JP) echo "▸ アプリ: {app}   ·   bundle id: {bid}" ;;
+        zh-TW) echo "▸ App：{app}   ·   bundle id：{bid}" ;;
+        zh-Hans) echo "▸ App：{app}   ·   bundle id：{bid}" ;;
+        ko-KR) echo "▸ 앱: {app}   ·   bundle id: {bid}" ;;
+        es-ES) echo "▸ App: {app}   ·   bundle id: {bid}" ;;
+        de-DE) echo "▸ App: {app}   ·   Bundle-ID: {bid}" ;;
+        fr-FR) echo "▸ App : {app}   ·   bundle id : {bid}" ;;
+        pt-BR) echo "▸ App: {app}   ·   bundle id: {bid}" ;;
+        *)     echo "▸ App: {app}   ·   bundle id: {bid}" ;;
       esac ;;
     un_header)   # {app}
       case "$SS_LANG" in
-        ja-JP) echo "{app} に属するもの（すべてゴミ箱へ移動 — 復元可能）:" ;;
-        zh-TW) echo "屬於 {app} 的所有東西（會移到垃圾桶——可救回）：" ;;
-        zh-Hans) echo "属于 {app} 的所有内容（将移到废纸篓——可恢复）：" ;;
-        ko-KR) echo "{app}에 속한 모든 항목(휴지통으로 이동 — 복원 가능):" ;;
-        es-ES) echo "Todo lo que pertenece a {app} (va a la Papelera — recuperable):" ;;
-        de-DE) echo "Alles, was zu {app} gehört (wandert in den Papierkorb — wiederherstellbar):" ;;
-        fr-FR) echo "Tout ce qui appartient à {app} (part à la Corbeille — récupérable) :" ;;
-        pt-BR) echo "Tudo o que pertence a {app} (vai para a Lixeira — recuperável):" ;;
-        *)     echo "Everything that belongs to {app} (moves to Trash — recoverable):" ;;
+        ja-JP) echo "▸ {app} に属するもの（すべてゴミ箱へ移動 — 復元可能）:" ;;
+        zh-TW) echo "▸ 屬於 {app} 的所有東西（會移到垃圾桶——可救回）：" ;;
+        zh-Hans) echo "▸ 属于 {app} 的所有内容（将移到废纸篓——可恢复）：" ;;
+        ko-KR) echo "▸ {app}에 속한 모든 항목(휴지통으로 이동 — 복원 가능):" ;;
+        es-ES) echo "▸ Todo lo que pertenece a {app} (va a la Papelera — recuperable):" ;;
+        de-DE) echo "▸ Alles, was zu {app} gehört (wandert in den Papierkorb — wiederherstellbar):" ;;
+        fr-FR) echo "▸ Tout ce qui appartient à {app} (part à la Corbeille — récupérable) :" ;;
+        pt-BR) echo "▸ Tudo o que pertence a {app} (vai para a Lixeira — recuperável):" ;;
+        *)     echo "▸ Everything that belongs to {app} (moves to Trash — recoverable):" ;;
       esac ;;
     un_empty)   # {app}
       case "$SS_LANG" in
@@ -1021,15 +1021,15 @@ t() {
     # run and Google it in English no matter your locale).
     un_brew_resolved)   # {name}  ·  {ver}
       case "$SS_LANG" in
-        ja-JP) echo "Homebrew formula: {name}   ·   バージョン: {ver}" ;;
-        zh-TW) echo "Homebrew formula：{name}   ·   版本：{ver}" ;;
-        zh-Hans) echo "Homebrew formula：{name}   ·   版本：{ver}" ;;
-        ko-KR) echo "Homebrew formula: {name}   ·   버전: {ver}" ;;
-        es-ES) echo "Formula de Homebrew: {name}   ·   versión: {ver}" ;;
-        de-DE) echo "Homebrew-Formula: {name}   ·   Version: {ver}" ;;
-        fr-FR) echo "Formula Homebrew : {name}   ·   version : {ver}" ;;
-        pt-BR) echo "Formula do Homebrew: {name}   ·   versão: {ver}" ;;
-        *)     echo "Homebrew formula: {name}   ·   version: {ver}" ;;
+        ja-JP) echo "▸ Homebrew formula: {name}   ·   バージョン: {ver}" ;;
+        zh-TW) echo "▸ Homebrew formula：{name}   ·   版本：{ver}" ;;
+        zh-Hans) echo "▸ Homebrew formula：{name}   ·   版本：{ver}" ;;
+        ko-KR) echo "▸ Homebrew formula: {name}   ·   버전: {ver}" ;;
+        es-ES) echo "▸ Formula de Homebrew: {name}   ·   versión: {ver}" ;;
+        de-DE) echo "▸ Homebrew-Formula: {name}   ·   Version: {ver}" ;;
+        fr-FR) echo "▸ Formula Homebrew : {name}   ·   version : {ver}" ;;
+        pt-BR) echo "▸ Formula do Homebrew: {name}   ·   versão: {ver}" ;;
+        *)     echo "▸ Homebrew formula: {name}   ·   version: {ver}" ;;
       esac ;;
     un_brew_deps)   # {name} {deps}
       case "$SS_LANG" in
@@ -1105,15 +1105,15 @@ t() {
       esac ;;
     un_bin_header)
       case "$SS_LANG" in
-        ja-JP) echo "パッケージマネージャ管理外のバイナリ（手動インストール）:" ;;
-        zh-TW) echo "沒有套件管理器認領的裸二進位（手動安裝）：" ;;
-        zh-Hans) echo "没有包管理器认领的二进制文件（手动安装）：" ;;
-        ko-KR) echo "패키지 관리자가 관리하지 않는 바이너리(수동 설치):" ;;
-        es-ES) echo "Binario sin gestor — ningún gestor de paquetes lo posee:" ;;
-        de-DE) echo "Unverwaltetes Binary — kein Paketmanager kennt es:" ;;
-        fr-FR) echo "Binaire non géré — aucun gestionnaire de paquets ne le possède :" ;;
-        pt-BR) echo "Binário sem dono — nenhum gerenciador de pacotes o gerencia:" ;;
-        *)     echo "Unmanaged binary — no package manager owns it:" ;;
+        ja-JP) echo "▸ パッケージマネージャ管理外のバイナリ（手動インストール）:" ;;
+        zh-TW) echo "▸ 沒有套件管理器認領的裸二進位（手動安裝）：" ;;
+        zh-Hans) echo "▸ 没有包管理器认领的二进制文件（手动安装）：" ;;
+        ko-KR) echo "▸ 패키지 관리자가 관리하지 않는 바이너리(수동 설치):" ;;
+        es-ES) echo "▸ Binario sin gestor — ningún gestor de paquetes lo posee:" ;;
+        de-DE) echo "▸ Unverwaltetes Binary — kein Paketmanager kennt es:" ;;
+        fr-FR) echo "▸ Binaire non géré — aucun gestionnaire de paquets ne le possède :" ;;
+        pt-BR) echo "▸ Binário sem dono — nenhum gerenciador de pacotes o gerencia:" ;;
+        *)     echo "▸ Unmanaged binary — no package manager owns it:" ;;
       esac ;;
     un_bin_note)
       case "$SS_LANG" in
@@ -3237,18 +3237,16 @@ do_uninstall() {
   for f in "/Library/PrivilegedHelperTools/$bid"*;     do add "$f" "$REAL_HOME"; done
 
   # --- show what we found (always; this IS the product) -----------------------
-  echo "============================================================"
   if [ "$orphan" -eq 1 ]; then
     m="$(t un_orphan)"; echo "${m//\{bid\}/$bid}"
   else
     m="$(t un_resolved)"; m="${m//\{app\}/${app:-$name}}"; echo "${m//\{bid\}/$bid}"
   fi
-  echo "------------------------------------------------------------"
   if [ "${#ITEM_PATH[@]}" -eq 0 ]; then
-    m="$(t un_empty)"; echo "${m//\{app\}/$name}"
-    echo "============================================================"
+    m="$(t un_empty)"; echo "   ${m//\{app\}/$name}"
     return 0
   fi
+  printf '\n'
   m="$(t un_header)"; echo "${m//\{app\}/$name}"
   local i last=""
   for i in "${!ITEM_PATH[@]}"; do
@@ -3257,12 +3255,11 @@ do_uninstall() {
   done
   local total
   total="$(du -sch "${ITEM_PATH[@]}" 2>/dev/null | tail -1 | cut -f1)"
-  echo "------------------------------------------------------------"
-  echo "$(t un_total)$total"
-  echo "============================================================"
+  printf '\n'
+  echo "   $(t un_total)$total"
 
   # --- dry-run stops here; nothing is touched ---------------------------------
-  if [ "$DRY" -eq 1 ]; then t un_dry_note; return 0; fi
+  if [ "$DRY" -eq 1 ]; then printf '\n'; t un_dry_note; return 0; fi
 
   # --- typed-name confirmation (informed consent, GitHub-delete style) --------
   m="$(t un_confirm)"; printf '%s' "${m//\{name\}/$name}"
@@ -3309,7 +3306,7 @@ do_uninstall() {
   chown -R "$(stat -f %u "$REAL_HOME" 2>/dev/null):$(stat -f %g "$REAL_HOME" 2>/dev/null)" "$REAL_HOME/.sheersweep" 2>/dev/null
   [ "$MV_MOVED" -eq 0 ] && rm -f "$rfile" 2>/dev/null
 
-  echo "============================================================"
+  printf '\n'
   m="$(t un_done)"; report_moves "${m//\{app\}/$name}"
   return 0
 }
@@ -3333,12 +3330,9 @@ do_uninstall_orphans() {
     done
   done
 
-  echo "============================================================"
   m="$(t un_orphans_header)"; echo "${m//\{n\}/$nids}"
-  echo "------------------------------------------------------------"
   if [ "${#ITEM_PATH[@]}" -eq 0 ]; then
-    m="$(t un_empty)"; echo "${m//\{app\}/orphans}"
-    echo "============================================================"
+    m="$(t un_empty)"; echo "   ${m//\{app\}/orphans}"
     return 0
   fi
   for i in "${!ITEM_PATH[@]}"; do
@@ -3346,11 +3340,10 @@ do_uninstall_orphans() {
     printf '   %6s  %s\n' "$(human "${ITEM_PATH[$i]}")" "$(printf '%s' "${ITEM_PATH[$i]}" | vis)"
   done
   total="$(du -sch "${ITEM_PATH[@]}" 2>/dev/null | tail -1 | cut -f1)"
-  echo "------------------------------------------------------------"
-  echo "$(t un_total)$total"
-  echo "============================================================"
+  printf '\n'
+  echo "   $(t un_total)$total"
 
-  if [ "$DRY" -eq 1 ]; then t un_dry_note; return 0; fi
+  if [ "$DRY" -eq 1 ]; then printf '\n'; t un_dry_note; return 0; fi
 
   m="$(t un_orphans_confirm)"; printf '%s' "${m//\{n\}/$nids}"
   local reply=""; read -r reply || true
@@ -3376,7 +3369,7 @@ do_uninstall_orphans() {
   chown -R "$(stat -f %u "$REAL_HOME" 2>/dev/null):$(stat -f %g "$REAL_HOME" 2>/dev/null)" "$REAL_HOME/.sheersweep" 2>/dev/null
   [ "$MV_MOVED" -eq 0 ] && rm -f "$rfile" 2>/dev/null
 
-  echo "============================================================"
+  printf '\n'
   m="$(t un_orphans_done)"; m="${m//\{n\}/$MV_MOVED}"
   report_moves "${m//\{ids\}/$nids}"
   return 0
@@ -3446,16 +3439,13 @@ do_uninstall_brew() {
   keg="$(brew_run --cellar 2>/dev/null)/$name"
   sz="$(du -sh "$keg" 2>/dev/null | cut -f1)"
   cmd="brew uninstall $name"
-  echo "============================================================"
   m="$(t un_brew_resolved)"; m="${m//\{name\}/$name}"; echo "${m//\{ver\}/$vers}"
-  echo "------------------------------------------------------------"
   printf '   %6s  %s\n' "${sz:-?}" "$keg"
-  echo "------------------------------------------------------------"
+  printf '\n'
   t un_brew_cmd
   printf '\n      %s\n\n' "$cmd"
   m="$(t un_brew_config)"; echo "${m//\{name\}/$name}"
-  echo "============================================================"
-  if [ "$DRY" -eq 1 ]; then t un_dry_note; return 0; fi
+  if [ "$DRY" -eq 1 ]; then printf '\n'; t un_dry_note; return 0; fi
   m="$(t un_brew_confirm)"; printf '%s' "${m//\{name\}/$name}"
   reply=""; read -r reply || true
   if [ "$reply" != "$name" ]; then t un_cancelled; return 0; fi
@@ -3498,17 +3488,14 @@ do_uninstall_bin() {
   local q="$1" hits=() f sz reply
   while IFS= read -r -d '' f; do hits+=("$f"); done < <(unmanaged_bins "$q" "$REAL_HOME")
   [ "${#hits[@]}" -eq 0 ] && return 2
-  echo "============================================================"
   t un_bin_header
-  echo "------------------------------------------------------------"
   for f in "${hits[@]}"; do
     sz="$(du -shL "$f" 2>/dev/null | cut -f1)"
     printf '   %6s  %s\n' "${sz:-?}" "$f"
   done
-  echo "------------------------------------------------------------"
+  printf '\n'
   t un_bin_note
-  echo "============================================================"
-  if [ "$DRY" -eq 1 ]; then t un_dry_note; return 0; fi
+  if [ "$DRY" -eq 1 ]; then printf '\n'; t un_dry_note; return 0; fi
   m="$(t un_bin_confirm)"; printf '%s' "${m//\{name\}/$q}"
   reply=""; read -r reply || true
   if [ "$reply" != "$q" ]; then t un_cancelled; return 0; fi
@@ -3532,7 +3519,7 @@ do_uninstall_bin() {
   done
   chown -R "$(stat -f %u "$REAL_HOME" 2>/dev/null):$(stat -f %g "$REAL_HOME" 2>/dev/null)" "$REAL_HOME/.sheersweep" 2>/dev/null
   [ "$MV_MOVED" -eq 0 ] && rm -f "$rfile" 2>/dev/null
-  echo "============================================================"
+  printf '\n'
   m="$(t un_done)"; report_moves "${m//\{app\}/$q}"
   return 0
 }
@@ -4616,7 +4603,7 @@ EOF
   # "here to stay" group = own login (floor rows) + the SIP remainder
   local shown_floor=0
   while IFS=$'\t' read -r kb label grp; do
-    [ "$grp" = "floor" ] && [ -n "$kb" ] || continue
+    if [ "$grp" != "floor" ] || [ -z "$kb" ]; then continue; fi
     if [ "$shown_floor" -eq 0 ]; then printf '\n   %s\n' "$(t dg_group_floor)"; shown_floor=1; fi
     printf '   · %s (%s)\n' "$(od_human_kb "$kb")" "$(printf '%s' "$(_disp "$label")" | vis)"
   done <<EOF

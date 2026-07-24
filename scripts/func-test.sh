@@ -244,8 +244,7 @@ fi
 # /Users/* glob, and the loop returns on first hit — so a name present in the
 # invoker's home never resolves to another account's copy.
 # shellcheck disable=SC2016  # matching the LITERAL string "$rh" as it appears in the source
-grep -q 'roots=("/Applications" "/Applications/Utilities" "$rh/Applications")' "$SCRIPT" \
-  && rc_ok=1 || rc_ok=0
+if grep -q 'roots=("/Applications" "/Applications/Utilities" "$rh/Applications")' "$SCRIPT"; then rc_ok=1; else rc_ok=0; fi
 if [ "$rc_ok" = 1 ]; then pass "resolve_app: own home is first in the search order"
 else fail "resolve_app: own-home-first ordering changed — re-check precedence"; fi
 teardown
@@ -664,7 +663,7 @@ case "$out1" in *"❌"*) ok1=1 ;; *) ok1=0 ;; esac
 case "$sum1" in *"🔴"*"0"*"1"*|*"🔴"*) ok2=1 ;; *) ok2=0 ;; esac
 case "$sum1" in *"🔒"*) ok3=1 ;; *) ok3=0 ;; esac
 case "$out2" in *"❌"*) ok4=0 ;; *) ok4=1 ;; esac
-[ "$sum2" = "ALL-GOOD-LINE" ] && ok5=1 || ok5=0
+if [ "$sum2" = "ALL-GOOD-LINE" ]; then ok5=1; else ok5=0; fi
 if [ "$ok1$ok2$ok3$ok4$ok5" = "11111" ]; then
   pass "honest accounting: stuck item ❌ + 🔴 shortfall + 🔒 container hint; full success keeps plain ✅"
 else
