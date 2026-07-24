@@ -352,15 +352,15 @@ t() {
       esac ;;
     un_orphan_header)   # {n}
       case "$SS_LANG" in
-        ja-JP) echo "🧟 削除済み — 残ったデータが見つかりました（{n} 件）:" ;;
-        zh-TW) echo "🧟 已移除——但留下了資料（{n} 個）：" ;;
-        zh-Hans) echo "🧟 已移除——但留下了数据（{n} 个）：" ;;
-        ko-KR) echo "🧟 이미 제거됨 — 남은 데이터 발견({n}개):" ;;
-        es-ES) echo "🧟 ya eliminadas — con datos abandonados ({n}):" ;;
-        de-DE) echo "🧟 schon entfernt — zurückgelassene Daten gefunden ({n}):" ;;
-        fr-FR) echo "🧟 déjà supprimées — données laissées derrière ({n}) :" ;;
-        pt-BR) echo "🧟 já removidos — dados deixados para trás ({n}):" ;;
-        *)     echo "🧟 Already removed — leftover data found ({n}):" ;;
+        ja-JP) echo "▸ 削除済み — 残ったデータが見つかりました（{n} 件）:" ;;
+        zh-TW) echo "▸ 已移除——但留下了資料（{n} 個）：" ;;
+        zh-Hans) echo "▸ 已移除——但留下了数据（{n} 个）：" ;;
+        ko-KR) echo "▸ 이미 제거됨 — 남은 데이터 발견({n}개):" ;;
+        es-ES) echo "▸ ya eliminadas — con datos abandonados ({n}):" ;;
+        de-DE) echo "▸ schon entfernt — zurückgelassene Daten gefunden ({n}):" ;;
+        fr-FR) echo "▸ déjà supprimées — données laissées derrière ({n}) :" ;;
+        pt-BR) echo "▸ já removidos — dados deixados para trás ({n}):" ;;
+        *)     echo "▸ Already removed — leftover data found ({n}):" ;;
       esac ;;
     un_orphan_tail)   # {n}
       case "$SS_LANG" in
@@ -376,15 +376,15 @@ t() {
       esac ;;
     un_pick_multi_hint)
       case "$SS_LANG" in
-        ja-JP) echo "複数行をまとめて選べます — 例: 5 7-8 19 · all は 🧟 行を全部 · アプリは1つずつ名前で確認します。" ;;
-        zh-TW) echo "可以一次選多列——例如 5 7-8 19；all 全選 🧟 列；App 仍會逐個請你確認名稱。" ;;
-        zh-Hans) echo "可以一次选多行——例如 5 7-8 19；all 全选 🧟 行；App 仍会逐个请你确认名称。" ;;
-        ko-KR) echo "여러 행을 한 번에 선택할 수 있습니다 — 예: 5 7-8 19 · all은 🧟 행 전부 · 앱은 하나씩 이름으로 확인합니다." ;;
-        es-ES) echo "Puedes elegir varias filas a la vez — p. ej. 5 7-8 19 · all toma todas las 🧟 · cada app se confirma una a una por su nombre." ;;
-        de-DE) echo "Mehrere Zeilen auf einmal wählen — z. B. 5 7-8 19 · all nimmt alle 🧟-Zeilen · jede App wird einzeln per Name bestätigt." ;;
-        fr-FR) echo "Choisissez plusieurs lignes à la fois — p. ex. 5 7-8 19 · all prend toutes les lignes 🧟 · chaque app se confirme une à une par son nom." ;;
-        pt-BR) echo "Escolha várias linhas de uma vez — ex.: 5 7-8 19 · all pega todas as linhas 🧟 · cada app é confirmado um a um pelo nome." ;;
-        *)     echo "Pick several rows at once — e.g. 5 7-8 19 · all takes every 🧟 row · each app still confirms by name." ;;
+        ja-JP) echo "複数行をまとめて選べます — 例: 5 7-8 19 · all は残存データの行を全部 · アプリは1つずつ名前で確認します。" ;;
+        zh-TW) echo "可以一次選多列——例如 5 7-8 19；all 全選「留下資料」那批；App 仍會逐個請你確認名稱。" ;;
+        zh-Hans) echo "可以一次选多行——例如 5 7-8 19；all 全选「留下数据」那批；App 仍会逐个请你确认名称。" ;;
+        ko-KR) echo "여러 행을 한 번에 선택할 수 있습니다 — 예: 5 7-8 19 · all은 남은 데이터 행 전부 · 앱은 하나씩 이름으로 확인합니다." ;;
+        es-ES) echo "Puedes elegir varias filas a la vez — p. ej. 5 7-8 19 · all toma todas las de datos abandonados · cada app se confirma una a una por su nombre." ;;
+        de-DE) echo "Mehrere Zeilen auf einmal wählen — z. B. 5 7-8 19 · all nimmt alle Zeilen mit zurückgelassenen Daten · jede App wird einzeln per Name bestätigt." ;;
+        fr-FR) echo "Choisissez plusieurs lignes à la fois — p. ex. 5 7-8 19 · all prend toutes les lignes de données laissées · chaque app se confirme une à une par son nom." ;;
+        pt-BR) echo "Escolha várias linhas de uma vez — ex.: 5 7-8 19 · all pega todas as linhas de dados deixados · cada app é confirmado um a um pelo nome." ;;
+        *)     echo "Pick several rows at once — e.g. 5 7-8 19 · all takes every leftover-data row · each app still confirms by name." ;;
       esac ;;
     un_orphans_header)   # {n}
       case "$SS_LANG" in
@@ -620,15 +620,15 @@ t() {
       esac ;;
     rc_banner)
       case "$SS_LANG" in
-        ja-JP) echo "♻️ ビルド産物の回収 — 証明済み（git 無視＋既知パターン＋マニフェスト）、加えて識別できない巨大な gitignored フォルダ（あなたが判断）。" ;;
-        zh-TW) echo "♻️ 回收 build 產物——已證的（git 忽略＋已知模式＋manifest），外加又肥又證不了的 gitignored 資料夾（你決定）。" ;;
-        zh-Hans) echo "♻️ 回收 build 产物——已证的（git 忽略＋已知模式＋manifest），外加又大又证不了的 gitignored 文件夹（你决定）。" ;;
-        ko-KR) echo "♻️ 빌드 산출물 회수 — 증명된 것(git 무시+알려진 패턴+매니페스트), 그리고 식별 못 하는 거대한 gitignored 폴더(당신이 판단)." ;;
-        es-ES) echo "♻️ recuperar artefactos de build — probados (git + patrón + manifiesto), más carpetas gitignored grandes que no puede identificar (tú decides)." ;;
-        de-DE) echo "♻️ Build-Artefakte zurückholen — bewiesen (git + Muster + Manifest), plus große gitignored Ordner, die es nicht identifizieren kann (du entscheidest)." ;;
-        fr-FR) echo "♻️ récupérer les artefacts de build — prouvés (git + motif + manifeste), plus de gros dossiers gitignored qu'il ne peut identifier (vous décidez)." ;;
-        pt-BR) echo "♻️ recuperar artefatos de build — provados (git + padrão + manifesto), mais pastas gitignored grandes que não consegue identificar (você decide)." ;;
-        *)     echo "♻️ Reclaim build output — proven (gitignored + known pattern + manifest), plus heavy gitignored folders it can't identify (you decide)." ;;
+        ja-JP) echo "▸ ビルド産物の回収 — 証明済み（git 無視＋既知パターン＋マニフェスト）、加えて識別できない巨大な gitignored フォルダ（あなたが判断）。" ;;
+        zh-TW) echo "▸ 回收 build 產物——已證的（git 忽略＋已知模式＋manifest），外加又肥又證不了的 gitignored 資料夾（你決定）。" ;;
+        zh-Hans) echo "▸ 回收 build 产物——已证的（git 忽略＋已知模式＋manifest），外加又大又证不了的 gitignored 文件夹（你决定）。" ;;
+        ko-KR) echo "▸ 빌드 산출물 회수 — 증명된 것(git 무시+알려진 패턴+매니페스트), 그리고 식별 못 하는 거대한 gitignored 폴더(당신이 판단)." ;;
+        es-ES) echo "▸ recuperar artefactos de build — probados (git + patrón + manifiesto), más carpetas gitignored grandes que no puede identificar (tú decides)." ;;
+        de-DE) echo "▸ Build-Artefakte zurückholen — bewiesen (git + Muster + Manifest), plus große gitignored Ordner, die es nicht identifizieren kann (du entscheidest)." ;;
+        fr-FR) echo "▸ récupérer les artefacts de build — prouvés (git + motif + manifeste), plus de gros dossiers gitignored qu'il ne peut identifier (vous décidez)." ;;
+        pt-BR) echo "▸ recuperar artefatos de build — provados (git + padrão + manifesto), mais pastas gitignored grandes que não consegue identificar (você decide)." ;;
+        *)     echo "▸ Reclaim build output — proven (gitignored + known pattern + manifest), plus heavy gitignored folders it can't identify (you decide)." ;;
       esac ;;
     rc_noroots)
       case "$SS_LANG" in
