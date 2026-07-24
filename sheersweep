@@ -1155,27 +1155,27 @@ t() {
     # ---- tools (read-only CLI inventory) ----
     tl_banner)
       case "$SS_LANG" in
-        ja-JP) echo "🧰 CLI ツールの棚卸し — 読み取り専用。何も変更しません。" ;;
-        zh-TW) echo "🧰 CLI 工具盤點——唯讀，什麼都不會動。" ;;
-        zh-Hans) echo "🧰 CLI 工具盘点——只读，什么都不会动。" ;;
-        ko-KR) echo "🧰 CLI 도구 목록 — 읽기 전용. 아무것도 변경하지 않습니다." ;;
-        es-ES) echo "🧰 Inventario de herramientas CLI — solo lectura. No se cambia nada." ;;
-        de-DE) echo "🧰 CLI-Werkzeug-Inventur — nur lesend. Nichts wird verändert." ;;
-        fr-FR) echo "🧰 Inventaire des outils CLI — lecture seule. Rien n'est modifié." ;;
-        pt-BR) echo "🧰 Inventário de ferramentas CLI — somente leitura. Nada é alterado." ;;
-        *)     echo "🧰 CLI tool inventory — read-only. Nothing is changed." ;;
+        ja-JP) echo "▸ CLI ツールの棚卸し — 読み取り専用。何も変更しません。" ;;
+        zh-TW) echo "▸ CLI 工具盤點——唯讀，什麼都不會動。" ;;
+        zh-Hans) echo "▸ CLI 工具盘点——只读，什么都不会动。" ;;
+        ko-KR) echo "▸ CLI 도구 목록 — 읽기 전용. 아무것도 변경하지 않습니다." ;;
+        es-ES) echo "▸ Inventario de herramientas CLI — solo lectura. No se cambia nada." ;;
+        de-DE) echo "▸ CLI-Werkzeug-Inventur — nur lesend. Nichts wird verändert." ;;
+        fr-FR) echo "▸ Inventaire des outils CLI — lecture seule. Rien n'est modifié." ;;
+        pt-BR) echo "▸ Inventário de ferramentas CLI — somente leitura. Nada é alterado." ;;
+        *)     echo "▸ CLI tool inventory — read-only. Nothing is changed." ;;
       esac ;;
     tl_brew_header)
       case "$SS_LANG" in
-        ja-JP) echo "自分で入れた Homebrew formula（leaves — 他の何にも必要とされていない）:" ;;
-        zh-TW) echo "你自己裝的 Homebrew formula（leaves——沒有別的東西依賴它們）：" ;;
-        zh-Hans) echo "你自己装的 Homebrew formula（leaves——没有别的东西依赖它们）：" ;;
-        ko-KR) echo "직접 설치한 Homebrew formula(leaves — 다른 어떤 것도 의존하지 않음):" ;;
-        es-ES) echo "Formulas de Homebrew que instalaste tú (leaves — nada más depende de ellas):" ;;
-        de-DE) echo "Homebrew-Formulas, die du selbst installiert hast (leaves — nichts anderes hängt davon ab):" ;;
-        fr-FR) echo "Formulas Homebrew que vous avez installées (leaves — rien d'autre n'en dépend) :" ;;
-        pt-BR) echo "Formulas do Homebrew que você instalou (leaves — nada mais depende delas):" ;;
-        *)     echo "Homebrew formulae you installed (leaves — nothing else depends on them):" ;;
+        ja-JP) echo "▸ 自分で入れた Homebrew formula（leaves — 他の何にも必要とされていない）:" ;;
+        zh-TW) echo "▸ 你自己裝的 Homebrew formula（leaves——沒有別的東西依賴它們）：" ;;
+        zh-Hans) echo "▸ 你自己装的 Homebrew formula（leaves——没有别的东西依赖它们）：" ;;
+        ko-KR) echo "▸ 직접 설치한 Homebrew formula(leaves — 다른 어떤 것도 의존하지 않음):" ;;
+        es-ES) echo "▸ Formulas de Homebrew que instalaste tú (leaves — nada más depende de ellas):" ;;
+        de-DE) echo "▸ Homebrew-Formulas, die du selbst installiert hast (leaves — nichts anderes hängt davon ab):" ;;
+        fr-FR) echo "▸ Formulas Homebrew que vous avez installées (leaves — rien d'autre n'en dépend) :" ;;
+        pt-BR) echo "▸ Formulas do Homebrew que você instalou (leaves — nada mais depende delas):" ;;
+        *)     echo "▸ Homebrew formulae you installed (leaves — nothing else depends on them):" ;;
       esac ;;
     tl_upgradable)   # {n}
       case "$SS_LANG" in
@@ -1203,15 +1203,15 @@ t() {
       esac ;;
     tl_orphans_header)
       case "$SS_LANG" in
-        ja-JP) echo "🧟 どの formula にも不要になった依存（brew autoremove が削除するもの）:" ;;
-        zh-TW) echo "🧟 已經沒人需要的依賴孤兒（brew autoremove 會清掉的）：" ;;
-        zh-Hans) echo "🧟 已经没人需要的依赖孤儿（brew autoremove 会清掉的）：" ;;
-        ko-KR) echo "🧟 아무도 필요로 하지 않는 고아 의존성(brew autoremove가 제거할 항목):" ;;
-        es-ES) echo "🧟 Dependencias huérfanas que ya nada necesita (lo que brew autoremove quitaría):" ;;
-        de-DE) echo "🧟 Verwaiste Abhängigkeiten, die nichts mehr braucht (was brew autoremove entfernen würde):" ;;
-        fr-FR) echo "🧟 Dépendances orphelines dont plus rien n'a besoin (ce que brew autoremove retirerait) :" ;;
-        pt-BR) echo "🧟 Dependências órfãs de que nada mais precisa (o que o brew autoremove removeria):" ;;
-        *)     echo "🧟 Orphaned dependencies nothing needs anymore (what brew autoremove would remove):" ;;
+        ja-JP) echo "▸ どの formula にも不要になった依存（brew autoremove が削除するもの）:" ;;
+        zh-TW) echo "▸ 已經沒人需要的依賴孤兒（brew autoremove 會清掉的）：" ;;
+        zh-Hans) echo "▸ 已经没人需要的依赖孤儿（brew autoremove 会清掉的）：" ;;
+        ko-KR) echo "▸ 아무도 필요로 하지 않는 고아 의존성(brew autoremove가 제거할 항목):" ;;
+        es-ES) echo "▸ Dependencias huérfanas que ya nada necesita (lo que brew autoremove quitaría):" ;;
+        de-DE) echo "▸ Verwaiste Abhängigkeiten, die nichts mehr braucht (was brew autoremove entfernen würde):" ;;
+        fr-FR) echo "▸ Dépendances orphelines dont plus rien n'a besoin (ce que brew autoremove retirerait) :" ;;
+        pt-BR) echo "▸ Dependências órfãs de que nada mais precisa (o que o brew autoremove removeria):" ;;
+        *)     echo "▸ Orphaned dependencies nothing needs anymore (what brew autoremove would remove):" ;;
       esac ;;
     tl_orphans_none)
       case "$SS_LANG" in
@@ -1227,15 +1227,15 @@ t() {
       esac ;;
     tl_bins_header)
       case "$SS_LANG" in
-        ja-JP) echo "手動インストールのバイナリ（マネージャ管理外 — ~/bin · ~/.local/bin · /usr/local/bin）:" ;;
-        zh-TW) echo "手動裝的裸二進位（無管理器認領——~/bin・~/.local/bin・/usr/local/bin）：" ;;
-        zh-Hans) echo "手动装的二进制文件（无管理器认领——~/bin、~/.local/bin、/usr/local/bin）：" ;;
-        ko-KR) echo "직접 설치한 바이너리(관리자 없음 — ~/bin · ~/.local/bin · /usr/local/bin):" ;;
-        es-ES) echo "Binarios instalados a mano, sin gestor (~/bin · ~/.local/bin · /usr/local/bin):" ;;
-        de-DE) echo "Von Hand installierte Binaries ohne Verwalter (~/bin · ~/.local/bin · /usr/local/bin):" ;;
-        fr-FR) echo "Binaires installés à la main, sans gestionnaire (~/bin · ~/.local/bin · /usr/local/bin) :" ;;
-        pt-BR) echo "Binários instalados à mão, sem gerenciador (~/bin · ~/.local/bin · /usr/local/bin):" ;;
-        *)     echo "Hand-installed binaries no manager owns (~/bin · ~/.local/bin · /usr/local/bin):" ;;
+        ja-JP) echo "▸ 手動インストールのバイナリ（マネージャ管理外 — ~/bin · ~/.local/bin · /usr/local/bin）:" ;;
+        zh-TW) echo "▸ 手動裝的裸二進位（無管理器認領——~/bin・~/.local/bin・/usr/local/bin）：" ;;
+        zh-Hans) echo "▸ 手动装的二进制文件（无管理器认领——~/bin、~/.local/bin、/usr/local/bin）：" ;;
+        ko-KR) echo "▸ 직접 설치한 바이너리(관리자 없음 — ~/bin · ~/.local/bin · /usr/local/bin):" ;;
+        es-ES) echo "▸ Binarios instalados a mano, sin gestor (~/bin · ~/.local/bin · /usr/local/bin):" ;;
+        de-DE) echo "▸ Von Hand installierte Binaries ohne Verwalter (~/bin · ~/.local/bin · /usr/local/bin):" ;;
+        fr-FR) echo "▸ Binaires installés à la main, sans gestionnaire (~/bin · ~/.local/bin · /usr/local/bin) :" ;;
+        pt-BR) echo "▸ Binários instalados à mão, sem gerenciador (~/bin · ~/.local/bin · /usr/local/bin):" ;;
+        *)     echo "▸ Hand-installed binaries no manager owns (~/bin · ~/.local/bin · /usr/local/bin):" ;;
       esac ;;
     tl_bins_none)
       case "$SS_LANG" in
@@ -1251,15 +1251,15 @@ t() {
       esac ;;
     tl_chains_header)
       case "$SS_LANG" in
-        ja-JP) echo "ツールチェーンのデータ（参考情報 — 消すなら各ツール自身の方法で）:" ;;
-        zh-TW) echo "Toolchain 資料目錄（純資訊——要清請用各工具自己的方式）：" ;;
-        zh-Hans) echo "Toolchain 数据目录（纯信息——要清请用各工具自己的方式）：" ;;
-        ko-KR) echo "툴체인 데이터(참고용 — 지우려면 각 도구 자체의 방법으로):" ;;
-        es-ES) echo "Datos de toolchains (informativo — elimínalos con el método propio de cada herramienta):" ;;
-        de-DE) echo "Toolchain-Daten (informativ — entfernen nur mit der eigenen Methode des jeweiligen Tools):" ;;
-        fr-FR) echo "Données de toolchains (informatif — à retirer avec la méthode propre de chaque outil) :" ;;
-        pt-BR) echo "Dados de toolchains (informativo — remova com o método próprio de cada ferramenta):" ;;
-        *)     echo "Toolchain data (informational — remove with each tool's own method):" ;;
+        ja-JP) echo "▸ ツールチェーンのデータ（参考情報 — 消すなら各ツール自身の方法で）:" ;;
+        zh-TW) echo "▸ Toolchain 資料目錄（純資訊——要清請用各工具自己的方式）：" ;;
+        zh-Hans) echo "▸ Toolchain 数据目录（纯信息——要清请用各工具自己的方式）：" ;;
+        ko-KR) echo "▸ 툴체인 데이터(참고용 — 지우려면 각 도구 자체의 방법으로):" ;;
+        es-ES) echo "▸ Datos de toolchains (informativo — elimínalos con el método propio de cada herramienta):" ;;
+        de-DE) echo "▸ Toolchain-Daten (informativ — entfernen nur mit der eigenen Methode des jeweiligen Tools):" ;;
+        fr-FR) echo "▸ Données de toolchains (informatif — à retirer avec la méthode propre de chaque outil) :" ;;
+        pt-BR) echo "▸ Dados de toolchains (informativo — remova com o método próprio de cada ferramenta):" ;;
+        *)     echo "▸ Toolchain data (informational — remove with each tool's own method):" ;;
       esac ;;
     tl_hint)
       case "$SS_LANG" in
@@ -3558,15 +3558,14 @@ do_uninstall_bin() {
 # ============================================================================
 do_tools() {
   local line name vers sz cellar leaves orphans f n rel hint p outdated newv up=0
-  echo "============================================================"
   t tl_banner
-  echo "------------------------------------------------------------"
 
   # ---- Homebrew: what you chose, and what nothing needs anymore --------------
   brew_locate
   if [ -z "$BREW_BIN" ]; then
     t tl_nobrew
   else
+    printf '\n'
     t tl_brew_header
     leaves="$(brew_run leaves 2>/dev/null)"
     if [ -n "$leaves" ]; then
@@ -3594,18 +3593,20 @@ do_tools() {
         m="$(t tl_upgradable)"; echo "   ${m//\{n\}/$up}"
       fi
     fi
-    echo "------------------------------------------------------------"
     orphans="$(brew_run autoremove --dry-run 2>/dev/null)"
+    # always lead with the ▸ header so this section reads like the others — then
+    # either the list, or a ✅ "none" underneath it (not a bare orphan line).
+    printf '\n'
+    t tl_orphans_header
     if [ -z "$orphans" ]; then
-      t tl_orphans_none
+      echo "   $(t tl_orphans_none)"
     else
-      t tl_orphans_header
       printf '%s\n' "$orphans" | grep -v '^==>' | sed 's/^/   /'
     fi
   fi
-  echo "------------------------------------------------------------"
 
   # ---- hand-installed binaries no manager owns --------------------------------
+  printf '\n'
   t tl_bins_header
   n=0
   while IFS= read -r -d '' f; do
@@ -3618,10 +3619,10 @@ do_tools() {
     fi
   done < <(unmanaged_bins "" "$REAL_HOME")
   [ "$n" -eq 0 ] && echo "   $(t tl_bins_none)"
-  echo "------------------------------------------------------------"
 
   # ---- toolchain data folders (informational — each row shows the NATIVE way
   # to reclaim it; sheersweep never touches these) ------------------------------
+  printf '\n'
   t tl_chains_header
   n=0
   while IFS='|' read -r rel hint; do
@@ -3647,9 +3648,8 @@ Library/Android|Android Studio → SDK Manager
 .android|Android emulator/adb data
 CHAINS
   [ "$n" -eq 0 ] && echo "   $(t tl_bins_none)"
-  echo "------------------------------------------------------------"
+  printf '\n'
   t tl_hint
-  echo "============================================================"
   return 0
 }
 
