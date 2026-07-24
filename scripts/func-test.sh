@@ -798,7 +798,9 @@ RC_UNID_MIN_KB=64
 DRY=1; RC_ROOTS=("$R"); RC_STALE_DAYS=""
 : "reads for shellcheck — consumed in the sourced do_reclaim: $DRY ${RC_ROOTS[*]} $RC_STALE_DAYS $RC_UNID_MIN_KB"
 out="$(do_reclaim 2>&1)"
-unid_lines="$(printf '%s\n' "$out" | grep '⚠️' || true)"   # unidentified now flagged ⚠️ (was ⚠️)
+# The ⚠️ now flags the GROUP HEADER once (not each item); items below it are
+# plain "· size (path)". Slice from the ⚠️ header to the end and check inside.
+unid_lines="$(printf '%s\n' "$out" | awk '/⚠️/{f=1} f')"
 u1=0; printf '%s\n' "$unid_lines" | grep -q '\.harvest'    && u1=1   # surfaced as unidentified
 u2=1; printf '%s\n' "$unid_lines" | grep -q 'node_modules' && u2=0   # proven → not double-listed here
 u3=1; case "$out" in *"proj/tiny"*) u3=0 ;; esac                     # below floor → hidden

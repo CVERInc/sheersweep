@@ -752,15 +752,15 @@ t() {
       esac ;;
     rc_unid_header)
       case "$SS_LANG" in
-        ja-JP) echo "▸ 未識別 — 大きく、git が無視、でも安全に消せるとは証明できません。" ;;
-        zh-TW) echo "▸ 未識別——又肥又被 git 忽略，但我證不了它們能安全刪除。" ;;
-        zh-Hans) echo "▸ 未识别——又大又被 git 忽略，但我证不了它们能安全删除。" ;;
-        ko-KR) echo "▸ 미확인 — 크고 git이 무시하지만, 안전하게 지울 수 있다고 증명할 수 없습니다." ;;
-        es-ES) echo "▸ Sin identificar — grandes, ignoradas por git, y no puedo probar que sea seguro borrarlas." ;;
-        de-DE) echo "▸ Nicht identifiziert — groß, von git ignoriert, und ich kann nicht beweisen, dass sie sicher zu löschen sind." ;;
-        fr-FR) echo "▸ Non identifié — volumineux, ignorés par git, et je ne peux pas prouver qu'ils sont sûrs à supprimer." ;;
-        pt-BR) echo "▸ Não identificado — grandes, ignoradas pelo git, e não posso provar que é seguro removê-las." ;;
-        *)     echo "▸ Unidentified — heavy, gitignored, and I can't prove these are safe to remove." ;;
+        ja-JP) echo "⚠️ 未識別 — 大きく、git が無視、でも安全に消せるとは証明できません。" ;;
+        zh-TW) echo "⚠️ 未識別——又肥又被 git 忽略，但我證不了它們能安全刪除。" ;;
+        zh-Hans) echo "⚠️ 未识别——又大又被 git 忽略，但我证不了它们能安全删除。" ;;
+        ko-KR) echo "⚠️ 미확인 — 크고 git이 무시하지만, 안전하게 지울 수 있다고 증명할 수 없습니다." ;;
+        es-ES) echo "⚠️ Sin identificar — grandes, ignoradas por git, y no puedo probar que sea seguro borrarlas." ;;
+        de-DE) echo "⚠️ Nicht identifiziert — groß, von git ignoriert, und ich kann nicht beweisen, dass sie sicher zu löschen sind." ;;
+        fr-FR) echo "⚠️ Non identifié — volumineux, ignorés par git, et je ne peux pas prouver qu'ils sont sûrs à supprimer." ;;
+        pt-BR) echo "⚠️ Não identificado — grandes, ignoradas pelo git, e não posso provar que é seguro removê-las." ;;
+        *)     echo "⚠️ Unidentified — heavy, gitignored, and I can't prove these are safe to remove." ;;
       esac ;;
     rc_unid_note)   # {min}
       case "$SS_LANG" in
@@ -4177,7 +4177,6 @@ do_reclaim() {
   printf '   %s ' "$(t rc_roots)"; printf '%s  ' "${roots[@]}"; echo
   [ -n "$RC_STALE_DAYS" ] && { m="$(t rc_stale_note)"; echo "   ${m//\{n\}/$RC_STALE_DAYS}"; }
   t rc_scanning
-  echo "------------------------------------------------------------"
 
   # ---- gather PROVEN candidates through the three gates (rc_collect) ----------
   local CAND_PATH=() CAND_REPO=() CAND_CMD=() CAND_KB=() CAND_DAYS=() CAND_OWNER=()
@@ -4223,7 +4222,7 @@ do_reclaim() {
       [ -n "${CAND_CMD[$i]}" ] && printf '      ↺ %s\n' "${CAND_CMD[$i]}"
       total_kb=$((total_kb + CAND_KB[i]))
     done
-    echo "------------------------------------------------------------"
+    printf '\n'
     echo "$(t un_total)$(od_human_kb "$total_kb")"
   fi
 
@@ -4246,7 +4245,7 @@ do_reclaim() {
       if [ "${UNID_DAYS[$i]}" -ge 0 ]; then m="$(t rc_days)"; ustale="   · ${m//\{n\}/${UNID_DAYS[$i]}}"; fi
       # size-first, ⚠️ (warning: can't prove safe — no ↺, deliberately: unprovable
       # means we won't hand you a rebuild command we can't stand behind).
-      printf '   %d) ⚠️ · %s (%s)%s\n' "$un" \
+      printf '   %d) · %s (%s)%s\n' "$un" \
         "$(od_human_kb "${UNID_KB[$i]}")" "$(printf '%s' "${UNID_PATH[$i]}" | vis)" "$ustale"
     done
   fi
@@ -4295,7 +4294,7 @@ do_reclaim() {
     local ui uname ureply
     for ui in "${UPICK[@]}"; do
       uname="${UNID_PATH[$ui]##*/}"
-      echo "------------------------------------------------------------"
+      printf '\n'
       printf '  ⚠️ %s   %s\n' "$(printf '%s' "${UNID_PATH[$ui]}" | vis)" "$(od_human_kb "${UNID_KB[$ui]}")"
       t rc_unid_contains
       rc_peek "${UNID_PATH[$ui]}"
