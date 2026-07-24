@@ -745,12 +745,18 @@ r1="$(rc_rebuild_for node_modules "$R/good")"
 touch "$R/good/pnpm-lock.yaml"; r2="$(rc_rebuild_for node_modules "$R/good")"
 rm "$R/good/pnpm-lock.yaml"; touch "$R/good/yarn.lock"; r3="$(rc_rebuild_for dist "$R/good")"
 r4="$(rc_rebuild_for .build "$R/good")"; r5="$(rc_rebuild_for target "$R/good")"
-if [ "$r1" = "npm install" ] && [ "$r2" = "pnpm install" ] && [ "$r3" = "yarn run build" ] \
-   && [ "$r4" = "swift build" ] && [ "$r5" = "cargo build" ]; then
-  pass "reclaim rebuild map: lockfile picks the package manager; swift/cargo mapped"
+rm "$R/good/yarn.lock"
+# The command is now a full, paste-anywhere "cd <ABSOLUTE parent> && <build>".
+if [ "$r1" = "cd $R/good && npm install" ] && [ "$r2" = "cd $R/good && pnpm install" ] \
+   && [ "$r3" = "cd $R/good && yarn run build" ] && [ "$r4" = "cd $R/good && swift build" ] \
+   && [ "$r5" = "cd $R/good && cargo build" ]; then
+  pass "reclaim rebuild map: lockfile picks the pm; command is a full cd-to-parent && build"
 else
   fail "rebuild map wrong ($r1 / $r2 / $r3 / $r4 / $r5)"
 fi
+# guard the paste-anywhere contract: it must lead with `cd ` and an ABSOLUTE path
+case "$r1" in "cd /"*" && "*) pass "reclaim rebuild: cd target is absolute (paste-anywhere)" ;;
+             *)               fail "reclaim rebuild: not an absolute cd [$r1]" ;; esac
 rm -f "$R/good/yarn.lock"
 
 # (e2e) real reclaim run: select all → typed count → Trash under the fixture
@@ -761,7 +767,7 @@ do_reclaim <<< $'all\n1' > "$SBX/rc.out" 2>&1
 RC_RECEIPT="$(find "$REAL_HOME/.sheersweep/uninstalls" -name "*-reclaim.tsv" 2>/dev/null | head -1)"
 e1=0; [ ! -e "$R/good/node_modules" ] && e1=1
 e2=0; [ -n "$RC_RECEIPT" ] && [ "$(receipt_header "$RC_RECEIPT" kind)" = "reclaim" ] && e2=1
-e3=0; receipt_header_all "$RC_RECEIPT" rebuild 2>/dev/null | grep -q "npm install" && e3=1
+e3=0; receipt_header_all "$RC_RECEIPT" rebuild 2>/dev/null | grep -q "cd .* && npm install" && e3=1
 e4=0; grep -q "✅" "$SBX/rc.out" && e4=1
 if [ "$e1$e2$e3$e4" = "1111" ]; then
   pass "reclaim e2e: moved to Trash, receipt kind=reclaim with rebuild command, honest ✅"
@@ -771,7 +777,7 @@ fi
 teardown
 
 # (unidentified tier) a heavy, gitignored, off-list, no-manifest folder is
-# SURFACED in the separate 🔺 section; a proven dir is NOT double-listed there;
+# SURFACED in the separate ⚠️ section; a proven dir is NOT double-listed there;
 # a below-floor dir and — critically — a heavy NOT-gitignored folder (possible
 # unsaved work) are never shown. The last is the safety line: the tier only ever
 # offers what the owner already told git to ignore.
@@ -792,7 +798,7 @@ RC_UNID_MIN_KB=64
 DRY=1; RC_ROOTS=("$R"); RC_STALE_DAYS=""
 : "reads for shellcheck — consumed in the sourced do_reclaim: $DRY ${RC_ROOTS[*]} $RC_STALE_DAYS $RC_UNID_MIN_KB"
 out="$(do_reclaim 2>&1)"
-unid_lines="$(printf '%s\n' "$out" | grep '🔺' || true)"
+unid_lines="$(printf '%s\n' "$out" | grep '⚠️' || true)"   # unidentified now flagged ⚠️ (was ⚠️)
 u1=0; printf '%s\n' "$unid_lines" | grep -q '\.harvest'    && u1=1   # surfaced as unidentified
 u2=1; printf '%s\n' "$unid_lines" | grep -q 'node_modules' && u2=0   # proven → not double-listed here
 u3=1; case "$out" in *"proj/tiny"*) u3=0 ;; esac                     # below floor → hidden
@@ -805,7 +811,7 @@ else
 fi
 teardown
 
-# (unified pick) proven and unidentified share ONE numbered list. Picking a 🔺
+# (unified pick) proven and unidentified share ONE numbered list. Picking a ⚠️
 # row by its number, then confirming by TYPING ITS NAME, moves only that folder —
 # the proven rows (not picked) stay put. This is the uninstall model: number to
 # select, type-name to confirm.
@@ -822,13 +828,13 @@ mkdir -p "$R/proj/node_modules/d"; dd if=/dev/zero of="$R/proj/node_modules/d/x"
 mkdir -p "$R/proj/crawl";          dd if=/dev/zero of="$R/proj/crawl/blob"      bs=1024 count=200 2>/dev/null # unidentified → row 2
 RC_UNID_MIN_KB=64; DRY=0; RC_ROOTS=("$R"); RC_STALE_DAYS=""
 : "reads for shellcheck: $RC_UNID_MIN_KB $DRY ${RC_ROOTS[*]} $RC_STALE_DAYS"
-do_reclaim <<< $'2\ncrawl' > "$SBX/u.out" 2>&1     # pick the 🔺 row (2), confirm by name
+do_reclaim <<< $'2\ncrawl' > "$SBX/u.out" 2>&1     # pick the ⚠️ row (2), confirm by name
 RC_UNID_MIN_KB=$(( 512 * 1024 ))
-p1=0; [ ! -e "$R/proj/crawl" ] && p1=1                                                # picked 🔺 moved
+p1=0; [ ! -e "$R/proj/crawl" ] && p1=1                                                # picked ⚠️ moved
 p2=0; [ -e "$R/proj/node_modules" ] && p2=1                                           # unpicked proven kept
 p3=0; find "$REAL_HOME/.Trash" -name crawl 2>/dev/null | grep -q . && p3=1            # landed in Trash
 if [ "$p1$p2$p3" = "111" ]; then
-  pass "reclaim unified pick: a 🔺 row picked by number + typed name moves only it; proven untouched"
+  pass "reclaim unified pick: a ⚠️ row picked by number + typed name moves only it; proven untouched"
 else
   fail "reclaim unified pick wrong (crawl_gone=$p1 nm_kept=$p2 trashed=$p3) $(tail -3 "$SBX/u.out")"
 fi

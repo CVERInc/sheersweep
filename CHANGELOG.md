@@ -47,6 +47,20 @@ by explicit path but not found by name. The resolver now searches every account'
 `~/Applications`, the invoker's first so a same-named app still resolves to yours.
 What you can sweep, you can now see — the gap this tool exists to close.
 
+### Changed — reclaim reads in the same visual language as the disk map
+
+`reclaim`'s list now speaks the layout the whole-disk map introduced: size-first
+(`· 714M (path)`, the number you scan for up front), a `▸` repo header per group,
+and — the real point — each artifact's rebuild command as a **full, paste-anywhere
+line** on its own row: `↺ cd /abs/path/to/parent && npm install`. reclaim's
+artifacts don't go to the Trash (they're too big), so that command IS their
+"reversible": it has to run from a fresh shell, so it's absolute, never assuming
+you're in the repo. The proven gate already requires a manifest beside the
+artifact, so the parent is guaranteed buildable — the command is correct by
+construction, not a guess. The "unidentified" tier (can't prove it's safe) now
+carries a ⚠️ and, deliberately, no `↺`: we won't hand you a rebuild line we can't
+stand behind. The decorative 🔺 is retired in favour of that ⚠️.
+
 ### Docs — a "Putting the verbs together" section
 
 Scenario recipes (inheriting a Mac, handing one on, reclaiming a dev disk) shown
