@@ -60,17 +60,31 @@ SS_LANG="$(ss_resolve_lang)"
 t() {
   # shellcheck disable=SC1111  # fullwidth “” below are deliberate CJK typography, not typos
   case "$1" in
-    escalate)
+    sec_swept)   # tense-neutral on purpose: in a dry-run nothing was swept yet,
+                 # and a past-tense label would be false in the mode people are
+                 # told to run first. Noun, not verb.
       case "$SS_LANG" in
-        ja-JP) echo "全アカウントを掃除するには管理者権限が必要です — sudo で再実行します…" ;;
-        zh-TW) echo "清掃所有帳號需要管理員權限——以 sudo 重新執行…" ;;
-        zh-Hans) echo "清扫所有账户需要管理员权限——正在以 sudo 重新运行…" ;;
-        ko-KR) echo "모든 계정을 청소하려면 관리자 권한이 필요합니다 — sudo로 다시 실행합니다…" ;;
-        es-ES) echo "Limpiar todas las cuentas requiere permisos de administrador — reejecutando con sudo…" ;;
-        de-DE) echo "Das Aufräumen aller Benutzerkonten erfordert Administratorrechte — wird mit sudo neu ausgeführt…" ;;
-        fr-FR) echo "Nettoyer tous les comptes nécessite les droits d'administrateur — relance avec sudo…" ;;
-        pt-BR) echo "Limpar todas as contas exige privilégios de administrador — reexecutando com sudo…" ;;
-        *)     echo "Sweeping every account needs admin rights — re-running with sudo…" ;;
+        ja-JP) echo "掃除の対象：" ;;
+        zh-TW) echo "這次的清掃：" ;;
+        zh-Hans) echo "这次的清扫：" ;;
+        ko-KR) echo "이번 청소:" ;;
+        es-ES) echo "El barrido:" ;;
+        de-DE) echo "Der Durchgang:" ;;
+        fr-FR) echo "Le balayage :" ;;
+        pt-BR) echo "A limpeza:" ;;
+        *)     echo "The sheersweep:" ;;
+      esac ;;
+    sec_space)   # picks up from the result line above — "still 93%" → "more space in:"
+      case "$SS_LANG" in
+        ja-JP) echo "残りの容量はここ：" ;;
+        zh-TW) echo "更多空間在：" ;;
+        zh-Hans) echo "更多空间在：" ;;
+        ko-KR) echo "남은 용량은 여기:" ;;
+        es-ES) echo "Más espacio en:" ;;
+        de-DE) echo "Mehr Platz in:" ;;
+        fr-FR) echo "Plus d'espace dans :" ;;
+        pt-BR) echo "Mais espaço em:" ;;
+        *)     echo "More space in:" ;;
       esac ;;
     run_note_real)   # one notice for the whole run — narration, so it goes to stderr
       case "$SS_LANG" in
@@ -2401,11 +2415,9 @@ if [ -z "${SHEERSWEEP_LIB:-}" ]; then
   # tool world — nothing is written, no other account is read, and brew refuses
   # to run as root anyway → it must NOT demand a password.
   if [ "$(id -u)" -ne 0 ] && [ "$MODE" != "tools" ]; then
-    # Explain the sudo re-exec only when a password is actually about to be asked.
-    # With the timestamp still warm there is no prompt, so the sentence explains
-    # something that isn't happening — and that is the line worth deleting.
-    # (`-n` never prompts; it just reports whether one would be needed.)
-    sudo -n true 2>/dev/null || t escalate >&2
+    # No explanation for the sudo prompt. Anyone running this installed a tool
+    # that says "sweeps every account" on the tin, and without root it cannot do
+    # the thing it exists for — so the password is a precondition, not a surprise.
     exec sudo SHEERSWEEP_LANG="$SS_LANG" SHEERSWEEP_SUSPECT_MIN_MB="${SHEERSWEEP_SUSPECT_MIN_MB:-}" "$0" "$@"
   fi
   REAL_USER="${SUDO_USER:-$(id -un)}"
@@ -4535,14 +4547,20 @@ dg_cleanable_group() {
   local waited=0
   while kill -0 "$DG_PID" 2>/dev/null && [ "$waited" -lt 12 ]; do sleep 1; waited=$((waited + 1)); done
 
-  local rows="" n kb fc fx fk url roots m tab; tab="$(printf '\t')"
+  local rows="" n kb fc fx fk url roots tab; tab="$(printf '\t')"
   # Each row is "sortkb<TAB>· size (label)<TAB>→ action". Built with printf so the
   # · and → sit inside quoted %s args (never immediately after a $var, where a
   # multibyte byte would get swallowed into the variable name). sortkb → biggest first.
-  _add() { rows="$rows$(printf '%s\t%s\t%s' "$1" "$2" "$3")"$'\n'; }
+  # rank 0 = this tool can do it · rank 1 = needs software the reader may not
+  # have. Rank first, then size, so every "sheersweep <verb>" row is together and
+  # the one that sends you to another product sits at the end — a list that keeps
+  # its promise until the last line, instead of breaking it in the middle.
+  _add() {   # $1 = rank  $2 = sort size  $3 = row  $4 = action
+    rows="$rows$(printf '%s\t%s\t%s\t%s' "$1" "$2" "$3" "$4")"$'\n'
+  }
   if [ -f "$DG_DIR/rc" ]; then
     read -r n kb < "$DG_DIR/rc"
-    [ "${n:-0}" -gt 0 ] && _add "$kb" "$(printf '· %8s  (%s · %s)' "$(od_human_kb "$kb")" "$(t dg_cl_build)" "$n")" "→ sheersweep reclaim"
+    [ "${n:-0}" -gt 0 ] && _add 0 "$kb" "$(printf '· %8s  (%s · %s)' "$(od_human_kb "$kb")" "$(t dg_cl_build)" "$n")" "→ sheersweep reclaim"
   fi
   if [ -f "$DG_DIR/ai" ]; then
     read -r kb fc fx fk < "$DG_DIR/ai"
@@ -4555,31 +4573,31 @@ dg_cleanable_group() {
       # shellcheck disable=SC2088
       [ "${fk:-0}" -eq 1 ] && roots="${roots:+$roots · }~/.clikae/profiles"
       url=""; [ -z "$(clikae_bin)" ] && url=" (https://oss.cver.net/clikae)"
-      _add "$kb" "$(printf '· %8s  (%s)' "$(od_human_kb "$kb")" "$roots")" "→ clikae clean$url"
+      _add 1 "$kb" "$(printf '· %8s  (%s)' "$(od_human_kb "$kb")" "$roots")" "→ clikae clean$url"
     fi
   fi
   if [ -f "$DG_DIR/orph" ]; then
     read -r n kb < "$DG_DIR/orph"
-    [ "${n:-0}" -gt 0 ] && _add "$kb" "$(printf '· %8s  (%s · %s)' "$(od_human_kb "$kb")" "$(t dg_cl_leftover)" "$n")" "→ sheersweep uninstall"
+    [ "${n:-0}" -gt 0 ] && _add 0 "$kb" "$(printf '· %8s  (%s · %s)' "$(od_human_kb "$kb")" "$(t dg_cl_leftover)" "$n")" "→ sheersweep uninstall"
   fi
   if [ -f "$DG_DIR/brew" ]; then
     read -r n < "$DG_DIR/brew"
     if [ "${n:-0}" -gt 0 ]; then
       # A count, not a size — but still a row: number in the same column, label in
       # parens like every other. sortkb 0 sinks it last.
-      _add 0 "$(printf '· %8s  (%s)' "$n" "$(t dg_cl_brew)")" "→ sheersweep tools"
+      _add 0 0 "$(printf '· %8s  (%s)' "$n" "$(t dg_cl_brew)")" "→ sheersweep tools"
     fi
   fi
 
   [ -z "$rows" ] && return 0
   printf '\n%s\n' "$(t dg_group_cleanable)"
   local first=1 l1 act
-  while IFS="$tab" read -r _ l1 act; do
+  while IFS="$tab" read -r _ _ l1 act; do
     [ -n "$l1" ] || continue
     [ "$first" -eq 0 ] && printf '\n'; first=0
     printf '   %s\n' "$l1"
     printf '     %s\n' "$act"
-  done < <(printf '%s' "$rows" | LC_ALL=C sort -t"$tab" -k1,1rn)
+  done < <(printf '%s' "$rows" | LC_ALL=C sort -t"$tab" -k1,1n -k2,2rn)
 }
 
 dg_heavy_print() {
@@ -4817,25 +4835,39 @@ fi
 # on stderr — so capturing it keeps the dots flowing live while the report waits.
 map_out="$(dg_heavy_print)"
 printf '\n' >&2          # close the heartbeat line: both phases are done
-sw_flush
-# $(...) strips the trailing newline, so the closing line below would glue onto
-# the map's last row. Put it back.
-printf '%s\n' "$map_out"
 
-printf '\n'
-if [ "$DRY" -eq 1 ]; then
-  # A dry-run freed nothing, so it CAN'T honestly report a delta or a new %. The
-  # per-item [preview] lines above already showed what it WOULD touch; anything
-  # more here would be an invented number. Just name it a preview. Flush-left, so
-  # it reads as the whole run's closing line — not another indented map entry.
-  printf '%s\n' "$(t sweep_result_dry)"
-else
-  # Real run: now the numbers are true. Lead with the delta (what you ran this
-  # for), then close the loop the digest opened at the top ("92% full" → this).
-  after="$(free_kb)"
-  read -r pct_after _ _ < <(dg_disk_stat)
-  gb="$(awk -v b="$before" -v a="$after" 'BEGIN{printf "%.1f", (a-b)/1024/1024}')"
-  m="$(t sweep_result_real)"
-  m="${m//\{gb\}/$gb}"; m="${m//\{before\}/$pct_before}"; m="${m//\{after\}/$pct_after}"
-  printf '%s\n' "$m"
+# Two sections, in the order the story runs: what this pass covered, what it came
+# to, and then where the rest of the space actually is. The result used to sit at
+# the very bottom, under the map — which read as a verdict on the whole report
+# when it only ever summarised the sweep. Above the map, it also sets up the next
+# heading: "still 93%" → "more space in:".
+#
+# Both sections lead with their label and no gap; sw_row/dg_heavy_print each open
+# a group with a blank line, so the first one is trimmed.
+if [ -n "$SWEEP_OUT" ]; then
+  printf '%s\n' "$(t sec_swept)"
+  SWEEP_OUT="${SWEEP_OUT#$'\n'}"
+  sw_flush
+  printf '\n'
+  if [ "$DRY" -eq 1 ]; then
+    # A dry-run freed nothing, so it CAN'T honestly report a delta or a new %.
+    # And no badge: [ PASS ] would read as "nothing needed doing", when a preview
+    # often finds plenty and simply didn't act. A badge means something happened;
+    # its ABSENCE is how a preview says nothing did.
+    printf '%s\n' "$(t sweep_result_dry)"
+  else
+    # Real run: now the numbers are true. Lead with the delta — the thing you ran
+    # this for — and let the fullness set up the section below.
+    after="$(free_kb)"
+    read -r pct_after _ _ < <(dg_disk_stat)
+    gb="$(awk -v b="$before" -v a="$after" 'BEGIN{printf "%.1f", (a-b)/1024/1024}')"
+    m="$(t sweep_result_real)"
+    m="${m//\{gb\}/$gb}"; m="${m//\{before\}/$pct_before}"; m="${m//\{after\}/$pct_after}"
+    printf '%s\n' "$m"
+  fi
+fi
+
+if [ -n "$map_out" ]; then
+  printf '\n%s\n' "$(t sec_space)"
+  printf '%s\n' "${map_out#$'\n'}"
 fi
