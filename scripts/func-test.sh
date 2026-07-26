@@ -843,32 +843,33 @@ else
 fi
 teardown
 
-# (guard) the sweep digest is REPORT-only formatting over finder results: each
-# fabricated result renders its localized line, sub-threshold AI size and
-# zero-count finders contribute nothing, and an empty digest prints NOTHING.
+# (guard) the "Cleanable, inside the above" group is REPORT-only formatting over
+# the same background finder results (build output, AI archives, leftovers, brew
+# updates), now folded into the one map. Each fabricated result renders its
+# two-line row; sub-threshold AI size and zero-count finders contribute nothing;
+# with no findings the group prints NOTHING (no empty header).
 setup
 DG_DIR="$SBX/dg"; mkdir -p "$DG_DIR"
 printf '3 1048576\n' > "$DG_DIR/orph"     # 3 orphans · 1.0G
 printf '2 2097152\n' > "$DG_DIR/rc"       # 2 folders · 2.0G
 printf '4\n'         > "$DG_DIR/brew"     # 4 outdated
 printf '204800 1 1 1\n' > "$DG_DIR/ai"    # 200M ≥ threshold · all three roots present
-printf '40 1 1\n'    > "$DG_DIR/disk"     # roomy disk → must stay silent
 true & DG_PID=$!; wait "$DG_PID" 2>/dev/null   # a finished pid → zero grace wait
-out="$(dg_print)"
-g1=0; case "$out" in *"· 1.0G of data left behind"*"(3)"*) g1=1 ;; esac
-g2=0; case "$out" in *"· 2.0G of rebuildable build output"*) g2=1 ;; esac
-g3=0; case "$out" in *"· Homebrew formula updates available: 4"*) g3=1 ;; esac
-g4=0; case "$out" in *200M*.claude/projects*"→ clikae clean"*) g4=1 ;; esac
+out="$(dg_cleanable_group)"
+g0=0; case "$out" in *"$(t dg_group_cleanable)"*) g0=1 ;; esac
+g1=0; case "$out" in *"· 1.0G (data left behind by removed apps · 3)"*"→ sheersweep uninstall"*) g1=1 ;; esac
+g2=0; case "$out" in *"· 2.0G (rebuildable build output · 2)"*"→ sheersweep reclaim"*) g2=1 ;; esac
+g3=0; case "$out" in *"· 4 Homebrew updates"*"→ sheersweep tools"*) g3=1 ;; esac
+g4=0; case "$out" in *"· 200M (~/.claude/projects · ~/.codex/sessions · ~/.clikae/profiles)"*"→ clikae clean"*) g4=1 ;; esac
 DG_DIR="$SBX/dg2"; mkdir -p "$DG_DIR"
-printf '0 0\n' > "$DG_DIR/orph"; printf '10240 1 0 0\n' > "$DG_DIR/ai"   # zero + sub-100M
-printf '40 1 1\n' > "$DG_DIR/disk"                                # silent
+printf '0 0\n' > "$DG_DIR/orph"; printf '10240 1 0 0\n' > "$DG_DIR/ai"   # zero + sub-100M → nothing
 true & DG_PID=$!; wait "$DG_PID" 2>/dev/null
-out2="$(dg_print)"
+out2="$(dg_cleanable_group)"
 g5=0; [ -z "$out2" ] && g5=1
-if [ "$g1$g2$g3$g4$g5" = "11111" ]; then
-  pass "digest: four lines render localized; zero/sub-threshold/roomy-disk finders silent; empty digest prints nothing"
+if [ "$g0$g1$g2$g3$g4$g5" = "111111" ]; then
+  pass "cleanable group: header + four two-line rows (biggest first); zero/sub-threshold silent; nothing → prints nothing"
 else
-  fail "digest wrong (orph=$g1 rc=$g2 brew=$g3 ai=$g4 empty=$g5) out=[$out] out2=[$out2]"
+  fail "cleanable group wrong (hdr=$g0 orph=$g1 rc=$g2 brew=$g3 ai=$g4 empty=$g5) out=[$out] out2=[$out2]"
 fi
 # dg_ai_kb: returns "KB claude codex clikae" — size + which roots are present.
 mkdir -p "$SBX/h1/.claude/projects" "$SBX/h1/.clikae/profiles/claude/l/projects"
@@ -899,17 +900,8 @@ else
   fail "dg_disk_stat wrong (got '$stat_out')"
 fi
 
-# dg_line reads its finders' result files out of $DG_DIR — fake them.
-DG_DIR="$SBX/dg"; mkdir -p "$DG_DIR"
-printf '95 184000000 12000000\n' > "$DG_DIR/disk"
-line_full="$(dg_line disk)"
-printf '40 80000000 120000000\n' > "$DG_DIR/disk"
-line_roomy="$(dg_line disk)"
-case "$line_full" in
-  *95*) if [ -z "$line_roomy" ]; then pass "dg_line disk: speaks at 95%, silent at 40%"
-        else fail "dg_line disk: spoke on a roomy disk ('$line_roomy')"; fi ;;
-  *)    fail "dg_line disk: no line at 95% ('$line_full')" ;;
-esac
+# (the standalone disk-fullness digest line is gone — its fullness story is now
+# the map itself, which always runs. Nothing to test in isolation here.)
 
 # dg_heavy_print: the foreground per-account map. It runs a real du walk (slow by
 # physics — no per-account size API on macOS), so it's guarded by the same
@@ -919,14 +911,10 @@ esac
 # full render — named consumers + subtraction-derived unreadable remainder — is
 # covered by the dg_line-level fixtures below and verified on a real machine.
 setup
-# Force dg_disk_stat to report a roomy disk by pointing it at a stub is not
-# possible (it reads real df), so assert via the gate value directly: the
-# function returns early when pct < 85. We check that a roomy real disk (if this
-# CI/dev disk is under 85%) produces no output; when the disk is genuinely tight
-# the real-machine dry-run is the check. Either way, silence-or-real, never a
-# half-measured lie.
-# Stub the two things that read the real machine, so the test exercises the GATE
-# and RENDER logic deterministically WITHOUT a 30 s du or a real full disk.
+# Stub the two things that read the real machine (dg_disk_stat + dg_heavy_measure)
+# so the test exercises the RENDER logic deterministically WITHOUT a 30 s du or a
+# real full disk. The map has no fullness gate anymore — it always runs — so these
+# stubs drive the grouping/remainder logic directly.
 # (Real measurement is verified by the separate dg_heavy_measure test + a real
 # dry-run; forcing dg_heavy_print through a real du here made the suite take 30 s
 # and depend on the dev disk's fullness.)
@@ -960,11 +948,15 @@ case "$unread_out" in
   *"$floor_hdr"*SIP*) pass "dg_heavy_print: SIP remainder lands under the 'here to stay' group" ;;
   *)                  fail "dg_heavy_print: no floor group when used >> measured [$unread_out]" ;;
 esac
+# The map now ALWAYS runs (no 85% gate) — it's the one report every sweep ends
+# with. So on a roomy disk it must STILL render the partition, not fall silent.
 # shellcheck disable=SC2329  # invoked indirectly by dg_heavy_print (stub override)
 dg_disk_stat() { echo "40 40000000 60000000"; }        # pretend: 40% — roomy
-out_roomy="$(dg_heavy_print 2>&1)"
-if [ -z "$out_roomy" ]; then pass "dg_heavy_print: silent on a roomy disk (never runs the du)"
-else fail "dg_heavy_print: spoke on a roomy disk [$out_roomy]"; fi
+out_roomy="$(dg_heavy_print 2>/dev/null)"
+case "$out_roomy" in
+  *"$(t dg_group_system)"*/Library*) pass "dg_heavy_print: always runs — renders the partition even on a roomy disk" ;;
+  *)                                 fail "dg_heavy_print: silent on a roomy disk (should always run now) [$out_roomy]" ;;
+esac
 # Re-source to RESTORE the real dg_disk_stat / dg_heavy_measure — `unset -f`
 # removes a stubbed function entirely (it does NOT reveal the original), so
 # without this the real ones stay gone for later tests. The re-source is required,

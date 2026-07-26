@@ -446,54 +446,6 @@ t() {
         pt-BR) echo "🔴 {bid} pertence a algo ainda instalado — desinstale esse app pelo nome." ;;
         *)     echo "🔴 {bid} belongs to something still installed — uninstall that app by its name instead." ;;
       esac ;;
-    dg_header)
-      case "$SS_LANG" in
-        ja-JP) echo "ついでに見えたもの（数字だけ。何も触っていません）" ;;
-        zh-TW) echo "順便看到的（只報數字，什麼都沒動）" ;;
-        zh-Hans) echo "顺便看到的（只报数字，什么都没动）" ;;
-        ko-KR) echo "겸사겸사 보인 것(숫자만, 아무것도 건드리지 않음)" ;;
-        es-ES) echo "También visto (solo números; no se tocó nada)" ;;
-        de-DE) echo "Nebenbei gesehen (nur Zahlen; nichts angefasst)" ;;
-        fr-FR) echo "Vu au passage (des chiffres, rien touché)" ;;
-        pt-BR) echo "Visto de passagem (só números; nada foi tocado)" ;;
-        *)     echo "Also seen (numbers only — nothing was touched)" ;;
-      esac ;;
-    dg_orphans)   # {n} · {size}
-      case "$SS_LANG" in
-        ja-JP) echo "· 削除済みアプリ {n} 件がデータ {size} を残しています   → sheersweep uninstall" ;;
-        zh-TW) echo "· {n} 個已移除的 App 留下了 {size} 的資料   → sheersweep uninstall" ;;
-        zh-Hans) echo "· {n} 个已移除的 App 留下了 {size} 的数据   → sheersweep uninstall" ;;
-        ko-KR) echo "· 제거된 앱 {n}개가 {size}의 데이터를 남겼습니다   → sheersweep uninstall" ;;
-        es-ES) echo "· {size} de datos dejados por apps eliminadas ({n})   → sheersweep uninstall" ;;
-        de-DE) echo "· {size} an Daten von entfernten Apps ({n})   → sheersweep uninstall" ;;
-        fr-FR) echo "· {size} de données laissées par des apps supprimées ({n})   → sheersweep uninstall" ;;
-        pt-BR) echo "· {size} de dados deixados por apps removidos ({n})   → sheersweep uninstall" ;;
-        *)     echo "· {size} of data left behind by removed apps ({n})   → sheersweep uninstall" ;;
-      esac ;;
-    dg_reclaim)   # {n} · {size}
-      case "$SS_LANG" in
-        ja-JP) echo "· 再ビルド可能なビルド産物が {size}（{n} フォルダ）   → sheersweep reclaim" ;;
-        zh-TW) echo "· 可重建的 build 產物共 {size}（{n} 個資料夾）   → sheersweep reclaim" ;;
-        zh-Hans) echo "· 可重建的 build 产物共 {size}（{n} 个文件夹）   → sheersweep reclaim" ;;
-        ko-KR) echo "· 다시 빌드 가능한 산출물 {size}({n}개 폴더)   → sheersweep reclaim" ;;
-        es-ES) echo "· {size} de artefactos de build reconstruibles ({n})   → sheersweep reclaim" ;;
-        de-DE) echo "· {size} an neu baubaren Build-Artefakten ({n})   → sheersweep reclaim" ;;
-        fr-FR) echo "· {size} d'artefacts de build reconstructibles ({n})   → sheersweep reclaim" ;;
-        pt-BR) echo "· {size} de artefatos de build reconstruíveis ({n})   → sheersweep reclaim" ;;
-        *)     echo "· {size} of rebuildable build output ({n})   → sheersweep reclaim" ;;
-      esac ;;
-    dg_outdated)   # {n}
-      case "$SS_LANG" in
-        ja-JP) echo "· Homebrew formula {n} 件に更新があります   → sheersweep tools" ;;
-        zh-TW) echo "· {n} 個 Homebrew formula 有新版   → sheersweep tools" ;;
-        zh-Hans) echo "· {n} 个 Homebrew formula 有新版   → sheersweep tools" ;;
-        ko-KR) echo "· Homebrew formula {n}개에 업데이트가 있습니다   → sheersweep tools" ;;
-        es-ES) echo "· actualizaciones de Homebrew disponibles: {n}   → sheersweep tools" ;;
-        de-DE) echo "· Homebrew-Updates verfügbar: {n}   → sheersweep tools" ;;
-        fr-FR) echo "· mises à jour Homebrew disponibles : {n}   → sheersweep tools" ;;
-        pt-BR) echo "· atualizações do Homebrew disponíveis: {n}   → sheersweep tools" ;;
-        *)     echo "· Homebrew formula updates available: {n}   → sheersweep tools" ;;
-      esac ;;
     dg_group_act)
       case "$SS_LANG" in
         ja-JP) echo "▸ あなたが動かせるもの" ;;
@@ -529,6 +481,54 @@ t() {
         fr-FR) echo "▸ C'est là pour rester" ;;
         pt-BR) echo "▸ Fica por aqui" ;;
         *)     echo "▸ Here to stay" ;;
+      esac ;;
+    dg_group_cleanable)   # cross-cutting categories that live INSIDE the account totals above
+      case "$SS_LANG" in
+        ja-JP) echo "▸ 上のどれかの中で、片づけられるもの" ;;
+        zh-TW) echo "▸ 上面那些裡面、清得掉的" ;;
+        zh-Hans) echo "▸ 上面那些里面、清得掉的" ;;
+        ko-KR) echo "▸ 위 항목들 안에서 정리할 수 있는 것" ;;
+        es-ES) echo "▸ Limpiable, dentro de lo de arriba" ;;
+        de-DE) echo "▸ Aufräumbar, in den obigen enthalten" ;;
+        fr-FR) echo "▸ Nettoyable, à l'intérieur de ce qui précède" ;;
+        pt-BR) echo "▸ Limpável, dentro do que está acima" ;;
+        *)     echo "▸ Cleanable, inside the above" ;;
+      esac ;;
+    dg_cl_build)   # label for the build-output cleanable row
+      case "$SS_LANG" in
+        ja-JP) echo "再ビルド可能なビルド産物" ;;
+        zh-TW) echo "可重建的 build 產物" ;;
+        zh-Hans) echo "可重建的 build 产物" ;;
+        ko-KR) echo "다시 빌드 가능한 산출물" ;;
+        es-ES) echo "artefactos de build reconstruibles" ;;
+        de-DE) echo "neu baubare Build-Artefakte" ;;
+        fr-FR) echo "artefacts de build reconstructibles" ;;
+        pt-BR) echo "artefatos de build reconstruíveis" ;;
+        *)     echo "rebuildable build output" ;;
+      esac ;;
+    dg_cl_leftover)   # label for the removed-app-leftover cleanable row
+      case "$SS_LANG" in
+        ja-JP) echo "削除済みアプリが残したデータ" ;;
+        zh-TW) echo "已移除 App 留下的資料" ;;
+        zh-Hans) echo "已移除 App 留下的数据" ;;
+        ko-KR) echo "제거된 앱이 남긴 데이터" ;;
+        es-ES) echo "datos dejados por apps eliminadas" ;;
+        de-DE) echo "Daten von entfernten Apps" ;;
+        fr-FR) echo "données laissées par des apps supprimées" ;;
+        pt-BR) echo "dados deixados por apps removidos" ;;
+        *)     echo "data left behind by removed apps" ;;
+      esac ;;
+    dg_cl_brew)   # label for the Homebrew-updates cleanable row ({n} = count)
+      case "$SS_LANG" in
+        ja-JP) echo "Homebrew の更新 {n} 件" ;;
+        zh-TW) echo "{n} 個 Homebrew 更新" ;;
+        zh-Hans) echo "{n} 个 Homebrew 更新" ;;
+        ko-KR) echo "Homebrew 업데이트 {n}개" ;;
+        es-ES) echo "{n} actualizaciones de Homebrew" ;;
+        de-DE) echo "{n} Homebrew-Updates" ;;
+        fr-FR) echo "{n} mises à jour Homebrew" ;;
+        pt-BR) echo "{n} atualizações do Homebrew" ;;
+        *)     echo "{n} Homebrew updates" ;;
       esac ;;
     dg_this_login)   # parenthetical for your own account in the "here to stay" group
       case "$SS_LANG" in
@@ -581,18 +581,6 @@ t() {
         fr-FR) echo "{size} (SIP : version DB, Spotlight)" ;;
         pt-BR) echo "{size} (SIP: versão DB, Spotlight)" ;;
         *)     echo "{size} (SIP: version DB, Spotlight)" ;;
-      esac ;;
-    dg_disk)   # {pct} · {used} · {free}
-      case "$SS_LANG" in
-        ja-JP) echo "· ディスク使用率 {pct}%（{used} 使用中、{free} 空き）— 上のスイープが片づけるのは再生成できるゴミだけ" ;;
-        zh-TW) echo "· 磁碟已用 {pct}%（{used} 使用中、{free} 可用）——上面的掃除只清除可再生的垃圾" ;;
-        zh-Hans) echo "· 磁盘已用 {pct}%（{used} 使用中、{free} 可用）——上面的扫除只清除可再生的垃圾" ;;
-        ko-KR) echo "· 디스크 {pct}% 사용 중({used} 사용, {free} 여유) — 위 스윕이 지우는 것은 재생성 가능한 정크뿐" ;;
-        es-ES) echo "· disco al {pct}% ({used} usado, {free} libre) — el barrido de arriba solo elimina basura regenerable" ;;
-        de-DE) echo "· Festplatte zu {pct}% belegt (davon {used} genutzt, {free} frei) — der Sweep oben löscht nur regenerierbare Dateien" ;;
-        fr-FR) echo "· disque rempli à {pct}% ({used} utilisé, {free} libre) — le balayage ci-dessus ne supprime que des fichiers régénérables" ;;
-        pt-BR) echo "· disco em {pct}% ({used} usado, {free} livre) — a limpeza acima só remove arquivos regeneráveis" ;;
-        *)     echo "· Disk is {pct}% full ({used} used, {free} free) — the sweep above only clears regenerable junk" ;;
       esac ;;
     rc_usage)
       case "$SS_LANG" in
@@ -4330,19 +4318,17 @@ do_reclaim() {
 DG_DIR=""
 DG_PID=""
 
-# AI-session archives: conversation history is NOT regenerable and never
-# sheersweep's to touch — the digest may report the size and point at the
-# owning tool, full stop. Named directories only.
-# 📊 Whole-disk context. The sweep only ever frees regenerable junk, so on a
-# nearly-full disk its win can be a rounding error — and the user is left with
-# "I cleaned and I'm still at 95%, why?". These two finders answer that WITHOUT
-# widening what the sweep touches: they only ever read.
+# Whole-disk context feeds the one report every sweep ends with (dg_heavy_print).
+# The sweep only ever frees regenerable junk, so on a nearly-full disk its win can
+# be a rounding error — "I cleaned and I'm still at 95%, why?". The report answers
+# that WITHOUT widening what the sweep touches: it only ever reads.
 #
-# df only — instant and always reliable. A per-consumer breakdown was tried and
-# cut: walking /Users took ~47 s (past dg_print's grace, so it usually never
-# showed), and every entry it would list (other accounts, the Photos library)
-# is something sheersweep neither can nor should touch — a look-but-don't-touch
-# list is worse than the honest one line below.
+# It DOES walk /Users (a per-account breakdown — slow, ~30–47 s, covered by a
+# heartbeat). An earlier version cut that walk, reasoning the accounts and photo
+# libraries it lists are "not sheersweep's to touch" — but that conflated can't-
+# touch with shouldn't-show. sheer is to show; whether to sweep is the sudo owner's
+# call. So it names every consumer, and marks what even root can't read honestly.
+# dg_disk_stat is the cheap df headline the walk builds on.
 dg_disk_stat() {   # → "pct used_kb free_kb"
   df -k /System/Volumes/Data | awk '/Data$/{ sub(/%/,"",$5); print $5, $3, $4 }'
 }
@@ -4418,88 +4404,11 @@ dg_scan_start() {
       # 🤖 AI-session archives
       dg_ai_kb "${homes[@]}" > "$DG_DIR/.ai" && mv "$DG_DIR/.ai" "$DG_DIR/ai"
     ) &
-    (
-      # 📊 disk fullness — df only, lands immediately
-      dg_disk_stat > "$DG_DIR/.disk" && mv "$DG_DIR/.disk" "$DG_DIR/disk"
-    ) &
     wait
   ) >/dev/null 2>&1 &
   DG_PID=$!
 }
 
-# Render one finder's line ("" = it has nothing worth a line).
-dg_line() {   # $1 = result key
-  local n kb m fc fx fk roots url
-  case "$1" in
-    orph) read -r n kb < "$DG_DIR/orph"
-          [ "${n:-0}" -gt 0 ] || return 0
-          m="$(t dg_orphans)"; m="${m//\{n\}/$n}"; printf '%s' "${m//\{size\}/$(od_human_kb "$kb")}" ;;
-    rc)   read -r n kb < "$DG_DIR/rc"
-          [ "${n:-0}" -gt 0 ] || return 0
-          m="$(t dg_reclaim)"; m="${m//\{n\}/$n}"; printf '%s' "${m//\{size\}/$(od_human_kb "$kb")}" ;;
-    brew) read -r n < "$DG_DIR/brew"
-          [ "${n:-0}" -gt 0 ] || return 0
-          m="$(t dg_outdated)"; printf '%s' "${m//\{n\}/$n}" ;;
-    ai)   read -r kb fc fx fk < "$DG_DIR/ai"
-          [ "${kb:-0}" -ge 102400 ] || return 0   # only worth a line from ~100 MB
-          # Two lines, in the map's language: size-first with the actual roots as
-          # the label (only the ones that exist — no phantom ~/.codex if there's
-          # no codex), then the one real next step. sheersweep can't clean these
-          # itself (conversation history isn't regenerable — its own safety net is
-          # "regenerable XOR reversible", and this is neither), so it points the
-          # way, exactly as it points other accounts at System Settings. clikae
-          # clean is that way; the URL shows only when clikae isn't already here.
-          # literal ~ is intentional below — display text (the path as a human
-          # types it), never a path we resolve here.
-          roots=""
-          # shellcheck disable=SC2088
-          [ "${fc:-0}" -eq 1 ] && roots="~/.claude/projects"
-          # shellcheck disable=SC2088
-          [ "${fx:-0}" -eq 1 ] && roots="${roots:+$roots · }~/.codex/sessions"
-          # shellcheck disable=SC2088
-          [ "${fk:-0}" -eq 1 ] && roots="${roots:+$roots · }~/.clikae/profiles"
-          url=""; [ -z "$(clikae_bin)" ] && url=" (https://oss.cver.net/clikae)"
-          printf '· %s (%s)\n     → clikae clean%s' "$(od_human_kb "$kb")" "$roots" "$url" ;;
-    disk) read -r pct used free < "$DG_DIR/disk"
-          [ "${pct:-0}" -ge 85 ] || return 0      # only speaks up when it matters
-          m="$(t dg_disk)"; m="${m//\{pct\}/$pct}"
-          m="${m//\{used\}/$(od_human_kb "$used")}"
-          printf '%s' "${m//\{free\}/$(od_human_kb "$free")}" ;;
-  esac
-}
-
-dg_print() {
-  [ -z "$DG_DIR" ] && return 0
-  # STREAMED, with a bounded grace: on a real sweep the finders finished long
-  # ago (everything prints at once, wait ≈ 0); on a fast dry-run each line
-  # surfaces the moment its finder lands — the wait reads as activity, not a
-  # hang — capped at ~10 s. A finder that misses the cap costs only its line.
-  local waited=0 hdr=0 done_keys=" " key line last_pass=0 all_done=0
-  while :; do
-    for key in disk orph rc brew ai; do
-      case "$done_keys" in *" $key "*) continue ;; esac
-      [ -f "$DG_DIR/$key" ] || continue
-      done_keys="$done_keys$key "
-      line="$(dg_line "$key")"
-      [ -z "$line" ] && continue
-      if [ "$hdr" -eq 0 ]; then echo "── $(t dg_header) ──"; hdr=1; fi
-      printf '   %s\n' "$line"
-    done
-    all_done=1
-    for key in disk orph rc brew ai; do
-      case "$done_keys" in *" $key "*) ;; *) all_done=0 ;; esac
-    done
-    [ "$all_done" -eq 1 ] && break
-    [ "$last_pass" -eq 1 ] && break
-    if ! kill -0 "$DG_PID" 2>/dev/null; then
-      last_pass=1; continue   # job ended — one more pass for files that landed mid-loop
-    fi
-    [ "$waited" -ge 10 ] && break
-    sleep 1; waited=$((waited + 1))
-  done
-  rm -rf "$DG_DIR"; DG_DIR=""
-  return 0
-}
 
 # 📦 Where the space actually is — foreground, AFTER the digest, and only when the
 # disk is genuinely tight. It's slow on purpose-of-physics: a per-account size on
@@ -4558,10 +4467,71 @@ dg_heavy_measure() {   # stdout: kb<TAB>label<TAB>group  (group: act|system|floo
   printf '\n' >&2
 }
 
+# "Cleanable, inside the above" — the by-category view the per-account partition
+# can't give. build output, AI archives, removed-app leftovers and brew updates
+# all live INSIDE the account totals the map shows, so they're their OWN group,
+# never summed into the partition (that would double-count and break the beyond-
+# reach remainder). Reads the background finders dg_scan_start launched; gives
+# them a bounded grace to land (the per-account walk above usually outlasts them,
+# but a warm cache can finish first). Two-line rows, biggest first; the actions
+# are fixed verb strings (like dg_arrow_*), not translated.
+dg_cleanable_group() {
+  [ -z "$DG_DIR" ] && return 0
+  local waited=0
+  while kill -0 "$DG_PID" 2>/dev/null && [ "$waited" -lt 12 ]; do sleep 1; waited=$((waited + 1)); done
+
+  local rows="" n kb fc fx fk url roots m tab; tab="$(printf '\t')"
+  # Each row is "sortkb<TAB>· size (label)<TAB>→ action". Built with printf so the
+  # · and → sit inside quoted %s args (never immediately after a $var, where a
+  # multibyte byte would get swallowed into the variable name). sortkb → biggest first.
+  _add() { rows="$rows$(printf '%s\t%s\t%s' "$1" "$2" "$3")"$'\n'; }
+  if [ -f "$DG_DIR/rc" ]; then
+    read -r n kb < "$DG_DIR/rc"
+    [ "${n:-0}" -gt 0 ] && _add "$kb" "· $(od_human_kb "$kb") ($(t dg_cl_build) · $n)" "→ sheersweep reclaim"
+  fi
+  if [ -f "$DG_DIR/ai" ]; then
+    read -r kb fc fx fk < "$DG_DIR/ai"
+    if [ "${kb:-0}" -ge 102400 ]; then
+      roots=""
+      # shellcheck disable=SC2088
+      [ "${fc:-0}" -eq 1 ] && roots="~/.claude/projects"
+      # shellcheck disable=SC2088
+      [ "${fx:-0}" -eq 1 ] && roots="${roots:+$roots · }~/.codex/sessions"
+      # shellcheck disable=SC2088
+      [ "${fk:-0}" -eq 1 ] && roots="${roots:+$roots · }~/.clikae/profiles"
+      url=""; [ -z "$(clikae_bin)" ] && url=" (https://oss.cver.net/clikae)"
+      _add "$kb" "· $(od_human_kb "$kb") ($roots)" "→ clikae clean$url"
+    fi
+  fi
+  if [ -f "$DG_DIR/orph" ]; then
+    read -r n kb < "$DG_DIR/orph"
+    [ "${n:-0}" -gt 0 ] && _add "$kb" "· $(od_human_kb "$kb") ($(t dg_cl_leftover) · $n)" "→ sheersweep uninstall"
+  fi
+  if [ -f "$DG_DIR/brew" ]; then
+    read -r n < "$DG_DIR/brew"
+    if [ "${n:-0}" -gt 0 ]; then
+      m="$(t dg_cl_brew)"; m="${m//\{n\}/$n}"
+      _add 0 "· $m" "→ sheersweep tools"   # a count, not a size → sortkb 0 sinks it last
+    fi
+  fi
+
+  [ -z "$rows" ] && return 0
+  printf '\n   %s\n' "$(t dg_group_cleanable)"
+  local first=1 l1 act
+  while IFS="$tab" read -r _ l1 act; do
+    [ -n "$l1" ] || continue
+    [ "$first" -eq 0 ] && printf '\n'; first=0
+    printf '   %s\n' "$l1"
+    printf '     %s\n' "$act"
+  done < <(printf '%s' "$rows" | LC_ALL=C sort -t"$tab" -k1,1rn)
+}
+
 dg_heavy_print() {
-  local pct used total_seen=0 kb label grp unread brew_prefix="" rh
-  read -r pct used _ < <(dg_disk_stat)
-  [ "${pct:-0}" -ge 85 ] || return 0
+  local used total_seen=0 kb label grp unread brew_prefix="" rh
+  read -r _ used _ < <(dg_disk_stat)
+  # No gate — this is now the ONE report every sweep ends with (the old "Also
+  # seen" digest folded in below as its own group). The per-account walk is the
+  # same cost a bare sweep already pays; a heartbeat covers the wait.
   rh="${REAL_HOME:-$HOME}"
   brew_locate
   [ -n "$BREW_BIN" ] && brew_prefix="$(cd "$(dirname "$BREW_BIN")/.." 2>/dev/null && pwd)"
@@ -4631,6 +4601,11 @@ EOF
     local frag; frag="$(t dg_unreadable)"; printf '   · %s\n' "${frag//\{size\}/$(od_human_kb "$unread")}"
   fi
   _emit_group dg_group_act act || true
+  # The by-category cleanables (build output, AI archives, leftovers, brew
+  # updates) — inside the account totals above, so their own group, never summed
+  # into the partition.
+  dg_cleanable_group
+  [ -n "$DG_DIR" ] && rm -rf "$DG_DIR"; DG_DIR=""
 }
 
 # --- dispatch: uninstall / tools / restore / leftovers are verbs; default → sweep
@@ -4753,8 +4728,9 @@ else
   fi
 fi
 
-# ---- the digest: what the other verbs can see (report only, never acts) ----
-dg_print
+# ---- the report: where the space is, and what the other verbs can clean ----
+# One renderer, one language. Location partition + the by-category cleanables +
+# the beyond-reach remainder. Always runs (report only, never acts).
 dg_heavy_print
 
 printf '\n'
