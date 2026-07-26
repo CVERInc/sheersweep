@@ -6,6 +6,44 @@ project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [0.11.0]
 
+### Changed — status is five badges now, the same in every language
+
+`✅ 🔴 ⚠️ ❌ 🔒 ✨` become **`[ PASS ] [ DONE ] [ WARN ] [ FAIL ] [ HELD ]`** —
+eight columns wide, and never translated. This is the CVER CLI seal
+(`signet/packages/cli`), shared with sheerstatus and clikae, so one language
+carries across every tool in the family.
+
+Not translating turns fixed width from a discipline into a property, makes
+`grep WARN` work on a log pasted by someone in any language, and deletes dozens
+of strings that could rot. The prose after a badge is still localised, so mixed
+script is expected: `[ WARN ] メモリ：…`. The badge is the anchor; the sentence
+carries the meaning. The padding is what keeps a badge from reading as a
+checkbox.
+
+Two glyphs turned out to be doing several jobs, visible only once each line had
+to pick one badge:
+
+- `✅` split by *did this change the disk?* — "No leftovers" and "Kept 23
+  untouched" are `[ PASS ]`; "Moved 3 to Trash" is `[ DONE ]`. That makes
+  `[ DONE ]` a claim that can be caught lying: a dry-run printing it is a phantom.
+- `🔴` was carrying three — a protective refusal (a sealed system app, a formula
+  others depend on → `[ HELD ]`), a partial move failure (`[ FAIL ]`), and "this
+  tool is macOS-only", which is just a run that didn't succeed (`[ FAIL ]`).
+
+And the per-row `[preview]` / `freeing` markers are gone. Whether a run deletes
+or previews belongs to the *run* — it's in the banner and in the closing line,
+and stamping it on twenty rows only teaches the eye to skip it. Rows are now a
+plain `· size path`.
+
+### Fixed — an empty account no longer prints anything at all
+
+`clean()` meant to skip anything measuring 0B, but `du -sh | cut -f1` left-pads
+its output, so the value was `"  0B"` and never matched the `"0B"` it was tested
+against: the guard had never once fired. On a Mac with a second, idle account,
+half the sweep's output was those dead lines. With them gone, a group heading
+would have been left standing over empty space — so a heading now waits until
+its group actually has a row.
+
 ### Changed — one report at the end of a sweep, not two
 
 The digest ("Also seen", by category) and the 📦 disk map (by location) were
