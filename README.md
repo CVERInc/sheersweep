@@ -53,20 +53,41 @@ Open source, no subscription, no surprises.
 - **Releases local APFS (Time Machine) snapshots** — the step most cleaners skip
   and most users never hear about: deleting files won't return the space if a
   snapshot still pins it. sheersweep frees it *and* tells you.
-- **Ends with a read-only digest** of what the *other* verbs can see right now —
-  scanned in the background while the sweep works, numbers and pointers only:
+- **Ends with one read-only report** — where the space actually is, and what the
+  *other* verbs could clean. Grouped by what you can do about it, and the group
+  you can act on comes last, nearest your prompt:
 
   ```
-  ── Also seen (numbers only — nothing was touched) ──
-     🧟 24 removed apps left 1.6G of data behind   → sheersweep uninstall
-     ♻️ 4.5G of rebuildable build output (20 folders)   → sheersweep reclaim
-     ↑ 5 Homebrew formulae have updates   → sheersweep tools
-     🤖 AI session archives hold 512M — history isn't regenerable; use your AI tool's own cleanup
+     ▸ System — leave it
+     · 7.1G (/private/var)
+     · 2.9G (/Library)
+
+     ▸ Here to stay
+     · 54.1G (/Users/you, this login)
+     · 46.0G (SIP: version DB, Spotlight)
+
+     ▸ Yours to act on
+     · 66.1G (/Users/someone-else)
+       → System Settings › Users
+
+     · 7.5G (/opt/homebrew)
+       → sheersweep tools
+
+     ▸ Cleanable, inside the above
+     · 2.2G (rebuildable build output · 9)
+       → sheersweep reclaim
+
+     · 1.4G (~/.claude/projects · ~/.codex/sessions)
+       → clikae clean (https://oss.cver.net/clikae)
   ```
 
-  Each line names its verb; the digest never acts. (AI session archives are
-  conversation history — not regenerable, so not sheersweep's to touch: it
-  reports the size and points at the owning tool, full stop.)
+  It only ever *shows*. Every arrow is a fact sheersweep can assert — an
+  unrecognised path simply gets none. The last group is *inside* the totals above
+  (build output lives in a home folder), which is why it's counted separately
+  rather than summed in. AI session archives are conversation history — not
+  regenerable, so not sheersweep's to touch: it names the size and the way out.
+  A per-account size on macOS means walking every inode (no quotas), so this takes
+  a moment; a heartbeat shows it working rather than promising a duration.
 
 It sweeps **all accounts** in one pass — handy on a shared or family Mac where
 every other tool only cleans the user running it.
@@ -105,7 +126,7 @@ Application Support, preferences — sometimes for years. Run the picker and
 sheersweep shows you, unprompted:
 
 ```
-🧟 Already removed — leftover data found (4):
+▸ Already removed — leftover data found (4):
   64) com.spotify.client                    340M  (spotify?)
   65) com.wacom.UpgradeHelper               128K  (upgradehelper?)
   …
@@ -121,9 +142,9 @@ explicitly a guess derived from the id; the id is the identity. Everything is
 listed — the small scraps too, numbered under a divider at the bottom, because
 you can't select what you can't see. Pick one and it runs the same preview →
 typed-confirm → Trash → receipt flow; pick **many** (`5 7-8 19`, or `all` for
-every 🧟 row) and the selection may mix apps and leftovers freely — selection
+every leftover-data row) and the selection may mix apps and leftovers freely — selection
 is batch, consent is not. Each selected **app** still walks its own preview and
-typed-name confirmation, one at a time (`all` never touches app rows); the 🧟
+typed-name confirmation, one at a time (`all` never touches app rows); the leftover
 rows then run as one batch: one combined preview of every file, one
 confirmation (you type the count of ids shown), one receipt — and
 `sheersweep restore` undoes the whole batch. Years of residue, one pass.
@@ -172,7 +193,7 @@ each with the **native** command that removes it. It changes nothing, needs no
 password, and never touches the network. Which to keep is your call — this verb
 just finally lets you *see* what you have; sheersweep gives evidence, not verdicts.
 
-Upgradable formulae are flagged inline (`apfel  1.5.0  ↑ 1.8.3  brew upgrade
+Upgradable formulae are flagged inline (`apfel  1.5.0  → 1.8.3  brew upgrade
 apfel`) — read from **brew's local index**, so even this stays offline: it's
 exactly as fresh as your last `brew update`, and the summary line says so.
 
@@ -189,7 +210,7 @@ sheersweep leftovers --dry-run   # preview only
 
 The point isn't finding *more* — it's being **honest about what's actually junk**:
 
-- **🧟 Dead** — the program it launches no longer exists (e.g. an EA Origin helper
+- **Dead** — the program it launches no longer exists (e.g. an EA Origin helper
   whose binary is gone). Safe to remove.
 - **⚠️ Likely orphan** — it references an app that's now missing (e.g. a
   discontinued app's self-remover). Shown for review; removed only if you opt in.
@@ -233,9 +254,9 @@ The preview is the anti-black-box payload made concrete — not "Junk: 3.8 GB �
 Clean", but:
 
 ```
-♻️  ~/Developer/snapsift
+▸ ~/Developer/snapsift
    1) app/.build           773M   rebuild: swift build    · 14d untouched
-♻️  ~/Developer/motifmint
+▸ ~/Developer/motifmint
    2) node_modules         263M   rebuild: npm install    · 31d untouched
 ```
 
