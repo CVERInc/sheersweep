@@ -460,51 +460,39 @@ t() {
       esac ;;
     dg_orphans)   # {n} · {size}
       case "$SS_LANG" in
-        ja-JP) echo "🧟 削除済みアプリ {n} 件がデータ {size} を残しています   → sheersweep uninstall" ;;
-        zh-TW) echo "🧟 {n} 個已移除的 App 留下了 {size} 的資料   → sheersweep uninstall" ;;
-        zh-Hans) echo "🧟 {n} 个已移除的 App 留下了 {size} 的数据   → sheersweep uninstall" ;;
-        ko-KR) echo "🧟 제거된 앱 {n}개가 {size}의 데이터를 남겼습니다   → sheersweep uninstall" ;;
-        es-ES) echo "🧟 {size} de datos dejados por apps eliminadas ({n})   → sheersweep uninstall" ;;
-        de-DE) echo "🧟 {size} an Daten von entfernten Apps ({n})   → sheersweep uninstall" ;;
-        fr-FR) echo "🧟 {size} de données laissées par des apps supprimées ({n})   → sheersweep uninstall" ;;
-        pt-BR) echo "🧟 {size} de dados deixados por apps removidos ({n})   → sheersweep uninstall" ;;
-        *)     echo "🧟 {size} of data left behind by removed apps ({n})   → sheersweep uninstall" ;;
+        ja-JP) echo "· 削除済みアプリ {n} 件がデータ {size} を残しています   → sheersweep uninstall" ;;
+        zh-TW) echo "· {n} 個已移除的 App 留下了 {size} 的資料   → sheersweep uninstall" ;;
+        zh-Hans) echo "· {n} 个已移除的 App 留下了 {size} 的数据   → sheersweep uninstall" ;;
+        ko-KR) echo "· 제거된 앱 {n}개가 {size}의 데이터를 남겼습니다   → sheersweep uninstall" ;;
+        es-ES) echo "· {size} de datos dejados por apps eliminadas ({n})   → sheersweep uninstall" ;;
+        de-DE) echo "· {size} an Daten von entfernten Apps ({n})   → sheersweep uninstall" ;;
+        fr-FR) echo "· {size} de données laissées par des apps supprimées ({n})   → sheersweep uninstall" ;;
+        pt-BR) echo "· {size} de dados deixados por apps removidos ({n})   → sheersweep uninstall" ;;
+        *)     echo "· {size} of data left behind by removed apps ({n})   → sheersweep uninstall" ;;
       esac ;;
     dg_reclaim)   # {n} · {size}
       case "$SS_LANG" in
-        ja-JP) echo "♻️ 再ビルド可能なビルド産物が {size}（{n} フォルダ）   → sheersweep reclaim" ;;
-        zh-TW) echo "♻️ 可重建的 build 產物共 {size}（{n} 個資料夾）   → sheersweep reclaim" ;;
-        zh-Hans) echo "♻️ 可重建的 build 产物共 {size}（{n} 个文件夹）   → sheersweep reclaim" ;;
-        ko-KR) echo "♻️ 다시 빌드 가능한 산출물 {size}({n}개 폴더)   → sheersweep reclaim" ;;
-        es-ES) echo "♻️ {size} de artefactos de build reconstruibles ({n})   → sheersweep reclaim" ;;
-        de-DE) echo "♻️ {size} an neu baubaren Build-Artefakten ({n})   → sheersweep reclaim" ;;
-        fr-FR) echo "♻️ {size} d'artefacts de build reconstructibles ({n})   → sheersweep reclaim" ;;
-        pt-BR) echo "♻️ {size} de artefatos de build reconstruíveis ({n})   → sheersweep reclaim" ;;
-        *)     echo "♻️ {size} of rebuildable build output ({n})   → sheersweep reclaim" ;;
+        ja-JP) echo "· 再ビルド可能なビルド産物が {size}（{n} フォルダ）   → sheersweep reclaim" ;;
+        zh-TW) echo "· 可重建的 build 產物共 {size}（{n} 個資料夾）   → sheersweep reclaim" ;;
+        zh-Hans) echo "· 可重建的 build 产物共 {size}（{n} 个文件夹）   → sheersweep reclaim" ;;
+        ko-KR) echo "· 다시 빌드 가능한 산출물 {size}({n}개 폴더)   → sheersweep reclaim" ;;
+        es-ES) echo "· {size} de artefactos de build reconstruibles ({n})   → sheersweep reclaim" ;;
+        de-DE) echo "· {size} an neu baubaren Build-Artefakten ({n})   → sheersweep reclaim" ;;
+        fr-FR) echo "· {size} d'artefacts de build reconstructibles ({n})   → sheersweep reclaim" ;;
+        pt-BR) echo "· {size} de artefatos de build reconstruíveis ({n})   → sheersweep reclaim" ;;
+        *)     echo "· {size} of rebuildable build output ({n})   → sheersweep reclaim" ;;
       esac ;;
     dg_outdated)   # {n}
       case "$SS_LANG" in
-        ja-JP) echo "↑ Homebrew formula {n} 件に更新があります   → sheersweep tools" ;;
-        zh-TW) echo "↑ {n} 個 Homebrew formula 有新版   → sheersweep tools" ;;
-        zh-Hans) echo "↑ {n} 个 Homebrew formula 有新版   → sheersweep tools" ;;
-        ko-KR) echo "↑ Homebrew formula {n}개에 업데이트가 있습니다   → sheersweep tools" ;;
-        es-ES) echo "↑ actualizaciones de Homebrew disponibles: {n}   → sheersweep tools" ;;
-        de-DE) echo "↑ Homebrew-Updates verfügbar: {n}   → sheersweep tools" ;;
-        fr-FR) echo "↑ mises à jour Homebrew disponibles : {n}   → sheersweep tools" ;;
-        pt-BR) echo "↑ atualizações do Homebrew disponíveis: {n}   → sheersweep tools" ;;
-        *)     echo "↑ Homebrew formula updates available: {n}   → sheersweep tools" ;;
-      esac ;;
-    dg_ai)   # {size}
-      case "$SS_LANG" in
-        ja-JP) echo "🤖 AI セッションの記録が {size} — 会話履歴は再生成できないため、お使いの AI ツール自身の掃除機能で" ;;
-        zh-TW) echo "🤖 AI session 紀錄佔 {size}——對話史不可再生，請用你的 AI 工具自己的清理功能" ;;
-        zh-Hans) echo "🤖 AI session 记录占 {size}——对话史不可再生，请用你的 AI 工具自己的清理功能" ;;
-        ko-KR) echo "🤖 AI 세션 기록이 {size} — 대화 기록은 재생성할 수 없으니 AI 도구 자체의 정리 기능으로" ;;
-        es-ES) echo "🤖 los archivos de sesiones de IA ocupan {size} — el historial no es regenerable; usa la limpieza propia de tu herramienta de IA" ;;
-        de-DE) echo "🤖 KI-Sitzungsarchive belegen {size} — Verläufe sind nicht regenerierbar; nutze die eigene Aufräumfunktion deines KI-Tools" ;;
-        fr-FR) echo "🤖 les archives de sessions IA occupent {size} — l'historique n'est pas régénérable ; utilisez le nettoyage propre de votre outil IA" ;;
-        pt-BR) echo "🤖 arquivos de sessões de IA ocupam {size} — o histórico não é regenerável; use a limpeza da própria ferramenta de IA" ;;
-        *)     echo "🤖 AI session archives hold {size} — history isn't regenerable; use your AI tool's own cleanup" ;;
+        ja-JP) echo "· Homebrew formula {n} 件に更新があります   → sheersweep tools" ;;
+        zh-TW) echo "· {n} 個 Homebrew formula 有新版   → sheersweep tools" ;;
+        zh-Hans) echo "· {n} 个 Homebrew formula 有新版   → sheersweep tools" ;;
+        ko-KR) echo "· Homebrew formula {n}개에 업데이트가 있습니다   → sheersweep tools" ;;
+        es-ES) echo "· actualizaciones de Homebrew disponibles: {n}   → sheersweep tools" ;;
+        de-DE) echo "· Homebrew-Updates verfügbar: {n}   → sheersweep tools" ;;
+        fr-FR) echo "· mises à jour Homebrew disponibles : {n}   → sheersweep tools" ;;
+        pt-BR) echo "· atualizações do Homebrew disponíveis: {n}   → sheersweep tools" ;;
+        *)     echo "· Homebrew formula updates available: {n}   → sheersweep tools" ;;
       esac ;;
     dg_group_act)
       case "$SS_LANG" in
@@ -596,15 +584,15 @@ t() {
       esac ;;
     dg_disk)   # {pct} · {used} · {free}
       case "$SS_LANG" in
-        ja-JP) echo "📊 ディスク使用率 {pct}%（{used} 使用中、{free} 空き）— 上のスイープが片づけるのは再生成できるゴミだけ" ;;
-        zh-TW) echo "📊 磁碟已用 {pct}%（{used} 使用中、{free} 可用）——上面的掃除只清除可再生的垃圾" ;;
-        zh-Hans) echo "📊 磁盘已用 {pct}%（{used} 使用中、{free} 可用）——上面的扫除只清除可再生的垃圾" ;;
-        ko-KR) echo "📊 디스크 {pct}% 사용 중({used} 사용, {free} 여유) — 위 스윕이 지우는 것은 재생성 가능한 정크뿐" ;;
-        es-ES) echo "📊 disco al {pct}% ({used} usado, {free} libre) — el barrido de arriba solo elimina basura regenerable" ;;
-        de-DE) echo "📊 Festplatte zu {pct}% belegt (davon {used} genutzt, {free} frei) — der Sweep oben löscht nur regenerierbare Dateien" ;;
-        fr-FR) echo "📊 disque rempli à {pct}% ({used} utilisé, {free} libre) — le balayage ci-dessus ne supprime que des fichiers régénérables" ;;
-        pt-BR) echo "📊 disco em {pct}% ({used} usado, {free} livre) — a limpeza acima só remove arquivos regeneráveis" ;;
-        *)     echo "📊 Disk is {pct}% full ({used} used, {free} free) — the sweep above only clears regenerable junk" ;;
+        ja-JP) echo "· ディスク使用率 {pct}%（{used} 使用中、{free} 空き）— 上のスイープが片づけるのは再生成できるゴミだけ" ;;
+        zh-TW) echo "· 磁碟已用 {pct}%（{used} 使用中、{free} 可用）——上面的掃除只清除可再生的垃圾" ;;
+        zh-Hans) echo "· 磁盘已用 {pct}%（{used} 使用中、{free} 可用）——上面的扫除只清除可再生的垃圾" ;;
+        ko-KR) echo "· 디스크 {pct}% 사용 중({used} 사용, {free} 여유) — 위 스윕이 지우는 것은 재생성 가능한 정크뿐" ;;
+        es-ES) echo "· disco al {pct}% ({used} usado, {free} libre) — el barrido de arriba solo elimina basura regenerable" ;;
+        de-DE) echo "· Festplatte zu {pct}% belegt (davon {used} genutzt, {free} frei) — der Sweep oben löscht nur regenerierbare Dateien" ;;
+        fr-FR) echo "· disque rempli à {pct}% ({used} utilisé, {free} libre) — le balayage ci-dessus ne supprime que des fichiers régénérables" ;;
+        pt-BR) echo "· disco em {pct}% ({used} usado, {free} livre) — a limpeza acima só remove arquivos regeneráveis" ;;
+        *)     echo "· Disk is {pct}% full ({used} used, {free} free) — the sweep above only clears regenerable junk" ;;
       esac ;;
     rc_usage)
       case "$SS_LANG" in
@@ -1167,15 +1155,15 @@ t() {
       esac ;;
     tl_upgradable)   # {n}
       case "$SS_LANG" in
-        ja-JP) echo "↑ {n} 件アップグレード可能（brew のローカル索引基準＝最後に brew update した時点）。" ;;
-        zh-TW) echo "↑ {n} 個可升級（依 brew 本地索引＝你上次 brew update 的時點）。" ;;
-        zh-Hans) echo "↑ {n} 个可升级（依 brew 本地索引＝你上次 brew update 的时间点）。" ;;
-        ko-KR) echo "↑ {n}개 업그레이드 가능(brew 로컬 색인 기준 = 마지막 brew update 시점)." ;;
-        es-ES) echo "↑ {n} actualizables (según el índice local de brew — tan fresco como tu último brew update)." ;;
-        de-DE) echo "↑ {n} aktualisierbar (laut brews lokalem Index — Stand deines letzten brew update)." ;;
-        fr-FR) echo "↑ {n} mises à jour possibles (selon l'index local de brew — daté de votre dernier brew update)." ;;
-        pt-BR) echo "↑ {n} atualizáveis (pelo índice local do brew — do seu último brew update)." ;;
-        *)     echo "↑ {n} upgradable (per brew's local index — as fresh as your last brew update)." ;;
+        ja-JP) echo "· {n} 件アップグレード可能（brew のローカル索引基準＝最後に brew update した時点）。" ;;
+        zh-TW) echo "· {n} 個可升級（依 brew 本地索引＝你上次 brew update 的時點）。" ;;
+        zh-Hans) echo "· {n} 个可升级（依 brew 本地索引＝你上次 brew update 的时间点）。" ;;
+        ko-KR) echo "· {n}개 업그레이드 가능(brew 로컬 색인 기준 = 마지막 brew update 시점)." ;;
+        es-ES) echo "· {n} actualizables (según el índice local de brew — tan fresco como tu último brew update)." ;;
+        de-DE) echo "· {n} aktualisierbar (laut brews lokalem Index — Stand deines letzten brew update)." ;;
+        fr-FR) echo "· {n} mises à jour possibles (selon l'index local de brew — daté de votre dernier brew update)." ;;
+        pt-BR) echo "· {n} atualizáveis (pelo índice local do brew — do seu último brew update)." ;;
+        *)     echo "· {n} upgradable (per brew's local index — as fresh as your last brew update)." ;;
       esac ;;
     tl_nobrew)
       case "$SS_LANG" in
@@ -3416,6 +3404,23 @@ brew_run() {
   fi
 }
 
+# Is clikae installed? Used only to decide whether the AI-archives digest line
+# needs to spell out the URL (someone who already has it doesn't). Same sudo-PATH
+# care as brew_locate: under sudo the invoker's ~/.local/bin isn't on PATH, so
+# check the fixed Homebrew locations first, then fall back to the real user's
+# login shell. A miss just means we print the URL — harmless if they do have it.
+clikae_bin() {   # echo path, empty if not found
+  local b
+  for b in /opt/homebrew/bin/clikae /usr/local/bin/clikae; do
+    [ -x "$b" ] && { echo "$b"; return; }
+  done
+  if [ "$(id -u)" -eq 0 ]; then
+    sudo -u "$REAL_USER" -i sh -c 'command -v clikae' 2>/dev/null
+  else
+    command -v clikae 2>/dev/null
+  fi
+}
+
 # uninstall a Homebrew formula by delegating to brew. Returns 0 = done or
 # cancelled · 1 = refused/failed · 2 = not a brew formula (caller falls through).
 do_uninstall_brew() {
@@ -3558,7 +3563,7 @@ do_tools() {
         sz="$(du -sh "$cellar/$name" 2>/dev/null | cut -f1)"
         newv="$(printf '%s\n' "$outdated" | LC_ALL=C awk -v n="$name" '$1 == n {print $NF; exit}')"
         if [ -n "$newv" ]; then
-          printf '   %6s  %-24s %-12s ↑ %-10s brew upgrade %s\n' "${sz:-?}" "$name" "$vers" "$newv" "$name"
+          printf '   %6s  %-24s %-12s → %-10s brew upgrade %s\n' "${sz:-?}" "$name" "$vers" "$newv" "$name"
           up=$((up + 1))
         else
           printf '   %6s  %-24s %s\n' "${sz:-?}" "$name" "$vers"
@@ -4343,18 +4348,18 @@ dg_disk_stat() {   # → "pct used_kb free_kb"
 }
 
 
-dg_ai_kb() {   # $@ = homes → total KB (0 if none)
-  local h d paths=()
+dg_ai_kb() {   # $@ = homes → "KB claude codex clikae" (flags 1/0; all 0 if none)
+  local h d paths=() fc=0 fx=0 fk=0
   for h in "$@"; do
-    for d in "$h/.claude/projects" "$h/.codex/sessions"; do
-      [ -d "$d" ] && paths+=("$d")
-    done
+    [ -d "$h/.claude/projects" ] && { paths+=("$h/.claude/projects"); fc=1; }
+    [ -d "$h/.codex/sessions" ]  && { paths+=("$h/.codex/sessions");  fx=1; }
     for d in "$h/.clikae/profiles"/*/*/projects; do
-      [ -d "$d" ] && paths+=("$d")
+      [ -d "$d" ] && { paths+=("$d"); fk=1; }
     done
   done
-  [ "${#paths[@]}" -eq 0 ] && { echo 0; return 0; }
-  du -sk "${paths[@]}" 2>/dev/null | awk '{s += $1} END {print s + 0}'
+  [ "${#paths[@]}" -eq 0 ] && { echo "0 0 0 0"; return 0; }
+  local kb; kb="$(du -sk "${paths[@]}" 2>/dev/null | awk '{s += $1} END {print s + 0}')"
+  echo "${kb:-0} $fc $fx $fk"
 }
 
 # Outdated formulae among the leaves — the same offline read `tools` flags.
@@ -4424,7 +4429,7 @@ dg_scan_start() {
 
 # Render one finder's line ("" = it has nothing worth a line).
 dg_line() {   # $1 = result key
-  local n kb m
+  local n kb m fc fx fk roots url
   case "$1" in
     orph) read -r n kb < "$DG_DIR/orph"
           [ "${n:-0}" -gt 0 ] || return 0
@@ -4435,9 +4440,26 @@ dg_line() {   # $1 = result key
     brew) read -r n < "$DG_DIR/brew"
           [ "${n:-0}" -gt 0 ] || return 0
           m="$(t dg_outdated)"; printf '%s' "${m//\{n\}/$n}" ;;
-    ai)   read -r kb < "$DG_DIR/ai"
+    ai)   read -r kb fc fx fk < "$DG_DIR/ai"
           [ "${kb:-0}" -ge 102400 ] || return 0   # only worth a line from ~100 MB
-          m="$(t dg_ai)"; printf '%s' "${m//\{size\}/$(od_human_kb "$kb")}" ;;
+          # Two lines, in the map's language: size-first with the actual roots as
+          # the label (only the ones that exist — no phantom ~/.codex if there's
+          # no codex), then the one real next step. sheersweep can't clean these
+          # itself (conversation history isn't regenerable — its own safety net is
+          # "regenerable XOR reversible", and this is neither), so it points the
+          # way, exactly as it points other accounts at System Settings. clikae
+          # clean is that way; the URL shows only when clikae isn't already here.
+          # literal ~ is intentional below — display text (the path as a human
+          # types it), never a path we resolve here.
+          roots=""
+          # shellcheck disable=SC2088
+          [ "${fc:-0}" -eq 1 ] && roots="~/.claude/projects"
+          # shellcheck disable=SC2088
+          [ "${fx:-0}" -eq 1 ] && roots="${roots:+$roots · }~/.codex/sessions"
+          # shellcheck disable=SC2088
+          [ "${fk:-0}" -eq 1 ] && roots="${roots:+$roots · }~/.clikae/profiles"
+          url=""; [ -z "$(clikae_bin)" ] && url=" (https://oss.cver.net/clikae)"
+          printf '· %s (%s)\n     → clikae clean%s' "$(od_human_kb "$kb")" "$roots" "$url" ;;
     disk) read -r pct used free < "$DG_DIR/disk"
           [ "${pct:-0}" -ge 85 ] || return 0      # only speaks up when it matters
           m="$(t dg_disk)"; m="${m//\{pct\}/$pct}"

@@ -851,16 +851,16 @@ DG_DIR="$SBX/dg"; mkdir -p "$DG_DIR"
 printf '3 1048576\n' > "$DG_DIR/orph"     # 3 orphans · 1.0G
 printf '2 2097152\n' > "$DG_DIR/rc"       # 2 folders · 2.0G
 printf '4\n'         > "$DG_DIR/brew"     # 4 outdated
-printf '204800\n'    > "$DG_DIR/ai"       # 200M ≥ threshold
+printf '204800 1 1 1\n' > "$DG_DIR/ai"    # 200M ≥ threshold · all three roots present
 printf '40 1 1\n'    > "$DG_DIR/disk"     # roomy disk → must stay silent
 true & DG_PID=$!; wait "$DG_PID" 2>/dev/null   # a finished pid → zero grace wait
 out="$(dg_print)"
-g1=0; case "$out" in *"🧟"*1.0G*"(3)"*) g1=1 ;; esac
-g2=0; case "$out" in *"♻️"*2.0G*) g2=1 ;; esac
-g3=0; case "$out" in *"↑"*4*) g3=1 ;; esac
-g4=0; case "$out" in *"🤖"*200M*) g4=1 ;; esac
+g1=0; case "$out" in *"· 1.0G of data left behind"*"(3)"*) g1=1 ;; esac
+g2=0; case "$out" in *"· 2.0G of rebuildable build output"*) g2=1 ;; esac
+g3=0; case "$out" in *"· Homebrew formula updates available: 4"*) g3=1 ;; esac
+g4=0; case "$out" in *200M*.claude/projects*"→ clikae clean"*) g4=1 ;; esac
 DG_DIR="$SBX/dg2"; mkdir -p "$DG_DIR"
-printf '0 0\n' > "$DG_DIR/orph"; printf '10240\n' > "$DG_DIR/ai"   # zero + sub-100M
+printf '0 0\n' > "$DG_DIR/orph"; printf '10240 1 0 0\n' > "$DG_DIR/ai"   # zero + sub-100M
 printf '40 1 1\n' > "$DG_DIR/disk"                                # silent
 true & DG_PID=$!; wait "$DG_PID" 2>/dev/null
 out2="$(dg_print)"
@@ -870,14 +870,18 @@ if [ "$g1$g2$g3$g4$g5" = "11111" ]; then
 else
   fail "digest wrong (orph=$g1 rc=$g2 brew=$g3 ai=$g4 empty=$g5) out=[$out] out2=[$out2]"
 fi
-# dg_ai_kb: named session dirs only, homes passed explicitly
+# dg_ai_kb: returns "KB claude codex clikae" — size + which roots are present.
 mkdir -p "$SBX/h1/.claude/projects" "$SBX/h1/.clikae/profiles/claude/l/projects"
 dd if=/dev/zero of="$SBX/h1/.claude/projects/s.jsonl" bs=1024 count=64 2>/dev/null
-kb="$(dg_ai_kb "$SBX/h1")"; kb0="$(dg_ai_kb "$SBX/empty-home")"
-if [ "${kb:-0}" -ge 64 ] && [ "${kb0:-x}" = "0" ]; then
-  pass "dg_ai_kb: measures named session dirs; empty home → 0"
+read -r kb fc fx fk < <(dg_ai_kb "$SBX/h1")           # h1 has claude + clikae, NO codex
+read -r kb0 fc0 fx0 fk0 < <(dg_ai_kb "$SBX/empty-home")
+# size ok; claude & clikae flagged present, codex flagged absent (the path-filter contract);
+# empty home → all zero. fx0/fc0 read for shellcheck; asserted via the all-zero line.
+if [ "${kb:-0}" -ge 64 ] && [ "$fc" = 1 ] && [ "$fx" = 0 ] && [ "$fk" = 1 ] \
+   && [ "$kb0 $fc0 $fx0 $fk0" = "0 0 0 0" ]; then
+  pass "dg_ai_kb: measures roots AND flags which exist (claude+clikae here, no codex); empty → all 0"
 else
-  fail "dg_ai_kb wrong (kb=$kb kb0=$kb0)"
+  fail "dg_ai_kb wrong (h1=[$kb $fc $fx $fk] empty=[$kb0 $fc0 $fx0 $fk0])"
 fi
 teardown
 
