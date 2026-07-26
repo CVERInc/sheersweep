@@ -6,6 +6,28 @@ project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [0.11.0]
 
+### Changed — every verb now speaks one visual language
+
+The output was a patchwork: `====`/`----` rules, and emoji whose spatial meaning
+fought their intent. It's now one grammar, shared by the digest, the disk map,
+and every verb — reached by a long back-and-forth over what each mark actually
+earns its place doing:
+
+- **No horizontal rules.** A `▸` group header and a blank line segment the output;
+  a rule only implies a boundary without enclosing anything. 33 of them, gone.
+- **Two-line entries** where an item has a next step: `· size (what)` then, indented
+  beneath, `→ where to go`. The action column can't be thrown off by a CJK name in
+  the label, because the label sits ragged-right.
+- **Each symbol does one job.** `·` an item · `→` the next step *or* a version
+  transition (`1.8.3 → 1.8.4`) · `▸` a group · `↺` how to rebuild · `✅ 🔴 ⚠️ ❌ 🔒`
+  state (safe vs. dangerous — the one thing plain text can't carry as fast).
+- **Retired the decorations that carried no information a header didn't:** `🧰 🔺
+  ♻️ 🧟 🤖 📊` as signage, and the line-start `↑` that read as "the line above."
+- **One warning per group, not per row** — five stacked ⚠️ stop being read.
+- The AI-session-archives digest line now points at `clikae clean` (its URL shown
+  only when clikae isn't installed) — the honest next step for history sheersweep
+  won't touch, the same way it points other accounts at System Settings.
+
 ### Added — the sweep now tells you when it's a drop in the bucket
 
 The sweep only ever clears regenerable junk, which is a feature — but on a
