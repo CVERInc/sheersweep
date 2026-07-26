@@ -72,6 +72,30 @@ t() {
         pt-BR) echo "Limpar todas as contas exige privilégios de administrador — reexecutando com sudo…" ;;
         *)     echo "Sweeping every account needs admin rights — re-running with sudo…" ;;
       esac ;;
+    run_note_real)   # one notice for the whole run — narration, so it goes to stderr
+      case "$SS_LANG" in
+        ja-JP) echo "掃除して計測中 — ディスクが一杯だと少し時間がかかります" ;;
+        zh-TW) echo "正在清掃並測量——磁碟滿時需要一點時間" ;;
+        zh-Hans) echo "正在清扫并测量——磁盘满时需要一点时间" ;;
+        ko-KR) echo "청소하고 측정하는 중 — 디스크가 가득 차면 잠시 걸립니다" ;;
+        es-ES) echo "barriendo y midiendo — un momento en un disco lleno" ;;
+        de-DE) echo "räume auf und messe — auf einer vollen Platte dauert es einen Moment" ;;
+        fr-FR) echo "balayage et mesure — un moment sur un disque plein" ;;
+        pt-BR) echo "limpando e medindo — um momento em um disco cheio" ;;
+        *)     echo "sweeping and measuring — a moment on a full disk" ;;
+      esac ;;
+    run_note_dry)   # the promise in plain words, not the jargon "DRY-RUN"
+      case "$SS_LANG" in
+        ja-JP) echo "何も削除しません — ディスクが一杯だと少し時間がかかります" ;;
+        zh-TW) echo "不會刪除任何東西——磁碟滿時需要一點時間" ;;
+        zh-Hans) echo "不会删除任何内容——磁盘满时需要一点时间" ;;
+        ko-KR) echo "아무것도 삭제하지 않습니다 — 디스크가 가득 차면 잠시 걸립니다" ;;
+        es-ES) echo "no se eliminará nada — un momento en un disco lleno" ;;
+        de-DE) echo "es wird nichts gelöscht — auf einer vollen Platte dauert es einen Moment" ;;
+        fr-FR) echo "rien ne sera supprimé — un moment sur un disque plein" ;;
+        pt-BR) echo "nada será apagado — um momento em um disco cheio" ;;
+        *)     echo "nothing will be deleted — a moment on a full disk" ;;
+      esac ;;
     dry_banner)
       case "$SS_LANG" in
         ja-JP) echo "🧪 ドライラン — 何も削除しません" ;;
@@ -90,23 +114,23 @@ t() {
         zh-TW) echo "[ DONE ] 釋出 {gb} GB · 使用率 {before}% → {after}%" ;;
         zh-Hans) echo "[ DONE ] 释出 {gb} GB · 使用率 {before}% → {after}%" ;;
         ko-KR) echo "[ DONE ] {gb} GB 확보 · 사용률 {before}% → {after}%" ;;
-        es-ES) echo "[ DONE ] {gb} GB liberados · {before}% → {after}% lleno" ;;
-        de-DE) echo "[ DONE ] {gb} GB frei gemacht · {before}% → {after}% belegt" ;;
-        fr-FR) echo "[ DONE ] {gb} GB libérés · {before}% → {after}% plein" ;;
-        pt-BR) echo "[ DONE ] {gb} GB liberados · {before}% → {after}% cheio" ;;
-        *)     echo "[ DONE ] freed {gb} GB · {before}% → {after}% full" ;;
+        es-ES) echo "[ DONE ] {gb} GB liberados · {before}% → {after}%" ;;
+        de-DE) echo "[ DONE ] {gb} GB frei · {before}% → {after}%" ;;
+        fr-FR) echo "[ DONE ] {gb} GB libérés · {before}% → {after}%" ;;
+        pt-BR) echo "[ DONE ] {gb} GB liberados · {before}% → {after}%" ;;
+        *)     echo "[ DONE ] {gb} GB freed · {before}% → {after}%" ;;
       esac ;;
     sweep_result_dry)   # a preview freed nothing — no invented delta
       case "$SS_LANG" in
-        ja-JP) echo "🧪 プレビュー — 何も削除していません。上に挙げた項目が対象です。" ;;
-        zh-TW) echo "🧪 預覽——什麼都沒刪。上面列出的就是會清的。" ;;
-        zh-Hans) echo "🧪 预览——什么都没删。上面列出的就是会清的。" ;;
-        ko-KR) echo "🧪 미리보기 — 아무것도 지우지 않았습니다. 위에 나열된 항목이 대상입니다." ;;
-        es-ES) echo "🧪 vista previa — no se borró nada. Lo listado arriba es lo que se limpiaría." ;;
-        de-DE) echo "🧪 Vorschau — nichts gelöscht. Die Zeilen oben zeigen, was bereinigt würde." ;;
-        fr-FR) echo "🧪 aperçu — rien supprimé. Les lignes ci-dessus montrent ce qui serait nettoyé." ;;
-        pt-BR) echo "🧪 prévia — nada foi apagado. As linhas acima mostram o que seria limpo." ;;
-        *)     echo "🧪 preview — nothing deleted. The lines above are what would be cleaned." ;;
+        ja-JP) echo "プレビュー — 何も削除していません。上に挙げた項目が対象です。" ;;
+        zh-TW) echo "預覽——什麼都沒刪。上面列出的就是會清的。" ;;
+        zh-Hans) echo "预览——什么都没删。上面列出的就是会清的。" ;;
+        ko-KR) echo "미리보기 — 아무것도 지우지 않았습니다. 위에 나열된 항목이 대상입니다." ;;
+        es-ES) echo "vista previa — no se borró nada. Lo listado arriba es lo que se limpiaría." ;;
+        de-DE) echo "Vorschau — nichts gelöscht. Die Zeilen oben zeigen, was bereinigt würde." ;;
+        fr-FR) echo "aperçu — rien supprimé. Les lignes ci-dessus montrent ce qui serait nettoyé." ;;
+        pt-BR) echo "prévia — nada foi apagado. As linhas acima mostram o que seria limpo." ;;
+        *)     echo "preview — nothing deleted. The lines above are what would be cleaned." ;;
       esac ;;
     acct)
       case "$SS_LANG" in
@@ -156,41 +180,41 @@ t() {
         pt-BR) echo "limpeza do homebrew (como {user})" ;;
         *)     echo "homebrew cleanup (as {user})" ;;
       esac ;;
-    snap_dry)
+    snap_group)   # one heading for both modes — the run states its mode once, up top
       case "$SS_LANG" in
-        ja-JP) echo "ローカルスナップショット（ドライランでは保持）" ;;
-        zh-TW) echo "本機快照（預演保留）" ;;
-        zh-Hans) echo "本机快照（预演保留）" ;;
-        ko-KR) echo "로컬 스냅샷(시험 실행에서는 유지)" ;;
-        es-ES) echo "instantáneas locales (la simulación las conserva)" ;;
-        de-DE) echo "lokale Schnappschüsse (der Probelauf behält sie)" ;;
-        fr-FR) echo "instantanés locaux (la simulation les conserve)" ;;
-        pt-BR) echo "instantâneos locais (a simulação os mantém)" ;;
-        *)     echo "local snapshots (dry-run keeps them)" ;;
+        ja-JP) echo "ローカルスナップショット" ;;
+        zh-TW) echo "本機快照" ;;
+        zh-Hans) echo "本机快照" ;;
+        ko-KR) echo "로컬 스냅샷" ;;
+        es-ES) echo "instantáneas locales" ;;
+        de-DE) echo "lokale Snapshots" ;;
+        fr-FR) echo "instantanés locaux" ;;
+        pt-BR) echo "instantâneos locais" ;;
+        *)     echo "local snapshots" ;;
       esac ;;
-    snap_count)   # {n}
+    snap_present)   # a state word, not a noun — sidesteps nine locales of plurals
       case "$SS_LANG" in
-        ja-JP) echo "ローカルスナップショットが {n} 個 — 本番実行で削除し空き容量を解放します" ;;
-        zh-TW) echo "目前有 {n} 個本機快照——正式執行會刪掉以釋放空間" ;;
-        zh-Hans) echo "目前有 {n} 个本机快照——正式运行会删除它们以释放空间" ;;
-        ko-KR) echo "로컬 스냅샷 {n}개 있음 — 실제 실행 시 삭제하여 공간을 확보합니다" ;;
-        es-ES) echo "hay {n} instantánea(s) local(es) — una ejecución real las elimina para liberar espacio" ;;
-        de-DE) echo "{n} lokale Schnappschüsse vorhanden — ein echter Lauf löscht sie, um Platz freizugeben" ;;
-        fr-FR) echo "{n} instantané(s) local(aux) présent(s) — une exécution réelle les supprime pour libérer l'espace" ;;
-        pt-BR) echo "{n} instantâneo(s) local(is) — uma execução real os apaga para liberar espaço" ;;
-        *)     echo "{n} local snapshot(s) present — a real run deletes them to free space" ;;
+        ja-JP) echo "あり" ;;
+        zh-TW) echo "存在" ;;
+        zh-Hans) echo "存在" ;;
+        ko-KR) echo "있음" ;;
+        es-ES) echo "presentes" ;;
+        de-DE) echo "vorhanden" ;;
+        fr-FR) echo "présents" ;;
+        pt-BR) echo "presentes" ;;
+        *)     echo "present" ;;
       esac ;;
-    snap_release)
+    snap_released)
       case "$SS_LANG" in
-        ja-JP) echo "ローカルスナップショットを解放中" ;;
-        zh-TW) echo "釋放本機快照" ;;
-        zh-Hans) echo "释放本机快照" ;;
-        ko-KR) echo "로컬 스냅샷 해제 중" ;;
-        es-ES) echo "liberando instantáneas locales" ;;
-        de-DE) echo "lokale Schnappschüsse werden freigegeben" ;;
-        fr-FR) echo "libération des instantanés locaux" ;;
-        pt-BR) echo "liberando instantâneos locais" ;;
-        *)     echo "releasing local snapshots" ;;
+        ja-JP) echo "解放済み" ;;
+        zh-TW) echo "已釋放" ;;
+        zh-Hans) echo "已释放" ;;
+        ko-KR) echo "해제됨" ;;
+        es-ES) echo "liberadas" ;;
+        de-DE) echo "freigegeben" ;;
+        fr-FR) echo "libérés" ;;
+        pt-BR) echo "liberados" ;;
+        *)     echo "released" ;;
       esac ;;
     snap_fail)
       case "$SS_LANG" in
@@ -2387,7 +2411,7 @@ if [ -z "${SHEERSWEEP_LIB:-}" ]; then
   # tool world — nothing is written, no other account is read, and brew refuses
   # to run as root anyway → it must NOT demand a password.
   if [ "$(id -u)" -ne 0 ] && [ "$MODE" != "tools" ]; then
-    t escalate
+    t escalate >&2       # narration, not data — a pipe should get only the report
     exec sudo SHEERSWEEP_LANG="$SS_LANG" SHEERSWEEP_SUSPECT_MIN_MB="${SHEERSWEEP_SUSPECT_MIN_MB:-}" "$0" "$@"
   fi
   REAL_USER="${SUDO_USER:-$(id -un)}"
@@ -2397,9 +2421,22 @@ fi
 
 human()  { du -sh "$1" 2>/dev/null | cut -f1; }
 
-# A pending group heading, printed by clean() only if the group turns out to
+# A pending group heading, emitted by clean() only if the group turns out to
 # have rows (see clean). Empty = nothing pending.
 SW_GROUP=""
+
+# The sweep's rows are COLLECTED, not streamed. What a person wants at the end of
+# a run is the result, not a play-by-play — so the work happens behind one notice
+# and a heartbeat, and the finished report prints in one piece. Safe to buffer
+# here because the sweep only ever removes regenerable caches: losing that log to
+# a crash costs nothing anyone would read. (The verbs that touch real data —
+# uninstall/reclaim/leftovers — write receipts instead, and are unaffected.)
+SWEEP_OUT=""
+sw_row() {   # $1 = a row (may be empty to mean "blank line then $2")
+  if [ -n "${2:-}" ]; then SWEEP_OUT="${SWEEP_OUT}"$'\n'"$2"$'\n'
+  else SWEEP_OUT="${SWEEP_OUT}$1"$'\n'; fi
+}
+sw_flush() { [ -n "$SWEEP_OUT" ] && printf '%s' "$SWEEP_OUT"; SWEEP_OUT=""; }
 free_kb() { df -k /System/Volumes/Data | awk '/Data$/{print $4}'; }
 
 # Strip terminal control bytes (C0 + DEL) from an untrusted string before it is
@@ -2417,6 +2454,7 @@ clean() {
   local p="$1" sz
   [ -d "$p" ] || return 0
   sz="$(human "$p")"
+  printf '.' >&2                     # one tick per path weighed — the run's proof of life
   # `du -sh | cut -f1` pads its size on the left ("  0B", " 24M"), so comparing
   # the raw string to "0B" never matched and every empty directory printed a
   # "0B" line. Strip the padding before the test; the printf below re-pads.
@@ -2425,12 +2463,11 @@ clean() {
   # A group's header waits here until the group has something in it — otherwise
   # an account with nothing to clear leaves a heading over empty space. Same
   # no-empty-group rule the report groups follow.
-  if [ -n "${SW_GROUP:-}" ]; then printf '\n%s\n' "$SW_GROUP"; SW_GROUP=""; fi
+  if [ -n "${SW_GROUP:-}" ]; then sw_row "" "$SW_GROUP"; SW_GROUP=""; fi
   # No per-row state marker. Whether this run deletes or previews is a property
-  # of the RUN, not of each line — it's announced in the banner above and again
-  # in the closing line, and stamping it on twenty rows only teaches the eye to
-  # skip it (SPEC.md: state belongs to the group).
-  printf '   · %6s  %s\n' "$sz" "$p"
+  # of the RUN, not of each line — it's stated once, up top, and stamping it on
+  # twenty rows only teaches the eye to skip it (SPEC.md: state on the group).
+  sw_row "$(printf '   · %6s  %s' "$sz" "$p")"
   [ "$DRY" -eq 1 ] || find "$p" -mindepth 1 -delete 2>/dev/null
 }
 
@@ -4464,7 +4501,6 @@ dg_heavy_measure() {   # stdout: kb<TAB>label<TAB>group  (group: act|system|floo
       *)             _dgm_one "$d" "$d" system ;;
     esac
   done
-  printf '\n' >&2
 }
 
 # "Cleanable, inside the above" — the by-category view the per-account partition
@@ -4536,7 +4572,8 @@ dg_heavy_print() {
   brew_locate
   [ -n "$BREW_BIN" ] && brew_prefix="$(cd "$(dirname "$BREW_BIN")/.." 2>/dev/null && pwd)"
 
-  t dg_heavy_scanning >&2                 # notice, then a dotted heartbeat during the walk
+  # No notice here: the run states its mode and its "this takes a moment" once,
+  # at the top, and the heartbeat has been running since the sweep began.
   local raw; raw="$(dg_heavy_measure | sort -rn -k1,1)"
 
   # The next-step action for a row (empty for none). Never a guess — only what
@@ -4658,7 +4695,9 @@ fi
 
 before="$(free_kb)"
 read -r pct_before _ _ < <(dg_disk_stat)     # capture the fullness % to close the loop at the end
-if [ "$DRY" -eq 1 ]; then t dry_banner; else echo "🧹 sheersweep"; fi
+# One notice for the whole run, on stderr: it is narration, not data — a pipe
+# gets the report, a person gets the context. The heartbeat dots follow it.
+if [ "$DRY" -eq 1 ]; then t run_note_dry >&2; else t run_note_real >&2; fi
 
 # the digest's finders start now and work UNDER the sweep (docs/digest-spec.md)
 dg_scan_start
@@ -4713,13 +4752,11 @@ if [ -n "$BREW_BIN" ]; then
   if [ "$DRY" -eq 1 ]; then bc="$(brew_run cleanup -n 2>/dev/null)"; else bc="$(brew_run cleanup 2>/dev/null)"; fi
   bsize="$(printf '%s\n' "$bc" | /usr/bin/sed -n 's/.*approximately \(.*\) of disk space\..*/\1/p' | tail -1)"
   if [ -n "$bsize" ]; then
-    printf '\n'
-    m="$(t brew)"; echo "▸ ${m//\{user\}/$REAL_USER}"
-    printf '   · %6s  %s\n' "~$bsize" "$(t brew_what)"
+    m="$(t brew)"; sw_row "" "▸ ${m//\{user\}/$REAL_USER}"
+    sw_row "$(printf '   · %6s  %s' "~$bsize" "$(t brew_what)")"
   elif [ -n "$bc" ]; then
-    printf '\n'
-    m="$(t brew)"; echo "▸ ${m//\{user\}/$REAL_USER}"
-    printf '%s\n' "$bc" | tail -1 | /usr/bin/sed 's/^/   /'
+    m="$(t brew)"; sw_row "" "▸ ${m//\{user\}/$REAL_USER}"
+    sw_row "$(printf '%s\n' "$bc" | tail -1 | /usr/bin/sed 's/^/   /')"
   fi
 fi
 
@@ -4727,29 +4764,41 @@ fi
 # tmutil is macOS-only; guard so a non-macOS host (or a stripped image) degrades
 # cleanly instead of erroring. On a real run, surface a tmutil failure rather than
 # swallowing it — a silent failure here means the freed space never came back.
+# One heading for both modes, and a count-first row like every other — the run
+# says once, at the top, whether it deletes. Counting first also lets a real run
+# report what it released instead of echoing tmutil's line, so both modes have
+# the same shape. Nothing pinned means nothing to say: no group at all.
 if ! command -v tmutil >/dev/null 2>&1; then
-  printf '\n'
-  echo "▸ $(t snap_release)"
-  echo "   $(t snap_notool)"
-elif [ "$DRY" -eq 1 ]; then
-  printf '\n'
-  echo "▸ $(t snap_dry)"
-  n="$(tmutil listlocalsnapshots / 2>/dev/null | grep -c TimeMachine)"
-  m="$(t snap_count)"; echo "   ${m//\{n\}/$n}"
+  sw_row "" "▸ $(t snap_group)"
+  sw_row "   $(t snap_notool)"
 else
-  printf '\n'
-  echo "▸ $(t snap_release)"
-  snap_out="$(tmutil deletelocalsnapshots / 2>&1)"; snap_rc=$?
-  printf '%s\n' "$snap_out" | tail -1
-  if [ "$snap_rc" -ne 0 ]; then
-    t snap_fail >&2
+  snap_n="$(tmutil listlocalsnapshots / 2>/dev/null | grep -c TimeMachine)"
+  if [ "${snap_n:-0}" -gt 0 ]; then
+    snap_word="$(t snap_present)"
+    if [ "$DRY" -eq 0 ]; then
+      if tmutil deletelocalsnapshots / >/dev/null 2>&1; then
+        snap_word="$(t snap_released)"
+      else
+        t snap_fail >&2
+      fi
+    fi
+    sw_row "" "▸ $(t snap_group)"
+    sw_row "$(printf '   · %6s  %s' "$snap_n" "$snap_word")"
   fi
 fi
 
-# ---- the report: where the space is, and what the other verbs can clean ----
-# One renderer, one language. Location partition + the by-category cleanables +
-# the beyond-reach remainder. Always runs (report only, never acts).
-dg_heavy_print
+# ---- the report ---------------------------------------------------------
+# Everything above was collected while the heartbeat ran. Close the heartbeat
+# line, then print the finished thing in one piece: what was swept, then where
+# the space is, then what the other verbs can clean.
+# dg_heavy_print already separates its streams — the map on stdout, the heartbeat
+# on stderr — so capturing it keeps the dots flowing live while the report waits.
+map_out="$(dg_heavy_print)"
+printf '\n' >&2          # close the heartbeat line: both phases are done
+sw_flush
+# $(...) strips the trailing newline, so the closing line below would glue onto
+# the map's last row. Put it back.
+printf '%s\n' "$map_out"
 
 printf '\n'
 if [ "$DRY" -eq 1 ]; then

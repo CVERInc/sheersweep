@@ -928,13 +928,14 @@ dg_heavy_measure() {
   printf '...' >&2                                  # heartbeat dots
 }
 map_out="$(dg_heavy_print 2>/dev/null)"            # the grouped map → STDOUT
-notice_out="$(dg_heavy_print 2>&1 1>/dev/null)"    # notice + heartbeat → STDERR
-g_notice=0;   case "$notice_out" in *🔍*) g_notice=1 ;; esac
+# The run's single notice moved to the top of main; the map only ticks now.
+notice_out="$(dg_heavy_print 2>&1 1>/dev/null)"    # heartbeat → STDERR
+g_notice=0;   case "$notice_out" in *.*) g_notice=1 ;; esac
 g_actgrp=0;   case "$map_out" in *"$(t dg_group_act)"*tin*) g_actgrp=1 ;; esac
 g_sysgrp=0;   case "$map_out" in *"$(t dg_group_system)"*/Library*) g_sysgrp=1 ;; esac
 g_floorgrp=0; case "$map_out" in *"$(t dg_group_floor)"*chodaict*) g_floorgrp=1 ;; esac
 if [ "$g_notice$g_actgrp$g_sysgrp$g_floorgrp" = "1111" ]; then
-  pass "dg_heavy_print: notice→stderr; three groups on stdout (act · system · here-to-stay)"
+  pass "dg_heavy_print: heartbeat→stderr; three groups on stdout (act · system · here-to-stay)"
 else
   fail "dg_heavy_print wrong (notice=$g_notice act=$g_actgrp sys=$g_sysgrp floor=$g_floorgrp) [$map_out]"
 fi
