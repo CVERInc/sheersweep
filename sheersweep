@@ -132,6 +132,18 @@ t() {
         pt-BR) echo "sistema" ;;
         *)     echo "system" ;;
       esac ;;
+    brew_what)
+      case "$SS_LANG" in
+        ja-JP) echo "Homebrew のキャッシュと古いバージョン" ;;
+        zh-TW) echo "Homebrew 的快取與舊版本" ;;
+        zh-Hans) echo "Homebrew 的缓存与旧版本" ;;
+        ko-KR) echo "Homebrew 캐시와 이전 버전" ;;
+        es-ES) echo "caché y versiones antiguas de Homebrew" ;;
+        de-DE) echo "Homebrew-Cache und alte Versionen" ;;
+        fr-FR) echo "cache et anciennes versions de Homebrew" ;;
+        pt-BR) echo "cache e versões antigas do Homebrew" ;;
+        *)     echo "Homebrew cache and old versions" ;;
+      esac ;;
     brew)   # {user}
       case "$SS_LANG" in
         ja-JP) echo "homebrew クリーンアップ（{user} として）" ;;
@@ -4688,12 +4700,26 @@ clean "/.adobeTemp"
 # even this cleanup off the network.
 brew_locate
 if [ -n "$BREW_BIN" ]; then
-  printf '\n'
-  m="$(t brew)"; echo "▸ ${m//\{user\}/$REAL_USER}"
-  if [ "$DRY" -eq 1 ]; then
-    brew_run cleanup -n 2>/dev/null | tail -3
-  else
-    brew_run cleanup 2>/dev/null | tail -3
+  # brew prints a line per removed keg and a summary. We showed `tail -3` of it,
+  # which is the one dishonest option available: a partial list under a total it
+  # doesn't add up to (the 82MB node keg was routinely among the lines cut).
+  # So: brew's own summary figure, in our shape. Both of brew's phrasings share
+  # "approximately <SIZE> of disk space." (cmd/cleanup.rb), so one pattern covers
+  # dry and real; ~ carries brew's "approximately", since this is the only size
+  # here we didn't measure ourselves. If brew ever rewords it, fall back to
+  # printing brew's own last line rather than inventing one.
+  # brew stays silent when there's nothing to clean (`unless …zero?`), and the
+  # heading is deferred, so a clean brew adds no empty group.
+  if [ "$DRY" -eq 1 ]; then bc="$(brew_run cleanup -n 2>/dev/null)"; else bc="$(brew_run cleanup 2>/dev/null)"; fi
+  bsize="$(printf '%s\n' "$bc" | /usr/bin/sed -n 's/.*approximately \(.*\) of disk space\..*/\1/p' | tail -1)"
+  if [ -n "$bsize" ]; then
+    printf '\n'
+    m="$(t brew)"; echo "▸ ${m//\{user\}/$REAL_USER}"
+    printf '   · %6s  %s\n' "~$bsize" "$(t brew_what)"
+  elif [ -n "$bc" ]; then
+    printf '\n'
+    m="$(t brew)"; echo "▸ ${m//\{user\}/$REAL_USER}"
+    printf '%s\n' "$bc" | tail -1 | /usr/bin/sed 's/^/   /'
   fi
 fi
 
