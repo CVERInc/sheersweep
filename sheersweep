@@ -364,15 +364,15 @@ t() {
       esac ;;
     un_orphan_tail)   # {n}
       case "$SS_LANG" in
-        ja-JP) echo "──── ほかに小さな残りが {n} 件（単独の設定ファイルなど） ────" ;;
-        zh-TW) echo "──── 另有 {n} 個零星殘留（單獨的偏好設定檔等） ────" ;;
-        zh-Hans) echo "──── 另有 {n} 个零星残留（单独的偏好设置文件等） ────" ;;
-        ko-KR) echo "──── 그 외 작은 잔여물 {n}개(단독 설정 파일 등) ────" ;;
-        es-ES) echo "──── {n} restos pequeños más (preferencias sueltas y similares) ────" ;;
-        de-DE) echo "──── {n} weitere kleine Reste (einzelne Einstellungsdateien u. ä.) ────" ;;
-        fr-FR) echo "──── {n} autres petits restes (préférences isolées, etc.) ────" ;;
-        pt-BR) echo "──── mais {n} sobras pequenas (preferências avulsas etc.) ────" ;;
-        *)     echo "──── {n} more small leftovers (lone preference files and scraps) ────" ;;
+        ja-JP) echo "▸ ほかに小さな残りが {n} 件（単独の設定ファイルなど）" ;;
+        zh-TW) echo "▸ 另有 {n} 個零星殘留（單獨的偏好設定檔等）" ;;
+        zh-Hans) echo "▸ 另有 {n} 个零星残留（单独的偏好设置文件等）" ;;
+        ko-KR) echo "▸ 그 외 작은 잔여물 {n}개(단독 설정 파일 등)" ;;
+        es-ES) echo "▸ {n} restos pequeños más (preferencias sueltas y similares)" ;;
+        de-DE) echo "▸ {n} weitere kleine Reste (einzelne Einstellungsdateien u. ä.)" ;;
+        fr-FR) echo "▸ {n} autres petits restes (préférences isolées, etc.)" ;;
+        pt-BR) echo "▸ mais {n} sobras pequenas (preferências avulsas etc.)" ;;
+        *)     echo "▸ {n} more small leftovers (lone preference files and scraps)" ;;
       esac ;;
     un_pick_multi_hint)
       case "$SS_LANG" in
@@ -2408,6 +2408,10 @@ if [ -z "${SHEERSWEEP_LIB:-}" ]; then
 fi
 
 human()  { du -sh "$1" 2>/dev/null | cut -f1; }
+
+# A pending group heading, printed by clean() only if the group turns out to
+# have rows (see clean). Empty = nothing pending.
+SW_GROUP=""
 free_kb() { df -k /System/Volumes/Data | awk '/Data$/{print $4}'; }
 
 # Strip terminal control bytes (C0 + DEL) from an untrusted string before it is
@@ -2430,6 +2434,10 @@ clean() {
   # "0B" line. Strip the padding before the test; the printf below re-pads.
   sz="${sz//[[:space:]]/}"
   if [ -z "$sz" ] || [ "$sz" = "0B" ]; then return 0; fi
+  # A group's header waits here until the group has something in it — otherwise
+  # an account with nothing to clear leaves a heading over empty space. Same
+  # no-empty-group rule the report groups follow.
+  if [ -n "${SW_GROUP:-}" ]; then printf '\n%s\n' "$SW_GROUP"; SW_GROUP=""; fi
   if [ "$DRY" -eq 1 ]; then
     printf '   %s %6s  %s\n' "$(t preview)" "$sz" "$p"
   else
@@ -3230,7 +3238,7 @@ do_uninstall() {
   m="$(t un_header)"; echo "${m//\{app\}/$name}"
   local i last=""
   for i in "${!ITEM_PATH[@]}"; do
-    if [ "${ITEM_SCOPE[$i]}" != "$last" ]; then echo "── ${ITEM_SCOPE[$i]} ──"; last="${ITEM_SCOPE[$i]}"; fi
+    if [ "${ITEM_SCOPE[$i]}" != "$last" ]; then echo "▸ ${ITEM_SCOPE[$i]}"; last="${ITEM_SCOPE[$i]}"; fi
     printf '   %6s  %s\n' "$(human "${ITEM_PATH[$i]}")" "$(printf '%s' "${ITEM_PATH[$i]}" | vis)"
   done
   local total
@@ -3316,7 +3324,7 @@ do_uninstall_orphans() {
     return 0
   fi
   for i in "${!ITEM_PATH[@]}"; do
-    if [ "${ITEM_SCOPE[$i]}" != "$last" ]; then echo "── ${ITEM_SCOPE[$i]} ──"; last="${ITEM_SCOPE[$i]}"; fi
+    if [ "${ITEM_SCOPE[$i]}" != "$last" ]; then echo "▸ ${ITEM_SCOPE[$i]}"; last="${ITEM_SCOPE[$i]}"; fi
     printf '   %6s  %s\n' "$(human "${ITEM_PATH[$i]}")" "$(printf '%s' "${ITEM_PATH[$i]}" | vis)"
   done
   total="$(du -sch "${ITEM_PATH[@]}" 2>/dev/null | tail -1 | cut -f1)"
@@ -4671,7 +4679,7 @@ dg_scan_start
 for home in /Users/*; do
   [ -d "$home/Library" ] || continue
   case "$(basename "$home")" in Shared|Guest) continue ;; esac
-  echo "── $(t acct)$(basename "$home") ──"
+  SW_GROUP="▸ $(t acct)$(basename "$home")"
   clean "$home/Library/Caches"
   clean "$home/Library/Logs"
   clean "$home/.cache"
@@ -4691,7 +4699,7 @@ for home in /Users/*; do
 done
 
 # ---- system-wide, once ----
-echo "── $(t system) ──"
+SW_GROUP="▸ $(t system)"
 clean "/Library/Caches"
 clean "/.adobeTemp"
 # Deliberately NOT touching /private/var/folders — it's the live temp area; deleting
@@ -4704,7 +4712,8 @@ clean "/.adobeTemp"
 # even this cleanup off the network.
 brew_locate
 if [ -n "$BREW_BIN" ]; then
-  m="$(t brew)"; echo "── ${m//\{user\}/$REAL_USER} ──"
+  printf '\n'
+  m="$(t brew)"; echo "▸ ${m//\{user\}/$REAL_USER}"
   if [ "$DRY" -eq 1 ]; then
     brew_run cleanup -n 2>/dev/null | tail -3
   else
@@ -4717,14 +4726,16 @@ fi
 # cleanly instead of erroring. On a real run, surface a tmutil failure rather than
 # swallowing it — a silent failure here means the freed space never came back.
 if ! command -v tmutil >/dev/null 2>&1; then
-  echo "── $(t snap_release) ──"
+  printf '\n'
+  echo "▸ $(t snap_release)"
   echo "   $(t snap_notool)"
 elif [ "$DRY" -eq 1 ]; then
-  echo "── $(t snap_dry) ──"
+  echo "▸ $(t snap_dry)"
   n="$(tmutil listlocalsnapshots / 2>/dev/null | grep -c TimeMachine)"
   m="$(t snap_count)"; echo "   ${m//\{n\}/$n}"
 else
-  echo "── $(t snap_release) ──"
+  printf '\n'
+  echo "▸ $(t snap_release)"
   snap_out="$(tmutil deletelocalsnapshots / 2>&1)"; snap_rc=$?
   printf '%s\n' "$snap_out" | tail -1
   if [ "$snap_rc" -ne 0 ]; then
