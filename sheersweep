@@ -72,7 +72,7 @@ t() {
         de-DE) echo "Der Durchgang:" ;;
         fr-FR) echo "Le balayage :" ;;
         pt-BR) echo "A limpeza:" ;;
-        *)     echo "The sheersweep:" ;;
+        en-US|*)     echo "The sheersweep:" ;;
       esac ;;
     sec_space)   # picks up from the result line above — "still 93%" → "more space in:"
       case "$SS_LANG" in
@@ -84,7 +84,7 @@ t() {
         de-DE) echo "Mehr Platz in:" ;;
         fr-FR) echo "Plus d'espace dans :" ;;
         pt-BR) echo "Mais espaço em:" ;;
-        *)     echo "More space in:" ;;
+        en-US|*)     echo "More space in:" ;;
       esac ;;
     run_note_real)   # one notice for the whole run — narration, so it goes to stderr
       case "$SS_LANG" in
@@ -96,7 +96,7 @@ t() {
         de-DE) echo "räume auf und messe — auf einer vollen Platte dauert es einen Moment" ;;
         fr-FR) echo "balayage et mesure — un moment sur un disque plein" ;;
         pt-BR) echo "limpando e medindo — um momento em um disco cheio" ;;
-        *)     echo "sweeping and measuring — a moment on a full disk" ;;
+        en-US|*)     echo "sweeping and measuring — a moment on a full disk" ;;
       esac ;;
     run_note_dry)   # the promise in plain words, not the jargon "DRY-RUN"
       case "$SS_LANG" in
@@ -108,7 +108,7 @@ t() {
         de-DE) echo "es wird nichts gelöscht — auf einer vollen Platte dauert es einen Moment" ;;
         fr-FR) echo "rien ne sera supprimé — un moment sur un disque plein" ;;
         pt-BR) echo "nada será apagado — um momento em um disco cheio" ;;
-        *)     echo "nothing will be deleted — a moment on a full disk" ;;
+        en-US|*)     echo "nothing will be deleted — a moment on a full disk" ;;
       esac ;;
     dry_banner)
       case "$SS_LANG" in
@@ -120,7 +120,7 @@ t() {
         de-DE) echo "🧪 PROBELAUF (dry-run) — es wird nichts gelöscht" ;;
         fr-FR) echo "🧪 SIMULATION (dry-run) — rien ne sera supprimé" ;;
         pt-BR) echo "🧪 SIMULAÇÃO (dry-run) — nada será apagado" ;;
-        *)     echo "🧪 DRY-RUN — nothing will be deleted" ;;
+        en-US|*)     echo "🧪 DRY-RUN — nothing will be deleted" ;;
       esac ;;
     sweep_result_real)   # {size} freed · {pct}% full
       case "$SS_LANG" in
@@ -132,7 +132,7 @@ t() {
         de-DE) echo "[ DONE ] {size} frei · {pct}% belegt" ;;
         fr-FR) echo "[ DONE ] {size} libérés · {pct}% plein" ;;
         pt-BR) echo "[ DONE ] {size} liberados · {pct}% cheio" ;;
-        *)     echo "[ DONE ] {size} freed · {pct}% full" ;;
+        en-US|*)     echo "[ DONE ] {size} freed · {pct}% full" ;;
       esac ;;
     sweep_result_nodelta)   # {pct} — swept, but free space did not go up
       case "$SS_LANG" in
@@ -144,7 +144,7 @@ t() {
         de-DE) echo "[ DONE ] Bereinigt · kein Speicher zurückgewonnen · {pct}% belegt" ;;
         fr-FR) echo "[ DONE ] Nettoyé · aucun espace récupéré · {pct}% plein" ;;
         pt-BR) echo "[ DONE ] Limpo · nenhum espaço recuperado · {pct}% cheio" ;;
-        *)     echo "[ DONE ] Swept · no space came back · {pct}% full" ;;
+        en-US|*)     echo "[ DONE ] Swept · no space came back · {pct}% full" ;;
       esac ;;
     sweep_result_dry)   # a preview freed nothing — no invented delta
       case "$SS_LANG" in
@@ -156,7 +156,7 @@ t() {
         de-DE) echo "Vorschau — nichts gelöscht. Die Zeilen oben zeigen, was bereinigt würde." ;;
         fr-FR) echo "aperçu — rien supprimé. Les lignes ci-dessus montrent ce qui serait nettoyé." ;;
         pt-BR) echo "prévia — nada foi apagado. As linhas acima mostram o que seria limpo." ;;
-        *)     echo "preview — nothing deleted. The lines above are what would be cleaned." ;;
+        en-US|*)     echo "preview — nothing deleted. The lines above are what would be cleaned." ;;
       esac ;;
     system)   # "system-wide", not "system": the report has a "System — leave it"
               # group four lines later, and one word meaning two things four lines
@@ -170,7 +170,7 @@ t() {
         de-DE) echo "systemweit" ;;
         fr-FR) echo "tout le système" ;;
         pt-BR) echo "todo o sistema" ;;
-        *)     echo "system-wide" ;;
+        en-US|*)     echo "system-wide" ;;
       esac ;;
     brew_what)
       case "$SS_LANG" in
@@ -182,7 +182,7 @@ t() {
         de-DE) echo "Homebrew-Cache und alte Versionen" ;;
         fr-FR) echo "cache et anciennes versions de Homebrew" ;;
         pt-BR) echo "cache e versões antigas do Homebrew" ;;
-        *)     echo "Homebrew cache and old versions" ;;
+        en-US|*)     echo "Homebrew cache and old versions" ;;
       esac ;;
     brew)   # {user}
       case "$SS_LANG" in
@@ -194,7 +194,7 @@ t() {
         de-DE) echo "Homebrew-Aufräumen (als {user})" ;;
         fr-FR) echo "nettoyage homebrew (en tant que {user})" ;;
         pt-BR) echo "limpeza do homebrew (como {user})" ;;
-        *)     echo "homebrew cleanup (as {user})" ;;
+        en-US|*)     echo "homebrew cleanup (as {user})" ;;
       esac ;;
     snap_group)   # one heading for both modes — the run states its mode once, up top
       case "$SS_LANG" in
@@ -206,7 +206,7 @@ t() {
         de-DE) echo "lokale Snapshots" ;;
         fr-FR) echo "instantanés locaux" ;;
         pt-BR) echo "instantâneos locais" ;;
-        *)     echo "local snapshots" ;;
+        en-US|*)     echo "local snapshots" ;;
       esac ;;
     snap_present)   # a state word, not a noun — sidesteps nine locales of plurals
       case "$SS_LANG" in
@@ -218,7 +218,7 @@ t() {
         de-DE) echo "vorhanden" ;;
         fr-FR) echo "présents" ;;
         pt-BR) echo "presentes" ;;
-        *)     echo "present" ;;
+        en-US|*)     echo "present" ;;
       esac ;;
     snap_released)
       case "$SS_LANG" in
@@ -230,7 +230,7 @@ t() {
         de-DE) echo "freigegeben" ;;
         fr-FR) echo "libérés" ;;
         pt-BR) echo "liberados" ;;
-        *)     echo "released" ;;
+        en-US|*)     echo "released" ;;
       esac ;;
     snap_fail)
       case "$SS_LANG" in
@@ -242,7 +242,7 @@ t() {
         de-DE) echo "[ FAIL ] Schnappschüsse konnten nicht freigegeben werden (tmutil meldete einen Fehler) — der Platz bleibt womöglich von ihnen belegt." ;;
         fr-FR) echo "[ FAIL ] impossible de libérer les instantanés (tmutil a signalé une erreur) — l'espace peut rester retenu par eux." ;;
         pt-BR) echo "[ FAIL ] não foi possível liberar os instantâneos (o tmutil retornou um erro) — o espaço pode continuar preso a eles." ;;
-        *)     echo "[ FAIL ] could not release snapshots (tmutil reported an error) — space may still be pinned by them." ;;
+        en-US|*)     echo "[ FAIL ] could not release snapshots (tmutil reported an error) — space may still be pinned by them." ;;
       esac ;;
     snap_notool)
       case "$SS_LANG" in
@@ -254,7 +254,7 @@ t() {
         de-DE) echo "(tmutil nicht gefunden — Schnappschuss-Freigabe übersprungen)" ;;
         fr-FR) echo "(tmutil introuvable — libération des instantanés ignorée)" ;;
         pt-BR) echo "(tmutil não encontrado — liberação de instantâneos ignorada)" ;;
-        *)     echo "(tmutil not found — skipping snapshot release)" ;;
+        en-US|*)     echo "(tmutil not found — skipping snapshot release)" ;;
       esac ;;
     unknown)   # {opt}
       case "$SS_LANG" in
@@ -266,7 +266,7 @@ t() {
         de-DE) echo "sheersweep: unbekannte Option '{opt}' (siehe --help)" ;;
         fr-FR) echo "sheersweep : option inconnue '{opt}' (voir --help)" ;;
         pt-BR) echo "sheersweep: opção desconhecida '{opt}' (veja --help)" ;;
-        *)     echo "sheersweep: unknown option '{opt}' (try --help)" ;;
+        en-US|*)     echo "sheersweep: unknown option '{opt}' (try --help)" ;;
       esac ;;
     not_macos)
       case "$SS_LANG" in
@@ -278,7 +278,7 @@ t() {
         de-DE) echo "[ FAIL ] sheersweep ist nur für macOS (es braucht tmutil, APFS, das /Users-Layout und ~/.Trash). Aktuelles OS: {os}. Abbruch." ;;
         fr-FR) echo "[ FAIL ] sheersweep est réservé à macOS (il dépend de tmutil, APFS, la structure /Users et ~/.Trash). OS actuel : {os}. Abandon." ;;
         pt-BR) echo "[ FAIL ] o sheersweep é só para macOS (depende de tmutil, APFS, da estrutura /Users e da ~/.Trash). SO atual: {os}. Abortando." ;;
-        *)     echo "[ FAIL ] sheersweep is macOS-only (it relies on tmutil, APFS, the /Users layout, and ~/.Trash). Current OS: {os}. Aborting." ;;
+        en-US|*)     echo "[ FAIL ] sheersweep is macOS-only (it relies on tmutil, APFS, the /Users layout, and ~/.Trash). Current OS: {os}. Aborting." ;;
       esac ;;
 
     # ---- uninstall flow ----
@@ -292,7 +292,7 @@ t() {
         de-DE) echo "uninstall braucht einen App-Namen:  sheersweep uninstall <App>" ;;
         fr-FR) echo "uninstall a besoin d'un nom d'app :  sheersweep uninstall <App>" ;;
         pt-BR) echo "uninstall precisa do nome de um app:  sheersweep uninstall <App>" ;;
-        *)     echo "uninstall needs an app name:  sheersweep uninstall <App>" ;;
+        en-US|*)     echo "uninstall needs an app name:  sheersweep uninstall <App>" ;;
       esac ;;
     un_pick_header)
       case "$SS_LANG" in
@@ -304,7 +304,7 @@ t() {
         de-DE) echo "▸ Apps, die du deinstallieren kannst" ;;
         fr-FR) echo "▸ Apps que vous pouvez désinstaller" ;;
         pt-BR) echo "▸ Apps que você pode desinstalar" ;;
-        *)     echo "▸ Apps you can uninstall" ;;
+        en-US|*)     echo "▸ Apps you can uninstall" ;;
       esac ;;
     un_pick_prompt)
       case "$SS_LANG" in
@@ -316,7 +316,7 @@ t() {
         de-DE) echo "Nummer eingeben zum Auswählen (q bricht ab): " ;;
         fr-FR) echo "Saisissez un numéro pour choisir (q pour annuler) : " ;;
         pt-BR) echo "Digite um número para escolher (q cancela): " ;;
-        *)     echo "Enter a number to choose (q to cancel): " ;;
+        en-US|*)     echo "Enter a number to choose (q to cancel): " ;;
       esac ;;
     un_pick_invalid)
       case "$SS_LANG" in
@@ -328,7 +328,7 @@ t() {
         de-DE) echo "Keine gültige Auswahl." ;;
         fr-FR) echo "Choix non valide." ;;
         pt-BR) echo "Não é uma opção válida." ;;
-        *)     echo "Not a valid choice." ;;
+        en-US|*)     echo "Not a valid choice." ;;
       esac ;;
     un_pick_none)
       case "$SS_LANG" in
@@ -340,7 +340,7 @@ t() {
         de-DE) echo "Keine entfernbaren Apps gefunden." ;;
         fr-FR) echo "Aucune app désinstallable trouvée." ;;
         pt-BR) echo "Nenhum app desinstalável encontrado." ;;
-        *)     echo "No removable apps found." ;;
+        en-US|*)     echo "No removable apps found." ;;
       esac ;;
     un_notfound)   # {app}
       case "$SS_LANG" in
@@ -352,7 +352,7 @@ t() {
         de-DE) echo "[ FAIL ] nichts namens '{app}' gefunden — keine App, keine Homebrew-Formula, kein von Hand installiertes Binary" ;;
         fr-FR) echo "[ FAIL ] rien nommé '{app}' — ni app, ni formula Homebrew, ni binaire installé à la main" ;;
         pt-BR) echo "[ FAIL ] nada chamado '{app}' — não é app, nem formula do Homebrew, nem binário instalado à mão" ;;
-        *)     echo "[ FAIL ] nothing named '{app}' — not an app, not a Homebrew formula, not a hand-installed binary" ;;
+        en-US|*)     echo "[ FAIL ] nothing named '{app}' — not an app, not a Homebrew formula, not a hand-installed binary" ;;
       esac ;;
     un_appgone)   # {app}
       case "$SS_LANG" in
@@ -364,7 +364,7 @@ t() {
         de-DE) echo "ℹ️ die App {app} ist schon weg — der Katalog räumt nur die zurückgelassenen Daten auf." ;;
         fr-FR) echo "ℹ️ l'app {app} n'est plus là — le catalogue sert à nettoyer seulement les données restantes." ;;
         pt-BR) echo "ℹ️ o app {app} já se foi — usando o catálogo para limpar só os dados que ficaram." ;;
-        *)     echo "ℹ️ {app}'s app bundle is already gone — using the catalog to clean up just the data it left behind." ;;
+        en-US|*)     echo "ℹ️ {app}'s app bundle is already gone — using the catalog to clean up just the data it left behind." ;;
       esac ;;
     un_orphan_scan)
       case "$SS_LANG" in
@@ -376,7 +376,7 @@ t() {
         de-DE) echo "🔍 Suche nach Daten entfernter Apps — in ein paar Sekunden erscheint das Menü vollständig, auf einmal…" ;;
         fr-FR) echo "🔍 recherche des données laissées par des apps supprimées — dans quelques secondes le menu apparaît complet, d'un coup…" ;;
         pt-BR) echo "🔍 procurando dados deixados por apps removidos — em alguns segundos o menu aparece completo, de uma vez…" ;;
-        *)     echo "🔍 Scanning for data left behind by removed apps — the menu arrives complete, in one piece, in a few seconds…" ;;
+        en-US|*)     echo "🔍 Scanning for data left behind by removed apps — the menu arrives complete, in one piece, in a few seconds…" ;;
       esac ;;
     un_orphan_header)   # {n}
       case "$SS_LANG" in
@@ -388,7 +388,7 @@ t() {
         de-DE) echo "▸ schon entfernt — zurückgelassene Daten gefunden ({n})" ;;
         fr-FR) echo "▸ déjà supprimées — données laissées derrière ({n})" ;;
         pt-BR) echo "▸ já removidos — dados deixados para trás ({n})" ;;
-        *)     echo "▸ Already removed — leftover data found ({n})" ;;
+        en-US|*)     echo "▸ Already removed — leftover data found ({n})" ;;
       esac ;;
     un_orphan_tail)   # {n}
       case "$SS_LANG" in
@@ -400,7 +400,7 @@ t() {
         de-DE) echo "▸ {n} weitere kleine Reste (einzelne Einstellungsdateien u. ä.)" ;;
         fr-FR) echo "▸ {n} autres petits restes (préférences isolées, etc.)" ;;
         pt-BR) echo "▸ mais {n} sobras pequenas (preferências avulsas etc.)" ;;
-        *)     echo "▸ {n} more small leftovers (lone preference files and scraps)" ;;
+        en-US|*)     echo "▸ {n} more small leftovers (lone preference files and scraps)" ;;
       esac ;;
     un_pick_multi_hint)
       case "$SS_LANG" in
@@ -412,7 +412,7 @@ t() {
         de-DE) echo "Mehrere Zeilen auf einmal wählen — z. B. 5 7-8 19 · all nimmt alle Zeilen mit zurückgelassenen Daten · jede App wird einzeln per Name bestätigt." ;;
         fr-FR) echo "Choisissez plusieurs lignes à la fois — p. ex. 5 7-8 19 · all prend toutes les lignes de données laissées · chaque app se confirme une à une par son nom." ;;
         pt-BR) echo "Escolha várias linhas de uma vez — ex.: 5 7-8 19 · all pega todas as linhas de dados deixados · cada app é confirmado um a um pelo nome." ;;
-        *)     echo "Pick several rows at once — e.g. 5 7-8 19 · all takes every leftover-data row · each app still confirms by name." ;;
+        en-US|*)     echo "Pick several rows at once — e.g. 5 7-8 19 · all takes every leftover-data row · each app still confirms by name." ;;
       esac ;;
     un_orphans_header)   # {n}
       case "$SS_LANG" in
@@ -424,7 +424,7 @@ t() {
         de-DE) echo "▸ Daten von {n} entfernten Apps — alles Folgende wandert in den Papierkorb (wiederherstellbar):" ;;
         fr-FR) echo "▸ données laissées par {n} apps supprimées — tout ce qui suit part à la Corbeille (récupérable) :" ;;
         pt-BR) echo "▸ dados deixados por {n} apps removidos — tudo abaixo vai para a Lixeira (recuperável):" ;;
-        *)     echo "▸ Leftover data of {n} removed apps — everything below moves to the Trash (recoverable):" ;;
+        en-US|*)     echo "▸ Leftover data of {n} removed apps — everything below moves to the Trash (recoverable):" ;;
       esac ;;
     un_orphans_confirm)   # {n}
       case "$SS_LANG" in
@@ -436,7 +436,7 @@ t() {
         de-DE) echo "Tippe die Anzahl ({n}), um alles in den Papierkorb zu verschieben (alles andere bricht ab): " ;;
         fr-FR) echo "Saisissez le nombre ({n}) pour tout déplacer vers la Corbeille (autre chose annule) : " ;;
         pt-BR) echo "Digite a contagem ({n}) para mover tudo para a Lixeira (qualquer outra coisa cancela): " ;;
-        *)     echo "Type the count ({n}) to move all of it to the Trash (anything else cancels): " ;;
+        en-US|*)     echo "Type the count ({n}) to move all of it to the Trash (anything else cancels): " ;;
       esac ;;
     un_orphans_done)   # {n} items · {ids} apps
       case "$SS_LANG" in
@@ -448,7 +448,7 @@ t() {
         de-DE) echo "[ DONE ] {n} Einträge von {ids} entfernten Apps in den Papierkorb verschoben. Rückgängig: sheersweep restore · erst das Leeren des Papierkorbs gibt den Platz frei." ;;
         fr-FR) echo "[ DONE ] {n} éléments de {ids} apps supprimées déplacés vers la Corbeille. Annuler : sheersweep restore · vider la Corbeille rend l'espace." ;;
         pt-BR) echo "[ DONE ] {n} itens de {ids} apps removidos movidos para a Lixeira. Desfazer: sheersweep restore · esvaziar a Lixeira devolve o espaço." ;;
-        *)     echo "[ DONE ] Moved {n} items from {ids} removed apps to the Trash. Undo: sheersweep restore · emptying the Trash reclaims the space." ;;
+        en-US|*)     echo "[ DONE ] Moved {n} items from {ids} removed apps to the Trash. Undo: sheersweep restore · emptying the Trash reclaims the space." ;;
       esac ;;
     un_orphan)   # {bid}
       case "$SS_LANG" in
@@ -460,7 +460,7 @@ t() {
         de-DE) echo "ℹ️ keine installierte App beansprucht {bid} — behandelt als Daten einer entfernten App. Es zählen nur Dateien, die exakt nach dieser ID benannt sind." ;;
         fr-FR) echo "ℹ️ aucune app installée ne revendique {bid} — traité comme des données laissées par une app supprimée. Seuls les fichiers nommés par cet id exact sont retenus." ;;
         pt-BR) echo "ℹ️ nenhum app instalado reivindica {bid} — tratado como dados deixados por um app removido. Só entram arquivos nomeados por este id exato." ;;
-        *)     echo "ℹ️ No installed app claims {bid} — treating it as data left behind by a removed app. Only files named by this exact id are matched." ;;
+        en-US|*)     echo "ℹ️ No installed app claims {bid} — treating it as data left behind by a removed app. Only files named by this exact id are matched." ;;
       esac ;;
     un_orphan_installed)   # {bid}
       case "$SS_LANG" in
@@ -472,7 +472,7 @@ t() {
         de-DE) echo "[ HELD ] {bid} gehört zu etwas noch Installiertem — deinstalliere diese App über ihren Namen." ;;
         fr-FR) echo "[ HELD ] {bid} appartient à quelque chose d'encore installé — désinstallez cette app par son nom." ;;
         pt-BR) echo "[ HELD ] {bid} pertence a algo ainda instalado — desinstale esse app pelo nome." ;;
-        *)     echo "[ HELD ] {bid} belongs to something still installed — uninstall that app by its name instead." ;;
+        en-US|*)     echo "[ HELD ] {bid} belongs to something still installed — uninstall that app by its name instead." ;;
       esac ;;
     dg_group_act)
       case "$SS_LANG" in
@@ -484,7 +484,7 @@ t() {
         de-DE) echo "▸ Was du angehen kannst" ;;
         fr-FR) echo "▸ Ce que vous pouvez gérer" ;;
         pt-BR) echo "▸ O que você pode resolver" ;;
-        *)     echo "▸ Yours to act on" ;;
+        en-US|*)     echo "▸ Yours to act on" ;;
       esac ;;
     dg_group_system)
       case "$SS_LANG" in
@@ -496,7 +496,7 @@ t() {
         de-DE) echo "▸ System — nicht anfassen" ;;
         fr-FR) echo "▸ Système — ne pas toucher" ;;
         pt-BR) echo "▸ Sistema — não mexer" ;;
-        *)     echo "▸ System — leave it" ;;
+        en-US|*)     echo "▸ System — leave it" ;;
       esac ;;
     dg_group_floor)   # your own live login + the SIP regions: present, big, immovable
       case "$SS_LANG" in
@@ -508,7 +508,7 @@ t() {
         de-DE) echo "▸ Bleibt einfach" ;;
         fr-FR) echo "▸ C'est là pour rester" ;;
         pt-BR) echo "▸ Fica por aqui" ;;
-        *)     echo "▸ Here to stay" ;;
+        en-US|*)     echo "▸ Here to stay" ;;
       esac ;;
     dg_group_cleanable)   # cross-cutting categories that live INSIDE the account totals above
       case "$SS_LANG" in
@@ -520,7 +520,7 @@ t() {
         de-DE) echo "▸ Aufräumbar, in den obigen enthalten" ;;
         fr-FR) echo "▸ Nettoyable, à l'intérieur de ce qui précède" ;;
         pt-BR) echo "▸ Limpável, dentro do que está acima" ;;
-        *)     echo "▸ Cleanable, inside the above" ;;
+        en-US|*)     echo "▸ Cleanable, inside the above" ;;
       esac ;;
     dg_cl_build)   # label for the build-output cleanable row
       case "$SS_LANG" in
@@ -532,7 +532,7 @@ t() {
         de-DE) echo "neu baubare Build-Artefakte" ;;
         fr-FR) echo "artefacts de build reconstructibles" ;;
         pt-BR) echo "artefatos de build reconstruíveis" ;;
-        *)     echo "rebuildable build output" ;;
+        en-US|*)     echo "rebuildable build output" ;;
       esac ;;
     dg_cl_leftover)   # label for the removed-app-leftover cleanable row
       case "$SS_LANG" in
@@ -544,7 +544,7 @@ t() {
         de-DE) echo "Daten von entfernten Apps" ;;
         fr-FR) echo "données laissées par des apps supprimées" ;;
         pt-BR) echo "dados deixados por apps removidos" ;;
-        *)     echo "data left behind by removed apps" ;;
+        en-US|*)     echo "data left behind by removed apps" ;;
       esac ;;
     dg_this_login)   # parenthetical for your own account in the "here to stay" group
       case "$SS_LANG" in
@@ -556,7 +556,7 @@ t() {
         de-DE) echo "aktuelle Anmeldung" ;;
         fr-FR) echo "session actuelle" ;;
         pt-BR) echo "login atual" ;;
-        *)     echo "this login" ;;
+        en-US|*)     echo "this login" ;;
       esac ;;
     dg_arrow_other)
       case "$SS_LANG" in
@@ -568,7 +568,7 @@ t() {
         de-DE) echo "→ Systemeinstellungen › Benutzer" ;;
         fr-FR) echo "→ Réglages › Utilisateurs" ;;
         pt-BR) echo "→ Ajustes › Usuários" ;;
-        *)     echo "→ System Settings › Users" ;;
+        en-US|*)     echo "→ System Settings › Users" ;;
       esac ;;
     dg_arrow_apps)
       echo "→ sheersweep uninstall" ;;
@@ -584,7 +584,7 @@ t() {
         de-DE) echo "🔍 messe die Speichernutzung aller Konten — auf einer vollen Platte dauert es einen Moment:" ;;
         fr-FR) echo "🔍 mesure de l'espace de chaque compte — sur un disque plein cela prend un moment :" ;;
         pt-BR) echo "🔍 medindo o espaço de cada conta — em um disco cheio leva um momento:" ;;
-        *)     echo "🔍 measuring where the space went across every account — this takes a moment on a full disk:" ;;
+        en-US|*)     echo "🔍 measuring where the space went across every account — this takes a moment on a full disk:" ;;
       esac ;;
     dg_unreadable)   # just the label — the size is the row's own column now
       case "$SS_LANG" in
@@ -596,7 +596,7 @@ t() {
         de-DE) echo "SIP: Versions-DB, Spotlight" ;;
         fr-FR) echo "SIP : version DB, Spotlight" ;;
         pt-BR) echo "SIP: versão DB, Spotlight" ;;
-        *)     echo "SIP: version DB, Spotlight" ;;
+        en-US|*)     echo "SIP: version DB, Spotlight" ;;
       esac ;;
     rc_usage)
       case "$SS_LANG" in
@@ -608,7 +608,7 @@ t() {
         de-DE) echo "der echte reclaim-Lauf ist interaktiv — im Terminal ausführen oder mit --dry-run headless ansehen." ;;
         fr-FR) echo "l'exécution réelle de reclaim est interactive — lancez-la dans un terminal, ou prévisualisez sans tête avec --dry-run." ;;
         pt-BR) echo "a execução real do reclaim é interativa — rode num terminal, ou visualize sem cabeça com --dry-run." ;;
-        *)     echo "reclaim's real run is interactive — run it on a terminal, or preview headless with --dry-run." ;;
+        en-US|*)     echo "reclaim's real run is interactive — run it on a terminal, or preview headless with --dry-run." ;;
       esac ;;
     rc_banner)
       case "$SS_LANG" in
@@ -620,7 +620,7 @@ t() {
         de-DE) echo "Build-Artefakte zurückholen — bewiesen (git + Muster + Manifest), plus große gitignored Ordner, die es nicht identifizieren kann (du entscheidest)." ;;
         fr-FR) echo "récupérer les artefacts de build — prouvés (git + motif + manifeste), plus de gros dossiers gitignored qu'il ne peut identifier (vous décidez)." ;;
         pt-BR) echo "recuperar artefatos de build — provados (git + padrão + manifesto), mais pastas gitignored grandes que não consegue identificar (você decide)." ;;
-        *)     echo "Reclaim build output — proven (gitignored + known pattern + manifest), plus heavy gitignored folders it can't identify (you decide)." ;;
+        en-US|*)     echo "Reclaim build output — proven (gitignored + known pattern + manifest), plus heavy gitignored folders it can't identify (you decide)." ;;
       esac ;;
     rc_noroots)
       case "$SS_LANG" in
@@ -632,7 +632,7 @@ t() {
         de-DE) echo "keine Scan-Wurzeln gefunden (gesucht: Developer/Projects/Code/src/repos/workspace in jedem Home). Gib einen Ordner an: sheersweep reclaim <Pfad>" ;;
         fr-FR) echo "aucune racine à scanner trouvée (cherché : Developer/Projects/Code/src/repos/workspace dans chaque home). Indiquez un dossier : sheersweep reclaim <chemin>" ;;
         pt-BR) echo "nenhuma raiz de varredura encontrada (procurei Developer/Projects/Code/src/repos/workspace em cada home). Indique uma pasta: sheersweep reclaim <caminho>" ;;
-        *)     echo "No scan roots found (looked for Developer/Projects/Code/src/repos/workspace in each home). Point it somewhere: sheersweep reclaim <path>" ;;
+        en-US|*)     echo "No scan roots found (looked for Developer/Projects/Code/src/repos/workspace in each home). Point it somewhere: sheersweep reclaim <path>" ;;
       esac ;;
     rc_roots)
       case "$SS_LANG" in
@@ -644,7 +644,7 @@ t() {
         de-DE) echo "durchsucht:" ;;
         fr-FR) echo "analyse :" ;;
         pt-BR) echo "varrendo:" ;;
-        *)     echo "scanning:" ;;
+        en-US|*)     echo "scanning:" ;;
       esac ;;
     rc_stale_note)   # {n}
       case "$SS_LANG" in
@@ -656,7 +656,7 @@ t() {
         de-DE) echo "nur Artefakte, deren Repo seit {n}+ Tagen unberührt ist." ;;
         fr-FR) echo "seulement les artefacts dont le dépôt n'a pas été touché depuis {n}+ jours." ;;
         pt-BR) echo "só artefatos cujo repo está sem toque há {n}+ dias." ;;
-        *)     echo "only artifacts whose repo has been untouched for {n}+ days." ;;
+        en-US|*)     echo "only artifacts whose repo has been untouched for {n}+ days." ;;
       esac ;;
     rc_scanning)
       case "$SS_LANG" in
@@ -668,7 +668,7 @@ t() {
         de-DE) echo "🔍 gehe die Wurzeln durch und wiege Kandidaten… (du braucht einen Moment)" ;;
         fr-FR) echo "🔍 parcours des racines et pesée des candidats… (du prend un instant)" ;;
         pt-BR) echo "🔍 percorrendo as raízes e pesando candidatos… (du leva um momento)" ;;
-        *)     echo "🔍 walking the roots and weighing candidates… (du takes a moment)" ;;
+        en-US|*)     echo "🔍 walking the roots and weighing candidates… (du takes a moment)" ;;
       esac ;;
     rc_none)
       case "$SS_LANG" in
@@ -680,7 +680,7 @@ t() {
         de-DE) echo "[ PASS ] nichts qualifiziert — keine manifest-belegten Build-Artefakte und keine großen, nicht identifizierbaren Ordner." ;;
         fr-FR) echo "[ PASS ] rien d'éligible — ni artefacts de build prouvés par manifeste, ni gros dossiers non identifiés." ;;
         pt-BR) echo "[ PASS ] nada elegível — nem artefatos de build provados por manifesto, nem pastas grandes não identificadas." ;;
-        *)     echo "[ PASS ] nothing eligible — no manifest-proven build output, and nothing heavy it couldn't identify." ;;
+        en-US|*)     echo "[ PASS ] nothing eligible — no manifest-proven build output, and nothing heavy it couldn't identify." ;;
       esac ;;
     rc_days)   # {n}
       case "$SS_LANG" in
@@ -692,7 +692,7 @@ t() {
         de-DE) echo "{n} Tage unberührt" ;;
         fr-FR) echo "{n} j sans toucher" ;;
         pt-BR) echo "{n} dias sem toque" ;;
-        *)     echo "{n}d untouched" ;;
+        en-US|*)     echo "{n}d untouched" ;;
       esac ;;
     rc_dry_note)
       case "$SS_LANG" in
@@ -704,7 +704,7 @@ t() {
         de-DE) echo "🧪 Vorschau — nichts wurde bewegt. Ohne --dry-run ausführen, um Platz zu holen." ;;
         fr-FR) echo "🧪 aperçu — rien n'a bougé. Relancez sans --dry-run pour récupérer." ;;
         pt-BR) echo "🧪 prévia — nada foi movido. Execute sem --dry-run para recuperar." ;;
-        *)     echo "🧪 preview — nothing moved. Run without --dry-run to reclaim." ;;
+        en-US|*)     echo "🧪 preview — nothing moved. Run without --dry-run to reclaim." ;;
       esac ;;
     rc_multi_hint)
       case "$SS_LANG" in
@@ -716,7 +716,7 @@ t() {
         de-DE) echo "per Nummer wählen — z. B. 1 3 9 · all = jede bewiesene Zeile. Nicht identifizierte Zeilen verlangen ihren Namen." ;;
         fr-FR) echo "choisissez par numéro — p. ex. 1 3 9 · all = chaque ligne prouvée. Les lignes non identifiées demandent leur nom." ;;
         pt-BR) echo "escolha por número — ex.: 1 3 9 · all = cada linha provada. As linhas não identificadas pedem o nome." ;;
-        *)     echo "Pick by number — e.g. 1 3 9 · all = every proven row. Unidentified rows each ask for their name." ;;
+        en-US|*)     echo "Pick by number — e.g. 1 3 9 · all = every proven row. Unidentified rows each ask for their name." ;;
       esac ;;
     rc_confirm)   # {n} · {size}
       case "$SS_LANG" in
@@ -728,7 +728,7 @@ t() {
         de-DE) echo "Tippe die Anzahl ({n}), um diese {n} Build-Ordner ({size}) in den Papierkorb zu verschieben (alles andere bricht ab): " ;;
         fr-FR) echo "Saisissez le nombre ({n}) pour déplacer ces {n} dossiers de build ({size}) vers la Corbeille (autre chose annule) : " ;;
         pt-BR) echo "Digite a contagem ({n}) para mover estas {n} pastas de build ({size}) para a Lixeira (qualquer outra coisa cancela): " ;;
-        *)     echo "Type the count ({n}) to move these {n} build folders ({size}) to the Trash (anything else cancels): " ;;
+        en-US|*)     echo "Type the count ({n}) to move these {n} build folders ({size}) to the Trash (anything else cancels): " ;;
       esac ;;
     rc_unid_header)
       case "$SS_LANG" in
@@ -740,7 +740,7 @@ t() {
         de-DE) echo "[ WARN ] Nicht identifiziert — groß, von git ignoriert, und ich kann nicht beweisen, dass sie sicher zu löschen sind." ;;
         fr-FR) echo "[ WARN ] Non identifié — volumineux, ignorés par git, et je ne peux pas prouver qu'ils sont sûrs à supprimer." ;;
         pt-BR) echo "[ WARN ] Não identificado — grandes, ignoradas pelo git, e não posso provar que é seguro removê-las." ;;
-        *)     echo "[ WARN ] Unidentified — heavy, gitignored, and I can't prove these are safe to remove." ;;
+        en-US|*)     echo "[ WARN ] Unidentified — heavy, gitignored, and I can't prove these are safe to remove." ;;
       esac ;;
     rc_unid_note)   # {min}
       case "$SS_LANG" in
@@ -752,7 +752,7 @@ t() {
         de-DE) echo "je ≥{min}. Ich kann sie nicht identifizieren — du schon. Einzeln entfernt, nur wenn du den Namen tippst." ;;
         fr-FR) echo "≥{min} chacun. Je ne peux pas les identifier — vous si. Retirés un par un, seulement si vous tapez leur nom." ;;
         pt-BR) echo "≥{min} cada. Não consigo identificá-las — você sim. Removidas uma a uma, só se você digitar o nome." ;;
-        *)     echo "≥{min} each. I can't identify these — you can. Removed one at a time, only if you type its name." ;;
+        en-US|*)     echo "≥{min} each. I can't identify these — you can. Removed one at a time, only if you type its name." ;;
       esac ;;
     rc_unid_contains)
       case "$SS_LANG" in
@@ -764,7 +764,7 @@ t() {
         de-DE) echo "        enthält:" ;;
         fr-FR) echo "        contient :" ;;
         pt-BR) echo "        contém:" ;;
-        *)     echo "        contains:" ;;
+        en-US|*)     echo "        contains:" ;;
       esac ;;
     rc_unid_confirm)   # {name} · {size} — kept terse on purpose: a wordy gate trains rubber-stamping
       case "$SS_LANG" in
@@ -776,7 +776,7 @@ t() {
         de-DE) echo "Tippe '{name}', um ihn ({size}) in den Papierkorb zu verschieben; sonst überspringen: " ;;
         fr-FR) echo "Tapez '{name}' pour le déplacer ({size}) vers la Corbeille ; sinon ignorer : " ;;
         pt-BR) echo "Digite '{name}' para movê-la ({size}) para a Lixeira; senão pula: " ;;
-        *)     echo "Type '{name}' to move it ({size}) to the Trash, anything else skips: " ;;
+        en-US|*)     echo "Type '{name}' to move it ({size}) to the Trash, anything else skips: " ;;
       esac ;;
     rc_unid_skip)
       case "$SS_LANG" in
@@ -788,7 +788,7 @@ t() {
         de-DE) echo "        ↳ übersprungen — bleibt an Ort und Stelle." ;;
         fr-FR) echo "        ↳ ignoré — laissé en place." ;;
         pt-BR) echo "        ↳ pulada — mantida no lugar." ;;
-        *)     echo "        ↳ skipped — kept in place." ;;
+        en-US|*)     echo "        ↳ skipped — kept in place." ;;
       esac ;;
     rc_done)   # {n} · {size}
       case "$SS_LANG" in
@@ -800,7 +800,7 @@ t() {
         de-DE) echo "[ DONE ] {n} Build-Ordner ({size}) in den Papierkorb verschoben. Die Rebuild-Befehle stehen im Beleg — sieh sie mit sheersweep restore · erst das Leeren des Papierkorbs gibt den Platz frei." ;;
         fr-FR) echo "[ DONE ] {n} dossiers de build ({size}) déplacés vers la Corbeille. Les commandes de rebuild sont dans le reçu — revoyez-les avec sheersweep restore · vider la Corbeille rend l'espace." ;;
         pt-BR) echo "[ DONE ] {n} pastas de build ({size}) movidas para a Lixeira. Os comandos de rebuild ficaram no recibo — veja com sheersweep restore · esvaziar a Lixeira devolve o espaço." ;;
-        *)     echo "[ DONE ] Moved {n} build folders ({size}) to the Trash. The rebuild commands are in the receipt — see them with sheersweep restore · emptying the Trash reclaims the space." ;;
+        en-US|*)     echo "[ DONE ] Moved {n} build folders ({size}) to the Trash. The rebuild commands are in the receipt — see them with sheersweep restore · emptying the Trash reclaims the space." ;;
       esac ;;
     rs_rebuild_hint)
       case "$SS_LANG" in
@@ -812,7 +812,7 @@ t() {
         de-DE) echo "▸ die sauberere Alternative zum Wiederherstellen — neu bauen:" ;;
         fr-FR) echo "▸ l'alternative plus propre à la restauration — reconstruire :" ;;
         pt-BR) echo "▸ a alternativa mais limpa a restaurar — reconstruir:" ;;
-        *)     echo "▸ The cleaner alternative to restoring — rebuild instead:" ;;
+        en-US|*)     echo "▸ The cleaner alternative to restoring — rebuild instead:" ;;
       esac ;;
     un_refuse_apple)   # {app}
       case "$SS_LANG" in
@@ -824,7 +824,7 @@ t() {
         de-DE) echo "[ HELD ] abgelehnt: {app} ist eine Apple-/System-App auf dem versiegelten, schreibgeschützten Systemvolume — nicht mal root kann sie entfernen (und Löschen gäbe keinen Platz frei)." ;;
         fr-FR) echo "[ HELD ] refus : {app} est une app Apple/système sur le volume système scellé en lecture seule — même root ne peut pas la retirer (et la supprimer ne libérerait pas d'espace)." ;;
         pt-BR) echo "[ HELD ] recusado: {app} é um app da Apple/do sistema no volume selado somente leitura — nem o root consegue removê-lo (e apagá-lo não liberaria espaço)." ;;
-        *)     echo "[ HELD ] refusing: {app} is an Apple / system app on the sealed, read-only system volume — not even root can remove it (and deleting it wouldn't free space)." ;;
+        en-US|*)     echo "[ HELD ] refusing: {app} is an Apple / system app on the sealed, read-only system volume — not even root can remove it (and deleting it wouldn't free space)." ;;
       esac ;;
     un_refuse_nobid)   # {app}
       case "$SS_LANG" in
@@ -836,7 +836,7 @@ t() {
         de-DE) echo "[ FAIL ] abgelehnt: {app} hat keine Bundle-ID — seine Dateien lassen sich nicht sicher zuordnen, Abbruch." ;;
         fr-FR) echo "[ FAIL ] refus : {app} n'a pas de bundle id — impossible d'identifier ses fichiers sûrement, abandon." ;;
         pt-BR) echo "[ FAIL ] recusado: {app} não tem bundle id — não dá para identificar seus arquivos com segurança, abortando." ;;
-        *)     echo "[ FAIL ] refusing: {app} has no bundle id — can't match its files safely, aborting." ;;
+        en-US|*)     echo "[ FAIL ] refusing: {app} has no bundle id — can't match its files safely, aborting." ;;
       esac ;;
     un_resolved)   # {app}  ·  {bid}
       case "$SS_LANG" in
@@ -848,7 +848,7 @@ t() {
         de-DE) echo "▸ App: {app}   ·   Bundle-ID: {bid}" ;;
         fr-FR) echo "▸ App : {app}   ·   bundle id : {bid}" ;;
         pt-BR) echo "▸ App: {app}   ·   bundle id: {bid}" ;;
-        *)     echo "▸ App: {app}   ·   bundle id: {bid}" ;;
+        en-US|*)     echo "▸ App: {app}   ·   bundle id: {bid}" ;;
       esac ;;
     un_header)   # {app}
       case "$SS_LANG" in
@@ -860,7 +860,7 @@ t() {
         de-DE) echo "▸ Alles, was zu {app} gehört (wandert in den Papierkorb — wiederherstellbar):" ;;
         fr-FR) echo "▸ Tout ce qui appartient à {app} (part à la Corbeille — récupérable) :" ;;
         pt-BR) echo "▸ Tudo o que pertence a {app} (vai para a Lixeira — recuperável):" ;;
-        *)     echo "▸ Everything that belongs to {app} (moves to Trash — recoverable):" ;;
+        en-US|*)     echo "▸ Everything that belongs to {app} (moves to Trash — recoverable):" ;;
       esac ;;
     un_empty)   # {app}
       case "$SS_LANG" in
@@ -872,7 +872,7 @@ t() {
         de-DE) echo "Nichts gefunden, was zu {app} gehört." ;;
         fr-FR) echo "Rien trouvé appartenant à {app}." ;;
         pt-BR) echo "Nada pertencente a {app} foi encontrado." ;;
-        *)     echo "Found nothing belonging to {app}." ;;
+        en-US|*)     echo "Found nothing belonging to {app}." ;;
       esac ;;
     un_total)
       case "$SS_LANG" in
@@ -884,7 +884,7 @@ t() {
         de-DE) echo "Gesamt:      " ;;
         fr-FR) echo "Total :      " ;;
         pt-BR) echo "Total:       " ;;
-        *)     echo "Total:       " ;;
+        en-US|*)     echo "Total:       " ;;
       esac ;;
     un_dry_note)
       case "$SS_LANG" in
@@ -896,7 +896,7 @@ t() {
         de-DE) echo "🧪 Vorschau — nichts wurde bewegt. Ohne --dry-run ausführen, um zu deinstallieren." ;;
         fr-FR) echo "🧪 aperçu — rien n'a bougé. Relancez sans --dry-run pour désinstaller." ;;
         pt-BR) echo "🧪 prévia — nada foi movido. Execute sem --dry-run para desinstalar." ;;
-        *)     echo "🧪 preview — nothing moved. Run without --dry-run to uninstall." ;;
+        en-US|*)     echo "🧪 preview — nothing moved. Run without --dry-run to uninstall." ;;
       esac ;;
     un_confirm)   # {name}
       case "$SS_LANG" in
@@ -908,7 +908,7 @@ t() {
         de-DE) echo "Tippe den App-Namen '{name}', um alles oben in den Papierkorb zu legen (alles andere bricht ab): " ;;
         fr-FR) echo "Saisissez le nom de l'app '{name}' pour tout déplacer vers la Corbeille (toute autre saisie annule) : " ;;
         pt-BR) echo "Digite o nome do app '{name}' para mover tudo acima para a Lixeira (qualquer outra coisa cancela): " ;;
-        *)     echo "Type the app name '{name}' to move all of the above to Trash (anything else cancels): " ;;
+        en-US|*)     echo "Type the app name '{name}' to move all of the above to Trash (anything else cancels): " ;;
       esac ;;
     un_cancelled)
       case "$SS_LANG" in
@@ -920,7 +920,7 @@ t() {
         de-DE) echo "Abgebrochen — nichts wurde angerührt." ;;
         fr-FR) echo "Annulé — rien n'a été touché." ;;
         pt-BR) echo "Cancelado — nada foi tocado." ;;
-        *)     echo "Cancelled — nothing was touched." ;;
+        en-US|*)     echo "Cancelled — nothing was touched." ;;
       esac ;;
     un_quit)   # {app}
       case "$SS_LANG" in
@@ -932,7 +932,7 @@ t() {
         de-DE) echo "{app} scheint zu laufen — es wird erst zum Beenden aufgefordert…" ;;
         fr-FR) echo "{app} semble en cours d'exécution — on lui demande d'abord de quitter…" ;;
         pt-BR) echo "{app} parece estar em execução — pedindo para encerrar primeiro…" ;;
-        *)     echo "{app} looks like it's running — asking it to quit first…" ;;
+        en-US|*)     echo "{app} looks like it's running — asking it to quit first…" ;;
       esac ;;
     un_trashing)
       case "$SS_LANG" in
@@ -944,7 +944,7 @@ t() {
         de-DE) echo "in den Papierkorb" ;;
         fr-FR) echo "vers la Corbeille" ;;
         pt-BR) echo "para a Lixeira" ;;
-        *)     echo "to Trash" ;;
+        en-US|*)     echo "to Trash" ;;
       esac ;;
     un_item_stuck)
       case "$SS_LANG" in
@@ -956,7 +956,7 @@ t() {
         de-DE) echo "[ FAIL ] ließ sich nicht verschieben — liegt noch am alten Ort (Grund unten)" ;;
         fr-FR) echo "[ FAIL ] impossible à déplacer — toujours en place (raison plus bas)" ;;
         pt-BR) echo "[ FAIL ] não foi possível mover — continua no lugar (motivo abaixo)" ;;
-        *)     echo "[ FAIL ] couldn't be moved — still in place (reason at the end)" ;;
+        en-US|*)     echo "[ FAIL ] couldn't be moved — still in place (reason at the end)" ;;
       esac ;;
     un_partial)   # {moved} · {total}
       case "$SS_LANG" in
@@ -968,7 +968,7 @@ t() {
         de-DE) echo "[ FAIL ] nur {moved} von {total} Einträgen konnten in den Papierkorb — der Rest liegt noch am alten Ort. Verschobenes rückgängig: sheersweep restore" ;;
         fr-FR) echo "[ FAIL ] seulement {moved} éléments sur {total} ont pu aller à la Corbeille — le reste est toujours en place. Annuler les déplacés : sheersweep restore" ;;
         pt-BR) echo "[ FAIL ] só {moved} de {total} itens foram para a Lixeira — o resto continua no lugar. Desfazer os movidos: sheersweep restore" ;;
-        *)     echo "[ FAIL ] only {moved} of {total} items could be moved to the Trash — the rest are still in place. Undo the moved ones: sheersweep restore" ;;
+        en-US|*)     echo "[ FAIL ] only {moved} of {total} items could be moved to the Trash — the rest are still in place. Undo the moved ones: sheersweep restore" ;;
       esac ;;
     un_protected_hint)
       case "$SS_LANG" in
@@ -980,7 +980,7 @@ t() {
         de-DE) echo "[ HELD ] übrig blieben App-CONTAINER (Library/Containers) — macOS schützt sie vor anderen Programmen, selbst als root. Gib deinem Terminal Festplattenvollzugriff (Systemeinstellungen → Datenschutz & Sicherheit → Festplattenvollzugriff) und führe es erneut aus. Container anderer Accounts können zusätzlich eine Anmeldung dort erfordern." ;;
         fr-FR) echo "[ HELD ] ce qui reste, ce sont des CONTENEURS d'apps (Library/Containers) — macOS les protège des autres programmes, même en root. Donnez à votre terminal l'Accès complet au disque (Réglages Système → Confidentialité et sécurité → Accès complet au disque), puis relancez. Les conteneurs d'un autre compte peuvent exiger de s'y connecter." ;;
         pt-BR) echo "[ HELD ] o que ficou são CONTÊINERES de apps (Library/Containers) — o macOS os protege de outros programas, mesmo como root. Dê ao seu terminal Acesso Total ao Disco (Ajustes do Sistema → Privacidade e Segurança → Acesso Total ao Disco) e execute de novo. Contêineres de outra conta podem exigir login nela." ;;
-        *)     echo "[ HELD ] What stayed behind are app CONTAINERS (Library/Containers) — macOS protects them from other programs, even running as root. Give your terminal Full Disk Access (System Settings → Privacy & Security → Full Disk Access), then run this again. Another account's containers may also require logging in as that account." ;;
+        en-US|*)     echo "[ HELD ] What stayed behind are app CONTAINERS (Library/Containers) — macOS protects them from other programs, even running as root. Give your terminal Full Disk Access (System Settings → Privacy & Security → Full Disk Access), then run this again. Another account's containers may also require logging in as that account." ;;
       esac ;;
     un_done)   # {app}
       case "$SS_LANG" in
@@ -992,7 +992,7 @@ t() {
         de-DE) echo "[ DONE ] {app} liegt im Papierkorb. Leere ihn, um den Platz zurückzubekommen — oder mach es rückgängig mit: sheersweep restore" ;;
         fr-FR) echo "[ DONE ] {app} déplacée vers la Corbeille. Videz-la pour récupérer l'espace — ou annulez avec : sheersweep restore" ;;
         pt-BR) echo "[ DONE ] {app} foi para a Lixeira. Esvazie a Lixeira para recuperar o espaço — ou desfaça com: sheersweep restore" ;;
-        *)     echo "[ DONE ] {app} moved to Trash. Empty the Trash to reclaim the space — or undo with: sheersweep restore" ;;
+        en-US|*)     echo "[ DONE ] {app} moved to Trash. Empty the Trash to reclaim the space — or undo with: sheersweep restore" ;;
       esac ;;
     un_refuse_protected)   # {app}
       case "$SS_LANG" in
@@ -1004,7 +1004,7 @@ t() {
         de-DE) echo "[ HELD ] abgelehnt: {app} ist ins System verdrahtet (Firmlink) und kann nicht entfernt werden." ;;
         fr-FR) echo "[ HELD ] refus : {app} est ancrée dans le système (firmlink) et ne peut pas être retirée." ;;
         pt-BR) echo "[ HELD ] recusado: {app} está ligado ao sistema (firmlink) e não pode ser removido." ;;
-        *)     echo "[ HELD ] refusing: {app} is wired into the system (firmlink) and can't be removed." ;;
+        en-US|*)     echo "[ HELD ] refusing: {app} is wired into the system (firmlink) and can't be removed." ;;
       esac ;;
 
     # ---- uninstall: CLI branches (Homebrew formula → delegate; bare binary → Trash).
@@ -1021,7 +1021,7 @@ t() {
         de-DE) echo "▸ Homebrew-Formula: {name}   ·   Version: {ver}" ;;
         fr-FR) echo "▸ Formula Homebrew : {name}   ·   version : {ver}" ;;
         pt-BR) echo "▸ Formula do Homebrew: {name}   ·   versão: {ver}" ;;
-        *)     echo "▸ Homebrew formula: {name}   ·   version: {ver}" ;;
+        en-US|*)     echo "▸ Homebrew formula: {name}   ·   version: {ver}" ;;
       esac ;;
     un_brew_deps)   # {name} {deps}
       case "$SS_LANG" in
@@ -1033,7 +1033,7 @@ t() {
         de-DE) echo "[ HELD ] abgelehnt: installierte Formulas hängen von {name} ab: {deps}— es zu entfernen würde sie kaputt machen. Entferne erst jene, oder behalte beides." ;;
         fr-FR) echo "[ HELD ] refus : des formulas installées dépendent de {name} : {deps}— le retirer les casserait. Retirez-les d'abord, ou gardez tout." ;;
         pt-BR) echo "[ HELD ] recusado: formulas instaladas dependem de {name}: {deps}— removê-la as quebraria. Remova essas primeiro, ou fique com as duas." ;;
-        *)     echo "[ HELD ] refusing: installed formulae depend on {name}: {deps}— removing it would break them. Remove those first, or keep both." ;;
+        en-US|*)     echo "[ HELD ] refusing: installed formulae depend on {name}: {deps}— removing it would break them. Remove those first, or keep both." ;;
       esac ;;
     un_brew_cmd)
       case "$SS_LANG" in
@@ -1045,7 +1045,7 @@ t() {
         de-DE) echo "Das führt den eigenen Deinstaller des Tools aus, genau wie angezeigt:" ;;
         fr-FR) echo "Ceci exécute le désinstalleur propre à l'outil, exactement comme affiché :" ;;
         pt-BR) echo "Isto executa o desinstalador do próprio programa, exatamente como mostrado:" ;;
-        *)     echo "This runs the tool's own uninstaller, exactly as shown:" ;;
+        en-US|*)     echo "This runs the tool's own uninstaller, exactly as shown:" ;;
       esac ;;
     un_brew_config)   # {name}
       case "$SS_LANG" in
@@ -1057,7 +1057,7 @@ t() {
         de-DE) echo "ℹ️ Homebrew verwaltet nur das Tool selbst. Einstellungen, die {name} im Benutzerordner ablegte (z. B. ~/.{name}), bleiben unberührt." ;;
         fr-FR) echo "ℹ️ Homebrew ne gère que l'outil lui-même. Les réglages que {name} garde dans votre dossier personnel (p. ex. ~/.{name}) restent intacts." ;;
         pt-BR) echo "ℹ️ O Homebrew só cuida do programa em si. As configurações que o {name} guardou na sua pasta pessoal (ex.: ~/.{name}) ficam intactas." ;;
-        *)     echo "ℹ️ Homebrew's receipt covers the tool itself. Any settings {name} kept in your home folder (e.g. ~/.{name}) are left untouched." ;;
+        en-US|*)     echo "ℹ️ Homebrew's receipt covers the tool itself. Any settings {name} kept in your home folder (e.g. ~/.{name}) are left untouched." ;;
       esac ;;
     un_brew_confirm)   # {name}
       case "$SS_LANG" in
@@ -1069,7 +1069,7 @@ t() {
         de-DE) echo "Tippe '{name}', um den Befehl oben auszuführen (alles andere bricht ab): " ;;
         fr-FR) echo "Saisissez '{name}' pour exécuter la commande ci-dessus (toute autre saisie annule) : " ;;
         pt-BR) echo "Digite '{name}' para executar o comando acima (qualquer outra coisa cancela): " ;;
-        *)     echo "Type '{name}' to run the command above (anything else cancels): " ;;
+        en-US|*)     echo "Type '{name}' to run the command above (anything else cancels): " ;;
       esac ;;
     un_brew_done)   # {name}  ·  {ver}
       case "$SS_LANG" in
@@ -1081,7 +1081,7 @@ t() {
         de-DE) echo "[ DONE ] {name} von Homebrew entfernt. Jederzeit zurückholen mit: brew install {name}   (entfernte Version: {ver})" ;;
         fr-FR) echo "[ DONE ] {name} retirée par Homebrew. Récupérez-la quand vous voulez avec : brew install {name}   (version retirée : {ver})" ;;
         pt-BR) echo "[ DONE ] {name} removida pelo Homebrew. Traga de volta quando quiser com: brew install {name}   (versão removida: {ver})" ;;
-        *)     echo "[ DONE ] {name} removed by Homebrew. Get it back anytime with: brew install {name}   (was version {ver})" ;;
+        en-US|*)     echo "[ DONE ] {name} removed by Homebrew. Get it back anytime with: brew install {name}   (was version {ver})" ;;
       esac ;;
     un_brew_orphans)
       case "$SS_LANG" in
@@ -1093,7 +1093,7 @@ t() {
         de-DE) echo "Dabei sind Abhängigkeiten verwaist. Sieh dir die Liste an und führe selbst aus: brew autoremove" ;;
         fr-FR) echo "Cela a laissé des dépendances orphelines. Vérifiez la liste, puis lancez vous-même : brew autoremove" ;;
         pt-BR) echo "Isso deixou dependências órfãs. Revise a lista e execute você mesmo: brew autoremove" ;;
-        *)     echo "This left some dependencies orphaned. Review the list, then run: brew autoremove" ;;
+        en-US|*)     echo "This left some dependencies orphaned. Review the list, then run: brew autoremove" ;;
       esac ;;
     un_bin_header)
       case "$SS_LANG" in
@@ -1105,7 +1105,7 @@ t() {
         de-DE) echo "▸ Unverwaltetes Binary — kein Paketmanager kennt es:" ;;
         fr-FR) echo "▸ Binaire non géré — aucun gestionnaire de paquets ne le possède :" ;;
         pt-BR) echo "▸ Binário sem dono — nenhum gerenciador de pacotes o gerencia:" ;;
-        *)     echo "▸ Unmanaged binary — no package manager owns it:" ;;
+        en-US|*)     echo "▸ Unmanaged binary — no package manager owns it:" ;;
       esac ;;
     un_bin_note)
       case "$SS_LANG" in
@@ -1117,7 +1117,7 @@ t() {
         de-DE) echo "ℹ️ Es ist ein nacktes Binary — ob es woanders Daten ablegte, weiß nur sein Autor. sheersweep legt nur das Binary in den Papierkorb." ;;
         fr-FR) echo "ℹ️ C'est un binaire nu — seul son auteur sait s'il a laissé des données ailleurs. sheersweep ne déplace que le binaire vers la Corbeille." ;;
         pt-BR) echo "ℹ️ É um binário avulso — só o autor sabe se ele guardou dados em outro lugar. O sheersweep move apenas o binário para a Lixeira." ;;
-        *)     echo "ℹ️ It's a bare binary — whether it kept data elsewhere, only its author knows. sheersweep moves just the binary to the Trash." ;;
+        en-US|*)     echo "ℹ️ It's a bare binary — whether it kept data elsewhere, only its author knows. sheersweep moves just the binary to the Trash." ;;
       esac ;;
     un_bin_confirm)   # {name}
       case "$SS_LANG" in
@@ -1129,7 +1129,7 @@ t() {
         de-DE) echo "Tippe '{name}', um das oben in den Papierkorb zu legen (alles andere bricht ab): " ;;
         fr-FR) echo "Saisissez '{name}' pour déplacer ce qui précède vers la Corbeille (toute autre saisie annule) : " ;;
         pt-BR) echo "Digite '{name}' para mover o item acima para a Lixeira (qualquer outra coisa cancela): " ;;
-        *)     echo "Type '{name}' to move the above to the Trash (anything else cancels): " ;;
+        en-US|*)     echo "Type '{name}' to move the above to the Trash (anything else cancels): " ;;
       esac ;;
 
     # ---- tools (read-only CLI inventory) ----
@@ -1143,7 +1143,7 @@ t() {
         de-DE) echo "▸ CLI-Werkzeug-Inventur — nur lesend. Nichts wird verändert." ;;
         fr-FR) echo "▸ Inventaire des outils CLI — lecture seule. Rien n'est modifié." ;;
         pt-BR) echo "▸ Inventário de ferramentas CLI — somente leitura. Nada é alterado." ;;
-        *)     echo "▸ CLI tool inventory — read-only. Nothing is changed." ;;
+        en-US|*)     echo "▸ CLI tool inventory — read-only. Nothing is changed." ;;
       esac ;;
     tl_brew_header)
       case "$SS_LANG" in
@@ -1155,7 +1155,7 @@ t() {
         de-DE) echo "▸ Homebrew-Formulas, die du selbst installiert hast (leaves — nichts anderes hängt davon ab):" ;;
         fr-FR) echo "▸ Formulas Homebrew que vous avez installées (leaves — rien d'autre n'en dépend) :" ;;
         pt-BR) echo "▸ Formulas do Homebrew que você instalou (leaves — nada mais depende delas):" ;;
-        *)     echo "▸ Homebrew formulae you installed (leaves — nothing else depends on them):" ;;
+        en-US|*)     echo "▸ Homebrew formulae you installed (leaves — nothing else depends on them):" ;;
       esac ;;
     tl_upgradable)   # {n}
       case "$SS_LANG" in
@@ -1167,7 +1167,7 @@ t() {
         de-DE) echo "· {n} aktualisierbar (laut brews lokalem Index — Stand deines letzten brew update)." ;;
         fr-FR) echo "· {n} mises à jour possibles (selon l'index local de brew — daté de votre dernier brew update)." ;;
         pt-BR) echo "· {n} atualizáveis (pelo índice local do brew — do seu último brew update)." ;;
-        *)     echo "· {n} upgradable (per brew's local index — as fresh as your last brew update)." ;;
+        en-US|*)     echo "· {n} upgradable (per brew's local index — as fresh as your last brew update)." ;;
       esac ;;
     tl_nobrew)
       case "$SS_LANG" in
@@ -1179,7 +1179,7 @@ t() {
         de-DE) echo "(Homebrew nicht gefunden — Formulas übersprungen)" ;;
         fr-FR) echo "(Homebrew introuvable — formulas ignorées)" ;;
         pt-BR) echo "(Homebrew não encontrado — formulas ignoradas)" ;;
-        *)     echo "(Homebrew not found — skipping formulae)" ;;
+        en-US|*)     echo "(Homebrew not found — skipping formulae)" ;;
       esac ;;
     tl_orphans_header)
       case "$SS_LANG" in
@@ -1191,7 +1191,7 @@ t() {
         de-DE) echo "▸ Verwaiste Abhängigkeiten, die nichts mehr braucht (was brew autoremove entfernen würde):" ;;
         fr-FR) echo "▸ Dépendances orphelines dont plus rien n'a besoin (ce que brew autoremove retirerait) :" ;;
         pt-BR) echo "▸ Dependências órfãs de que nada mais precisa (o que o brew autoremove removeria):" ;;
-        *)     echo "▸ Orphaned dependencies nothing needs anymore (what brew autoremove would remove):" ;;
+        en-US|*)     echo "▸ Orphaned dependencies nothing needs anymore (what brew autoremove would remove):" ;;
       esac ;;
     tl_orphans_none)
       case "$SS_LANG" in
@@ -1203,7 +1203,7 @@ t() {
         de-DE) echo "[ PASS ] Keine verwaisten Abhängigkeiten." ;;
         fr-FR) echo "[ PASS ] Aucune dépendance orpheline." ;;
         pt-BR) echo "[ PASS ] Nenhuma dependência órfã." ;;
-        *)     echo "[ PASS ] No orphaned dependencies." ;;
+        en-US|*)     echo "[ PASS ] No orphaned dependencies." ;;
       esac ;;
     tl_bins_header)
       case "$SS_LANG" in
@@ -1215,7 +1215,7 @@ t() {
         de-DE) echo "▸ Von Hand installierte Binaries ohne Verwalter (~/bin · ~/.local/bin · /usr/local/bin):" ;;
         fr-FR) echo "▸ Binaires installés à la main, sans gestionnaire (~/bin · ~/.local/bin · /usr/local/bin) :" ;;
         pt-BR) echo "▸ Binários instalados à mão, sem gerenciador (~/bin · ~/.local/bin · /usr/local/bin):" ;;
-        *)     echo "▸ Hand-installed binaries no manager owns (~/bin · ~/.local/bin · /usr/local/bin):" ;;
+        en-US|*)     echo "▸ Hand-installed binaries no manager owns (~/bin · ~/.local/bin · /usr/local/bin):" ;;
       esac ;;
     tl_bins_none)
       case "$SS_LANG" in
@@ -1227,7 +1227,7 @@ t() {
         de-DE) echo "(keine)" ;;
         fr-FR) echo "(aucun)" ;;
         pt-BR) echo "(nenhum)" ;;
-        *)     echo "(none)" ;;
+        en-US|*)     echo "(none)" ;;
       esac ;;
     tl_chains_header)
       case "$SS_LANG" in
@@ -1239,7 +1239,7 @@ t() {
         de-DE) echo "▸ Toolchain-Daten (informativ — entfernen nur mit der eigenen Methode des jeweiligen Tools):" ;;
         fr-FR) echo "▸ Données de toolchains (informatif — à retirer avec la méthode propre de chaque outil) :" ;;
         pt-BR) echo "▸ Dados de toolchains (informativo — remova com o método próprio de cada ferramenta):" ;;
-        *)     echo "▸ Toolchain data (informational — remove with each tool's own method):" ;;
+        en-US|*)     echo "▸ Toolchain data (informational — remove with each tool's own method):" ;;
       esac ;;
     tl_hint)
       case "$SS_LANG" in
@@ -1251,7 +1251,7 @@ t() {
         de-DE) echo "Formula oder Binary entfernen mit: sheersweep uninstall <Name>   (erst mit --dry-run ansehen)" ;;
         fr-FR) echo "Retirez une formula ou un binaire avec : sheersweep uninstall <nom>   (aperçu d'abord avec --dry-run)" ;;
         pt-BR) echo "Remova uma formula ou binário com: sheersweep uninstall <nome>   (veja antes com --dry-run)" ;;
-        *)     echo "Remove a formula or a bare binary with: sheersweep uninstall <name>   (preview first with --dry-run)" ;;
+        en-US|*)     echo "Remove a formula or a bare binary with: sheersweep uninstall <name>   (preview first with --dry-run)" ;;
       esac ;;
 
     # ---- restore (undo the last uninstall) ----
@@ -1265,7 +1265,7 @@ t() {
         de-DE) echo "Nichts wiederherzustellen — keine Deinstallations-Belege gefunden." ;;
         fr-FR) echo "Rien à restaurer — aucun reçu de désinstallation trouvé." ;;
         pt-BR) echo "Nada para restaurar — nenhum recibo de desinstalação encontrado." ;;
-        *)     echo "Nothing to restore — no uninstall receipts found." ;;
+        en-US|*)     echo "Nothing to restore — no uninstall receipts found." ;;
       esac ;;
     rs_header)   # {app}  ·  {date}
       case "$SS_LANG" in
@@ -1277,7 +1277,7 @@ t() {
         de-DE) echo "▸ Letzte Deinstallation wird wiederhergestellt: {app}   ·   {date}" ;;
         fr-FR) echo "▸ Restauration de la dernière désinstallation : {app}   ·   {date}" ;;
         pt-BR) echo "▸ Restaurando a última desinstalação: {app}   ·   {date}" ;;
-        *)     echo "▸ Restoring the last uninstall: {app}   ·   {date}" ;;
+        en-US|*)     echo "▸ Restoring the last uninstall: {app}   ·   {date}" ;;
       esac ;;
     rs_confirm)
       case "$SS_LANG" in
@@ -1289,7 +1289,7 @@ t() {
         de-DE) echo "Alles oben an seinen Ursprungsort zurücklegen? [y/N]: " ;;
         fr-FR) echo "Remettre tout ce qui précède à sa place ? [y/N] : " ;;
         pt-BR) echo "Devolver tudo acima para onde estava? [y/N]: " ;;
-        *)     echo "Put all of the above back where they came from? [y/N]: " ;;
+        en-US|*)     echo "Put all of the above back where they came from? [y/N]: " ;;
       esac ;;
     rs_restoring)
       case "$SS_LANG" in
@@ -1301,7 +1301,7 @@ t() {
         de-DE) echo "zurück" ;;
         fr-FR) echo "restaure" ;;
         pt-BR) echo "restaura" ;;
-        *)     echo "restore" ;;
+        en-US|*)     echo "restore" ;;
       esac ;;
     rs_skip)   # {path}
       case "$SS_LANG" in
@@ -1313,7 +1313,7 @@ t() {
         de-DE) echo "übersprungen (schon da): {path}" ;;
         fr-FR) echo "ignoré (déjà là) : {path}" ;;
         pt-BR) echo "pulado (já existe): {path}" ;;
-        *)     echo "skip (already there): {path}" ;;
+        en-US|*)     echo "skip (already there): {path}" ;;
       esac ;;
     rs_fail)   # {path}
       case "$SS_LANG" in
@@ -1325,7 +1325,7 @@ t() {
         de-DE) echo "[ FAIL ] konnte nicht wiederhergestellt werden: {path}" ;;
         fr-FR) echo "[ FAIL ] restauration impossible : {path}" ;;
         pt-BR) echo "[ FAIL ] não foi possível restaurar: {path}" ;;
-        *)     echo "[ FAIL ] could not restore: {path}" ;;
+        en-US|*)     echo "[ FAIL ] could not restore: {path}" ;;
       esac ;;
     rs_done)   # {app}
       case "$SS_LANG" in
@@ -1337,7 +1337,7 @@ t() {
         de-DE) echo "[ DONE ] {app} an den alten Ort zurückgelegt." ;;
         fr-FR) echo "[ DONE ] {app} remise à sa place." ;;
         pt-BR) echo "[ DONE ] {app} de volta ao lugar." ;;
-        *)     echo "[ DONE ] Restored {app} to where it was." ;;
+        en-US|*)     echo "[ DONE ] Restored {app} to where it was." ;;
       esac ;;
     rs_list_header)
       case "$SS_LANG" in
@@ -1349,7 +1349,7 @@ t() {
         de-DE) echo "Bisherige Deinstallationen (neueste zuerst):" ;;
         fr-FR) echo "Désinstallations passées (récentes d'abord) :" ;;
         pt-BR) echo "Desinstalações anteriores (mais recentes primeiro):" ;;
-        *)     echo "Past uninstalls (newest first):" ;;
+        en-US|*)     echo "Past uninstalls (newest first):" ;;
       esac ;;
     rs_list_count)   # {n}
       case "$SS_LANG" in
@@ -1361,7 +1361,7 @@ t() {
         de-DE) echo "{n} Objekt(e)" ;;
         fr-FR) echo "{n} élément(s)" ;;
         pt-BR) echo "{n} item(ns)" ;;
-        *)     echo "{n} item(s)" ;;
+        en-US|*)     echo "{n} item(s)" ;;
       esac ;;
     rs_restored)
       case "$SS_LANG" in
@@ -1373,7 +1373,7 @@ t() {
         de-DE) echo " (wiederhergestellt)" ;;
         fr-FR) echo " (restauré)" ;;
         pt-BR) echo " (restaurado)" ;;
-        *)     echo " (restored)" ;;
+        en-US|*)     echo " (restored)" ;;
       esac ;;
 
     # ---- leftovers (orphaned background items from apps that are gone) ----
@@ -1387,7 +1387,7 @@ t() {
         de-DE) echo "▸ Überbleibsel — Start-/Hintergrund-Einträge von Apps, die weg sind:" ;;
         fr-FR) echo "▸ Restes — éléments de démarrage/arrière-plan d'apps disparues :" ;;
         pt-BR) echo "▸ Sobras — itens de início/segundo plano de apps que já se foram:" ;;
-        *)     echo "▸ Leftovers — startup/background items left behind by apps that are gone:" ;;
+        en-US|*)     echo "▸ Leftovers — startup/background items left behind by apps that are gone:" ;;
       esac ;;
     lf_dead_header)
       case "$SS_LANG" in
@@ -1399,7 +1399,7 @@ t() {
         de-DE) echo "▸ Tot (das Programm, das sie starten, existiert nicht mehr):" ;;
         fr-FR) echo "▸ Morts (le programme qu'ils lancent n'existe plus) :" ;;
         pt-BR) echo "▸ Mortos (o programa que eles iniciam não existe mais):" ;;
-        *)     echo "▸ Dead (the program they launch no longer exists):" ;;
+        en-US|*)     echo "▸ Dead (the program they launch no longer exists):" ;;
       esac ;;
     lf_review_header)
       case "$SS_LANG" in
@@ -1411,7 +1411,7 @@ t() {
         de-DE) echo "[ WARN ] Wahrscheinlich verwaist (sie verweisen auf eine App, die weg ist — prüfen):" ;;
         fr-FR) echo "[ WARN ] Probablement orphelins (ils référencent une app disparue — à vérifier) :" ;;
         pt-BR) echo "[ WARN ] Prováveis órfãos (referenciam um app que se foi — revise):" ;;
-        *)     echo "[ WARN ] Likely orphans (they reference an app that's gone — review):" ;;
+        en-US|*)     echo "[ WARN ] Likely orphans (they reference an app that's gone — review):" ;;
       esac ;;
     lf_kept)   # {n}
       case "$SS_LANG" in
@@ -1423,7 +1423,7 @@ t() {
         de-DE) echo "[ PASS ] {n} lebende Einträge blieben unberührt — ihr Programm existiert noch (kein Müll)." ;;
         fr-FR) echo "[ PASS ] {n} élément(s) vivants laissés intacts — leur programme existe encore (pas des déchets)." ;;
         pt-BR) echo "[ PASS ] {n} item(ns) vivos ficaram intactos — o programa deles ainda existe (não é lixo)." ;;
-        *)     echo "[ PASS ] Kept {n} live item(s) untouched — their program still exists (not junk)." ;;
+        en-US|*)     echo "[ PASS ] Kept {n} live item(s) untouched — their program still exists (not junk)." ;;
       esac ;;
     lf_clean)
       case "$SS_LANG" in
@@ -1435,7 +1435,7 @@ t() {
         de-DE) echo "[ PASS ] Keine Überbleibsel — jeder Starteintrag zeigt auf etwas Echtes." ;;
         fr-FR) echo "[ PASS ] Aucun reste — chaque élément de démarrage pointe vers quelque chose de réel." ;;
         pt-BR) echo "[ PASS ] Sem sobras — todo item de início aponta para algo real." ;;
-        *)     echo "[ PASS ] No leftovers — every startup item points to something real." ;;
+        en-US|*)     echo "[ PASS ] No leftovers — every startup item points to something real." ;;
       esac ;;
     lf_dry_note)
       case "$SS_LANG" in
@@ -1447,7 +1447,7 @@ t() {
         de-DE) echo "🧪 Vorschau — nichts wurde bewegt. Ohne --dry-run ausführen, um aufzuräumen." ;;
         fr-FR) echo "🧪 aperçu — rien n'a bougé. Relancez sans --dry-run pour nettoyer." ;;
         pt-BR) echo "🧪 prévia — nada foi movido. Execute sem --dry-run para limpar." ;;
-        *)     echo "🧪 preview — nothing moved. Run without --dry-run to clean." ;;
+        en-US|*)     echo "🧪 preview — nothing moved. Run without --dry-run to clean." ;;
       esac ;;
     lf_confirm)
       case "$SS_LANG" in
@@ -1459,7 +1459,7 @@ t() {
         de-DE) echo "In den Papierkorb: [yes = nur tote · all = auch wahrscheinlich verwaiste · alles andere bricht ab]: " ;;
         fr-FR) echo "Vers la Corbeille : [yes = morts seulement · all = orphelins probables inclus · autre saisie annule] : " ;;
         pt-BR) echo "Mover para a Lixeira: [yes = só os mortos · all = inclui prováveis órfãos · outra coisa cancela]: " ;;
-        *)     echo "Move to Trash: [yes = dead only · all = include likely-orphans · anything else cancels]: " ;;
+        en-US|*)     echo "Move to Trash: [yes = dead only · all = include likely-orphans · anything else cancels]: " ;;
       esac ;;
     lf_done)   # {n}
       case "$SS_LANG" in
@@ -1471,7 +1471,7 @@ t() {
         de-DE) echo "[ DONE ] {n} Überbleibsel in den Papierkorb gelegt. Voll wirksam nach dem nächsten Login/Neustart. Rückgängig: sheersweep restore" ;;
         fr-FR) echo "[ DONE ] {n} reste(s) déplacé(s) vers la Corbeille. Pleinement effectif après la prochaine connexion/redémarrage. Annuler : sheersweep restore" ;;
         pt-BR) echo "[ DONE ] {n} sobra(s) movida(s) para a Lixeira. Vale plenamente após o próximo login/reinício. Desfazer: sheersweep restore" ;;
-        *)     echo "[ DONE ] Moved {n} leftover(s) to Trash. Fully takes effect after the next login/restart. Undo: sheersweep restore" ;;
+        en-US|*)     echo "[ DONE ] Moved {n} leftover(s) to Trash. Fully takes effect after the next login/restart. Undo: sheersweep restore" ;;
       esac ;;
   esac
 }
@@ -4811,7 +4811,15 @@ else
       fi
     fi
     sw_row "" "▸ $(t snap_group)"
-    sw_row "$(printf '   · %8s  (%s)' "$snap_n" "$snap_word")"
+    # The size column holds an em dash, not the count: a snapshot's size is the
+    # one number on this report that genuinely cannot be measured — the space it
+    # pins is scattered across already-deleted files, and tmutil won't total it.
+    # `—` says that, in the same voice as "unreadable even to root". The count
+    # belongs with the state word, in the label, where a number isn't a size.
+    #
+    # Written out rather than passed through %8s: bash pads by BYTES, so an
+    # em dash (3 bytes, 1 column) lands two columns short of every MB beside it.
+    sw_row "$(printf '   ·        —  (%s · %s)' "$snap_n" "$snap_word")"
   fi
 fi
 

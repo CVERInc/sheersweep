@@ -29,16 +29,23 @@ SHEERSWEEP_LIB=1
 # shellcheck source=/dev/null
 source "$SCRIPT"
 
+# Rendering follows the CVER CLI signet, the same as the tool under test — a
+# harness that reports ✅ while the tool reports [ PASS ] makes a person read two
+# languages in one sitting, which is the whole thing the signet exists to stop.
+# (The lint can't catch this one: it knows the badge SHAPE, not that an emoji was
+# standing in for a badge. Hence the note.)
 fails=0
-pass() { printf '  ✅ %s\n' "$1"; }
-fail() { printf '  ❌ %s\n' "$1"; fails=$((fails + 1)); }
+pass() { printf '   [ PASS ] %s\n' "$1"; }
+fail() { printf '   [ FAIL ] %s\n' "$1"; fails=$((fails + 1)); }
 
 SBX=""
 setup() { SBX="$(mktemp -d "${TMPDIR:-/tmp}/sheersweep-test.XXXXXX")"; }
 teardown() { [ -n "$SBX" ] && rm -rf "$SBX"; SBX=""; }
 
 # ------------------------------------------------------------------------------
-echo "→ func-test (uninstall/restore edge cases)"
+# ▸ is the group header; → points at a next step. This line names a group.
+echo "▸ func-test (uninstall/restore edge cases)"
+echo ""
 
 # (3) Trash collision: trashing two DIFFERENT items that share a basename within
 # the same wall-clock second must keep BOTH — a coarse second-stamp would clobber
@@ -995,31 +1002,60 @@ DG_DIR="$SBX/dg"; mkdir -p "$DG_DIR"
 DG_DIR=""
 teardown
 
-# (guard) EVERY t() key must exist in EVERY supported locale — the key list is
-# extracted from the script itself so a future key can't dodge the check. The
-# i18n rule is tiered (command lines stay raw) but a key that IS localized may
-# never silently fall back for one language, least of all a consent prompt.
+# (guard) EVERY localized t() key must NAME every supported locale.
+#
+# The old version of this check asked whether `t <key>` returned something in
+# each locale — and a key missing a locale falls through to *) and returns
+# English, which is very much something. It could only ever catch a typo'd key
+# name. Its comment claimed more than it did, and the way that was found was by
+# writing the same weak check for sheerstatus and watching it bless a partial
+# translation. (sheersweep itself was clean; the gate was not.)
+#
+# This one reads the SHAPE: a key whose body opens `case "$SS_LANG"` claims
+# per-language text, so every locale must appear as a branch label — hence
+# `en-US|*)` throughout t(), which says "English, and anything we don't know"
+# instead of letting one label mean both. A key with no such case (a badge, a
+# glyph) is deliberately universal and is skipped; that difference is structural,
+# so there is no exception list to maintain.
 i18n_ok=1
-all_keys="$(awk '/^t\(\) \{/,/^\}/' "$SCRIPT" | grep -oE '^    [a-z][a-z_0-9]*\)' | tr -d ' )')"
-n_keys="$(printf '%s\n' "$all_keys" | grep -c .)"
-# the locale list is extracted from ss_resolve_lang too — a PR that adds a
-# language is enforced automatically, without touching this test.
-all_locs="$(awk '/^ss_resolve_lang\(\) \{/,/^\}/' "$SCRIPT" | grep -oE 'echo "[A-Za-z-]+"' | sed 's/echo //; s/"//g' | sort -u)"
-n_locs="$(printf '%s\n' "$all_locs" | grep -c .)"
-for key in $all_keys; do
-  for loc in $all_locs; do
-    SS_LANG="$loc"   # read by the sourced t()
-    [ -n "$(t "$key")" ] || { i18n_ok=0; echo "     missing: $key ($loc)"; }
-  done
-done
+n_keys="$(awk '/^t\(\) \{/,/^\}/' "$SCRIPT" | grep -cE '^    [a-z][a-z_0-9]*\)')"
+# Both lists come out of the script itself, so adding a language or a key is
+# enforced without touching this file.
+loclist="$(awk '/^ss_resolve_lang\(\) \{/,/^\}/' "$SCRIPT" | grep -oE 'echo "[A-Za-z-]+"' | sed 's/echo //; s/"//g' | sort -u | tr '\n' ',' | sed 's/,$//')"
+n_locs="$(printf '%s' "$loclist" | tr ',' '\n' | grep -c .)"
+i18n_gaps="$(awk -v LOCLIST="$loclist" '
+  BEGIN { NLOC = split(LOCLIST, LOC, ",") }
+  /^t\(\) \{/            { inT = 1; next }
+  inT && /^\}/           { if (key != "") emit(); inT = 0; next }
+  !inT                   { next }
+  /^    [a-z][a-z_0-9]*\)/ {
+    if (key != "") emit()
+    key = $0; sub(/\).*/, "", key); sub(/^ +/, "", key); body = ""
+    next
+  }
+  { body = body "\n" $0 }
+  function emit(   i, loc, gap) {
+    if (index(body, "case \"$SS_LANG\"") == 0) { key = ""; body = ""; return }
+    gap = ""
+    for (i = 1; i <= NLOC; i++) {
+      loc = LOC[i]
+      # a label may stand alone (es-ES) or share a branch (zh-TW|zh-Hans)
+      if (body !~ ("(^|[\n|(])[ \t]*" loc "[|)]")) gap = gap " " loc
+    }
+    if (gap != "") printf "%s:%s\n", key, gap
+    key = ""; body = ""
+  }
+' "$SCRIPT")"
+[ -z "$i18n_gaps" ] || { i18n_ok=0; printf '%s\n' "$i18n_gaps" | sed 's/^/     /'; }
 # shellcheck disable=SC2034  # read by the sourced library, not this file
 SS_LANG="en-US"
 if [ "$i18n_ok" -eq 1 ] && [ "$n_keys" -ge 70 ] && [ "$n_locs" -ge 9 ]; then
-  pass "i18n: all $n_keys t() keys present in all $n_locs locales"
+  pass "i18n: all $n_keys t() keys name all $n_locs locales"
 else
-  fail "i18n: a key is missing a locale (or extraction broke: $n_keys keys / $n_locs locales)"
+  fail "i18n: a localized key is missing a locale (or extraction broke: $n_keys keys / $n_locs locales)"
 fi
 
-echo "→ func-test done"
-[ "$fails" -eq 0 ] || { echo "❌ $fails functional test(s) failed"; exit 1; }
-echo "✅ func-test all green"
+echo ""
+[ "$fails" -eq 0 ] || { printf '[ FAIL ] %s functional test(s) failed\n' "$fails"; exit 1; }
+# A test run changes nothing, so the closing badge is PASS, not DONE.
+echo "[ PASS ] func-test all green"
