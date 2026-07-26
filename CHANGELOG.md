@@ -73,8 +73,8 @@ earns its place doing:
   beneath, `→ where to go`. The action column can't be thrown off by a CJK name in
   the label, because the label sits ragged-right.
 - **Each symbol does one job.** `·` an item · `→` the next step *or* a version
-  transition (`1.8.3 → 1.8.4`) · `▸` a group · `↺` how to rebuild · `✅ 🔴 ⚠️ ❌ 🔒`
-  state (safe vs. dangerous — the one thing plain text can't carry as fast).
+  transition (`1.8.3 → 1.8.4`) · `▸` a group · `↺` how to rebuild · and state,
+  which by the end of this release became the five badges described at the top.
 - **Retired the decorations that carried no information a header didn't:** `🧰 🔺
   ♻️ 🧟 🤖 📊` as signage, and the line-start `↑` that read as "the line above."
 - **One warning per group, not per row** — five stacked ⚠️ stop being read.
@@ -89,11 +89,9 @@ nearly-full disk that honesty has a blind spot: you clean, reclaim a few dozen
 megabytes, and you're still at 92%, with no idea why. The numbers were there
 (`Free before` / `Free after`) but never the context.
 
-The `Also seen` digest now carries one more line when the disk is genuinely
-tight (≥ 85% full): `📊 Disk is 92% full (181.9G used, 17.9G free) — the sweep
-above only clears regenerable junk`. It reads nothing but `df`, so it's instant
-and always accurate, and it stays silent on a disk with room — no noise when
-there's no problem.
+This began as one extra digest line when the disk was tight, and ended up as the
+whole-disk map below — which always runs and tells the same story in more detail,
+so the standalone fullness line was folded into it before release.
 
 Below it, when the disk is tight, a whole-disk **map** shows where the space
 actually went, in three groups by what you can do about it:
