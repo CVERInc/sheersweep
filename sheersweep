@@ -520,17 +520,17 @@ t() {
         pt-BR) echo "dados deixados por apps removidos" ;;
         *)     echo "data left behind by removed apps" ;;
       esac ;;
-    dg_cl_brew)   # label for the Homebrew-updates cleanable row ({n} = count)
+    dg_cl_brew)   # label for the Homebrew-updates cleanable row (= count)
       case "$SS_LANG" in
-        ja-JP) echo "Homebrew の更新 {n} 件" ;;
-        zh-TW) echo "{n} 個 Homebrew 更新" ;;
-        zh-Hans) echo "{n} 个 Homebrew 更新" ;;
-        ko-KR) echo "Homebrew 업데이트 {n}개" ;;
-        es-ES) echo "{n} actualizaciones de Homebrew" ;;
-        de-DE) echo "{n} Homebrew-Updates" ;;
-        fr-FR) echo "{n} mises à jour Homebrew" ;;
-        pt-BR) echo "{n} atualizações do Homebrew" ;;
-        *)     echo "{n} Homebrew updates" ;;
+        ja-JP) echo "Homebrew の更新" ;;
+        zh-TW) echo "Homebrew 更新" ;;
+        zh-Hans) echo "Homebrew 更新" ;;
+        ko-KR) echo "Homebrew 업데이트" ;;
+        es-ES) echo "actualizaciones de Homebrew" ;;
+        de-DE) echo "Homebrew-Updates" ;;
+        fr-FR) echo "mises à jour Homebrew" ;;
+        pt-BR) echo "atualizações do Homebrew" ;;
+        *)     echo "Homebrew updates" ;;
       esac ;;
     dg_this_login)   # parenthetical for your own account in the "here to stay" group
       case "$SS_LANG" in
@@ -572,17 +572,17 @@ t() {
         pt-BR) echo "🔍 medindo o espaço de cada conta — em um disco cheio leva um momento:" ;;
         *)     echo "🔍 measuring where the space went across every account — this takes a moment on a full disk:" ;;
       esac ;;
-    dg_unreadable)   # {size} — printed under the "beyond reach" group header
+    dg_unreadable)   # just the label — the size is the row's own column now
       case "$SS_LANG" in
-        ja-JP) echo "{size}（SIP：バージョン DB、Spotlight）" ;;
-        zh-TW) echo "{size}（SIP：版本資料庫、Spotlight）" ;;
-        zh-Hans) echo "{size}（SIP：版本资料库、Spotlight）" ;;
-        ko-KR) echo "{size} (SIP: 버전 DB, Spotlight)" ;;
-        es-ES) echo "{size} (SIP: version DB, Spotlight)" ;;
-        de-DE) echo "{size} (SIP: Versions-DB, Spotlight)" ;;
-        fr-FR) echo "{size} (SIP : version DB, Spotlight)" ;;
-        pt-BR) echo "{size} (SIP: versão DB, Spotlight)" ;;
-        *)     echo "{size} (SIP: version DB, Spotlight)" ;;
+        ja-JP) echo "SIP：バージョン DB、Spotlight" ;;
+        zh-TW) echo "SIP：版本資料庫、Spotlight" ;;
+        zh-Hans) echo "SIP：版本资料库、Spotlight" ;;
+        ko-KR) echo "SIP: 버전 DB, Spotlight" ;;
+        es-ES) echo "SIP: version DB, Spotlight" ;;
+        de-DE) echo "SIP: Versions-DB, Spotlight" ;;
+        fr-FR) echo "SIP : version DB, Spotlight" ;;
+        pt-BR) echo "SIP: versão DB, Spotlight" ;;
+        *)     echo "SIP: version DB, Spotlight" ;;
       esac ;;
     rc_usage)
       case "$SS_LANG" in
@@ -4542,7 +4542,7 @@ dg_cleanable_group() {
   _add() { rows="$rows$(printf '%s\t%s\t%s' "$1" "$2" "$3")"$'\n'; }
   if [ -f "$DG_DIR/rc" ]; then
     read -r n kb < "$DG_DIR/rc"
-    [ "${n:-0}" -gt 0 ] && _add "$kb" "· $(od_human_kb "$kb") ($(t dg_cl_build) · $n)" "→ sheersweep reclaim"
+    [ "${n:-0}" -gt 0 ] && _add "$kb" "$(printf '· %8s  (%s · %s)' "$(od_human_kb "$kb")" "$(t dg_cl_build)" "$n")" "→ sheersweep reclaim"
   fi
   if [ -f "$DG_DIR/ai" ]; then
     read -r kb fc fx fk < "$DG_DIR/ai"
@@ -4555,18 +4555,19 @@ dg_cleanable_group() {
       # shellcheck disable=SC2088
       [ "${fk:-0}" -eq 1 ] && roots="${roots:+$roots · }~/.clikae/profiles"
       url=""; [ -z "$(clikae_bin)" ] && url=" (https://oss.cver.net/clikae)"
-      _add "$kb" "· $(od_human_kb "$kb") ($roots)" "→ clikae clean$url"
+      _add "$kb" "$(printf '· %8s  (%s)' "$(od_human_kb "$kb")" "$roots")" "→ clikae clean$url"
     fi
   fi
   if [ -f "$DG_DIR/orph" ]; then
     read -r n kb < "$DG_DIR/orph"
-    [ "${n:-0}" -gt 0 ] && _add "$kb" "· $(od_human_kb "$kb") ($(t dg_cl_leftover) · $n)" "→ sheersweep uninstall"
+    [ "${n:-0}" -gt 0 ] && _add "$kb" "$(printf '· %8s  (%s · %s)' "$(od_human_kb "$kb")" "$(t dg_cl_leftover)" "$n")" "→ sheersweep uninstall"
   fi
   if [ -f "$DG_DIR/brew" ]; then
     read -r n < "$DG_DIR/brew"
     if [ "${n:-0}" -gt 0 ]; then
-      m="$(t dg_cl_brew)"; m="${m//\{n\}/$n}"
-      _add 0 "· $m" "→ sheersweep tools"   # a count, not a size → sortkb 0 sinks it last
+      # A count, not a size — but still a row: number in the same column, label in
+      # parens like every other. sortkb 0 sinks it last.
+      _add 0 "$(printf '· %8s  (%s)' "$n" "$(t dg_cl_brew)")" "→ sheersweep tools"
     fi
   fi
 
@@ -4654,7 +4655,9 @@ $raw
 EOF
   if [ "$unread" -gt 1048576 ]; then
     [ "$shown_floor" -eq 0 ] && printf '\n%s\n' "$(t dg_group_floor)"
-    local frag; frag="$(t dg_unreadable)"; printf '   · %s\n' "${frag//\{size\}/$(od_human_kb "$unread")}"
+    # Same row shape as everything else — this was the last line still built by
+    # hand, and it showed: unpadded, one space, out of column.
+    printf '   · %8s  (%s)\n' "$(od_human_kb "$unread")" "$(t dg_unreadable)"
   fi
   _emit_group dg_group_act act || true
   # The by-category cleanables (build output, AI archives, leftovers, brew

@@ -859,7 +859,7 @@ out="$(dg_cleanable_group)"
 g0=0; case "$out" in *"$(t dg_group_cleanable)"*) g0=1 ;; esac
 g1=0; case "$out" in *"(data left behind by removed apps · 3)"*"→ sheersweep uninstall"*) g1=1 ;; esac
 g2=0; case "$out" in *"(rebuildable build output · 2)"*"→ sheersweep reclaim"*) g2=1 ;; esac
-g3=0; case "$out" in *"· 4 Homebrew updates"*"→ sheersweep tools"*) g3=1 ;; esac
+g3=0; case "$out" in *"(Homebrew updates)"*"→ sheersweep tools"*) g3=1 ;; esac
 g4=0; case "$out" in *"(~/.claude/projects · ~/.codex/sessions · ~/.clikae/profiles)"*"→ clikae clean"*) g4=1 ;; esac
 DG_DIR="$SBX/dg2"; mkdir -p "$DG_DIR"
 printf '0 0\n' > "$DG_DIR/orph"; printf '10240 1 0 0\n' > "$DG_DIR/ai"   # zero + sub-100M → nothing
