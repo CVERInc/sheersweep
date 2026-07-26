@@ -534,18 +534,6 @@ t() {
         pt-BR) echo "dados deixados por apps removidos" ;;
         *)     echo "data left behind by removed apps" ;;
       esac ;;
-    dg_cl_brew)   # label for the Homebrew-updates cleanable row (= count)
-      case "$SS_LANG" in
-        ja-JP) echo "Homebrew の更新" ;;
-        zh-TW) echo "Homebrew 更新" ;;
-        zh-Hans) echo "Homebrew 更新" ;;
-        ko-KR) echo "Homebrew 업데이트" ;;
-        es-ES) echo "actualizaciones de Homebrew" ;;
-        de-DE) echo "Homebrew-Updates" ;;
-        fr-FR) echo "mises à jour Homebrew" ;;
-        pt-BR) echo "atualizações do Homebrew" ;;
-        *)     echo "Homebrew updates" ;;
-      esac ;;
     dg_this_login)   # parenthetical for your own account in the "here to stay" group
       case "$SS_LANG" in
         ja-JP) echo "現在のログイン" ;;
@@ -4416,19 +4404,6 @@ dg_ai_kb() {   # $@ = homes → "KB claude codex clikae" (flags 1/0; all 0 if no
   echo "${kb:-0} $fc $fx $fk"
 }
 
-# Outdated formulae among the leaves — the same offline read `tools` flags.
-dg_outdated_n() {
-  brew_locate
-  [ -z "$BREW_BIN" ] && { echo 0; return 0; }
-  local lv od
-  lv="$(brew_run leaves 2>/dev/null)"
-  od="$(brew_run outdated --formula --quiet 2>/dev/null)"
-  if [ -z "$lv" ] || [ -z "$od" ]; then echo 0; return 0; fi
-  LC_ALL=C comm -12 \
-    <(printf '%s\n' "$lv" | LC_ALL=C sort) \
-    <(printf '%s\n' "$od" | LC_ALL=C sort) | grep -c . || true
-}
-
 dg_scan_start() {
   DG_DIR="$(mktemp -d "${TMPDIR:-/tmp}/sheersweep-digest.XXXXXX" 2>/dev/null)" || DG_DIR=""
   [ -z "$DG_DIR" ] && return 0
@@ -4463,10 +4438,6 @@ dg_scan_start() {
       kb=0
       for i in "${OD_KB[@]-}" "${OD_TKB[@]-}"; do [ -n "$i" ] && kb=$((kb + i)); done
       printf '%s %s\n' "$n" "$kb" > "$DG_DIR/.orph" && mv "$DG_DIR/.orph" "$DG_DIR/orph"
-    ) &
-    (
-      # ↑ outdated formulae
-      dg_outdated_n > "$DG_DIR/.brew" && mv "$DG_DIR/.brew" "$DG_DIR/brew"
     ) &
     (
       # 🤖 AI-session archives
@@ -4579,14 +4550,6 @@ dg_cleanable_group() {
   if [ -f "$DG_DIR/orph" ]; then
     read -r n kb < "$DG_DIR/orph"
     [ "${n:-0}" -gt 0 ] && _add 0 "$kb" "$(printf '· %8s  (%s · %s)' "$(od_human_kb "$kb")" "$(t dg_cl_leftover)" "$n")" "→ sheersweep uninstall"
-  fi
-  if [ -f "$DG_DIR/brew" ]; then
-    read -r n < "$DG_DIR/brew"
-    if [ "${n:-0}" -gt 0 ]; then
-      # A count, not a size — but still a row: number in the same column, label in
-      # parens like every other. sortkb 0 sinks it last.
-      _add 0 0 "$(printf '· %8s  (%s)' "$n" "$(t dg_cl_brew)")" "→ sheersweep tools"
-    fi
   fi
 
   [ -z "$rows" ] && return 0
@@ -4834,7 +4797,10 @@ fi
 # dg_heavy_print already separates its streams — the map on stdout, the heartbeat
 # on stderr — so capturing it keeps the dots flowing live while the report waits.
 map_out="$(dg_heavy_print)"
-printf '\n' >&2          # close the heartbeat line: both phases are done
+# Close the heartbeat line and leave a gap — on stderr, because the gap belongs
+# to the narration ending, not to the report starting. Piped, stdout still opens
+# on the first label with nothing above it.
+printf '\n\n' >&2
 
 # Two sections, in the order the story runs: what this pass covered, what it came
 # to, and then where the rest of the space actually is. The result used to sit at

@@ -852,24 +852,22 @@ setup
 DG_DIR="$SBX/dg"; mkdir -p "$DG_DIR"
 printf '3 1048576\n' > "$DG_DIR/orph"     # 3 orphans · 1.0G
 printf '2 2097152\n' > "$DG_DIR/rc"       # 2 folders · 2.0G
-printf '4\n'         > "$DG_DIR/brew"     # 4 outdated
 printf '204800 1 1 1\n' > "$DG_DIR/ai"    # 200M ≥ threshold · all three roots present
 true & DG_PID=$!; wait "$DG_PID" 2>/dev/null   # a finished pid → zero grace wait
 out="$(dg_cleanable_group)"
 g0=0; case "$out" in *"$(t dg_group_cleanable)"*) g0=1 ;; esac
 g1=0; case "$out" in *"(data left behind by removed apps · 3)"*"→ sheersweep uninstall"*) g1=1 ;; esac
 g2=0; case "$out" in *"(rebuildable build output · 2)"*"→ sheersweep reclaim"*) g2=1 ;; esac
-g3=0; case "$out" in *"(Homebrew updates)"*"→ sheersweep tools"*) g3=1 ;; esac
 g4=0; case "$out" in *"(~/.claude/projects · ~/.codex/sessions · ~/.clikae/profiles)"*"→ clikae clean"*) g4=1 ;; esac
 DG_DIR="$SBX/dg2"; mkdir -p "$DG_DIR"
 printf '0 0\n' > "$DG_DIR/orph"; printf '10240 1 0 0\n' > "$DG_DIR/ai"   # zero + sub-100M → nothing
 true & DG_PID=$!; wait "$DG_PID" 2>/dev/null
 out2="$(dg_cleanable_group)"
 g5=0; [ -z "$out2" ] && g5=1
-if [ "$g0$g1$g2$g3$g4$g5" = "111111" ]; then
-  pass "cleanable group: header + four two-line rows (biggest first); zero/sub-threshold silent; nothing → prints nothing"
+if [ "$g0$g1$g2$g4$g5" = "11111" ]; then
+  pass "cleanable group: header + two-line rows, own-verb before other-product; zero/sub-threshold silent; nothing → prints nothing"
 else
-  fail "cleanable group wrong (hdr=$g0 orph=$g1 rc=$g2 brew=$g3 ai=$g4 empty=$g5) out=[$out] out2=[$out2]"
+  fail "cleanable group wrong (hdr=$g0 orph=$g1 rc=$g2 ai=$g4 empty=$g5) out=[$out] out2=[$out2]"
 fi
 # (guard) sizes are DECIMAL and spelled out, matching what macOS shows its owner
 # (Finder/diskutil say 245.1 GB where `df -h` says 228Gi). 102400 KB is exactly
