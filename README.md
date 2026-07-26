@@ -28,7 +28,7 @@ Open source, no subscription, no surprises.
   and sheersweep prints the exact command before running it.
 - **Dry-run first.** `sheersweep --dry-run` prints how much each item *would*
   free and deletes nothing. Run it, read it, then decide.
-- **🔴 Never-touch list — no line in the script can reach these:**
+- **`[ HELD ]` never-touch list — no line in the script can reach these:**
   Photos / Documents / Desktop / Movies / Music, Clip Studio (CELSYS), app
   Containers & Application Support, Dropbox / cloud-sync folders, screen
   recordings, Mail / Messages / Keychains, any git repo, any Obsidian vault.
@@ -151,10 +151,10 @@ confirmation (you type the count of ids shown), one receipt — and
 `sheersweep uninstall <bundle-id>` reaches a single one directly (add
 `--dry-run` to preview headlessly).
 
-One more honesty rule: **the ✅ only appears if everything actually moved.**
+One more honesty rule: **`[ DONE ]` only appears if everything actually moved.**
 macOS protects app containers from other programs (even as root) unless your
 terminal has Full Disk Access — when that blocks an item, sheersweep marks it
-`❌ still in place`, reports `🔴 only N of M moved`, and tells you about the
+`[ FAIL ] still in place`, reports `[ FAIL ] only N of M moved`, and tells you about the
 System Settings toggle instead of pretending.
 
 ### CLI tools use the same verb — removed the way each restores best
@@ -212,9 +212,9 @@ The point isn't finding *more* — it's being **honest about what's actually jun
 
 - **Dead** — the program it launches no longer exists (e.g. an EA Origin helper
   whose binary is gone). Safe to remove.
-- **⚠️ Likely orphan** — it references an app that's now missing (e.g. a
+- **`[ WARN ]` likely orphan** — it references an app that's now missing (e.g. a
   discontinued app's self-remover). Shown for review; removed only if you opt in.
-- **✅ Kept** — anything whose program still exists is left alone and counted. A
+- **`[ PASS ]` kept** — anything whose program still exists is left alone and counted. A
   *working* updater that a still-installed app shares (say, the Google updater that
   Google Drive needs) is **never** mistaken for junk — the trap dumb cleaners spring
   to scare you into deleting something load-bearing.
