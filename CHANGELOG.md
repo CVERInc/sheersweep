@@ -6,6 +6,22 @@ project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [0.11.0]
 
+### Changed — one report at the end of a sweep, not two
+
+The digest ("Also seen", by category) and the 📦 disk map (by location) were
+separate blocks built at different times, and on a full disk they collided —
+the disk-fullness line was just a headline for what the map detailed right below,
+and the same `→ tools` / `→ uninstall` pointers showed in both.
+
+Now it's **one report**. The map always runs (the per-account `du` is a cost a
+bare sweep already pays; a heartbeat covers the wait). The by-category findings
+fold in as a **"Cleanable, inside the above"** group — build output, AI archives,
+removed-app leftovers, brew updates — in the map's two-line language, biggest
+first. It's a distinct group on purpose: those categories live *inside* the
+account totals the map partitions, so summing them in would double-count and
+break the "beyond reach" remainder. The standalone disk-% line is gone (the map
+is that story).
+
 ### Changed — every verb now speaks one visual language
 
 The output was a patchwork: `====`/`----` rules, and emoji whose spatial meaning
