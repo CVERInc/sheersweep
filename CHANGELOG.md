@@ -4,6 +4,63 @@ All notable changes to sheersweep are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.12.0]
+
+### Added — the picker shows what each app actually costs you
+
+`sheersweep uninstall` with no name used to list bare app names. A bare name
+can't answer the question people are actually asking there: "Discord" is a
+keep-or-remove coin flip; **`Discord · 2.1 GB`** is a decision — at that size a
+browser tab starts looking like the better deal. The number has to be on screen
+while the choice is being made, not after it.
+
+Each row is the app's **full footprint** — the bundle plus everything it owns
+across every account — measured by the same walk `uninstall` uses for its
+preview, now lifted into one `gather_footprint` so the picker and the preview
+can never disagree about what an app is made of.
+
+Sorted **by name**: you look an app up by what it's called. (The array is
+sorted, not just the display — row N is `apps[N-1]` for the rest of that
+function, so a display-only sort would have uninstalled the wrong app.)
+
+Measured on the author's machine: **14 apps, ~1.0 s** for the whole list, behind
+the same heartbeat the sweep uses. On a multi-account machine it walks every
+home, so expect more.
+
+### Fixed — a size column too narrow for the sizes in it
+
+Nine detail rows across `uninstall`, `tools` and the brew inventory were six
+columns wide, which is one short of `116.0 GB` and two short of the alignment
+everything else on screen uses. They are eight now, and carry the family's `·`
+like every other row you can read but not select.
+
+### Fixed — the snapshot row was a count wearing a size column
+
+```
+·        1  (present)      →      ·        —  (1 · present)
+```
+
+A snapshot's size is the one number on this report that genuinely cannot be
+measured: the space it pins is scattered across already-deleted files and
+`tmutil` won't total it. The em dash says so, in the same voice as "unreadable
+even to root". Written out rather than passed through `%8s` — bash pads by
+BYTES, so an em dash (three bytes, one column) lands two columns short of every
+MB beside it.
+
+### Fixed — the i18n gate could not see a missing translation
+
+It asked whether `t <key>` returned something in every locale. A key missing a
+locale falls through to `*)` and returns English, which is very much something,
+so the check could only ever catch a typo'd key name — while its comment claimed
+it caught silent fallbacks. Found by writing the same weak check for sheerstatus
+and watching it bless a four-locale section as nine.
+
+The new one reads the shape: a key whose body opens `case "$SS_LANG"` is
+claiming per-language text, so every locale must appear as a branch label. Hence
+`en-US|*)` across all 116 branches — one label meaning both "English" and "any
+language we haven't heard of" is what made a gap invisible. sheersweep itself
+was clean; it was the gate that wasn't.
+
 ## [0.11.1]
 
 ### Fixed — `reclaim > file` was writing the narration into the file

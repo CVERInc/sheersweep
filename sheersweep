@@ -32,7 +32,7 @@
 #   each with the native way to remove it. Changes nothing; never needs sudo.
 set -u
 
-VERSION="0.11.1"
+VERSION="0.12.0"
 
 # ============================================================================
 # i18n — en-US · ja-JP · zh-TW · zh-Hans · ko-KR · es-ES · de-DE · fr-FR · pt-BR.
@@ -3015,13 +3015,42 @@ pick_app() {
     collect_claims
     orphan_discover
   fi
+  # ── every app's FULL footprint, before you choose ─────────────────────────
+  # A list of bare names can't answer the question people actually ask here.
+  # "Discord" is a keep-or-remove coin flip; "Discord · 2.1 GB" is a decision —
+  # at that size a browser tab starts looking like the better deal. The number
+  # has to be on screen while the choice is being made, not after it.
+  #
+  # gather_footprint is the same walk `uninstall` does, so the picker and the
+  # preview can never disagree about what an app is made of. Measured on this
+  # machine: 14 apps, 0.68s — the whole list, not per row.
+  #
+  # SORTED BY NAME, and the ARRAY is sorted, not just the display: row N is
+  # `apps[N-1]` for the rest of this function, so a display-only sort would
+  # uninstall the wrong app.
+  local _fp_rows="" _base _bid _kb
+  for appp in "${apps[@]}"; do
+    _base="$(basename "$appp")"; _base="${_base%.app}"
+    _bid="$(bundle_id "$appp")"
+    gather_footprint "$appp" "${_bid:-$_base}" "$_base" 0
+    _kb=0
+    [ "${#ITEM_PATH[@]}" -gt 0 ] && _kb="$(du -sck "${ITEM_PATH[@]}" 2>/dev/null | tail -1 | cut -f1)"
+    _fp_rows="$_fp_rows$_base"$'\t'"${_kb:-0}"$'\t'"$appp"$'\n'
+    printf '.' >&2                     # one tick per app weighed — proof of life
+  done
+  printf '\n' >&2
+  apps=(); local _names=() _sizes=()
+  while IFS=$'\t' read -r _base _kb appp; do
+    [ -n "$appp" ] || continue
+    apps+=("$appp"); _names+=("$_base"); _sizes+=("$_kb")
+  done < <(printf '%s' "$_fp_rows" | LC_ALL=C sort -f -t"$(printf '\t')" -k1,1)
+
   # ── now the whole menu, in one breath: apps, then what apps left behind ──
   printf '%s (%d)\n' "$(t un_pick_header)" "${#apps[@]}"   # show the full count → no hidden "next page"
   n=0
-  for appp in "${apps[@]}"; do
+  for i in "${!apps[@]}"; do
     n=$((n + 1))
-    base="$(basename "$appp")"; base="${base%.app}"
-    printf '   %3d) %s\n' "$n" "$(printf '%s' "$base" | vis)"
+    printf '   %3d) %-44s %8s\n' "$n" "$(printf '%s' "${_names[$i]}" | vis)" "$(od_human_kb "${_sizes[$i]}")"
   done
   # 🧟 rows are numbered continuously with the apps; picking one runs the same
   # footprint→preview→typed-confirm→Trash→receipt flow, keyed by the bundle id.
@@ -3156,6 +3185,67 @@ report_moves() {   # $1 = the fully-successful ✅ line, already formatted
   return 0
 }
 
+# gather_footprint <app-path> <bundle-id> <name> <orphan?>
+#   -> fills ITEM_PATH / ITEM_OWNER / ITEM_SCOPE with everything this app owns.
+#
+# Lifted out of do_uninstall so the PICKER can total the same footprint before
+# you choose, rather than after. That matters because the number changes the
+# choice: a 2 GB Discord is a candidate for "use the web version instead", and
+# you cannot make that call from a list of bare names. One definition, so the
+# preview and the picker can never disagree about what an app is made of.
+gather_footprint() {   # $1 = app path (may be "")  $2 = bid  $3 = name  $4 = orphan flag
+  local app="$1" bid="$2" name="$3" orphan="$4"
+  ITEM_PATH=(); ITEM_OWNER=(); ITEM_SCOPE=()
+  local ascope=""
+  add() {                       # add a path IF it exists, under the current scope
+    [ -e "$1" ] || return 0
+    ITEM_PATH+=("$1"); ITEM_OWNER+=("$2"); ITEM_SCOPE+=("$ascope")
+  }
+
+  local home u f rel
+  for home in /Users/*; do
+    [ -d "$home/Library" ] || continue
+    case "$(basename "$home")" in Shared|Guest) continue ;; esac
+    u="$(basename "$home")"
+    ascope="$(t acct)$u"
+    # name-anchored paths are skipped in the orphan (discovery) flow: there the
+    # "name" IS the bundle id — adding both would list the same path twice.
+    [ "$orphan" -eq 0 ] && add "$home/Library/Application Support/$name" "$home"
+    add "$home/Library/Application Support/$bid"             "$home"
+    add "$home/Library/Caches/$bid"                          "$home"
+    [ "$orphan" -eq 0 ] && add "$home/Library/Caches/$name"  "$home"
+    add "$home/Library/Preferences/$bid.plist"              "$home"
+    for f in "$home/Library/Preferences/$bid".*.plist;   do add "$f" "$home"; done
+    add "$home/Library/Containers/$bid"                     "$home"
+    for f in "$home/Library/Group Containers/"*"$bid"*;  do add "$f" "$home"; done
+    add "$home/Library/Saved Application State/$bid.savedState" "$home"
+    for f in "$home/Library/HTTPStorages/$bid"*;         do add "$f" "$home"; done
+    add "$home/Library/WebKit/$bid"                        "$home"
+    add "$home/Library/Cookies/$bid.binarycookies"        "$home"
+    add "$home/Library/Application Scripts/$bid"           "$home"
+    [ "$orphan" -eq 0 ] && add "$home/Library/Logs/$name"  "$home"
+    for f in "$home/Library/LaunchAgents/$bid"*.plist;   do add "$f" "$home"; done
+    # vendor-nested data the standard patterns above can't reach (Chrome's
+    # Google/Chrome, Brave's BraveSoftware/Brave-Browser, …). extra_is_safe()
+    # refuses a shared vendor root so a sibling app (e.g. Google Drive) is never
+    # swept up with the browser.
+    while IFS= read -r rel; do
+      [ -z "$rel" ] && continue
+      extra_is_safe "$rel" && add "$home/Library/$rel" "$home"
+    done < <(catalog_extra_rel "$bid")
+  done
+
+  # system-wide bits + the .app itself → the running user's Trash (Finder-like)
+  ascope="$(t system)"
+  add "$app"                                                "$REAL_HOME"
+  [ "$orphan" -eq 0 ] && add "/Library/Application Support/$name" "$REAL_HOME"
+  add "/Library/Caches/$bid"                                "$REAL_HOME"
+  for f in "/Library/LaunchAgents/$bid"*.plist;        do add "$f" "$REAL_HOME"; done
+  for f in "/Library/LaunchDaemons/$bid"*.plist;       do add "$f" "$REAL_HOME"; done
+  for f in "/Library/PrivilegedHelperTools/$bid"*;     do add "$f" "$REAL_HOME"; done
+
+}
+
 do_uninstall() {
   local target="$1" app bid name rc orphan=0
   # an empty target must die HERE: handed to the resolvers below, "" would match
@@ -3233,56 +3323,7 @@ do_uninstall() {
     name="$(basename "$app")"; name="${name%.app}"
   fi
 
-  # --- gather the footprint into parallel arrays (path / owner-home / scope) ---
-  ITEM_PATH=(); ITEM_OWNER=(); ITEM_SCOPE=()
-  local ascope=""
-  add() {                       # add a path IF it exists, under the current scope
-    [ -e "$1" ] || return 0
-    ITEM_PATH+=("$1"); ITEM_OWNER+=("$2"); ITEM_SCOPE+=("$ascope")
-  }
-
-  local home u f rel
-  for home in /Users/*; do
-    [ -d "$home/Library" ] || continue
-    case "$(basename "$home")" in Shared|Guest) continue ;; esac
-    u="$(basename "$home")"
-    ascope="$(t acct)$u"
-    # name-anchored paths are skipped in the orphan (discovery) flow: there the
-    # "name" IS the bundle id — adding both would list the same path twice.
-    [ "$orphan" -eq 0 ] && add "$home/Library/Application Support/$name" "$home"
-    add "$home/Library/Application Support/$bid"             "$home"
-    add "$home/Library/Caches/$bid"                          "$home"
-    [ "$orphan" -eq 0 ] && add "$home/Library/Caches/$name"  "$home"
-    add "$home/Library/Preferences/$bid.plist"              "$home"
-    for f in "$home/Library/Preferences/$bid".*.plist;   do add "$f" "$home"; done
-    add "$home/Library/Containers/$bid"                     "$home"
-    for f in "$home/Library/Group Containers/"*"$bid"*;  do add "$f" "$home"; done
-    add "$home/Library/Saved Application State/$bid.savedState" "$home"
-    for f in "$home/Library/HTTPStorages/$bid"*;         do add "$f" "$home"; done
-    add "$home/Library/WebKit/$bid"                        "$home"
-    add "$home/Library/Cookies/$bid.binarycookies"        "$home"
-    add "$home/Library/Application Scripts/$bid"           "$home"
-    [ "$orphan" -eq 0 ] && add "$home/Library/Logs/$name"  "$home"
-    for f in "$home/Library/LaunchAgents/$bid"*.plist;   do add "$f" "$home"; done
-    # vendor-nested data the standard patterns above can't reach (Chrome's
-    # Google/Chrome, Brave's BraveSoftware/Brave-Browser, …). extra_is_safe()
-    # refuses a shared vendor root so a sibling app (e.g. Google Drive) is never
-    # swept up with the browser.
-    while IFS= read -r rel; do
-      [ -z "$rel" ] && continue
-      extra_is_safe "$rel" && add "$home/Library/$rel" "$home"
-    done < <(catalog_extra_rel "$bid")
-  done
-
-  # system-wide bits + the .app itself → the running user's Trash (Finder-like)
-  ascope="$(t system)"
-  add "$app"                                                "$REAL_HOME"
-  [ "$orphan" -eq 0 ] && add "/Library/Application Support/$name" "$REAL_HOME"
-  add "/Library/Caches/$bid"                                "$REAL_HOME"
-  for f in "/Library/LaunchAgents/$bid"*.plist;        do add "$f" "$REAL_HOME"; done
-  for f in "/Library/LaunchDaemons/$bid"*.plist;       do add "$f" "$REAL_HOME"; done
-  for f in "/Library/PrivilegedHelperTools/$bid"*;     do add "$f" "$REAL_HOME"; done
-
+  gather_footprint "$app" "$bid" "$name" "$orphan"
   # --- show what we found (always; this IS the product) -----------------------
   if [ "$orphan" -eq 1 ]; then
     m="$(t un_orphan)"; echo "${m//\{bid\}/$bid}"
@@ -3298,7 +3339,7 @@ do_uninstall() {
   local i last=""
   for i in "${!ITEM_PATH[@]}"; do
     if [ "${ITEM_SCOPE[$i]}" != "$last" ]; then echo "▸ ${ITEM_SCOPE[$i]}"; last="${ITEM_SCOPE[$i]}"; fi
-    printf '   %6s  %s\n' "$(human "${ITEM_PATH[$i]}")" "$(printf '%s' "${ITEM_PATH[$i]}" | vis)"
+    printf '   ·   %8s  %s\n' "$(human "${ITEM_PATH[$i]}")" "$(printf '%s' "${ITEM_PATH[$i]}" | vis)"
   done
   local total
   total="$(od_human_kb "$(du -sck "${ITEM_PATH[@]}" 2>/dev/null | tail -1 | cut -f1)")"
@@ -3384,7 +3425,7 @@ do_uninstall_orphans() {
   fi
   for i in "${!ITEM_PATH[@]}"; do
     if [ "${ITEM_SCOPE[$i]}" != "$last" ]; then echo "▸ ${ITEM_SCOPE[$i]}"; last="${ITEM_SCOPE[$i]}"; fi
-    printf '   %6s  %s\n' "$(human "${ITEM_PATH[$i]}")" "$(printf '%s' "${ITEM_PATH[$i]}" | vis)"
+    printf '   ·   %8s  %s\n' "$(human "${ITEM_PATH[$i]}")" "$(printf '%s' "${ITEM_PATH[$i]}" | vis)"
   done
   total="$(od_human_kb "$(du -sck "${ITEM_PATH[@]}" 2>/dev/null | tail -1 | cut -f1)")"
   printf '\n'
@@ -3504,7 +3545,7 @@ do_uninstall_brew() {
   sz="$(human "$keg")"
   cmd="brew uninstall $name"
   m="$(t un_brew_resolved)"; m="${m//\{name\}/$name}"; echo "${m//\{ver\}/$vers}"
-  printf '   %6s  %s\n' "${sz:-?}" "$keg"
+  printf '   ·   %8s  %s\n' "${sz:-?}" "$keg"
   printf '\n'
   t un_brew_cmd
   printf '\n      %s\n\n' "$cmd"
@@ -3555,7 +3596,7 @@ do_uninstall_bin() {
   t un_bin_header
   for f in "${hits[@]}"; do
     sz="$(od_human_kb "$(du -skL "$f" 2>/dev/null | cut -f1)")"
-    printf '   %6s  %s\n' "${sz:-?}" "$f"
+    printf '   ·   %8s  %s\n' "${sz:-?}" "$f"
   done
   printf '\n'
   t un_bin_note
@@ -3622,10 +3663,10 @@ do_tools() {
         sz="$(human "$cellar/$name")"
         newv="$(printf '%s\n' "$outdated" | LC_ALL=C awk -v n="$name" '$1 == n {print $NF; exit}')"
         if [ -n "$newv" ]; then
-          printf '   %6s  %-24s %-12s → %-10s brew upgrade %s\n' "${sz:-?}" "$name" "$vers" "$newv" "$name"
+          printf '   ·   %8s  %-24s %-12s → %-10s brew upgrade %s\n' "${sz:-?}" "$name" "$vers" "$newv" "$name"
           up=$((up + 1))
         else
-          printf '   %6s  %-24s %s\n' "${sz:-?}" "$name" "$vers"
+          printf '   ·   %8s  %-24s %s\n' "${sz:-?}" "$name" "$vers"
         fi
       done < <(brew_run list --formula --versions $leaves 2>/dev/null)
       if [ "$up" -gt 0 ]; then
@@ -3652,9 +3693,9 @@ do_tools() {
     n=$((n + 1))
     sz="$(od_human_kb "$(du -skL "$f" 2>/dev/null | cut -f1)")"
     if [ -L "$f" ]; then
-      printf '   %6s  %s → %s\n' "${sz:-?}" "$f" "$(readlink "$f")"
+      printf '   ·   %8s  %s → %s\n' "${sz:-?}" "$f" "$(readlink "$f")"
     else
-      printf '   %6s  %s\n' "${sz:-?}" "$f"
+      printf '   ·   %8s  %s\n' "${sz:-?}" "$f"
     fi
   done < <(unmanaged_bins "" "$REAL_HOME")
   [ "$n" -eq 0 ] && echo "   $(t tl_bins_none)"
@@ -3672,7 +3713,7 @@ do_tools() {
     case "$sz" in ""|0B) continue ;; esac
     n=$((n + 1))
     # shellcheck disable=SC2088  # the literal "~/" is display text, not a path
-    printf '   %6s  %-22s %s\n' "$sz" "~/$rel" "$hint"
+    printf '   ·   %8s  %-22s %s\n' "$sz" "~/$rel" "$hint"
   done <<'CHAINS'
 .rustup|rustup self uninstall
 .cargo|removed by: rustup self uninstall
