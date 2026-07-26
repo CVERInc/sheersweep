@@ -4,6 +4,57 @@ All notable changes to sheersweep are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.11.1]
+
+### Fixed — `reclaim > file` was writing the narration into the file
+
+`sheersweep reclaim --dry-run > report.txt` came out with a scanning cursor and
+a progress notice sitting on top of the report; `reclaim`'s stderr was empty and
+everything went to stdout. The sweep had already been split — **stdout is data,
+stderr is narration** — and this verb had never been.
+
+The banner stays on stdout, because it defines what the rows below mean, the
+way `The sheersweep:` heads the sweep. It also lost its `▸`: it is the report's
+title, and the `▸` headers under it are its groups, so it was competing with
+them for the same mark.
+
+### Fixed — a sweep that freed nothing measurable claimed it freed nothing
+
+`0.0 GB freed` after clearing 57 MB is not a rounding artefact; it is the tool
+saying it did nothing. The unit now follows the amount, so a small win reads as
+a small win. And when free space doesn't go up at all — something else wrote
+while the sweep ran — the sentence changes instead of the number:
+
+```
+[ DONE ] Swept · no space came back · 93% full
+```
+
+Reporting `-1.2 GB freed` would blame the tool for the machine.
+
+### Fixed — `reclaim`'s numbered rows didn't line up
+
+`1)` and `10)` sheared the size column apart, and the sizes themselves were
+unpadded. Both are padded now, and the `↺` rebuild command starts at the column
+the size starts in — the same relationship `→` has to its own row.
+
+### Changed — one bullet, one group header
+
+`•` is retired in favour of `·`, which was already doing both jobs everywhere
+else: marking an item, and separating fields inside one. Thirty-six of them were
+hiding in the localised `--help` text, which is why an earlier pass called this
+tool consistent. **A tool's language includes the part you only read once.**
+
+The uninstall picker gained the group header it never had, blank lines between
+its three sections, and the family's indent.
+
+### Changed — the badge set grew a sixth: `[ CRIT ]`
+
+`PASS · DONE · WARN · CRIT · FAIL · HELD`. The five were derived from this tool,
+which *acts*; a tool that *measures* runs a three-rung ladder, and flattening
+"getting full" into "already thrashing" makes a report useless at the exact
+moment it matters. Nothing in sheersweep emits `CRIT` today — the set is shared,
+and it is now correct for the whole family.
+
 ## [0.11.0]
 
 ### Changed — status is five badges now, the same in every language

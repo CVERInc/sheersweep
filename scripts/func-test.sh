@@ -637,8 +637,8 @@ fi
 # (P1 guard) honest move accounting: three real runs "succeeded" (✅) while
 # every macOS-protected container silently stayed put. trash_one must count
 # tried vs moved, mark a stuck item ❌ out loud, flag the container case, and
-# report_moves must turn any shortfall into a 🔴 with real numbers — plus the
-# actionable 🔒 hint when containers are what stuck.
+# report_moves must turn any shortfall into a [ FAIL ] with real numbers — plus
+# the actionable [ HELD ] hint when containers are what stuck.
 setup
 HOME_OWNER="$SBX/home"; mkdir -p "$HOME_OWNER"
 mkdir -p "$SBX/fake/Library/Containers/com.stuck.app"; echo x > "$SBX/fake/Library/Containers/com.stuck.app/f"
@@ -665,7 +665,7 @@ case "$sum1" in *"[ HELD ]"*) ok3=1 ;; *) ok3=0 ;; esac
 case "$out2" in *"[ FAIL ]"*) ok4=0 ;; *) ok4=1 ;; esac
 if [ "$sum2" = "ALL-GOOD-LINE" ]; then ok5=1; else ok5=0; fi
 if [ "$ok1$ok2$ok3$ok4$ok5" = "11111" ]; then
-  pass "honest accounting: stuck item ❌ + 🔴 shortfall + 🔒 container hint; full success keeps plain ✅"
+  pass "honest accounting: [ FAIL ] on the stuck item and on the shortfall · [ HELD ] names containers as the reason · a clean run carries no badge"
 else
   fail "move accounting wrong (stuck-mark=$ok1 shortfall=$ok2 hint=$ok3 clean-item=$ok4 clean-summary=$ok5)"
 fi
