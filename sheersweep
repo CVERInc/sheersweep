@@ -132,29 +132,19 @@ t() {
         pt-BR) echo "prévia — nada foi apagado. As linhas acima mostram o que seria limpo." ;;
         *)     echo "preview — nothing deleted. The lines above are what would be cleaned." ;;
       esac ;;
-    acct)
+    system)   # "system-wide", not "system": the report has a "System — leave it"
+              # group four lines later, and one word meaning two things four lines
+              # apart is exactly the collision this language exists to prevent.
       case "$SS_LANG" in
-        ja-JP) echo "アカウント：" ;;
-        zh-TW) echo "帳號：" ;;
-        zh-Hans) echo "账户：" ;;
-        ko-KR) echo "계정: " ;;
-        es-ES) echo "cuenta: " ;;
-        de-DE) echo "Konto: " ;;
-        fr-FR) echo "compte : " ;;
-        pt-BR) echo "conta: " ;;
-        *)     echo "account: " ;;
-      esac ;;
-    system)
-      case "$SS_LANG" in
-        ja-JP) echo "システム" ;;
-        zh-TW) echo "系統" ;;
-        zh-Hans) echo "系统" ;;
-        ko-KR) echo "시스템" ;;
-        es-ES) echo "sistema" ;;
-        de-DE) echo "System" ;;
-        fr-FR) echo "système" ;;
-        pt-BR) echo "sistema" ;;
-        *)     echo "system" ;;
+        ja-JP) echo "システム全体" ;;
+        zh-TW) echo "系統層級" ;;
+        zh-Hans) echo "系统层级" ;;
+        ko-KR) echo "시스템 전체" ;;
+        es-ES) echo "todo el sistema" ;;
+        de-DE) echo "systemweit" ;;
+        fr-FR) echo "tout le système" ;;
+        pt-BR) echo "todo o sistema" ;;
+        *)     echo "system-wide" ;;
       esac ;;
     brew_what)
       case "$SS_LANG" in
@@ -2411,7 +2401,11 @@ if [ -z "${SHEERSWEEP_LIB:-}" ]; then
   # tool world — nothing is written, no other account is read, and brew refuses
   # to run as root anyway → it must NOT demand a password.
   if [ "$(id -u)" -ne 0 ] && [ "$MODE" != "tools" ]; then
-    t escalate >&2       # narration, not data — a pipe should get only the report
+    # Explain the sudo re-exec only when a password is actually about to be asked.
+    # With the timestamp still warm there is no prompt, so the sentence explains
+    # something that isn't happening — and that is the line worth deleting.
+    # (`-n` never prompts; it just reports whether one would be needed.)
+    sudo -n true 2>/dev/null || t escalate >&2
     exec sudo SHEERSWEEP_LANG="$SS_LANG" SHEERSWEEP_SUSPECT_MIN_MB="${SHEERSWEEP_SUSPECT_MIN_MB:-}" "$0" "$@"
   fi
   REAL_USER="${SUDO_USER:-$(id -un)}"
@@ -2419,11 +2413,14 @@ if [ -z "${SHEERSWEEP_LIB:-}" ]; then
   [ -n "$REAL_HOME" ] || REAL_HOME="/Users/$REAL_USER"
 fi
 
-human()  { du -sh "$1" 2>/dev/null | cut -f1; }
+# One path to a size string: measure in KB, format decimally. Was `du -sh`,
+# whose binary "23M" matched nothing the owner sees elsewhere on their Mac.
+human()  { od_human_kb "$(du -sk "$1" 2>/dev/null | cut -f1)"; }
 
 # A pending group heading, emitted by clean() only if the group turns out to
 # have rows (see clean). Empty = nothing pending.
 SW_GROUP=""
+SW_HOME=""      # the home a group's rows live under, so they can show as ~/…
 
 # The sweep's rows are COLLECTED, not streamed. What a person wants at the end of
 # a run is the result, not a play-by-play — so the work happens behind one notice
@@ -2451,15 +2448,17 @@ vis() { LC_ALL=C tr -d '\000-\037\177'; }
 
 # Clear a directory's CONTENTS (keep the dir). Dry-run only reports the size.
 clean() {
-  local p="$1" sz
+  local p="$1" kb sz disp
   [ -d "$p" ] || return 0
-  sz="$(human "$p")"
+  kb="$(du -sk "$p" 2>/dev/null | cut -f1)"
   printf '.' >&2                     # one tick per path weighed — the run's proof of life
-  # `du -sh | cut -f1` pads its size on the left ("  0B", " 24M"), so comparing
-  # the raw string to "0B" never matched and every empty directory printed a
-  # "0B" line. Strip the padding before the test; the printf below re-pads.
-  sz="${sz//[[:space:]]/}"
-  if [ -z "$sz" ] || [ "$sz" = "0B" ]; then return 0; fi
+  # Test the NUMBER, never the rendered string. This guard was written as
+  # [ "$sz" = "0B" ] against `du -sh` output that arrives left-padded ("  0B"),
+  # so it never once matched and every empty directory printed a row. Rewriting
+  # the formatter would have broken a string test a second way ("0 KB"); a
+  # numeric test can't rot when the wording changes.
+  [ "${kb:-0}" -gt 0 ] 2>/dev/null || return 0
+  sz="$(od_human_kb "$kb")"
   # A group's header waits here until the group has something in it — otherwise
   # an account with nothing to clear leaves a heading over empty space. Same
   # no-empty-group rule the report groups follow.
@@ -2467,7 +2466,12 @@ clean() {
   # No per-row state marker. Whether this run deletes or previews is a property
   # of the RUN, not of each line — it's stated once, up top, and stamping it on
   # twenty rows only teaches the eye to skip it (SPEC.md: state on the group).
-  sw_row "$(printf '   · %6s  %s' "$sz" "$p")"
+  # The heading already names whose home this is, so a path inside it shows as
+  # ~/… — shorter, and it can't be mistaken for another account's. Anything
+  # outside a home (e.g. /var/folders/…/T) stays absolute.
+  disp="$p"
+  if [ -n "${SW_HOME:-}" ]; then case "$p" in "$SW_HOME"/*) disp="~${p#"$SW_HOME"}" ;; esac; fi
+  sw_row "$(printf '   · %8s  (%s)' "$sz" "$disp")"
   [ "$DRY" -eq 1 ] || find "$p" -mindepth 1 -delete 2>/dev/null
 }
 
@@ -2812,11 +2816,26 @@ orphan_hint() {   # $1 = id → one lowercase word, "" if nothing useful
   printf '%s' "$last" | LC_ALL=C tr '[:upper:]' '[:lower:]'
 }
 
-od_human_kb() {   # KB → "12K" / "340M" / "1.2G" (matches du -h's vocabulary)
+# The one size formatter. Input is KB as du/df report it (1024-byte blocks);
+# output is DECIMAL, because decimal is what this Mac shows its owner everywhere
+# they can check us: Finder, System Settings, diskutil ("245.1 GB" for the volume
+# that `df -h` calls 228Gi). We even point at System Settings — sending someone
+# to a number that won't match ours is a seam we'd be making ourselves.
+#
+# So the suffix is spelled out (GB/MB/KB) exactly as macOS spells it. That also
+# distinguishes it from `du -h`'s binary "G"/"M" at a glance, which is the
+# existing convention rather than one we invented — and it happens to put us on
+# the same scale as brew, whose figures we quote.
+#
+# NB: `df -H` gives decimal, but `du -H` means "follow symlinks" — the flags do
+# not mirror each other, so the arithmetic lives here instead.
+od_human_kb() {   # KB (1024-byte blocks) → "12 KB" / "340 MB" / "1.2 GB", decimal
   awk -v k="${1:-0}" 'BEGIN {
-    if (k >= 1048576)   printf "%.1fG", k / 1048576
-    else if (k >= 1024) printf "%.0fM", k / 1024
-    else                printf "%dK", k
+    b = k * 1024
+    if (b >= 1000000000)        printf "%.1f GB", b / 1000000000
+    else if (b >= 10000000)     printf "%.0f MB", b / 1000000
+    else if (b >= 1000000)      printf "%.1f MB", b / 1000000
+    else                        printf "%.0f KB", b / 1000
   }'
 }
 
@@ -3267,7 +3286,7 @@ do_uninstall() {
     printf '   %6s  %s\n' "$(human "${ITEM_PATH[$i]}")" "$(printf '%s' "${ITEM_PATH[$i]}" | vis)"
   done
   local total
-  total="$(du -sch "${ITEM_PATH[@]}" 2>/dev/null | tail -1 | cut -f1)"
+  total="$(od_human_kb "$(du -sck "${ITEM_PATH[@]}" 2>/dev/null | tail -1 | cut -f1)")"
   printf '\n'
   echo "   $(t un_total)$total"
 
@@ -3352,7 +3371,7 @@ do_uninstall_orphans() {
     if [ "${ITEM_SCOPE[$i]}" != "$last" ]; then echo "▸ ${ITEM_SCOPE[$i]}"; last="${ITEM_SCOPE[$i]}"; fi
     printf '   %6s  %s\n' "$(human "${ITEM_PATH[$i]}")" "$(printf '%s' "${ITEM_PATH[$i]}" | vis)"
   done
-  total="$(du -sch "${ITEM_PATH[@]}" 2>/dev/null | tail -1 | cut -f1)"
+  total="$(od_human_kb "$(du -sck "${ITEM_PATH[@]}" 2>/dev/null | tail -1 | cut -f1)")"
   printf '\n'
   echo "   $(t un_total)$total"
 
@@ -3467,7 +3486,7 @@ do_uninstall_brew() {
     return 1
   fi
   keg="$(brew_run --cellar 2>/dev/null)/$name"
-  sz="$(du -sh "$keg" 2>/dev/null | cut -f1)"
+  sz="$(human "$keg")"
   cmd="brew uninstall $name"
   m="$(t un_brew_resolved)"; m="${m//\{name\}/$name}"; echo "${m//\{ver\}/$vers}"
   printf '   %6s  %s\n' "${sz:-?}" "$keg"
@@ -3520,7 +3539,7 @@ do_uninstall_bin() {
   [ "${#hits[@]}" -eq 0 ] && return 2
   t un_bin_header
   for f in "${hits[@]}"; do
-    sz="$(du -shL "$f" 2>/dev/null | cut -f1)"
+    sz="$(od_human_kb "$(du -skL "$f" 2>/dev/null | cut -f1)")"
     printf '   %6s  %s\n' "${sz:-?}" "$f"
   done
   printf '\n'
@@ -3585,7 +3604,7 @@ do_tools() {
       while IFS= read -r line; do
         [ -z "$line" ] && continue
         name="${line%% *}"; vers="${line#* }"
-        sz="$(du -sh "$cellar/$name" 2>/dev/null | cut -f1)"
+        sz="$(human "$cellar/$name")"
         newv="$(printf '%s\n' "$outdated" | LC_ALL=C awk -v n="$name" '$1 == n {print $NF; exit}')"
         if [ -n "$newv" ]; then
           printf '   %6s  %-24s %-12s → %-10s brew upgrade %s\n' "${sz:-?}" "$name" "$vers" "$newv" "$name"
@@ -3616,7 +3635,7 @@ do_tools() {
   n=0
   while IFS= read -r -d '' f; do
     n=$((n + 1))
-    sz="$(du -shL "$f" 2>/dev/null | cut -f1)"
+    sz="$(od_human_kb "$(du -skL "$f" 2>/dev/null | cut -f1)")"
     if [ -L "$f" ]; then
       printf '   %6s  %s → %s\n' "${sz:-?}" "$f" "$(readlink "$f")"
     else
@@ -3634,7 +3653,7 @@ do_tools() {
     [ -z "$rel" ] && continue
     p="$REAL_HOME/$rel"
     [ -d "$p" ] || continue
-    sz="$(du -sh "$p" 2>/dev/null | cut -f1)"
+    sz="$(human "$p")"
     case "$sz" in ""|0B) continue ;; esac
     n=$((n + 1))
     # shellcheck disable=SC2088  # the literal "~/" is display text, not a path
@@ -4606,7 +4625,7 @@ dg_heavy_print() {
       # blank line BETWEEN entries only when they're two-line (have an action) —
       # single-line rows read tighter packed together.
       [ "$first" -eq 0 ] && [ -n "$a" ] && printf '\n'; first=0
-      printf '   · %s (%s)\n' "$(od_human_kb "$kb")" "$(printf '%s' "$(_disp "$label")" | vis)"
+      printf '   · %8s  (%s)\n' "$(od_human_kb "$kb")" "$(printf '%s' "$(_disp "$label")" | vis)"
       [ -n "$a" ] && printf '     %s\n' "$a"
     done <<EOF
 $raw
@@ -4629,7 +4648,7 @@ EOF
   while IFS=$'\t' read -r kb label grp; do
     if [ "$grp" != "floor" ] || [ -z "$kb" ]; then continue; fi
     if [ "$shown_floor" -eq 0 ]; then printf '\n%s\n' "$(t dg_group_floor)"; shown_floor=1; fi
-    printf '   · %s (%s)\n' "$(od_human_kb "$kb")" "$(printf '%s' "$(_disp "$label")" | vis)"
+    printf '   · %8s  (%s)\n' "$(od_human_kb "$kb")" "$(printf '%s' "$(_disp "$label")" | vis)"
   done <<EOF
 $raw
 EOF
@@ -4706,7 +4725,7 @@ dg_scan_start
 for home in /Users/*; do
   [ -d "$home/Library" ] || continue
   case "$(basename "$home")" in Shared|Guest) continue ;; esac
-  SW_GROUP="▸ $(t acct)$(basename "$home")"
+  SW_GROUP="▸ $(basename "$home")"; SW_HOME="$home"
   clean "$home/Library/Caches"
   clean "$home/Library/Logs"
   clean "$home/.cache"
@@ -4726,7 +4745,7 @@ for home in /Users/*; do
 done
 
 # ---- system-wide, once ----
-SW_GROUP="▸ $(t system)"
+SW_GROUP="▸ $(t system)"; SW_HOME=""
 clean "/Library/Caches"
 clean "/.adobeTemp"
 # Deliberately NOT touching /private/var/folders — it's the live temp area; deleting
@@ -4753,7 +4772,7 @@ if [ -n "$BREW_BIN" ]; then
   bsize="$(printf '%s\n' "$bc" | /usr/bin/sed -n 's/.*approximately \(.*\) of disk space\..*/\1/p' | tail -1)"
   if [ -n "$bsize" ]; then
     m="$(t brew)"; sw_row "" "▸ ${m//\{user\}/$REAL_USER}"
-    sw_row "$(printf '   · %6s  %s' "~$bsize" "$(t brew_what)")"
+    sw_row "$(printf '   · %8s  (%s)' "~$bsize" "$(t brew_what)")"
   elif [ -n "$bc" ]; then
     m="$(t brew)"; sw_row "" "▸ ${m//\{user\}/$REAL_USER}"
     sw_row "$(printf '%s\n' "$bc" | tail -1 | /usr/bin/sed 's/^/   /')"
@@ -4783,7 +4802,7 @@ else
       fi
     fi
     sw_row "" "▸ $(t snap_group)"
-    sw_row "$(printf '   · %6s  %s' "$snap_n" "$snap_word")"
+    sw_row "$(printf '   · %8s  (%s)' "$snap_n" "$snap_word")"
   fi
 fi
 

@@ -857,10 +857,10 @@ printf '204800 1 1 1\n' > "$DG_DIR/ai"    # 200M ≥ threshold · all three root
 true & DG_PID=$!; wait "$DG_PID" 2>/dev/null   # a finished pid → zero grace wait
 out="$(dg_cleanable_group)"
 g0=0; case "$out" in *"$(t dg_group_cleanable)"*) g0=1 ;; esac
-g1=0; case "$out" in *"· 1.0G (data left behind by removed apps · 3)"*"→ sheersweep uninstall"*) g1=1 ;; esac
-g2=0; case "$out" in *"· 2.0G (rebuildable build output · 2)"*"→ sheersweep reclaim"*) g2=1 ;; esac
+g1=0; case "$out" in *"(data left behind by removed apps · 3)"*"→ sheersweep uninstall"*) g1=1 ;; esac
+g2=0; case "$out" in *"(rebuildable build output · 2)"*"→ sheersweep reclaim"*) g2=1 ;; esac
 g3=0; case "$out" in *"· 4 Homebrew updates"*"→ sheersweep tools"*) g3=1 ;; esac
-g4=0; case "$out" in *"· 200M (~/.claude/projects · ~/.codex/sessions · ~/.clikae/profiles)"*"→ clikae clean"*) g4=1 ;; esac
+g4=0; case "$out" in *"(~/.claude/projects · ~/.codex/sessions · ~/.clikae/profiles)"*"→ clikae clean"*) g4=1 ;; esac
 DG_DIR="$SBX/dg2"; mkdir -p "$DG_DIR"
 printf '0 0\n' > "$DG_DIR/orph"; printf '10240 1 0 0\n' > "$DG_DIR/ai"   # zero + sub-100M → nothing
 true & DG_PID=$!; wait "$DG_PID" 2>/dev/null
@@ -871,6 +871,16 @@ if [ "$g0$g1$g2$g3$g4$g5" = "111111" ]; then
 else
   fail "cleanable group wrong (hdr=$g0 orph=$g1 rc=$g2 brew=$g3 ai=$g4 empty=$g5) out=[$out] out2=[$out2]"
 fi
+# (guard) sizes are DECIMAL and spelled out, matching what macOS shows its owner
+# (Finder/diskutil say 245.1 GB where `df -h` says 228Gi). 102400 KB is exactly
+# 100 MiB — binary would render "100M", decimal renders "105 MB".
+u1="$(od_human_kb 102400)"; u2="$(od_human_kb 976563)"; u3="$(od_human_kb 4)"
+if [ "$u1" = "105 MB" ] && [ "$u2" = "1.0 GB" ] && [ "$u3" = "4 KB" ]; then
+  pass "od_human_kb: decimal units, spelled out (105 MB / 1.0 GB / 4 KB)"
+else
+  fail "od_human_kb wrong ($u1 / $u2 / $u3) — binary would give 100M / 954M / 4K"
+fi
+
 # dg_ai_kb: returns "KB claude codex clikae" — size + which roots are present.
 mkdir -p "$SBX/h1/.claude/projects" "$SBX/h1/.clikae/profiles/claude/l/projects"
 dd if=/dev/zero of="$SBX/h1/.claude/projects/s.jsonl" bs=1024 count=64 2>/dev/null
