@@ -4706,6 +4706,7 @@ if ! command -v tmutil >/dev/null 2>&1; then
   echo "▸ $(t snap_release)"
   echo "   $(t snap_notool)"
 elif [ "$DRY" -eq 1 ]; then
+  printf '\n'
   echo "▸ $(t snap_dry)"
   n="$(tmutil listlocalsnapshots / 2>/dev/null | grep -c TimeMachine)"
   m="$(t snap_count)"; echo "   ${m//\{n\}/$n}"
