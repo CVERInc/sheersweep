@@ -58,27 +58,30 @@ Open source, no subscription, no surprises.
   you can act on comes last, nearest your prompt:
 
   ```
-     ▸ System — leave it
-     · 7.1G (/private/var)
-     · 2.9G (/Library)
+  ▸ System — leave it
+     ·   7.4 GB  (/private/var)
+     ·   3.2 GB  (/Library)
 
-     ▸ Here to stay
-     · 54.1G (/Users/you, this login)
-     · 46.0G (SIP: version DB, Spotlight)
+  ▸ Here to stay
+     ·  25.0 GB  (/Users/you, this login)
+     · 116.0 GB  (SIP: version DB, Spotlight)
 
-     ▸ Yours to act on
-     · 66.1G (/Users/someone-else)
+  ▸ Yours to act on
+     ·  41.1 GB  (/Users/someone-else)
        → System Settings › Users
 
-     · 7.5G (/opt/homebrew)
+     ·   7.9 GB  (/opt/homebrew)
        → sheersweep tools
 
-     ▸ Cleanable, inside the above
-     · 2.2G (rebuildable build output · 9)
+     ·   4.7 GB  (/Applications)
+       → sheersweep uninstall
+
+  ▸ Cleanable, inside the above
+     ·   2.4 GB  (rebuildable build output · 9)
        → sheersweep reclaim
 
-     · 1.4G (~/.claude/projects · ~/.codex/sessions)
-       → clikae clean (https://oss.cver.net/clikae)
+     ·   1.5 GB  (~/.claude/projects · ~/.codex/sessions · ~/.clikae/profiles)
+       → clikae clean
   ```
 
   It only ever *shows*. Every arrow is a fact sheersweep can assert — an
@@ -126,10 +129,10 @@ Application Support, preferences — sometimes for years. Run the picker and
 sheersweep shows you, unprompted:
 
 ```
-▸ Already removed — leftover data found (4):
-  64) com.spotify.client                    340M  (spotify?)
-  65) com.wacom.UpgradeHelper               128K  (upgradehelper?)
-  …
+▸ Already removed — leftover data found (4)
+    64) com.spotify.client                             340 MB  (spotify?)
+    65) com.wacom.UpgradeHelper                        128 KB  (upgradehelper?)
+    …
 ```
 
 This stays inside the same identity rule that governs everything else: a large
@@ -254,10 +257,13 @@ The preview is the anti-black-box payload made concrete — not "Junk: 3.8 GB �
 Clean", but:
 
 ```
-▸ ~/Developer/snapsift
-   1) app/.build           773M   rebuild: swift build    · 14d untouched
-▸ ~/Developer/motifmint
-   2) node_modules         263M   rebuild: npm install    · 31d untouched
+▸ /Users/you/Developer/snapsift
+     1)   454 MB  (app/.build)   · 21d untouched
+        ↺ cd /Users/you/Developer/snapsift/app && swift build
+
+▸ /Users/you/Developer/motifmint
+     2)   263 MB  (node_modules)   · 31d untouched
+        ↺ cd /Users/you/Developer/motifmint && npm install
 ```
 
 What it is, how to rebuild it, how stale it is — *you* judge alive vs dead;
