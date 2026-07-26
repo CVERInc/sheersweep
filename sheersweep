@@ -4516,7 +4516,7 @@ dg_cleanable_group() {
   fi
 
   [ -z "$rows" ] && return 0
-  printf '\n   %s\n' "$(t dg_group_cleanable)"
+  printf '\n%s\n' "$(t dg_group_cleanable)"
   local first=1 l1 act
   while IFS="$tab" read -r _ l1 act; do
     [ -n "$l1" ] || continue
@@ -4564,7 +4564,7 @@ dg_heavy_print() {
     while IFS=$'\t' read -r kb label grp; do
       [ "$grp" = "$2" ] || continue
       [ -n "$kb" ] || continue
-      if [ "$shown" -eq 0 ]; then printf '\n   %s\n' "$(t "$1")"; shown=1; fi
+      if [ "$shown" -eq 0 ]; then printf '\n%s\n' "$(t "$1")"; shown=1; fi
       local a; a="$(_act "$label")"
       # blank line BETWEEN entries only when they're two-line (have an action) —
       # single-line rows read tighter packed together.
@@ -4591,13 +4591,13 @@ EOF
   local shown_floor=0
   while IFS=$'\t' read -r kb label grp; do
     if [ "$grp" != "floor" ] || [ -z "$kb" ]; then continue; fi
-    if [ "$shown_floor" -eq 0 ]; then printf '\n   %s\n' "$(t dg_group_floor)"; shown_floor=1; fi
+    if [ "$shown_floor" -eq 0 ]; then printf '\n%s\n' "$(t dg_group_floor)"; shown_floor=1; fi
     printf '   · %s (%s)\n' "$(od_human_kb "$kb")" "$(printf '%s' "$(_disp "$label")" | vis)"
   done <<EOF
 $raw
 EOF
   if [ "$unread" -gt 1048576 ]; then
-    [ "$shown_floor" -eq 0 ] && printf '\n   %s\n' "$(t dg_group_floor)"
+    [ "$shown_floor" -eq 0 ] && printf '\n%s\n' "$(t dg_group_floor)"
     local frag; frag="$(t dg_unreadable)"; printf '   · %s\n' "${frag//\{size\}/$(od_human_kb "$unread")}"
   fi
   _emit_group dg_group_act act || true
