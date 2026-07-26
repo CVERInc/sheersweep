@@ -2425,6 +2425,10 @@ clean() {
   local p="$1" sz
   [ -d "$p" ] || return 0
   sz="$(human "$p")"
+  # `du -sh | cut -f1` pads its size on the left ("  0B", " 24M"), so comparing
+  # the raw string to "0B" never matched and every empty directory printed a
+  # "0B" line. Strip the padding before the test; the printf below re-pads.
+  sz="${sz//[[:space:]]/}"
   if [ -z "$sz" ] || [ "$sz" = "0B" ]; then return 0; fi
   if [ "$DRY" -eq 1 ]; then
     printf '   %s %6s  %s\n' "$(t preview)" "$sz" "$p"
