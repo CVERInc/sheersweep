@@ -86,27 +86,27 @@ t() {
       esac ;;
     sweep_result_real)   # {gb} freed · {before}% → {after}% full
       case "$SS_LANG" in
-        ja-JP) echo "✅ {gb} GB を解放 · 使用率 {before}% → {after}%" ;;
-        zh-TW) echo "✅ 釋出 {gb} GB · 使用率 {before}% → {after}%" ;;
-        zh-Hans) echo "✅ 释出 {gb} GB · 使用率 {before}% → {after}%" ;;
-        ko-KR) echo "✅ {gb} GB 확보 · 사용률 {before}% → {after}%" ;;
-        es-ES) echo "✅ {gb} GB liberados · {before}% → {after}% lleno" ;;
-        de-DE) echo "✅ {gb} GB frei gemacht · {before}% → {after}% belegt" ;;
-        fr-FR) echo "✅ {gb} GB libérés · {before}% → {after}% plein" ;;
-        pt-BR) echo "✅ {gb} GB liberados · {before}% → {after}% cheio" ;;
-        *)     echo "✅ freed {gb} GB · {before}% → {after}% full" ;;
+        ja-JP) echo "[ DONE ] {gb} GB を解放 · 使用率 {before}% → {after}%" ;;
+        zh-TW) echo "[ DONE ] 釋出 {gb} GB · 使用率 {before}% → {after}%" ;;
+        zh-Hans) echo "[ DONE ] 释出 {gb} GB · 使用率 {before}% → {after}%" ;;
+        ko-KR) echo "[ DONE ] {gb} GB 확보 · 사용률 {before}% → {after}%" ;;
+        es-ES) echo "[ DONE ] {gb} GB liberados · {before}% → {after}% lleno" ;;
+        de-DE) echo "[ DONE ] {gb} GB frei gemacht · {before}% → {after}% belegt" ;;
+        fr-FR) echo "[ DONE ] {gb} GB libérés · {before}% → {after}% plein" ;;
+        pt-BR) echo "[ DONE ] {gb} GB liberados · {before}% → {after}% cheio" ;;
+        *)     echo "[ DONE ] freed {gb} GB · {before}% → {after}% full" ;;
       esac ;;
     sweep_result_dry)   # a preview freed nothing — no invented delta
       case "$SS_LANG" in
-        ja-JP) echo "🧪 プレビュー — 何も削除していません。上の [preview] が対象です。" ;;
-        zh-TW) echo "🧪 預覽——什麼都沒刪。上面標 [preview] 的就是會清的。" ;;
-        zh-Hans) echo "🧪 预览——什么都没删。上面标 [preview] 的就是会清的。" ;;
-        ko-KR) echo "🧪 미리보기 — 아무것도 지우지 않았습니다. 위 [preview] 항목이 대상입니다." ;;
-        es-ES) echo "🧪 vista previa — no se borró nada. Lo marcado [preview] arriba es lo que se limpiaría." ;;
-        de-DE) echo "🧪 Vorschau — nichts gelöscht. Die [preview]-Zeilen oben zeigen, was bereinigt würde." ;;
-        fr-FR) echo "🧪 aperçu — rien supprimé. Les lignes [preview] ci-dessus montrent ce qui serait nettoyé." ;;
-        pt-BR) echo "🧪 prévia — nada foi apagado. As linhas [preview] acima mostram o que seria limpo." ;;
-        *)     echo "🧪 preview — nothing deleted. The [preview] lines above are what would be cleaned." ;;
+        ja-JP) echo "🧪 プレビュー — 何も削除していません。上に挙げた項目が対象です。" ;;
+        zh-TW) echo "🧪 預覽——什麼都沒刪。上面列出的就是會清的。" ;;
+        zh-Hans) echo "🧪 预览——什么都没删。上面列出的就是会清的。" ;;
+        ko-KR) echo "🧪 미리보기 — 아무것도 지우지 않았습니다. 위에 나열된 항목이 대상입니다." ;;
+        es-ES) echo "🧪 vista previa — no se borró nada. Lo listado arriba es lo que se limpiaría." ;;
+        de-DE) echo "🧪 Vorschau — nichts gelöscht. Die Zeilen oben zeigen, was bereinigt würde." ;;
+        fr-FR) echo "🧪 aperçu — rien supprimé. Les lignes ci-dessus montrent ce qui serait nettoyé." ;;
+        pt-BR) echo "🧪 prévia — nada foi apagado. As linhas acima mostram o que seria limpo." ;;
+        *)     echo "🧪 preview — nothing deleted. The lines above are what would be cleaned." ;;
       esac ;;
     acct)
       case "$SS_LANG" in
@@ -182,15 +182,15 @@ t() {
       esac ;;
     snap_fail)
       case "$SS_LANG" in
-        ja-JP) echo "⚠️ スナップショットを解放できませんでした（tmutil がエラーを返しました）。空き容量がスナップショットに保持されたままの可能性があります。" ;;
-        zh-TW) echo "⚠️ 無法釋放快照（tmutil 回報錯誤）。空間可能仍被快照釘住。" ;;
-        zh-Hans) echo "⚠️ 无法释放快照（tmutil 报错）。空间可能仍被快照占用。" ;;
-        ko-KR) echo "⚠️ 스냅샷을 해제할 수 없습니다(tmutil 오류). 공간이 여전히 스냅샷에 붙들려 있을 수 있습니다." ;;
-        es-ES) echo "⚠️ no se pudieron liberar las instantáneas (tmutil devolvió un error) — puede que sigan reteniendo el espacio." ;;
-        de-DE) echo "⚠️ Schnappschüsse konnten nicht freigegeben werden (tmutil meldete einen Fehler) — der Platz bleibt womöglich von ihnen belegt." ;;
-        fr-FR) echo "⚠️ impossible de libérer les instantanés (tmutil a signalé une erreur) — l'espace peut rester retenu par eux." ;;
-        pt-BR) echo "⚠️ não foi possível liberar os instantâneos (o tmutil retornou um erro) — o espaço pode continuar preso a eles." ;;
-        *)     echo "⚠️ could not release snapshots (tmutil reported an error) — space may still be pinned by them." ;;
+        ja-JP) echo "[ FAIL ] スナップショットを解放できませんでした（tmutil がエラーを返しました）。空き容量がスナップショットに保持されたままの可能性があります。" ;;
+        zh-TW) echo "[ FAIL ] 無法釋放快照（tmutil 回報錯誤）。空間可能仍被快照釘住。" ;;
+        zh-Hans) echo "[ FAIL ] 无法释放快照（tmutil 报错）。空间可能仍被快照占用。" ;;
+        ko-KR) echo "[ FAIL ] 스냅샷을 해제할 수 없습니다(tmutil 오류). 공간이 여전히 스냅샷에 붙들려 있을 수 있습니다." ;;
+        es-ES) echo "[ FAIL ] no se pudieron liberar las instantáneas (tmutil devolvió un error) — puede que sigan reteniendo el espacio." ;;
+        de-DE) echo "[ FAIL ] Schnappschüsse konnten nicht freigegeben werden (tmutil meldete einen Fehler) — der Platz bleibt womöglich von ihnen belegt." ;;
+        fr-FR) echo "[ FAIL ] impossible de libérer les instantanés (tmutil a signalé une erreur) — l'espace peut rester retenu par eux." ;;
+        pt-BR) echo "[ FAIL ] não foi possível liberar os instantâneos (o tmutil retornou um erro) — o espaço pode continuar preso a eles." ;;
+        *)     echo "[ FAIL ] could not release snapshots (tmutil reported an error) — space may still be pinned by them." ;;
       esac ;;
     snap_notool)
       case "$SS_LANG" in
@@ -203,30 +203,6 @@ t() {
         fr-FR) echo "(tmutil introuvable — libération des instantanés ignorée)" ;;
         pt-BR) echo "(tmutil não encontrado — liberação de instantâneos ignorada)" ;;
         *)     echo "(tmutil not found — skipping snapshot release)" ;;
-      esac ;;
-    preview)
-      case "$SS_LANG" in
-        ja-JP) echo "［予定］" ;;
-        zh-TW) echo "［預覽］" ;;
-        zh-Hans) echo "［预览］" ;;
-        ko-KR) echo "[미리보기]" ;;
-        es-ES) echo "[previsto]" ;;
-        de-DE) echo "[Vorschau]" ;;
-        fr-FR) echo "[aperçu]" ;;
-        pt-BR) echo "[prévia]" ;;
-        *)     echo "[preview]" ;;
-      esac ;;
-    freeing)
-      case "$SS_LANG" in
-        ja-JP) echo "解放" ;;
-        zh-TW) echo "釋放" ;;
-        zh-Hans) echo "释放" ;;
-        ko-KR) echo "확보" ;;
-        es-ES) echo "libera" ;;
-        de-DE) echo "frei  " ;;
-        fr-FR) echo "libère" ;;
-        pt-BR) echo "libera" ;;
-        *)     echo "free  " ;;
       esac ;;
     unknown)   # {opt}
       case "$SS_LANG" in
@@ -242,15 +218,15 @@ t() {
       esac ;;
     not_macos)
       case "$SS_LANG" in
-        ja-JP) echo "🔴 sheersweep は macOS 専用です（tmutil・APFS・/Users レイアウト・~/.Trash に依存）。現在の OS: {os}。中止します。" ;;
-        zh-TW) echo "🔴 sheersweep 只支援 macOS（依賴 tmutil、APFS、/Users 結構、~/.Trash）。目前作業系統：{os}。已中止。" ;;
-        zh-Hans) echo "🔴 sheersweep 仅支持 macOS（依赖 tmutil、APFS、/Users 结构、~/.Trash）。当前操作系统：{os}。已中止。" ;;
-        ko-KR) echo "🔴 sheersweep는 macOS 전용입니다(tmutil, APFS, /Users 구조, ~/.Trash에 의존). 현재 OS: {os}. 중단합니다." ;;
-        es-ES) echo "🔴 sheersweep es solo para macOS (depende de tmutil, APFS, la estructura /Users y ~/.Trash). SO actual: {os}. Abortando." ;;
-        de-DE) echo "🔴 sheersweep ist nur für macOS (es braucht tmutil, APFS, das /Users-Layout und ~/.Trash). Aktuelles OS: {os}. Abbruch." ;;
-        fr-FR) echo "🔴 sheersweep est réservé à macOS (il dépend de tmutil, APFS, la structure /Users et ~/.Trash). OS actuel : {os}. Abandon." ;;
-        pt-BR) echo "🔴 o sheersweep é só para macOS (depende de tmutil, APFS, da estrutura /Users e da ~/.Trash). SO atual: {os}. Abortando." ;;
-        *)     echo "🔴 sheersweep is macOS-only (it relies on tmutil, APFS, the /Users layout, and ~/.Trash). Current OS: {os}. Aborting." ;;
+        ja-JP) echo "[ FAIL ] sheersweep は macOS 専用です（tmutil・APFS・/Users レイアウト・~/.Trash に依存）。現在の OS: {os}。中止します。" ;;
+        zh-TW) echo "[ FAIL ] sheersweep 只支援 macOS（依賴 tmutil、APFS、/Users 結構、~/.Trash）。目前作業系統：{os}。已中止。" ;;
+        zh-Hans) echo "[ FAIL ] sheersweep 仅支持 macOS（依赖 tmutil、APFS、/Users 结构、~/.Trash）。当前操作系统：{os}。已中止。" ;;
+        ko-KR) echo "[ FAIL ] sheersweep는 macOS 전용입니다(tmutil, APFS, /Users 구조, ~/.Trash에 의존). 현재 OS: {os}. 중단합니다." ;;
+        es-ES) echo "[ FAIL ] sheersweep es solo para macOS (depende de tmutil, APFS, la estructura /Users y ~/.Trash). SO actual: {os}. Abortando." ;;
+        de-DE) echo "[ FAIL ] sheersweep ist nur für macOS (es braucht tmutil, APFS, das /Users-Layout und ~/.Trash). Aktuelles OS: {os}. Abbruch." ;;
+        fr-FR) echo "[ FAIL ] sheersweep est réservé à macOS (il dépend de tmutil, APFS, la structure /Users et ~/.Trash). OS actuel : {os}. Abandon." ;;
+        pt-BR) echo "[ FAIL ] o sheersweep é só para macOS (depende de tmutil, APFS, da estrutura /Users e da ~/.Trash). SO atual: {os}. Abortando." ;;
+        *)     echo "[ FAIL ] sheersweep is macOS-only (it relies on tmutil, APFS, the /Users layout, and ~/.Trash). Current OS: {os}. Aborting." ;;
       esac ;;
 
     # ---- uninstall flow ----
@@ -316,15 +292,15 @@ t() {
       esac ;;
     un_notfound)   # {app}
       case "$SS_LANG" in
-        ja-JP) echo "❌ '{app}' が見つかりません（アプリ / Homebrew formula / 手動インストールのバイナリのいずれにも該当なし）" ;;
-        zh-TW) echo "❌ 找不到「{app}」（不是 App、不是 Homebrew formula、也不是手動裝的裸二進位）" ;;
-        zh-Hans) echo "❌ 找不到“{app}”（不是 App、不是 Homebrew formula、也不是手动安装的二进制文件）" ;;
-        ko-KR) echo "❌ '{app}'을(를) 찾을 수 없습니다 — 앱도, Homebrew formula도, 수동 설치한 바이너리도 아닙니다" ;;
-        es-ES) echo "❌ no hay nada llamado '{app}' — ni app, ni formula de Homebrew, ni binario instalado a mano" ;;
-        de-DE) echo "❌ nichts namens '{app}' gefunden — keine App, keine Homebrew-Formula, kein von Hand installiertes Binary" ;;
-        fr-FR) echo "❌ rien nommé '{app}' — ni app, ni formula Homebrew, ni binaire installé à la main" ;;
-        pt-BR) echo "❌ nada chamado '{app}' — não é app, nem formula do Homebrew, nem binário instalado à mão" ;;
-        *)     echo "❌ nothing named '{app}' — not an app, not a Homebrew formula, not a hand-installed binary" ;;
+        ja-JP) echo "[ FAIL ] '{app}' が見つかりません（アプリ / Homebrew formula / 手動インストールのバイナリのいずれにも該当なし）" ;;
+        zh-TW) echo "[ FAIL ] 找不到「{app}」（不是 App、不是 Homebrew formula、也不是手動裝的裸二進位）" ;;
+        zh-Hans) echo "[ FAIL ] 找不到“{app}”（不是 App、不是 Homebrew formula、也不是手动安装的二进制文件）" ;;
+        ko-KR) echo "[ FAIL ] '{app}'을(를) 찾을 수 없습니다 — 앱도, Homebrew formula도, 수동 설치한 바이너리도 아닙니다" ;;
+        es-ES) echo "[ FAIL ] no hay nada llamado '{app}' — ni app, ni formula de Homebrew, ni binario instalado a mano" ;;
+        de-DE) echo "[ FAIL ] nichts namens '{app}' gefunden — keine App, keine Homebrew-Formula, kein von Hand installiertes Binary" ;;
+        fr-FR) echo "[ FAIL ] rien nommé '{app}' — ni app, ni formula Homebrew, ni binaire installé à la main" ;;
+        pt-BR) echo "[ FAIL ] nada chamado '{app}' — não é app, nem formula do Homebrew, nem binário instalado à mão" ;;
+        *)     echo "[ FAIL ] nothing named '{app}' — not an app, not a Homebrew formula, not a hand-installed binary" ;;
       esac ;;
     un_appgone)   # {app}
       case "$SS_LANG" in
@@ -412,15 +388,15 @@ t() {
       esac ;;
     un_orphans_done)   # {n} items · {ids} apps
       case "$SS_LANG" in
-        ja-JP) echo "✅ 削除済みアプリ {ids} 件の残り {n} 項目をゴミ箱へ移動しました。元に戻す: sheersweep restore · 容量はゴミ箱を空にすると戻ります。" ;;
-        zh-TW) echo "✅ 已把 {ids} 個已移除 App 的 {n} 個項目移到垃圾桶。想還原打：sheersweep restore；清空垃圾桶才會拿回空間。" ;;
-        zh-Hans) echo "✅ 已把 {ids} 个已移除 App 的 {n} 个项目移到废纸篓。要恢复输入：sheersweep restore；清空废纸篓才会拿回空间。" ;;
-        ko-KR) echo "✅ 제거된 앱 {ids}개의 항목 {n}개를 휴지통으로 옮겼습니다. 되돌리기: sheersweep restore · 공간은 휴지통을 비워야 돌아옵니다." ;;
-        es-ES) echo "✅ Movidos {n} elementos de {ids} apps eliminadas a la Papelera. Deshacer: sheersweep restore · vaciar la Papelera recupera el espacio." ;;
-        de-DE) echo "✅ {n} Einträge von {ids} entfernten Apps in den Papierkorb verschoben. Rückgängig: sheersweep restore · erst das Leeren des Papierkorbs gibt den Platz frei." ;;
-        fr-FR) echo "✅ {n} éléments de {ids} apps supprimées déplacés vers la Corbeille. Annuler : sheersweep restore · vider la Corbeille rend l'espace." ;;
-        pt-BR) echo "✅ {n} itens de {ids} apps removidos movidos para a Lixeira. Desfazer: sheersweep restore · esvaziar a Lixeira devolve o espaço." ;;
-        *)     echo "✅ Moved {n} items from {ids} removed apps to the Trash. Undo: sheersweep restore · emptying the Trash reclaims the space." ;;
+        ja-JP) echo "[ DONE ] 削除済みアプリ {ids} 件の残り {n} 項目をゴミ箱へ移動しました。元に戻す: sheersweep restore · 容量はゴミ箱を空にすると戻ります。" ;;
+        zh-TW) echo "[ DONE ] 已把 {ids} 個已移除 App 的 {n} 個項目移到垃圾桶。想還原打：sheersweep restore；清空垃圾桶才會拿回空間。" ;;
+        zh-Hans) echo "[ DONE ] 已把 {ids} 个已移除 App 的 {n} 个项目移到废纸篓。要恢复输入：sheersweep restore；清空废纸篓才会拿回空间。" ;;
+        ko-KR) echo "[ DONE ] 제거된 앱 {ids}개의 항목 {n}개를 휴지통으로 옮겼습니다. 되돌리기: sheersweep restore · 공간은 휴지통을 비워야 돌아옵니다." ;;
+        es-ES) echo "[ DONE ] Movidos {n} elementos de {ids} apps eliminadas a la Papelera. Deshacer: sheersweep restore · vaciar la Papelera recupera el espacio." ;;
+        de-DE) echo "[ DONE ] {n} Einträge von {ids} entfernten Apps in den Papierkorb verschoben. Rückgängig: sheersweep restore · erst das Leeren des Papierkorbs gibt den Platz frei." ;;
+        fr-FR) echo "[ DONE ] {n} éléments de {ids} apps supprimées déplacés vers la Corbeille. Annuler : sheersweep restore · vider la Corbeille rend l'espace." ;;
+        pt-BR) echo "[ DONE ] {n} itens de {ids} apps removidos movidos para a Lixeira. Desfazer: sheersweep restore · esvaziar a Lixeira devolve o espaço." ;;
+        *)     echo "[ DONE ] Moved {n} items from {ids} removed apps to the Trash. Undo: sheersweep restore · emptying the Trash reclaims the space." ;;
       esac ;;
     un_orphan)   # {bid}
       case "$SS_LANG" in
@@ -436,15 +412,15 @@ t() {
       esac ;;
     un_orphan_installed)   # {bid}
       case "$SS_LANG" in
-        ja-JP) echo "🔴 {bid} はまだインストール中の何かのものです。そのアプリ名で uninstall してください。" ;;
-        zh-TW) echo "🔴 {bid} 屬於還裝在機上的東西——請改用那個 App 的名稱來 uninstall。" ;;
-        zh-Hans) echo "🔴 {bid} 属于仍安装在机上的东西——请改用那个 App 的名称来 uninstall。" ;;
-        ko-KR) echo "🔴 {bid}는 아직 설치된 무언가의 것입니다 — 그 앱의 이름으로 uninstall 하세요." ;;
-        es-ES) echo "🔴 {bid} pertenece a algo aún instalado — desinstala esa app por su nombre." ;;
-        de-DE) echo "🔴 {bid} gehört zu etwas noch Installiertem — deinstalliere diese App über ihren Namen." ;;
-        fr-FR) echo "🔴 {bid} appartient à quelque chose d'encore installé — désinstallez cette app par son nom." ;;
-        pt-BR) echo "🔴 {bid} pertence a algo ainda instalado — desinstale esse app pelo nome." ;;
-        *)     echo "🔴 {bid} belongs to something still installed — uninstall that app by its name instead." ;;
+        ja-JP) echo "[ HELD ] {bid} はまだインストール中の何かのものです。そのアプリ名で uninstall してください。" ;;
+        zh-TW) echo "[ HELD ] {bid} 屬於還裝在機上的東西——請改用那個 App 的名稱來 uninstall。" ;;
+        zh-Hans) echo "[ HELD ] {bid} 属于仍安装在机上的东西——请改用那个 App 的名称来 uninstall。" ;;
+        ko-KR) echo "[ HELD ] {bid}는 아직 설치된 무언가의 것입니다 — 그 앱의 이름으로 uninstall 하세요." ;;
+        es-ES) echo "[ HELD ] {bid} pertenece a algo aún instalado — desinstala esa app por su nombre." ;;
+        de-DE) echo "[ HELD ] {bid} gehört zu etwas noch Installiertem — deinstalliere diese App über ihren Namen." ;;
+        fr-FR) echo "[ HELD ] {bid} appartient à quelque chose d'encore installé — désinstallez cette app par son nom." ;;
+        pt-BR) echo "[ HELD ] {bid} pertence a algo ainda instalado — desinstale esse app pelo nome." ;;
+        *)     echo "[ HELD ] {bid} belongs to something still installed — uninstall that app by its name instead." ;;
       esac ;;
     dg_group_act)
       case "$SS_LANG" in
@@ -656,15 +632,15 @@ t() {
       esac ;;
     rc_none)
       case "$SS_LANG" in
-        ja-JP) echo "✨ 対象なし — マニフェストで証明できるビルド産物も、識別できない巨大フォルダもありません。" ;;
-        zh-TW) echo "✨ 沒有可回收的——沒有 manifest 佐證的 build 產物，也沒有又肥又證不了的資料夾。" ;;
-        zh-Hans) echo "✨ 没有可回收的——没有 manifest 佐证的 build 产物，也没有又大又证不了的文件夹。" ;;
-        ko-KR) echo "✨ 대상 없음 — 매니페스트로 증명되는 빌드 산출물도, 식별 못 하는 거대 폴더도 없습니다." ;;
-        es-ES) echo "✨ nada elegible — ni artefactos de build probados por manifiesto, ni carpetas grandes sin identificar." ;;
-        de-DE) echo "✨ nichts qualifiziert — keine manifest-belegten Build-Artefakte und keine großen, nicht identifizierbaren Ordner." ;;
-        fr-FR) echo "✨ rien d'éligible — ni artefacts de build prouvés par manifeste, ni gros dossiers non identifiés." ;;
-        pt-BR) echo "✨ nada elegível — nem artefatos de build provados por manifesto, nem pastas grandes não identificadas." ;;
-        *)     echo "✨ nothing eligible — no manifest-proven build output, and nothing heavy it couldn't identify." ;;
+        ja-JP) echo "[ PASS ] 対象なし — マニフェストで証明できるビルド産物も、識別できない巨大フォルダもありません。" ;;
+        zh-TW) echo "[ PASS ] 沒有可回收的——沒有 manifest 佐證的 build 產物，也沒有又肥又證不了的資料夾。" ;;
+        zh-Hans) echo "[ PASS ] 没有可回收的——没有 manifest 佐证的 build 产物，也没有又大又证不了的文件夹。" ;;
+        ko-KR) echo "[ PASS ] 대상 없음 — 매니페스트로 증명되는 빌드 산출물도, 식별 못 하는 거대 폴더도 없습니다." ;;
+        es-ES) echo "[ PASS ] nada elegible — ni artefactos de build probados por manifiesto, ni carpetas grandes sin identificar." ;;
+        de-DE) echo "[ PASS ] nichts qualifiziert — keine manifest-belegten Build-Artefakte und keine großen, nicht identifizierbaren Ordner." ;;
+        fr-FR) echo "[ PASS ] rien d'éligible — ni artefacts de build prouvés par manifeste, ni gros dossiers non identifiés." ;;
+        pt-BR) echo "[ PASS ] nada elegível — nem artefatos de build provados por manifesto, nem pastas grandes não identificadas." ;;
+        *)     echo "[ PASS ] nothing eligible — no manifest-proven build output, and nothing heavy it couldn't identify." ;;
       esac ;;
     rc_days)   # {n}
       case "$SS_LANG" in
@@ -692,15 +668,15 @@ t() {
       esac ;;
     rc_multi_hint)
       case "$SS_LANG" in
-        ja-JP) echo "番号で選択 — 例: 1 3 9 · all は証明済みの全行。⚠️ の行は名前の入力で確認します。" ;;
-        zh-TW) echo "用號碼選——例如 1 3 9；all＝所有已證那批。⚠️ 那幾行要打出名字才移除。" ;;
-        zh-Hans) echo "用号码选——例如 1 3 9；all＝所有已证那批。⚠️ 那几行要打出名字才移除。" ;;
-        ko-KR) echo "번호로 선택 — 예: 1 3 9 · all은 증명된 모든 행. ⚠️ 행은 이름을 입력해 확인합니다." ;;
-        es-ES) echo "elige por número — p. ej. 1 3 9 · all = cada fila probada. Las filas ⚠️ piden su nombre." ;;
-        de-DE) echo "per Nummer wählen — z. B. 1 3 9 · all = jede bewiesene Zeile. ⚠️-Zeilen verlangen ihren Namen." ;;
-        fr-FR) echo "choisissez par numéro — p. ex. 1 3 9 · all = chaque ligne prouvée. Les lignes ⚠️ demandent leur nom." ;;
-        pt-BR) echo "escolha por número — ex.: 1 3 9 · all = cada linha provada. As linhas ⚠️ pedem o nome." ;;
-        *)     echo "Pick by number — e.g. 1 3 9 · all = every proven row. ⚠️ rows each ask for their name." ;;
+        ja-JP) echo "番号で選択 — 例: 1 3 9 · all は証明済みの全行。未識別の行は名前の入力で確認します。" ;;
+        zh-TW) echo "用號碼選——例如 1 3 9；all＝所有已證那批。未識別的那幾行要打出名字才移除。" ;;
+        zh-Hans) echo "用号码选——例如 1 3 9；all＝所有已证那批。未识别的那几行要打出名字才移除。" ;;
+        ko-KR) echo "번호로 선택 — 예: 1 3 9 · all은 증명된 모든 행. 미확인 행은 이름을 입력해 확인합니다." ;;
+        es-ES) echo "elige por número — p. ej. 1 3 9 · all = cada fila probada. Las filas sin identificar piden su nombre." ;;
+        de-DE) echo "per Nummer wählen — z. B. 1 3 9 · all = jede bewiesene Zeile. Nicht identifizierte Zeilen verlangen ihren Namen." ;;
+        fr-FR) echo "choisissez par numéro — p. ex. 1 3 9 · all = chaque ligne prouvée. Les lignes non identifiées demandent leur nom." ;;
+        pt-BR) echo "escolha por número — ex.: 1 3 9 · all = cada linha provada. As linhas não identificadas pedem o nome." ;;
+        *)     echo "Pick by number — e.g. 1 3 9 · all = every proven row. Unidentified rows each ask for their name." ;;
       esac ;;
     rc_confirm)   # {n} · {size}
       case "$SS_LANG" in
@@ -716,15 +692,15 @@ t() {
       esac ;;
     rc_unid_header)
       case "$SS_LANG" in
-        ja-JP) echo "⚠️ 未識別 — 大きく、git が無視、でも安全に消せるとは証明できません。" ;;
-        zh-TW) echo "⚠️ 未識別——又肥又被 git 忽略，但我證不了它們能安全刪除。" ;;
-        zh-Hans) echo "⚠️ 未识别——又大又被 git 忽略，但我证不了它们能安全删除。" ;;
-        ko-KR) echo "⚠️ 미확인 — 크고 git이 무시하지만, 안전하게 지울 수 있다고 증명할 수 없습니다." ;;
-        es-ES) echo "⚠️ Sin identificar — grandes, ignoradas por git, y no puedo probar que sea seguro borrarlas." ;;
-        de-DE) echo "⚠️ Nicht identifiziert — groß, von git ignoriert, und ich kann nicht beweisen, dass sie sicher zu löschen sind." ;;
-        fr-FR) echo "⚠️ Non identifié — volumineux, ignorés par git, et je ne peux pas prouver qu'ils sont sûrs à supprimer." ;;
-        pt-BR) echo "⚠️ Não identificado — grandes, ignoradas pelo git, e não posso provar que é seguro removê-las." ;;
-        *)     echo "⚠️ Unidentified — heavy, gitignored, and I can't prove these are safe to remove." ;;
+        ja-JP) echo "[ WARN ] 未識別 — 大きく、git が無視、でも安全に消せるとは証明できません。" ;;
+        zh-TW) echo "[ WARN ] 未識別——又肥又被 git 忽略，但我證不了它們能安全刪除。" ;;
+        zh-Hans) echo "[ WARN ] 未识别——又大又被 git 忽略，但我证不了它们能安全删除。" ;;
+        ko-KR) echo "[ WARN ] 미확인 — 크고 git이 무시하지만, 안전하게 지울 수 있다고 증명할 수 없습니다." ;;
+        es-ES) echo "[ WARN ] Sin identificar — grandes, ignoradas por git, y no puedo probar que sea seguro borrarlas." ;;
+        de-DE) echo "[ WARN ] Nicht identifiziert — groß, von git ignoriert, und ich kann nicht beweisen, dass sie sicher zu löschen sind." ;;
+        fr-FR) echo "[ WARN ] Non identifié — volumineux, ignorés par git, et je ne peux pas prouver qu'ils sont sûrs à supprimer." ;;
+        pt-BR) echo "[ WARN ] Não identificado — grandes, ignoradas pelo git, e não posso provar que é seguro removê-las." ;;
+        *)     echo "[ WARN ] Unidentified — heavy, gitignored, and I can't prove these are safe to remove." ;;
       esac ;;
     rc_unid_note)   # {min}
       case "$SS_LANG" in
@@ -776,15 +752,15 @@ t() {
       esac ;;
     rc_done)   # {n} · {size}
       case "$SS_LANG" in
-        ja-JP) echo "✅ ビルドフォルダ {n} 件（{size}）をゴミ箱へ移動しました。再ビルドのコマンドはレシートに記録済み — sheersweep restore で表示できます。容量はゴミ箱を空にすると戻ります。" ;;
-        zh-TW) echo "✅ 已把 {n} 個 build 資料夾（{size}）移到垃圾桶。重建指令已寫進收據——打 sheersweep restore 隨時看得到；清空垃圾桶才會拿回空間。" ;;
-        zh-Hans) echo "✅ 已把 {n} 个 build 文件夹（{size}）移到废纸篓。重建命令已写进收据——输入 sheersweep restore 随时可见；清空废纸篓才会拿回空间。" ;;
-        ko-KR) echo "✅ 빌드 폴더 {n}개({size})를 휴지통으로 옮겼습니다. 재빌드 명령은 영수증에 기록됨 — sheersweep restore로 볼 수 있습니다. 공간은 휴지통을 비워야 돌아옵니다." ;;
-        es-ES) echo "✅ Movidas {n} carpetas de build ({size}) a la Papelera. Los comandos de rebuild quedaron en el recibo — míralos con sheersweep restore · vaciar la Papelera recupera el espacio." ;;
-        de-DE) echo "✅ {n} Build-Ordner ({size}) in den Papierkorb verschoben. Die Rebuild-Befehle stehen im Beleg — sieh sie mit sheersweep restore · erst das Leeren des Papierkorbs gibt den Platz frei." ;;
-        fr-FR) echo "✅ {n} dossiers de build ({size}) déplacés vers la Corbeille. Les commandes de rebuild sont dans le reçu — revoyez-les avec sheersweep restore · vider la Corbeille rend l'espace." ;;
-        pt-BR) echo "✅ {n} pastas de build ({size}) movidas para a Lixeira. Os comandos de rebuild ficaram no recibo — veja com sheersweep restore · esvaziar a Lixeira devolve o espaço." ;;
-        *)     echo "✅ Moved {n} build folders ({size}) to the Trash. The rebuild commands are in the receipt — see them with sheersweep restore · emptying the Trash reclaims the space." ;;
+        ja-JP) echo "[ DONE ] ビルドフォルダ {n} 件（{size}）をゴミ箱へ移動しました。再ビルドのコマンドはレシートに記録済み — sheersweep restore で表示できます。容量はゴミ箱を空にすると戻ります。" ;;
+        zh-TW) echo "[ DONE ] 已把 {n} 個 build 資料夾（{size}）移到垃圾桶。重建指令已寫進收據——打 sheersweep restore 隨時看得到；清空垃圾桶才會拿回空間。" ;;
+        zh-Hans) echo "[ DONE ] 已把 {n} 个 build 文件夹（{size}）移到废纸篓。重建命令已写进收据——输入 sheersweep restore 随时可见；清空废纸篓才会拿回空间。" ;;
+        ko-KR) echo "[ DONE ] 빌드 폴더 {n}개({size})를 휴지통으로 옮겼습니다. 재빌드 명령은 영수증에 기록됨 — sheersweep restore로 볼 수 있습니다. 공간은 휴지통을 비워야 돌아옵니다." ;;
+        es-ES) echo "[ DONE ] Movidas {n} carpetas de build ({size}) a la Papelera. Los comandos de rebuild quedaron en el recibo — míralos con sheersweep restore · vaciar la Papelera recupera el espacio." ;;
+        de-DE) echo "[ DONE ] {n} Build-Ordner ({size}) in den Papierkorb verschoben. Die Rebuild-Befehle stehen im Beleg — sieh sie mit sheersweep restore · erst das Leeren des Papierkorbs gibt den Platz frei." ;;
+        fr-FR) echo "[ DONE ] {n} dossiers de build ({size}) déplacés vers la Corbeille. Les commandes de rebuild sont dans le reçu — revoyez-les avec sheersweep restore · vider la Corbeille rend l'espace." ;;
+        pt-BR) echo "[ DONE ] {n} pastas de build ({size}) movidas para a Lixeira. Os comandos de rebuild ficaram no recibo — veja com sheersweep restore · esvaziar a Lixeira devolve o espaço." ;;
+        *)     echo "[ DONE ] Moved {n} build folders ({size}) to the Trash. The rebuild commands are in the receipt — see them with sheersweep restore · emptying the Trash reclaims the space." ;;
       esac ;;
     rs_rebuild_hint)
       case "$SS_LANG" in
@@ -800,27 +776,27 @@ t() {
       esac ;;
     un_refuse_apple)   # {app}
       case "$SS_LANG" in
-        ja-JP) echo "🔴 拒否：{app} は Apple／システムのアプリです。封印された読み取り専用のシステムボリューム上にあり、root でも削除できません（削除しても容量は戻りません）。" ;;
-        zh-TW) echo "🔴 拒絕：{app} 是 Apple／系統 App，住在已封印的唯讀系統卷上——連 root 都刪不掉（刪了也不會釋放空間）。" ;;
-        zh-Hans) echo "🔴 拒绝：{app} 是 Apple／系统 App，位于已封印的只读系统卷上——连 root 都删不掉（删了也不会释放空间）。" ;;
-        ko-KR) echo "🔴 거부: {app}은(는) Apple/시스템 앱으로, 봉인된 읽기 전용 시스템 볼륨에 있습니다 — root도 제거할 수 없습니다(지워도 공간이 돌아오지 않습니다)." ;;
-        es-ES) echo "🔴 rechazado: {app} es una app de Apple/del sistema en el volumen sellado de solo lectura — ni root puede quitarla (y borrarla no liberaría espacio)." ;;
-        de-DE) echo "🔴 abgelehnt: {app} ist eine Apple-/System-App auf dem versiegelten, schreibgeschützten Systemvolume — nicht mal root kann sie entfernen (und Löschen gäbe keinen Platz frei)." ;;
-        fr-FR) echo "🔴 refus : {app} est une app Apple/système sur le volume système scellé en lecture seule — même root ne peut pas la retirer (et la supprimer ne libérerait pas d'espace)." ;;
-        pt-BR) echo "🔴 recusado: {app} é um app da Apple/do sistema no volume selado somente leitura — nem o root consegue removê-lo (e apagá-lo não liberaria espaço)." ;;
-        *)     echo "🔴 refusing: {app} is an Apple / system app on the sealed, read-only system volume — not even root can remove it (and deleting it wouldn't free space)." ;;
+        ja-JP) echo "[ HELD ] 拒否：{app} は Apple／システムのアプリです。封印された読み取り専用のシステムボリューム上にあり、root でも削除できません（削除しても容量は戻りません）。" ;;
+        zh-TW) echo "[ HELD ] 拒絕：{app} 是 Apple／系統 App，住在已封印的唯讀系統卷上——連 root 都刪不掉（刪了也不會釋放空間）。" ;;
+        zh-Hans) echo "[ HELD ] 拒绝：{app} 是 Apple／系统 App，位于已封印的只读系统卷上——连 root 都删不掉（删了也不会释放空间）。" ;;
+        ko-KR) echo "[ HELD ] 거부: {app}은(는) Apple/시스템 앱으로, 봉인된 읽기 전용 시스템 볼륨에 있습니다 — root도 제거할 수 없습니다(지워도 공간이 돌아오지 않습니다)." ;;
+        es-ES) echo "[ HELD ] rechazado: {app} es una app de Apple/del sistema en el volumen sellado de solo lectura — ni root puede quitarla (y borrarla no liberaría espacio)." ;;
+        de-DE) echo "[ HELD ] abgelehnt: {app} ist eine Apple-/System-App auf dem versiegelten, schreibgeschützten Systemvolume — nicht mal root kann sie entfernen (und Löschen gäbe keinen Platz frei)." ;;
+        fr-FR) echo "[ HELD ] refus : {app} est une app Apple/système sur le volume système scellé en lecture seule — même root ne peut pas la retirer (et la supprimer ne libérerait pas d'espace)." ;;
+        pt-BR) echo "[ HELD ] recusado: {app} é um app da Apple/do sistema no volume selado somente leitura — nem o root consegue removê-lo (e apagá-lo não liberaria espaço)." ;;
+        *)     echo "[ HELD ] refusing: {app} is an Apple / system app on the sealed, read-only system volume — not even root can remove it (and deleting it wouldn't free space)." ;;
       esac ;;
     un_refuse_nobid)   # {app}
       case "$SS_LANG" in
-        ja-JP) echo "🔴 拒否：{app} に bundle id がありません。安全に照合できないため中止します。" ;;
-        zh-TW) echo "🔴 拒絕：{app} 沒有 bundle id，無法安全比對，已中止。" ;;
-        zh-Hans) echo "🔴 拒绝：{app} 没有 bundle id，无法安全匹配它的文件，已中止。" ;;
-        ko-KR) echo "🔴 거부: {app}에 bundle id가 없어 파일을 안전하게 대조할 수 없습니다. 중단합니다." ;;
-        es-ES) echo "🔴 rechazado: {app} no tiene bundle id — no se pueden identificar sus archivos con seguridad, abortando." ;;
-        de-DE) echo "🔴 abgelehnt: {app} hat keine Bundle-ID — seine Dateien lassen sich nicht sicher zuordnen, Abbruch." ;;
-        fr-FR) echo "🔴 refus : {app} n'a pas de bundle id — impossible d'identifier ses fichiers sûrement, abandon." ;;
-        pt-BR) echo "🔴 recusado: {app} não tem bundle id — não dá para identificar seus arquivos com segurança, abortando." ;;
-        *)     echo "🔴 refusing: {app} has no bundle id — can't match its files safely, aborting." ;;
+        ja-JP) echo "[ FAIL ] 拒否：{app} に bundle id がありません。安全に照合できないため中止します。" ;;
+        zh-TW) echo "[ FAIL ] 拒絕：{app} 沒有 bundle id，無法安全比對，已中止。" ;;
+        zh-Hans) echo "[ FAIL ] 拒绝：{app} 没有 bundle id，无法安全匹配它的文件，已中止。" ;;
+        ko-KR) echo "[ FAIL ] 거부: {app}에 bundle id가 없어 파일을 안전하게 대조할 수 없습니다. 중단합니다." ;;
+        es-ES) echo "[ FAIL ] rechazado: {app} no tiene bundle id — no se pueden identificar sus archivos con seguridad, abortando." ;;
+        de-DE) echo "[ FAIL ] abgelehnt: {app} hat keine Bundle-ID — seine Dateien lassen sich nicht sicher zuordnen, Abbruch." ;;
+        fr-FR) echo "[ FAIL ] refus : {app} n'a pas de bundle id — impossible d'identifier ses fichiers sûrement, abandon." ;;
+        pt-BR) echo "[ FAIL ] recusado: {app} não tem bundle id — não dá para identificar seus arquivos com segurança, abortando." ;;
+        *)     echo "[ FAIL ] refusing: {app} has no bundle id — can't match its files safely, aborting." ;;
       esac ;;
     un_resolved)   # {app}  ·  {bid}
       case "$SS_LANG" in
@@ -932,63 +908,63 @@ t() {
       esac ;;
     un_item_stuck)
       case "$SS_LANG" in
-        ja-JP) echo "❌ 移動できませんでした — 元の場所に残っています（理由は下記）" ;;
-        zh-TW) echo "❌ 搬不動——仍留在原位（原因見最後）" ;;
-        zh-Hans) echo "❌ 移不动——仍留在原位（原因见最后）" ;;
-        ko-KR) echo "❌ 옮기지 못했습니다 — 원래 자리에 남아 있습니다(이유는 아래)" ;;
-        es-ES) echo "❌ no se pudo mover — sigue en su sitio (motivo abajo)" ;;
-        de-DE) echo "❌ ließ sich nicht verschieben — liegt noch am alten Ort (Grund unten)" ;;
-        fr-FR) echo "❌ impossible à déplacer — toujours en place (raison plus bas)" ;;
-        pt-BR) echo "❌ não foi possível mover — continua no lugar (motivo abaixo)" ;;
-        *)     echo "❌ couldn't be moved — still in place (reason at the end)" ;;
+        ja-JP) echo "[ FAIL ] 移動できませんでした — 元の場所に残っています（理由は下記）" ;;
+        zh-TW) echo "[ FAIL ] 搬不動——仍留在原位（原因見最後）" ;;
+        zh-Hans) echo "[ FAIL ] 移不动——仍留在原位（原因见最后）" ;;
+        ko-KR) echo "[ FAIL ] 옮기지 못했습니다 — 원래 자리에 남아 있습니다(이유는 아래)" ;;
+        es-ES) echo "[ FAIL ] no se pudo mover — sigue en su sitio (motivo abajo)" ;;
+        de-DE) echo "[ FAIL ] ließ sich nicht verschieben — liegt noch am alten Ort (Grund unten)" ;;
+        fr-FR) echo "[ FAIL ] impossible à déplacer — toujours en place (raison plus bas)" ;;
+        pt-BR) echo "[ FAIL ] não foi possível mover — continua no lugar (motivo abaixo)" ;;
+        *)     echo "[ FAIL ] couldn't be moved — still in place (reason at the end)" ;;
       esac ;;
     un_partial)   # {moved} · {total}
       case "$SS_LANG" in
-        ja-JP) echo "🔴 {total} 項目中 {moved} 項目しかゴミ箱へ移動できませんでした — 残りは元の場所にあります。移動した分を戻す: sheersweep restore" ;;
-        zh-TW) echo "🔴 {total} 個項目只搬走了 {moved} 個——其餘仍留在原位。想還原已搬走的部分打：sheersweep restore" ;;
-        zh-Hans) echo "🔴 {total} 个项目只移走了 {moved} 个——其余仍留在原位。要恢复已移走的部分输入：sheersweep restore" ;;
-        ko-KR) echo "🔴 {total}개 중 {moved}개만 휴지통으로 옮겼습니다 — 나머지는 그대로 있습니다. 옮긴 것 되돌리기: sheersweep restore" ;;
-        es-ES) echo "🔴 solo {moved} de {total} elementos pudieron moverse a la Papelera — el resto sigue en su sitio. Deshacer los movidos: sheersweep restore" ;;
-        de-DE) echo "🔴 nur {moved} von {total} Einträgen konnten in den Papierkorb — der Rest liegt noch am alten Ort. Verschobenes rückgängig: sheersweep restore" ;;
-        fr-FR) echo "🔴 seulement {moved} éléments sur {total} ont pu aller à la Corbeille — le reste est toujours en place. Annuler les déplacés : sheersweep restore" ;;
-        pt-BR) echo "🔴 só {moved} de {total} itens foram para a Lixeira — o resto continua no lugar. Desfazer os movidos: sheersweep restore" ;;
-        *)     echo "🔴 only {moved} of {total} items could be moved to the Trash — the rest are still in place. Undo the moved ones: sheersweep restore" ;;
+        ja-JP) echo "[ FAIL ] {total} 項目中 {moved} 項目しかゴミ箱へ移動できませんでした — 残りは元の場所にあります。移動した分を戻す: sheersweep restore" ;;
+        zh-TW) echo "[ FAIL ] {total} 個項目只搬走了 {moved} 個——其餘仍留在原位。想還原已搬走的部分打：sheersweep restore" ;;
+        zh-Hans) echo "[ FAIL ] {total} 个项目只移走了 {moved} 个——其余仍留在原位。要恢复已移走的部分输入：sheersweep restore" ;;
+        ko-KR) echo "[ FAIL ] {total}개 중 {moved}개만 휴지통으로 옮겼습니다 — 나머지는 그대로 있습니다. 옮긴 것 되돌리기: sheersweep restore" ;;
+        es-ES) echo "[ FAIL ] solo {moved} de {total} elementos pudieron moverse a la Papelera — el resto sigue en su sitio. Deshacer los movidos: sheersweep restore" ;;
+        de-DE) echo "[ FAIL ] nur {moved} von {total} Einträgen konnten in den Papierkorb — der Rest liegt noch am alten Ort. Verschobenes rückgängig: sheersweep restore" ;;
+        fr-FR) echo "[ FAIL ] seulement {moved} éléments sur {total} ont pu aller à la Corbeille — le reste est toujours en place. Annuler les déplacés : sheersweep restore" ;;
+        pt-BR) echo "[ FAIL ] só {moved} de {total} itens foram para a Lixeira — o resto continua no lugar. Desfazer os movidos: sheersweep restore" ;;
+        *)     echo "[ FAIL ] only {moved} of {total} items could be moved to the Trash — the rest are still in place. Undo the moved ones: sheersweep restore" ;;
       esac ;;
     un_protected_hint)
       case "$SS_LANG" in
-        ja-JP) echo "🔒 残ったのはアプリの「コンテナ」（Library/Containers）です。macOS が他のプログラムから保護していて、root でも動かせません。ターミナルに「フルディスクアクセス」を許可（システム設定 → プライバシーとセキュリティ → フルディスクアクセス）してから再実行してください。他アカウントのコンテナは、そのアカウントでのログインも必要な場合があります。" ;;
-        zh-TW) echo "🔒 搬不動的是 App 的「容器」（Library/Containers）——macOS 保護它們不被其他程式移動，連 root 也一樣。請給你的終端機「完整磁碟取用權」（系統設定 → 隱私權與安全性 → 完整磁碟取用權），再跑一次。別的帳號的容器可能還需要登入那個帳號處理。" ;;
-        zh-Hans) echo "🔒 移不动的是 App 的“容器”（Library/Containers）——macOS 保护它们不被其他程序移动，root 也一样。请给你的终端“完全磁盘访问权限”（系统设置 → 隐私与安全性 → 完全磁盘访问权限），再运行一次。其他账户的容器可能还需要登录该账户处理。" ;;
-        ko-KR) echo "🔒 남은 것은 앱의 '컨테이너'(Library/Containers)입니다. macOS가 다른 프로그램으로부터 보호하며 root도 옮길 수 없습니다. 터미널에 '전체 디스크 접근 권한'을 허용(시스템 설정 → 개인정보 보호 및 보안 → 전체 디스크 접근 권한)한 뒤 다시 실행하세요. 다른 계정의 컨테이너는 해당 계정으로 로그인해야 할 수 있습니다." ;;
-        es-ES) echo "🔒 lo que quedó son CONTENEDORES de apps (Library/Containers) — macOS los protege de otros programas, incluso como root. Da a tu terminal Acceso total al disco (Ajustes del Sistema → Privacidad y seguridad → Acceso total al disco) y vuelve a ejecutar. Los contenedores de otra cuenta pueden requerir iniciar sesión en esa cuenta." ;;
-        de-DE) echo "🔒 übrig blieben App-CONTAINER (Library/Containers) — macOS schützt sie vor anderen Programmen, selbst als root. Gib deinem Terminal Festplattenvollzugriff (Systemeinstellungen → Datenschutz & Sicherheit → Festplattenvollzugriff) und führe es erneut aus. Container anderer Accounts können zusätzlich eine Anmeldung dort erfordern." ;;
-        fr-FR) echo "🔒 ce qui reste, ce sont des CONTENEURS d'apps (Library/Containers) — macOS les protège des autres programmes, même en root. Donnez à votre terminal l'Accès complet au disque (Réglages Système → Confidentialité et sécurité → Accès complet au disque), puis relancez. Les conteneurs d'un autre compte peuvent exiger de s'y connecter." ;;
-        pt-BR) echo "🔒 o que ficou são CONTÊINERES de apps (Library/Containers) — o macOS os protege de outros programas, mesmo como root. Dê ao seu terminal Acesso Total ao Disco (Ajustes do Sistema → Privacidade e Segurança → Acesso Total ao Disco) e execute de novo. Contêineres de outra conta podem exigir login nela." ;;
-        *)     echo "🔒 What stayed behind are app CONTAINERS (Library/Containers) — macOS protects them from other programs, even running as root. Give your terminal Full Disk Access (System Settings → Privacy & Security → Full Disk Access), then run this again. Another account's containers may also require logging in as that account." ;;
+        ja-JP) echo "[ HELD ] 残ったのはアプリの「コンテナ」（Library/Containers）です。macOS が他のプログラムから保護していて、root でも動かせません。ターミナルに「フルディスクアクセス」を許可（システム設定 → プライバシーとセキュリティ → フルディスクアクセス）してから再実行してください。他アカウントのコンテナは、そのアカウントでのログインも必要な場合があります。" ;;
+        zh-TW) echo "[ HELD ] 搬不動的是 App 的「容器」（Library/Containers）——macOS 保護它們不被其他程式移動，連 root 也一樣。請給你的終端機「完整磁碟取用權」（系統設定 → 隱私權與安全性 → 完整磁碟取用權），再跑一次。別的帳號的容器可能還需要登入那個帳號處理。" ;;
+        zh-Hans) echo "[ HELD ] 移不动的是 App 的“容器”（Library/Containers）——macOS 保护它们不被其他程序移动，root 也一样。请给你的终端“完全磁盘访问权限”（系统设置 → 隐私与安全性 → 完全磁盘访问权限），再运行一次。其他账户的容器可能还需要登录该账户处理。" ;;
+        ko-KR) echo "[ HELD ] 남은 것은 앱의 '컨테이너'(Library/Containers)입니다. macOS가 다른 프로그램으로부터 보호하며 root도 옮길 수 없습니다. 터미널에 '전체 디스크 접근 권한'을 허용(시스템 설정 → 개인정보 보호 및 보안 → 전체 디스크 접근 권한)한 뒤 다시 실행하세요. 다른 계정의 컨테이너는 해당 계정으로 로그인해야 할 수 있습니다." ;;
+        es-ES) echo "[ HELD ] lo que quedó son CONTENEDORES de apps (Library/Containers) — macOS los protege de otros programas, incluso como root. Da a tu terminal Acceso total al disco (Ajustes del Sistema → Privacidad y seguridad → Acceso total al disco) y vuelve a ejecutar. Los contenedores de otra cuenta pueden requerir iniciar sesión en esa cuenta." ;;
+        de-DE) echo "[ HELD ] übrig blieben App-CONTAINER (Library/Containers) — macOS schützt sie vor anderen Programmen, selbst als root. Gib deinem Terminal Festplattenvollzugriff (Systemeinstellungen → Datenschutz & Sicherheit → Festplattenvollzugriff) und führe es erneut aus. Container anderer Accounts können zusätzlich eine Anmeldung dort erfordern." ;;
+        fr-FR) echo "[ HELD ] ce qui reste, ce sont des CONTENEURS d'apps (Library/Containers) — macOS les protège des autres programmes, même en root. Donnez à votre terminal l'Accès complet au disque (Réglages Système → Confidentialité et sécurité → Accès complet au disque), puis relancez. Les conteneurs d'un autre compte peuvent exiger de s'y connecter." ;;
+        pt-BR) echo "[ HELD ] o que ficou são CONTÊINERES de apps (Library/Containers) — o macOS os protege de outros programas, mesmo como root. Dê ao seu terminal Acesso Total ao Disco (Ajustes do Sistema → Privacidade e Segurança → Acesso Total ao Disco) e execute de novo. Contêineres de outra conta podem exigir login nela." ;;
+        *)     echo "[ HELD ] What stayed behind are app CONTAINERS (Library/Containers) — macOS protects them from other programs, even running as root. Give your terminal Full Disk Access (System Settings → Privacy & Security → Full Disk Access), then run this again. Another account's containers may also require logging in as that account." ;;
       esac ;;
     un_done)   # {app}
       case "$SS_LANG" in
-        ja-JP) echo "✅ {app} をゴミ箱へ移動しました。容量を取り戻すにはゴミ箱を空に。元に戻すには: sheersweep restore" ;;
-        zh-TW) echo "✅ {app} 已移到垃圾桶。要真正釋放空間請清空垃圾桶；想還原打：sheersweep restore" ;;
-        zh-Hans) echo "✅ {app} 已移到废纸篓。要真正释放空间请清空废纸篓；想还原请运行：sheersweep restore" ;;
-        ko-KR) echo "✅ {app}을(를) 휴지통으로 옮겼습니다. 공간을 되찾으려면 휴지통을 비우세요. 되돌리려면: sheersweep restore" ;;
-        es-ES) echo "✅ {app} movida a la Papelera. Vacía la Papelera para recuperar el espacio — o deshaz con: sheersweep restore" ;;
-        de-DE) echo "✅ {app} liegt im Papierkorb. Leere ihn, um den Platz zurückzubekommen — oder mach es rückgängig mit: sheersweep restore" ;;
-        fr-FR) echo "✅ {app} déplacée vers la Corbeille. Videz-la pour récupérer l'espace — ou annulez avec : sheersweep restore" ;;
-        pt-BR) echo "✅ {app} foi para a Lixeira. Esvazie a Lixeira para recuperar o espaço — ou desfaça com: sheersweep restore" ;;
-        *)     echo "✅ {app} moved to Trash. Empty the Trash to reclaim the space — or undo with: sheersweep restore" ;;
+        ja-JP) echo "[ DONE ] {app} をゴミ箱へ移動しました。容量を取り戻すにはゴミ箱を空に。元に戻すには: sheersweep restore" ;;
+        zh-TW) echo "[ DONE ] {app} 已移到垃圾桶。要真正釋放空間請清空垃圾桶；想還原打：sheersweep restore" ;;
+        zh-Hans) echo "[ DONE ] {app} 已移到废纸篓。要真正释放空间请清空废纸篓；想还原请运行：sheersweep restore" ;;
+        ko-KR) echo "[ DONE ] {app}을(를) 휴지통으로 옮겼습니다. 공간을 되찾으려면 휴지통을 비우세요. 되돌리려면: sheersweep restore" ;;
+        es-ES) echo "[ DONE ] {app} movida a la Papelera. Vacía la Papelera para recuperar el espacio — o deshaz con: sheersweep restore" ;;
+        de-DE) echo "[ DONE ] {app} liegt im Papierkorb. Leere ihn, um den Platz zurückzubekommen — oder mach es rückgängig mit: sheersweep restore" ;;
+        fr-FR) echo "[ DONE ] {app} déplacée vers la Corbeille. Videz-la pour récupérer l'espace — ou annulez avec : sheersweep restore" ;;
+        pt-BR) echo "[ DONE ] {app} foi para a Lixeira. Esvazie a Lixeira para recuperar o espaço — ou desfaça com: sheersweep restore" ;;
+        *)     echo "[ DONE ] {app} moved to Trash. Empty the Trash to reclaim the space — or undo with: sheersweep restore" ;;
       esac ;;
     un_refuse_protected)   # {app}
       case "$SS_LANG" in
-        ja-JP) echo "🔴 拒否：{app} はシステムに組み込まれており（firmlink）、削除できません。" ;;
-        zh-TW) echo "🔴 拒絕：{app} 接進系統核心（firmlink），無法移除。" ;;
-        zh-Hans) echo "🔴 拒绝：{app} 已接入系统核心（firmlink），无法移除。" ;;
-        ko-KR) echo "🔴 거부: {app}은(는) 시스템에 연결되어 있어(firmlink) 제거할 수 없습니다." ;;
-        es-ES) echo "🔴 rechazado: {app} está integrada en el sistema (firmlink) y no se puede quitar." ;;
-        de-DE) echo "🔴 abgelehnt: {app} ist ins System verdrahtet (Firmlink) und kann nicht entfernt werden." ;;
-        fr-FR) echo "🔴 refus : {app} est ancrée dans le système (firmlink) et ne peut pas être retirée." ;;
-        pt-BR) echo "🔴 recusado: {app} está ligado ao sistema (firmlink) e não pode ser removido." ;;
-        *)     echo "🔴 refusing: {app} is wired into the system (firmlink) and can't be removed." ;;
+        ja-JP) echo "[ HELD ] 拒否：{app} はシステムに組み込まれており（firmlink）、削除できません。" ;;
+        zh-TW) echo "[ HELD ] 拒絕：{app} 接進系統核心（firmlink），無法移除。" ;;
+        zh-Hans) echo "[ HELD ] 拒绝：{app} 已接入系统核心（firmlink），无法移除。" ;;
+        ko-KR) echo "[ HELD ] 거부: {app}은(는) 시스템에 연결되어 있어(firmlink) 제거할 수 없습니다." ;;
+        es-ES) echo "[ HELD ] rechazado: {app} está integrada en el sistema (firmlink) y no se puede quitar." ;;
+        de-DE) echo "[ HELD ] abgelehnt: {app} ist ins System verdrahtet (Firmlink) und kann nicht entfernt werden." ;;
+        fr-FR) echo "[ HELD ] refus : {app} est ancrée dans le système (firmlink) et ne peut pas être retirée." ;;
+        pt-BR) echo "[ HELD ] recusado: {app} está ligado ao sistema (firmlink) e não pode ser removido." ;;
+        *)     echo "[ HELD ] refusing: {app} is wired into the system (firmlink) and can't be removed." ;;
       esac ;;
 
     # ---- uninstall: CLI branches (Homebrew formula → delegate; bare binary → Trash).
@@ -1009,15 +985,15 @@ t() {
       esac ;;
     un_brew_deps)   # {name} {deps}
       case "$SS_LANG" in
-        ja-JP) echo "🔴 拒否：インストール済みの formula が {name} に依存しています: {deps}— 削除すると壊れます。先にそちらを削除するか、そのままに。" ;;
-        zh-TW) echo "🔴 拒絕：這些已安裝的 formula 依賴 {name}：{deps}——移掉會弄壞它們。要嘛先移除它們，要嘛都留著。" ;;
-        zh-Hans) echo "🔴 拒绝：这些已安装的 formula 依赖 {name}：{deps}——移掉会弄坏它们。要么先移除它们，要么都留着。" ;;
-        ko-KR) echo "🔴 거부: 설치된 formula가 {name}에 의존합니다: {deps}— 제거하면 함께 망가집니다. 그것들을 먼저 제거하거나, 모두 그대로 두세요." ;;
-        es-ES) echo "🔴 rechazado: hay formulas instaladas que dependen de {name}: {deps}— quitarla las rompería. Quita esas primero, o quédate con ambas." ;;
-        de-DE) echo "🔴 abgelehnt: installierte Formulas hängen von {name} ab: {deps}— es zu entfernen würde sie kaputt machen. Entferne erst jene, oder behalte beides." ;;
-        fr-FR) echo "🔴 refus : des formulas installées dépendent de {name} : {deps}— le retirer les casserait. Retirez-les d'abord, ou gardez tout." ;;
-        pt-BR) echo "🔴 recusado: formulas instaladas dependem de {name}: {deps}— removê-la as quebraria. Remova essas primeiro, ou fique com as duas." ;;
-        *)     echo "🔴 refusing: installed formulae depend on {name}: {deps}— removing it would break them. Remove those first, or keep both." ;;
+        ja-JP) echo "[ HELD ] 拒否：インストール済みの formula が {name} に依存しています: {deps}— 削除すると壊れます。先にそちらを削除するか、そのままに。" ;;
+        zh-TW) echo "[ HELD ] 拒絕：這些已安裝的 formula 依賴 {name}：{deps}——移掉會弄壞它們。要嘛先移除它們，要嘛都留著。" ;;
+        zh-Hans) echo "[ HELD ] 拒绝：这些已安装的 formula 依赖 {name}：{deps}——移掉会弄坏它们。要么先移除它们，要么都留着。" ;;
+        ko-KR) echo "[ HELD ] 거부: 설치된 formula가 {name}에 의존합니다: {deps}— 제거하면 함께 망가집니다. 그것들을 먼저 제거하거나, 모두 그대로 두세요." ;;
+        es-ES) echo "[ HELD ] rechazado: hay formulas instaladas que dependen de {name}: {deps}— quitarla las rompería. Quita esas primero, o quédate con ambas." ;;
+        de-DE) echo "[ HELD ] abgelehnt: installierte Formulas hängen von {name} ab: {deps}— es zu entfernen würde sie kaputt machen. Entferne erst jene, oder behalte beides." ;;
+        fr-FR) echo "[ HELD ] refus : des formulas installées dépendent de {name} : {deps}— le retirer les casserait. Retirez-les d'abord, ou gardez tout." ;;
+        pt-BR) echo "[ HELD ] recusado: formulas instaladas dependem de {name}: {deps}— removê-la as quebraria. Remova essas primeiro, ou fique com as duas." ;;
+        *)     echo "[ HELD ] refusing: installed formulae depend on {name}: {deps}— removing it would break them. Remove those first, or keep both." ;;
       esac ;;
     un_brew_cmd)
       case "$SS_LANG" in
@@ -1057,15 +1033,15 @@ t() {
       esac ;;
     un_brew_done)   # {name}  ·  {ver}
       case "$SS_LANG" in
-        ja-JP) echo "✅ {name} を Homebrew が削除しました。元に戻すには: brew install {name}（削除時のバージョン: {ver}）" ;;
-        zh-TW) echo "✅ {name} 已由 Homebrew 移除。想要回來隨時：brew install {name}（移除時版本：{ver}）" ;;
-        zh-Hans) echo "✅ {name} 已由 Homebrew 移除。想要回来随时：brew install {name}（移除时版本：{ver}）" ;;
-        ko-KR) echo "✅ Homebrew가 {name}을(를) 제거했습니다. 언제든 되찾으려면: brew install {name} (제거 당시 버전: {ver})" ;;
-        es-ES) echo "✅ {name} eliminada por Homebrew. Recupérala cuando quieras con: brew install {name}   (versión eliminada: {ver})" ;;
-        de-DE) echo "✅ {name} von Homebrew entfernt. Jederzeit zurückholen mit: brew install {name}   (entfernte Version: {ver})" ;;
-        fr-FR) echo "✅ {name} retirée par Homebrew. Récupérez-la quand vous voulez avec : brew install {name}   (version retirée : {ver})" ;;
-        pt-BR) echo "✅ {name} removida pelo Homebrew. Traga de volta quando quiser com: brew install {name}   (versão removida: {ver})" ;;
-        *)     echo "✅ {name} removed by Homebrew. Get it back anytime with: brew install {name}   (was version {ver})" ;;
+        ja-JP) echo "[ DONE ] {name} を Homebrew が削除しました。元に戻すには: brew install {name}（削除時のバージョン: {ver}）" ;;
+        zh-TW) echo "[ DONE ] {name} 已由 Homebrew 移除。想要回來隨時：brew install {name}（移除時版本：{ver}）" ;;
+        zh-Hans) echo "[ DONE ] {name} 已由 Homebrew 移除。想要回来随时：brew install {name}（移除时版本：{ver}）" ;;
+        ko-KR) echo "[ DONE ] Homebrew가 {name}을(를) 제거했습니다. 언제든 되찾으려면: brew install {name} (제거 당시 버전: {ver})" ;;
+        es-ES) echo "[ DONE ] {name} eliminada por Homebrew. Recupérala cuando quieras con: brew install {name}   (versión eliminada: {ver})" ;;
+        de-DE) echo "[ DONE ] {name} von Homebrew entfernt. Jederzeit zurückholen mit: brew install {name}   (entfernte Version: {ver})" ;;
+        fr-FR) echo "[ DONE ] {name} retirée par Homebrew. Récupérez-la quand vous voulez avec : brew install {name}   (version retirée : {ver})" ;;
+        pt-BR) echo "[ DONE ] {name} removida pelo Homebrew. Traga de volta quando quiser com: brew install {name}   (versão removida: {ver})" ;;
+        *)     echo "[ DONE ] {name} removed by Homebrew. Get it back anytime with: brew install {name}   (was version {ver})" ;;
       esac ;;
     un_brew_orphans)
       case "$SS_LANG" in
@@ -1179,15 +1155,15 @@ t() {
       esac ;;
     tl_orphans_none)
       case "$SS_LANG" in
-        ja-JP) echo "✅ 孤児化した依存はありません。" ;;
-        zh-TW) echo "✅ 沒有孤兒依賴。" ;;
-        zh-Hans) echo "✅ 没有孤儿依赖。" ;;
-        ko-KR) echo "✅ 고아 의존성이 없습니다." ;;
-        es-ES) echo "✅ Sin dependencias huérfanas." ;;
-        de-DE) echo "✅ Keine verwaisten Abhängigkeiten." ;;
-        fr-FR) echo "✅ Aucune dépendance orpheline." ;;
-        pt-BR) echo "✅ Nenhuma dependência órfã." ;;
-        *)     echo "✅ No orphaned dependencies." ;;
+        ja-JP) echo "[ PASS ] 孤児化した依存はありません。" ;;
+        zh-TW) echo "[ PASS ] 沒有孤兒依賴。" ;;
+        zh-Hans) echo "[ PASS ] 没有孤儿依赖。" ;;
+        ko-KR) echo "[ PASS ] 고아 의존성이 없습니다." ;;
+        es-ES) echo "[ PASS ] Sin dependencias huérfanas." ;;
+        de-DE) echo "[ PASS ] Keine verwaisten Abhängigkeiten." ;;
+        fr-FR) echo "[ PASS ] Aucune dépendance orpheline." ;;
+        pt-BR) echo "[ PASS ] Nenhuma dependência órfã." ;;
+        *)     echo "[ PASS ] No orphaned dependencies." ;;
       esac ;;
     tl_bins_header)
       case "$SS_LANG" in
@@ -1301,27 +1277,27 @@ t() {
       esac ;;
     rs_fail)   # {path}
       case "$SS_LANG" in
-        ja-JP) echo "⚠️ 復元できませんでした: {path}" ;;
-        zh-TW) echo "⚠️ 無法還原：{path}" ;;
-        zh-Hans) echo "⚠️ 无法还原：{path}" ;;
-        ko-KR) echo "⚠️ 복원할 수 없습니다: {path}" ;;
-        es-ES) echo "⚠️ no se pudo restaurar: {path}" ;;
-        de-DE) echo "⚠️ konnte nicht wiederhergestellt werden: {path}" ;;
-        fr-FR) echo "⚠️ restauration impossible : {path}" ;;
-        pt-BR) echo "⚠️ não foi possível restaurar: {path}" ;;
-        *)     echo "⚠️ could not restore: {path}" ;;
+        ja-JP) echo "[ FAIL ] 復元できませんでした: {path}" ;;
+        zh-TW) echo "[ FAIL ] 無法還原：{path}" ;;
+        zh-Hans) echo "[ FAIL ] 无法还原：{path}" ;;
+        ko-KR) echo "[ FAIL ] 복원할 수 없습니다: {path}" ;;
+        es-ES) echo "[ FAIL ] no se pudo restaurar: {path}" ;;
+        de-DE) echo "[ FAIL ] konnte nicht wiederhergestellt werden: {path}" ;;
+        fr-FR) echo "[ FAIL ] restauration impossible : {path}" ;;
+        pt-BR) echo "[ FAIL ] não foi possível restaurar: {path}" ;;
+        *)     echo "[ FAIL ] could not restore: {path}" ;;
       esac ;;
     rs_done)   # {app}
       case "$SS_LANG" in
-        ja-JP) echo "✅ {app} を元の場所へ復元しました。" ;;
-        zh-TW) echo "✅ {app} 已放回原處。" ;;
-        zh-Hans) echo "✅ {app} 已放回原处。" ;;
-        ko-KR) echo "✅ {app}을(를) 원래 자리로 복원했습니다." ;;
-        es-ES) echo "✅ {app} restaurada a su sitio." ;;
-        de-DE) echo "✅ {app} an den alten Ort zurückgelegt." ;;
-        fr-FR) echo "✅ {app} remise à sa place." ;;
-        pt-BR) echo "✅ {app} de volta ao lugar." ;;
-        *)     echo "✅ Restored {app} to where it was." ;;
+        ja-JP) echo "[ DONE ] {app} を元の場所へ復元しました。" ;;
+        zh-TW) echo "[ DONE ] {app} 已放回原處。" ;;
+        zh-Hans) echo "[ DONE ] {app} 已放回原处。" ;;
+        ko-KR) echo "[ DONE ] {app}을(를) 원래 자리로 복원했습니다." ;;
+        es-ES) echo "[ DONE ] {app} restaurada a su sitio." ;;
+        de-DE) echo "[ DONE ] {app} an den alten Ort zurückgelegt." ;;
+        fr-FR) echo "[ DONE ] {app} remise à sa place." ;;
+        pt-BR) echo "[ DONE ] {app} de volta ao lugar." ;;
+        *)     echo "[ DONE ] Restored {app} to where it was." ;;
       esac ;;
     rs_list_header)
       case "$SS_LANG" in
@@ -1387,39 +1363,39 @@ t() {
       esac ;;
     lf_review_header)
       case "$SS_LANG" in
-        ja-JP) echo "⚠️ 孤児の可能性（存在しないアプリを参照 — 要確認）:" ;;
-        zh-TW) echo "⚠️ 可能孤兒（指向一個已不存在的 app——請自行確認）：" ;;
-        zh-Hans) echo "⚠️ 疑似孤儿（指向一个已不存在的 App——请自行确认）：" ;;
-        ko-KR) echo "⚠️ 고아로 추정(사라진 앱을 참조 — 직접 확인 필요):" ;;
-        es-ES) echo "⚠️ Probables huérfanos (referencian una app que ya no está — revísalos):" ;;
-        de-DE) echo "⚠️ Wahrscheinlich verwaist (sie verweisen auf eine App, die weg ist — prüfen):" ;;
-        fr-FR) echo "⚠️ Probablement orphelins (ils référencent une app disparue — à vérifier) :" ;;
-        pt-BR) echo "⚠️ Prováveis órfãos (referenciam um app que se foi — revise):" ;;
-        *)     echo "⚠️ Likely orphans (they reference an app that's gone — review):" ;;
+        ja-JP) echo "[ WARN ] 孤児の可能性（存在しないアプリを参照 — 要確認）:" ;;
+        zh-TW) echo "[ WARN ] 可能孤兒（指向一個已不存在的 app——請自行確認）：" ;;
+        zh-Hans) echo "[ WARN ] 疑似孤儿（指向一个已不存在的 App——请自行确认）：" ;;
+        ko-KR) echo "[ WARN ] 고아로 추정(사라진 앱을 참조 — 직접 확인 필요):" ;;
+        es-ES) echo "[ WARN ] Probables huérfanos (referencian una app que ya no está — revísalos):" ;;
+        de-DE) echo "[ WARN ] Wahrscheinlich verwaist (sie verweisen auf eine App, die weg ist — prüfen):" ;;
+        fr-FR) echo "[ WARN ] Probablement orphelins (ils référencent une app disparue — à vérifier) :" ;;
+        pt-BR) echo "[ WARN ] Prováveis órfãos (referenciam um app que se foi — revise):" ;;
+        *)     echo "[ WARN ] Likely orphans (they reference an app that's gone — review):" ;;
       esac ;;
     lf_kept)   # {n}
       case "$SS_LANG" in
-        ja-JP) echo "✅ 稼働中の起動項目 {n} 件はそのまま（実行ファイルが存在 — 削除しません）。" ;;
-        zh-TW) echo "✅ 另有 {n} 個還在用的項目原封不動（程式還在＝不是垃圾，別動它）。" ;;
-        zh-Hans) echo "✅ 另有 {n} 个仍在用的项目原封不动（程序还在＝不是垃圾，别动它）。" ;;
-        ko-KR) echo "✅ 아직 살아 있는 항목 {n}개는 그대로 두었습니다(프로그램이 존재 = 쓰레기가 아님)." ;;
-        es-ES) echo "✅ {n} ítem(s) vivos quedaron intactos — su programa aún existe (no es basura)." ;;
-        de-DE) echo "✅ {n} lebende Einträge blieben unberührt — ihr Programm existiert noch (kein Müll)." ;;
-        fr-FR) echo "✅ {n} élément(s) vivants laissés intacts — leur programme existe encore (pas des déchets)." ;;
-        pt-BR) echo "✅ {n} item(ns) vivos ficaram intactos — o programa deles ainda existe (não é lixo)." ;;
-        *)     echo "✅ Kept {n} live item(s) untouched — their program still exists (not junk)." ;;
+        ja-JP) echo "[ PASS ] 稼働中の起動項目 {n} 件はそのまま（実行ファイルが存在 — 削除しません）。" ;;
+        zh-TW) echo "[ PASS ] 另有 {n} 個還在用的項目原封不動（程式還在＝不是垃圾，別動它）。" ;;
+        zh-Hans) echo "[ PASS ] 另有 {n} 个仍在用的项目原封不动（程序还在＝不是垃圾，别动它）。" ;;
+        ko-KR) echo "[ PASS ] 아직 살아 있는 항목 {n}개는 그대로 두었습니다(프로그램이 존재 = 쓰레기가 아님)." ;;
+        es-ES) echo "[ PASS ] {n} ítem(s) vivos quedaron intactos — su programa aún existe (no es basura)." ;;
+        de-DE) echo "[ PASS ] {n} lebende Einträge blieben unberührt — ihr Programm existiert noch (kein Müll)." ;;
+        fr-FR) echo "[ PASS ] {n} élément(s) vivants laissés intacts — leur programme existe encore (pas des déchets)." ;;
+        pt-BR) echo "[ PASS ] {n} item(ns) vivos ficaram intactos — o programa deles ainda existe (não é lixo)." ;;
+        *)     echo "[ PASS ] Kept {n} live item(s) untouched — their program still exists (not junk)." ;;
       esac ;;
     lf_clean)
       case "$SS_LANG" in
-        ja-JP) echo "✅ 残骸はありません — すべての起動項目が実在するものを指しています。" ;;
-        zh-TW) echo "✅ 沒有孤兒殘骸——每個開機項目都指向真實存在的東西。" ;;
-        zh-Hans) echo "✅ 没有孤儿残留——每个启动项都指向真实存在的东西。" ;;
-        ko-KR) echo "✅ 잔재 없음 — 모든 시작 항목이 실제로 존재하는 대상을 가리킵니다." ;;
-        es-ES) echo "✅ Sin restos — cada ítem de arranque apunta a algo real." ;;
-        de-DE) echo "✅ Keine Überbleibsel — jeder Starteintrag zeigt auf etwas Echtes." ;;
-        fr-FR) echo "✅ Aucun reste — chaque élément de démarrage pointe vers quelque chose de réel." ;;
-        pt-BR) echo "✅ Sem sobras — todo item de início aponta para algo real." ;;
-        *)     echo "✅ No leftovers — every startup item points to something real." ;;
+        ja-JP) echo "[ PASS ] 残骸はありません — すべての起動項目が実在するものを指しています。" ;;
+        zh-TW) echo "[ PASS ] 沒有孤兒殘骸——每個開機項目都指向真實存在的東西。" ;;
+        zh-Hans) echo "[ PASS ] 没有孤儿残留——每个启动项都指向真实存在的东西。" ;;
+        ko-KR) echo "[ PASS ] 잔재 없음 — 모든 시작 항목이 실제로 존재하는 대상을 가리킵니다." ;;
+        es-ES) echo "[ PASS ] Sin restos — cada ítem de arranque apunta a algo real." ;;
+        de-DE) echo "[ PASS ] Keine Überbleibsel — jeder Starteintrag zeigt auf etwas Echtes." ;;
+        fr-FR) echo "[ PASS ] Aucun reste — chaque élément de démarrage pointe vers quelque chose de réel." ;;
+        pt-BR) echo "[ PASS ] Sem sobras — todo item de início aponta para algo real." ;;
+        *)     echo "[ PASS ] No leftovers — every startup item points to something real." ;;
       esac ;;
     lf_dry_note)
       case "$SS_LANG" in
@@ -1447,15 +1423,15 @@ t() {
       esac ;;
     lf_done)   # {n}
       case "$SS_LANG" in
-        ja-JP) echo "✅ 残骸 {n} 件をゴミ箱へ移動。完全に反映されるのは次回ログイン／再起動後です。元に戻す: sheersweep restore" ;;
-        zh-TW) echo "✅ 已把 {n} 個殘骸移到垃圾桶。下次登入／重開機後完全生效。想還原打：sheersweep restore" ;;
-        zh-Hans) echo "✅ 已把 {n} 个残留移到废纸篓。下次登录／重启后完全生效。想还原：sheersweep restore" ;;
-        ko-KR) echo "✅ 잔재 {n}개를 휴지통으로 옮겼습니다. 다음 로그인/재시동 후 완전히 적용됩니다. 되돌리기: sheersweep restore" ;;
-        es-ES) echo "✅ {n} resto(s) movidos a la Papelera. Surte efecto pleno tras el próximo inicio de sesión/reinicio. Deshacer: sheersweep restore" ;;
-        de-DE) echo "✅ {n} Überbleibsel in den Papierkorb gelegt. Voll wirksam nach dem nächsten Login/Neustart. Rückgängig: sheersweep restore" ;;
-        fr-FR) echo "✅ {n} reste(s) déplacé(s) vers la Corbeille. Pleinement effectif après la prochaine connexion/redémarrage. Annuler : sheersweep restore" ;;
-        pt-BR) echo "✅ {n} sobra(s) movida(s) para a Lixeira. Vale plenamente após o próximo login/reinício. Desfazer: sheersweep restore" ;;
-        *)     echo "✅ Moved {n} leftover(s) to Trash. Fully takes effect after the next login/restart. Undo: sheersweep restore" ;;
+        ja-JP) echo "[ DONE ] 残骸 {n} 件をゴミ箱へ移動。完全に反映されるのは次回ログイン／再起動後です。元に戻す: sheersweep restore" ;;
+        zh-TW) echo "[ DONE ] 已把 {n} 個殘骸移到垃圾桶。下次登入／重開機後完全生效。想還原打：sheersweep restore" ;;
+        zh-Hans) echo "[ DONE ] 已把 {n} 个残留移到废纸篓。下次登录／重启后完全生效。想还原：sheersweep restore" ;;
+        ko-KR) echo "[ DONE ] 잔재 {n}개를 휴지통으로 옮겼습니다. 다음 로그인/재시동 후 완전히 적용됩니다. 되돌리기: sheersweep restore" ;;
+        es-ES) echo "[ DONE ] {n} resto(s) movidos a la Papelera. Surte efecto pleno tras el próximo inicio de sesión/reinicio. Deshacer: sheersweep restore" ;;
+        de-DE) echo "[ DONE ] {n} Überbleibsel in den Papierkorb gelegt. Voll wirksam nach dem nächsten Login/Neustart. Rückgängig: sheersweep restore" ;;
+        fr-FR) echo "[ DONE ] {n} reste(s) déplacé(s) vers la Corbeille. Pleinement effectif après la prochaine connexion/redémarrage. Annuler : sheersweep restore" ;;
+        pt-BR) echo "[ DONE ] {n} sobra(s) movida(s) para a Lixeira. Vale plenamente após o próximo login/reinício. Desfazer: sheersweep restore" ;;
+        *)     echo "[ DONE ] Moved {n} leftover(s) to Trash. Fully takes effect after the next login/restart. Undo: sheersweep restore" ;;
       esac ;;
   esac
 }
@@ -1541,7 +1517,7 @@ CLI ツールの棚卸し（読み取り専用）
   --version   バージョンを表示して終了。
   --help      このヘルプを表示して終了。
 
-🔴 絶対に触れない（このスクリプトのどの行も到達しません）
+[ HELD ] 絶対に触れない（このスクリプトのどの行も到達しません）
   写真 / 書類 / デスクトップ / ムービー / ミュージック、Clip Studio (CELSYS)、
   アプリの Containers と Application Support、
   Dropbox / クラウド同期フォルダ、画面収録、メール / メッセージ / キーチェーン、
@@ -1625,7 +1601,7 @@ CLI 工具盤點（唯讀）
   --version   印出版本後結束。
   --help      顯示這份說明後結束。
 
-🔴 絕不碰（這支腳本沒有任何一行碰得到）
+[ HELD ] 絕不碰（這支腳本沒有任何一行碰得到）
   照片 / 文件 / 桌面 / 影片 / 音樂、Clip Studio (CELSYS)、
   app 的 Containers 與 Application Support、
   Dropbox / 雲端同步資料夾、螢幕錄影、Mail / Messages / 鑰匙圈、
@@ -1709,7 +1685,7 @@ CLI 工具盘点（只读）
   --version   打印版本后退出。
   --help      显示本帮助后退出。
 
-🔴 绝不碰（这个脚本没有任何一行碰得到）
+[ HELD ] 绝不碰（这个脚本没有任何一行碰得到）
   照片 / 文稿 / 桌面 / 影片 / 音乐、Clip Studio (CELSYS)、
   App 的 Containers 与 Application Support、
   Dropbox / 云同步文件夹、屏幕录制、邮件 / 信息 / 钥匙串、
@@ -1798,7 +1774,7 @@ CLI 도구 목록(읽기 전용)
   --version   버전을 출력하고 종료.
   --help      이 도움말을 표시하고 종료.
 
-🔴 절대 건드리지 않음(이 스크립트의 어떤 줄도 닿을 수 없음)
+[ HELD ] 절대 건드리지 않음(이 스크립트의 어떤 줄도 닿을 수 없음)
   사진 / 문서 / 데스크탑 / 동영상 / 음악, Clip Studio (CELSYS),
   앱의 Containers 및 Application Support,
   Dropbox / 클라우드 동기화 폴더, 화면 기록, Mail / 메시지 / 키체인,
@@ -1897,7 +1873,7 @@ OPCIONES
   --version   Imprime la versión y sale.
   --help      Muestra esta ayuda y sale.
 
-🔴 NUNCA SE TOCA (ninguna línea de este script puede alcanzarlo)
+[ HELD ] NUNCA SE TOCA (ninguna línea de este script puede alcanzarlo)
   Fotos / Documentos / Escritorio / Películas / Música, Clip Studio (CELSYS),
   Containers y Application Support de las apps,
   Dropbox / carpetas de sincronización en la nube, grabaciones de pantalla,
@@ -2000,7 +1976,7 @@ OPTIONEN
   --version   Gibt die Version aus und beendet.
   --help      Zeigt diese Hilfe und beendet.
 
-🔴 NIE ANGERÜHRT (keine Zeile dieses Skripts kommt dort hin)
+[ HELD ] NIE ANGERÜHRT (keine Zeile dieses Skripts kommt dort hin)
   Fotos / Dokumente / Schreibtisch / Filme / Musik, Clip Studio (CELSYS),
   Containers & Application Support der Apps,
   Dropbox / Cloud-Sync-Ordner, Bildschirmaufnahmen, Mail / Nachrichten /
@@ -2102,7 +2078,7 @@ OPTIONS
   --version   Affiche la version et quitte.
   --help      Affiche cette aide et quitte.
 
-🔴 JAMAIS TOUCHÉ (aucune ligne de ce script ne peut y accéder)
+[ HELD ] JAMAIS TOUCHÉ (aucune ligne de ce script ne peut y accéder)
   Photos / Documents / Bureau / Vidéos / Musique, Clip Studio (CELSYS),
   Containers & Application Support des apps,
   Dropbox / dossiers de synchro cloud, enregistrements d'écran, Mail /
@@ -2200,7 +2176,7 @@ OPÇÕES
   --version   Imprime a versão e sai.
   --help      Mostra esta ajuda e sai.
 
-🔴 NUNCA TOCADO (nenhuma linha deste script chega lá)
+[ HELD ] NUNCA TOCADO (nenhuma linha deste script chega lá)
   Fotos / Documentos / Mesa / Filmes / Música, Clip Studio (CELSYS),
   Containers & Application Support dos apps,
   Dropbox / pastas de sincronização na nuvem, gravações de tela, Mail /
@@ -2298,7 +2274,7 @@ OPTIONS
   --version   Print version and exit.
   --help      Show this help and exit.
 
-🔴 NEVER TOUCHED (no line in this script can reach these)
+[ HELD ] NEVER TOUCHED (no line in this script can reach these)
   Photos / Documents / Desktop / Movies / Music, Clip Studio (CELSYS),
   app Containers & Application Support,
   Dropbox / cloud-sync folders, screen recordings, Mail / Messages / Keychains,
@@ -2438,12 +2414,12 @@ clean() {
   # an account with nothing to clear leaves a heading over empty space. Same
   # no-empty-group rule the report groups follow.
   if [ -n "${SW_GROUP:-}" ]; then printf '\n%s\n' "$SW_GROUP"; SW_GROUP=""; fi
-  if [ "$DRY" -eq 1 ]; then
-    printf '   %s %6s  %s\n' "$(t preview)" "$sz" "$p"
-  else
-    printf '   %s %6s  %s\n' "$(t freeing)" "$sz" "$p"
-    find "$p" -mindepth 1 -delete 2>/dev/null
-  fi
+  # No per-row state marker. Whether this run deletes or previews is a property
+  # of the RUN, not of each line — it's announced in the banner above and again
+  # in the closing line, and stamping it on twenty rows only teaches the eye to
+  # skip it (SPEC.md: state belongs to the group).
+  printf '   · %6s  %s\n' "$sz" "$p"
+  [ "$DRY" -eq 1 ] || find "$p" -mindepth 1 -delete 2>/dev/null
 }
 
 # ============================================================================
@@ -3084,7 +3060,7 @@ trash_one() {   # $1 = path  $2 = owner-home  $3 = receipt file
 }
 
 # The honest tail of every move loop: full success keeps the old one-line ✅;
-# anything less becomes a 🔴 with the real numbers — and when macOS's app
+# anything less becomes a [ HELD ] with the real numbers — and when macOS's app
 # container protection is the culprit, the one line that actually helps.
 report_moves() {   # $1 = the fully-successful ✅ line, already formatted
   local m
@@ -4266,7 +4242,7 @@ do_reclaim() {
     for ui in "${UPICK[@]}"; do
       uname="${UNID_PATH[$ui]##*/}"
       printf '\n'
-      printf '  ⚠️ %s   %s\n' "$(printf '%s' "${UNID_PATH[$ui]}" | vis)" "$(od_human_kb "${UNID_KB[$ui]}")"
+      printf '  [ WARN ] %s   %s\n' "$(printf '%s' "${UNID_PATH[$ui]}" | vis)" "$(od_human_kb "${UNID_KB[$ui]}")"
       t rc_unid_contains
       rc_peek "${UNID_PATH[$ui]}"
       m="$(t rc_unid_confirm)"; m="${m//\{name\}/$uname}"

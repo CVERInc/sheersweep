@@ -659,10 +659,10 @@ trash_one "$SBX/loose/plain.plist" "$HOME_OWNER" "$RF" > "$SBX/out2"
 report_moves "ALL-GOOD-LINE" > "$SBX/sum2"
 out2="$(cat "$SBX/out2")"; sum2="$(cat "$SBX/sum2")"
 : "reads for shellcheck — the real consumers live in the sourced script: $MV_TRIED $MV_MOVED $MV_STUCK_CONT"
-case "$out1" in *"❌"*) ok1=1 ;; *) ok1=0 ;; esac
-case "$sum1" in *"🔴"*"0"*"1"*|*"🔴"*) ok2=1 ;; *) ok2=0 ;; esac
-case "$sum1" in *"🔒"*) ok3=1 ;; *) ok3=0 ;; esac
-case "$out2" in *"❌"*) ok4=0 ;; *) ok4=1 ;; esac
+case "$out1" in *"[ FAIL ]"*) ok1=1 ;; *) ok1=0 ;; esac
+case "$sum1" in *"[ FAIL ]"*) ok2=1 ;; *) ok2=0 ;; esac
+case "$sum1" in *"[ HELD ]"*) ok3=1 ;; *) ok3=0 ;; esac
+case "$out2" in *"[ FAIL ]"*) ok4=0 ;; *) ok4=1 ;; esac
 if [ "$sum2" = "ALL-GOOD-LINE" ]; then ok5=1; else ok5=0; fi
 if [ "$ok1$ok2$ok3$ok4$ok5" = "11111" ]; then
   pass "honest accounting: stuck item ❌ + 🔴 shortfall + 🔒 container hint; full success keeps plain ✅"
@@ -769,7 +769,7 @@ RC_RECEIPT="$(find "$REAL_HOME/.sheersweep/uninstalls" -name "*-reclaim.tsv" 2>/
 e1=0; [ ! -e "$R/good/node_modules" ] && e1=1
 e2=0; [ -n "$RC_RECEIPT" ] && [ "$(receipt_header "$RC_RECEIPT" kind)" = "reclaim" ] && e2=1
 e3=0; receipt_header_all "$RC_RECEIPT" rebuild 2>/dev/null | grep -q "cd .* && npm install" && e3=1
-e4=0; grep -q "✅" "$SBX/rc.out" && e4=1
+e4=0; grep -q "\[ DONE \]" "$SBX/rc.out" && e4=1
 if [ "$e1$e2$e3$e4" = "1111" ]; then
   pass "reclaim e2e: moved to Trash, receipt kind=reclaim with rebuild command, honest ✅"
 else
@@ -801,7 +801,7 @@ DRY=1; RC_ROOTS=("$R"); RC_STALE_DAYS=""
 out="$(do_reclaim 2>&1)"
 # The ⚠️ now flags the GROUP HEADER once (not each item); items below it are
 # plain "· size (path)". Slice from the ⚠️ header to the end and check inside.
-unid_lines="$(printf '%s\n' "$out" | awk '/⚠️/{f=1} f')"
+unid_lines="$(printf '%s\n' "$out" | awk '/\[ WARN \]/{f=1} f')"
 u1=0; printf '%s\n' "$unid_lines" | grep -q '\.harvest'    && u1=1   # surfaced as unidentified
 u2=1; printf '%s\n' "$unid_lines" | grep -q 'node_modules' && u2=0   # proven → not double-listed here
 u3=1; case "$out" in *"proj/tiny"*) u3=0 ;; esac                     # below floor → hidden
