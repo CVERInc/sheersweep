@@ -145,7 +145,8 @@ explicitly a guess derived from the id; the id is the identity. Everything is
 listed — the small scraps too, numbered under a divider at the bottom, because
 you can't select what you can't see. Pick one and it runs the same preview →
 typed-confirm → Trash → receipt flow; pick **many** (`5 7-8 19`, or `all` for
-every leftover-data row) and the selection may mix apps and leftovers freely — selection
+every discovered row) and the selection may mix apps, leftover data and startup
+items freely — selection
 is batch, consent is not. Each selected **app** still walks its own preview and
 typed-name confirmation, one at a time (`all` never touches app rows); the leftover
 rows then run as one batch: one combined preview of every file, one
@@ -200,30 +201,30 @@ Upgradable formulae are flagged inline (`apfel  1.5.0  → 1.8.3  brew upgrade
 apfel`) — read from **brew's local index**, so even this stays offline: it's
 exactly as fresh as your last `brew update`, and the summary line says so.
 
-## Clean up leftovers (opt-in)
+### Startup items apps forgot to take with them
 
 Apps you removed long ago often leave a **background item** behind — a
-`LaunchAgent` or `LaunchDaemon` that still tries to run at login. `leftovers`
-finds them across every account:
+`LaunchAgent` or `LaunchDaemon` that still tries to run at login. They weigh
+nothing (24 KB for the lot on the author's machine) and run at every boot, which
+is exactly why they can't be ranked among the rows above by size: the picker
+gives them their own section and writes `—` where a size would be.
 
-```bash
-sheersweep leftovers             # find orphaned startup items (preview + confirm)
-sheersweep leftovers --dry-run   # preview only
+```
+▸ [ WARN ] Still starting up — the program they launch is gone (1 of 19 startup items)
+    65) com.dropbox.DropboxUpdater.wake                   —  (missing DropboxUpdater)
 ```
 
-The point isn't finding *more* — it's being **honest about what's actually junk**:
+The point isn't finding *more* — it's being **honest about what's actually junk**.
+`1 of 19` is the whole claim: eighteen were looked at and left alone. A *working*
+updater that a still-installed app shares (say, the Google updater Google Drive
+needs) is **never** mistaken for junk — the trap dumb cleaners spring to scare
+you into deleting something load-bearing. An item that only *references* a
+missing app gets a `?` on its hint and is yours to judge.
 
-- **Dead** — the program it launches no longer exists (e.g. an EA Origin helper
-  whose binary is gone). Safe to remove.
-- **`[ WARN ]` likely orphan** — it references an app that's now missing (e.g. a
-  discontinued app's self-remover). Shown for review; removed only if you opt in.
-- **`[ PASS ]` kept** — anything whose program still exists is left alone and counted. A
-  *working* updater that a still-installed app shares (say, the Google updater that
-  Google Drive needs) is **never** mistaken for junk — the trap dumb cleaners spring
-  to scare you into deleting something load-bearing.
-
-Chosen items move to the Trash and are logged, so **`sheersweep restore`** undoes a
-leftovers sweep too. The system list catches up after the next login/restart.
+This used to be its own verb, `leftovers`. It isn't any more: the same question —
+*what did an app leave behind?* — had two front doors and two vocabularies, and
+the receipts already went to the same place, so `restore` had always undone
+either. Only the entrance was split.
 
 ## Reclaim build output (opt-in)
 
@@ -286,9 +287,8 @@ cd sheersweep
 ./sheersweep                  # real run (prompts once for sudo — needed to sweep all accounts)
 ./sheersweep uninstall        # pick an app — or removed apps' leftover data — to clear
 ./sheersweep tools            # read-only: your CLI tools, orphans, toolchain data
-./sheersweep leftovers        # find orphaned startup items from apps that are gone
 ./sheersweep reclaim          # build output in your repos — 3 proofs, then Trash
-./sheersweep restore          # undo the last uninstall/leftovers/reclaim — put it all back
+./sheersweep restore          # undo the last uninstall/reclaim — put it all back
 ./sheersweep --version
 ./sheersweep --help
 ```
@@ -319,7 +319,7 @@ home folder stay).
 ```bash
 sudo sheersweep uninstall SomeApp        # names resolve across every account's ~/Applications
 sudo sheersweep uninstall /Users/prev/Applications/SomeApp.app   # or point straight at it
-sudo sheersweep leftovers                # orphaned startup items from apps now gone
+sudo sheersweep uninstall                # …or the picker, which also lists what they left running
 ```
 
 The account's **shell** — its home folder, login picture, documents — is left
@@ -329,13 +329,13 @@ account *itself*, that's macOS's job — System Settings › Users & Groups. she
 clears contents; it doesn't create or destroy accounts.
 
 **Handing a Mac to the next person — wipe your traces, leave the OS pristine.**
-Uninstall the apps you added, clear their startup leftovers, then sweep the
-regenerable junk. Everything an app removal touches goes to the Trash, so you can
+Uninstall the apps you added — the picker lists their leftover data and any
+startup item they left running — then sweep the regenerable junk. Everything an app removal touches goes to the Trash, so you can
 walk it back until you empty it.
 
 ```bash
 sudo sheersweep uninstall AppA && sudo sheersweep uninstall AppB
-sudo sheersweep leftovers
+sudo sheersweep uninstall                 # the picker: leftover data + startup items
 sudo sheersweep                          # the sweep: caches/logs/temp the OS rebuilds
 ```
 

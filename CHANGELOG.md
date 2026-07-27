@@ -4,6 +4,63 @@ All notable changes to sheersweep are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.13.0]
+
+### Removed — the `leftovers` verb. The picker asks its question now.
+
+**Breaking:** `sheersweep leftovers` (and its `orphans` / `cruft` aliases) is
+gone. Startup items whose program no longer exists are a section of
+`sheersweep uninstall`.
+
+The same question — *what did an app leave behind?* — had two front doors and
+two vocabularies. The receipts had always gone to the same store, so `restore`
+already undid either one; only the entrance was split.
+
+What it is not: a transplant. The old verb's section had its own glyph (`↳`),
+its own confirm, its own summary line. Rendered in the picker's language it
+needs none of them — the missing program becomes a parenthesised hint, exactly
+like an orphan's vendor guess, which is how the tool stopped needing a third
+kind of arrow:
+
+```
+▸ [ WARN ] Still starting up — the program they launch is gone (1 of 19 startup items)
+    65) com.dropbox.DropboxUpdater.wake                   —  (missing DropboxUpdater)
+```
+
+Two things that shape looks nothing like a size-sorted row for a reason. These
+weigh **24 KB for the lot** on the author's machine and run at every boot, so
+ranking them among apps by size would bury the only thing that matters about
+them — hence their own section, and `—` where a size would go.
+
+And `1 of 19` is the whole claim: eighteen were looked at and left alone. That
+counter existed before only as a line the old verb printed; it is now what the
+header says, and it is the same control the test suite uses to tell "skipped
+every live item" from "never looked at anything".
+
+An item that only *references* a missing app keeps its `?`, the picker's
+existing mark for a guess, and is yours to judge.
+
+### Changed — a row records what it is, instead of being worked out twice
+
+Selecting a row used to be index arithmetic with the tier boundaries hard-coded
+at both the render and the selection. Fine for two tiers; the reason a third was
+awkward. Rows now record their own kind as they print, which retired
+`orphan_row_id` entirely.
+
+`all` reaches the new rows too, and the multi-select hint says so in all nine
+languages rather than promising less than it does.
+
+### Changed — every verb's headers, on one rule
+
+- A **report title** carries no `▸` (`tools` wore one; sweep and reclaim don't).
+- A **group header** carries `▸`, no trailing colon, and never opens with a
+  badge — but *may* carry one after the mark: `▸ [ WARN ] Likely orphans …`.
+  Two marks, two jobs: `▸` says a group starts here, the badge says what state
+  it's in. That is the rule that state belongs to the group rather than to every
+  row, which is why those sections had a badge in the first place.
+- A **note** is not an item: `tools`' "N upgradable" line no longer wears a
+  bullet in the size column of the list it follows.
+
 ## [0.12.0]
 
 ### Added — the picker shows what each app actually costs you

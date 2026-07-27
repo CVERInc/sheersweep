@@ -32,7 +32,7 @@
 #   each with the native way to remove it. Changes nothing; never needs sudo.
 set -u
 
-VERSION="0.12.0"
+VERSION="0.13.0"
 
 # ============================================================================
 # i18n — en-US · ja-JP · zh-TW · zh-Hans · ko-KR · es-ES · de-DE · fr-FR · pt-BR.
@@ -378,6 +378,66 @@ t() {
         pt-BR) echo "🔍 procurando dados deixados por apps removidos — em alguns segundos o menu aparece completo, de uma vez…" ;;
         en-US|*)     echo "🔍 Scanning for data left behind by removed apps — the menu arrives complete, in one piece, in a few seconds…" ;;
       esac ;;
+    un_startup_batch)   # {n}
+      case "$SS_LANG" in
+        ja-JP) echo "▸ 起動項目を削除します（{n} 件）— ゴミ箱へ、あとで restore で戻せます" ;;
+        zh-TW) echo "▸ 要移除的開機項目（{n} 個）——搬到垃圾桶，restore 可以還原" ;;
+        zh-Hans) echo "▸ 要移除的开机项目（{n} 个）——搬到垃圾桶，restore 可以还原" ;;
+        ko-KR) echo "▸ 제거할 시작 항목({n}개) — 휴지통으로, restore로 되돌릴 수 있습니다" ;;
+        es-ES) echo "▸ Elementos de arranque a eliminar ({n}) — a la Papelera, restore los devuelve" ;;
+        de-DE) echo "▸ Startobjekte zum Entfernen ({n}) — in den Papierkorb, restore holt sie zurück" ;;
+        fr-FR) echo "▸ Éléments de démarrage à retirer ({n}) — vers la Corbeille, restore les remet" ;;
+        pt-BR) echo "▸ Itens de inicialização a remover ({n}) — para o Lixo, restore devolve" ;;
+        en-US|*) echo "▸ Startup items to remove ({n}) — to the Trash; restore puts them back" ;;
+      esac ;;
+    un_startup_confirm)   # {n}
+      case "$SS_LANG" in
+        ja-JP) echo "削除する件数を入力してください（{n}）、または Enter で中止: " ;;
+        zh-TW) echo "輸入要移除的數量（{n}），或按 Enter 取消：" ;;
+        zh-Hans) echo "输入要移除的数量（{n}），或按 Enter 取消：" ;;
+        ko-KR) echo "제거할 개수를 입력하세요({n}), 취소하려면 Enter: " ;;
+        es-ES) echo "Escribe cuántos vas a quitar ({n}), o Enter para cancelar: " ;;
+        de-DE) echo "Tippe die Anzahl, die entfernt wird ({n}), oder Enter zum Abbrechen: " ;;
+        fr-FR) echo "Tapez le nombre à retirer ({n}), ou Entrée pour annuler : " ;;
+        pt-BR) echo "Digite quantos serão removidos ({n}), ou Enter para cancelar: " ;;
+        en-US|*) echo "Type how many are going ({n}), or Enter to cancel: " ;;
+      esac ;;
+    un_startup_done)   # {n}
+      case "$SS_LANG" in
+        ja-JP) echo "[ DONE ] 起動項目 {n} 件をゴミ箱へ移動しました。" ;;
+        zh-TW) echo "[ DONE ] 已把 {n} 個開機項目搬進垃圾桶。" ;;
+        zh-Hans) echo "[ DONE ] 已把 {n} 个开机项目搬进垃圾桶。" ;;
+        ko-KR) echo "[ DONE ] 시작 항목 {n}개를 휴지통으로 옮겼습니다." ;;
+        es-ES) echo "[ DONE ] {n} elementos de arranque movidos a la Papelera." ;;
+        de-DE) echo "[ DONE ] {n} Startobjekte in den Papierkorb verschoben." ;;
+        fr-FR) echo "[ DONE ] {n} éléments de démarrage déplacés vers la Corbeille." ;;
+        pt-BR) echo "[ DONE ] {n} itens de inicialização movidos para o Lixo." ;;
+        en-US|*) echo "[ DONE ] Moved {n} startup item(s) to the Trash." ;;
+      esac ;;
+    un_startup_header)   # {n} — startup items whose program is gone
+      case "$SS_LANG" in
+        ja-JP) echo "▸ [ WARN ] まだ起動しようとしています — 起動先のプログラムがありません（起動項目 {tot} 件中 {n} 件）" ;;
+        zh-TW) echo "▸ [ WARN ] 還在開機自動啟動——但要啟動的程式已經不在了（{tot} 個開機項目中的 {n} 個）" ;;
+        zh-Hans) echo "▸ [ WARN ] 还在开机自动启动——但要启动的程序已经不在了（{tot} 个开机项目中的 {n} 个）" ;;
+        ko-KR) echo "▸ [ WARN ] 여전히 시작되지만 실행할 프로그램이 없습니다(시작 항목 {tot}개 중 {n}개)" ;;
+        es-ES) echo "▸ [ WARN ] Siguen arrancando — el programa que lanzan ya no existe ({n} de {tot} elementos de arranque)" ;;
+        de-DE) echo "▸ [ WARN ] Starten weiterhin — das Programm dahinter gibt es nicht mehr ({n} von {tot} Startobjekten)" ;;
+        fr-FR) echo "▸ [ WARN ] Se lancent encore — le programme visé n'existe plus ({n} sur {tot} éléments de démarrage)" ;;
+        pt-BR) echo "▸ [ WARN ] Ainda iniciam — o programa que executam não existe mais ({n} de {tot} itens de inicialização)" ;;
+        en-US|*) echo "▸ [ WARN ] Still starting up — the program they launch is gone ({n} of {tot} startup items)" ;;
+      esac ;;
+    un_startup_gone)   # prefix inside a row's hint: "(<this> Foo)"
+      case "$SS_LANG" in
+        ja-JP) echo "見つかりません:" ;;
+        zh-TW) echo "找不到" ;;
+        zh-Hans) echo "找不到" ;;
+        ko-KR) echo "없음:" ;;
+        es-ES) echo "falta" ;;
+        de-DE) echo "fehlt" ;;
+        fr-FR) echo "absent :" ;;
+        pt-BR) echo "falta" ;;
+        en-US|*) echo "missing" ;;
+      esac ;;
     un_orphan_header)   # {n}
       case "$SS_LANG" in
         ja-JP) echo "▸ 削除済み — 残ったデータが見つかりました（{n} 件）" ;;
@@ -404,15 +464,15 @@ t() {
       esac ;;
     un_pick_multi_hint)
       case "$SS_LANG" in
-        ja-JP) echo "複数行をまとめて選べます — 例: 5 7-8 19 · all は残存データの行を全部 · アプリは1つずつ名前で確認します。" ;;
-        zh-TW) echo "可以一次選多列——例如 5 7-8 19；all 全選「留下資料」那批；App 仍會逐個請你確認名稱。" ;;
-        zh-Hans) echo "可以一次选多行——例如 5 7-8 19；all 全选「留下数据」那批；App 仍会逐个请你确认名称。" ;;
-        ko-KR) echo "여러 행을 한 번에 선택할 수 있습니다 — 예: 5 7-8 19 · all은 남은 데이터 행 전부 · 앱은 하나씩 이름으로 확인합니다." ;;
-        es-ES) echo "Puedes elegir varias filas a la vez — p. ej. 5 7-8 19 · all toma todas las de datos abandonados · cada app se confirma una a una por su nombre." ;;
-        de-DE) echo "Mehrere Zeilen auf einmal wählen — z. B. 5 7-8 19 · all nimmt alle Zeilen mit zurückgelassenen Daten · jede App wird einzeln per Name bestätigt." ;;
-        fr-FR) echo "Choisissez plusieurs lignes à la fois — p. ex. 5 7-8 19 · all prend toutes les lignes de données laissées · chaque app se confirme une à une par son nom." ;;
-        pt-BR) echo "Escolha várias linhas de uma vez — ex.: 5 7-8 19 · all pega todas as linhas de dados deixados · cada app é confirmado um a um pelo nome." ;;
-        en-US|*)     echo "Pick several rows at once — e.g. 5 7-8 19 · all takes every leftover-data row · each app still confirms by name." ;;
+        ja-JP) echo "複数行をまとめて選べます — 例: 5 7-8 19 · all は見つかった行を全部 · アプリは1つずつ名前で確認します。" ;;
+        zh-TW) echo "可以一次選多列——例如 5 7-8 19；all 全選找到的那批；App 仍會逐個請你確認名稱。" ;;
+        zh-Hans) echo "可以一次选多行——例如 5 7-8 19；all 全选找到的那批；App 仍会逐个请你确认名称。" ;;
+        ko-KR) echo "여러 행을 한 번에 선택할 수 있습니다 — 예: 5 7-8 19 · all은 발견된 행 전부 · 앱은 하나씩 이름으로 확인합니다." ;;
+        es-ES) echo "Puedes elegir varias filas a la vez — p. ej. 5 7-8 19 · all toma todas las filas encontradas · cada app se confirma una a una por su nombre." ;;
+        de-DE) echo "Mehrere Zeilen auf einmal wählen — z. B. 5 7-8 19 · all nimmt alle gefundenen Zeilen · jede App wird einzeln per Name bestätigt." ;;
+        fr-FR) echo "Choisissez plusieurs lignes à la fois — p. ex. 5 7-8 19 · all prend toutes les lignes trouvées · chaque app se confirme une à une par son nom." ;;
+        pt-BR) echo "Escolha várias linhas de uma vez — ex.: 5 7-8 19 · all pega todas as linhas encontradas · cada app é confirmado um a um pelo nome." ;;
+        en-US|*)     echo "Pick several rows at once — e.g. 5 7-8 19 · all takes every discovered row · each app still confirms by name." ;;
       esac ;;
     un_orphans_header)   # {n}
       case "$SS_LANG" in
@@ -732,15 +792,15 @@ t() {
       esac ;;
     rc_unid_header)
       case "$SS_LANG" in
-        ja-JP) echo "[ WARN ] 未識別 — 大きく、git が無視、でも安全に消せるとは証明できません。" ;;
-        zh-TW) echo "[ WARN ] 未識別——又肥又被 git 忽略，但我證不了它們能安全刪除。" ;;
-        zh-Hans) echo "[ WARN ] 未识别——又大又被 git 忽略，但我证不了它们能安全删除。" ;;
-        ko-KR) echo "[ WARN ] 미확인 — 크고 git이 무시하지만, 안전하게 지울 수 있다고 증명할 수 없습니다." ;;
-        es-ES) echo "[ WARN ] Sin identificar — grandes, ignoradas por git, y no puedo probar que sea seguro borrarlas." ;;
-        de-DE) echo "[ WARN ] Nicht identifiziert — groß, von git ignoriert, und ich kann nicht beweisen, dass sie sicher zu löschen sind." ;;
-        fr-FR) echo "[ WARN ] Non identifié — volumineux, ignorés par git, et je ne peux pas prouver qu'ils sont sûrs à supprimer." ;;
-        pt-BR) echo "[ WARN ] Não identificado — grandes, ignoradas pelo git, e não posso provar que é seguro removê-las." ;;
-        en-US|*)     echo "[ WARN ] Unidentified — heavy, gitignored, and I can't prove these are safe to remove." ;;
+        ja-JP) echo "▸ [ WARN ] 未識別 — 大きく、git が無視、でも安全に消せるとは証明できません。" ;;
+        zh-TW) echo "▸ [ WARN ] 未識別——又肥又被 git 忽略，但我證不了它們能安全刪除。" ;;
+        zh-Hans) echo "▸ [ WARN ] 未识别——又大又被 git 忽略，但我证不了它们能安全删除。" ;;
+        ko-KR) echo "▸ [ WARN ] 미확인 — 크고 git이 무시하지만, 안전하게 지울 수 있다고 증명할 수 없습니다." ;;
+        es-ES) echo "▸ [ WARN ] Sin identificar — grandes, ignoradas por git, y no puedo probar que sea seguro borrarlas." ;;
+        de-DE) echo "▸ [ WARN ] Nicht identifiziert — groß, von git ignoriert, und ich kann nicht beweisen, dass sie sicher zu löschen sind." ;;
+        fr-FR) echo "▸ [ WARN ] Non identifié — volumineux, ignorés par git, et je ne peux pas prouver qu'ils sont sûrs à supprimer." ;;
+        pt-BR) echo "▸ [ WARN ] Não identificado — grandes, ignoradas pelo git, e não posso provar que é seguro removê-las." ;;
+        en-US|*)     echo "▸ [ WARN ] Unidentified — heavy, gitignored, and I can't prove these are safe to remove." ;;
       esac ;;
     rc_unid_note)   # {min}
       case "$SS_LANG" in
@@ -1135,39 +1195,39 @@ t() {
     # ---- tools (read-only CLI inventory) ----
     tl_banner)
       case "$SS_LANG" in
-        ja-JP) echo "▸ CLI ツールの棚卸し — 読み取り専用。何も変更しません。" ;;
-        zh-TW) echo "▸ CLI 工具盤點——唯讀，什麼都不會動。" ;;
-        zh-Hans) echo "▸ CLI 工具盘点——只读，什么都不会动。" ;;
-        ko-KR) echo "▸ CLI 도구 목록 — 읽기 전용. 아무것도 변경하지 않습니다." ;;
-        es-ES) echo "▸ Inventario de herramientas CLI — solo lectura. No se cambia nada." ;;
-        de-DE) echo "▸ CLI-Werkzeug-Inventur — nur lesend. Nichts wird verändert." ;;
-        fr-FR) echo "▸ Inventaire des outils CLI — lecture seule. Rien n'est modifié." ;;
-        pt-BR) echo "▸ Inventário de ferramentas CLI — somente leitura. Nada é alterado." ;;
-        en-US|*)     echo "▸ CLI tool inventory — read-only. Nothing is changed." ;;
+        ja-JP) echo "CLI ツールの棚卸し — 読み取り専用。何も変更しません。" ;;
+        zh-TW) echo "CLI 工具盤點——唯讀，什麼都不會動。" ;;
+        zh-Hans) echo "CLI 工具盘点——只读，什么都不会动。" ;;
+        ko-KR) echo "CLI 도구 목록 — 읽기 전용. 아무것도 변경하지 않습니다." ;;
+        es-ES) echo "Inventario de herramientas CLI — solo lectura. No se cambia nada." ;;
+        de-DE) echo "CLI-Werkzeug-Inventur — nur lesend. Nichts wird verändert." ;;
+        fr-FR) echo "Inventaire des outils CLI — lecture seule. Rien n'est modifié." ;;
+        pt-BR) echo "Inventário de ferramentas CLI — somente leitura. Nada é alterado." ;;
+        en-US|*)     echo "CLI tool inventory — read-only. Nothing is changed." ;;
       esac ;;
     tl_brew_header)
       case "$SS_LANG" in
-        ja-JP) echo "▸ 自分で入れた Homebrew formula（leaves — 他の何にも必要とされていない）:" ;;
-        zh-TW) echo "▸ 你自己裝的 Homebrew formula（leaves——沒有別的東西依賴它們）：" ;;
-        zh-Hans) echo "▸ 你自己装的 Homebrew formula（leaves——没有别的东西依赖它们）：" ;;
-        ko-KR) echo "▸ 직접 설치한 Homebrew formula(leaves — 다른 어떤 것도 의존하지 않음):" ;;
-        es-ES) echo "▸ Formulas de Homebrew que instalaste tú (leaves — nada más depende de ellas):" ;;
-        de-DE) echo "▸ Homebrew-Formulas, die du selbst installiert hast (leaves — nichts anderes hängt davon ab):" ;;
-        fr-FR) echo "▸ Formulas Homebrew que vous avez installées (leaves — rien d'autre n'en dépend) :" ;;
-        pt-BR) echo "▸ Formulas do Homebrew que você instalou (leaves — nada mais depende delas):" ;;
-        en-US|*)     echo "▸ Homebrew formulae you installed (leaves — nothing else depends on them):" ;;
+        ja-JP) echo "▸ 自分で入れた Homebrew formula（leaves — 他の何にも必要とされていない）" ;;
+        zh-TW) echo "▸ 你自己裝的 Homebrew formula（leaves——沒有別的東西依賴它們）" ;;
+        zh-Hans) echo "▸ 你自己装的 Homebrew formula（leaves——没有别的东西依赖它们）" ;;
+        ko-KR) echo "▸ 직접 설치한 Homebrew formula(leaves — 다른 어떤 것도 의존하지 않음)" ;;
+        es-ES) echo "▸ Formulas de Homebrew que instalaste tú (leaves — nada más depende de ellas)" ;;
+        de-DE) echo "▸ Homebrew-Formulas, die du selbst installiert hast (leaves — nichts anderes hängt davon ab)" ;;
+        fr-FR) echo "▸ Formulas Homebrew que vous avez installées (leaves — rien d'autre n'en dépend) " ;;
+        pt-BR) echo "▸ Formulas do Homebrew que você instalou (leaves — nada mais depende delas)" ;;
+        en-US|*)     echo "▸ Homebrew formulae you installed (leaves — nothing else depends on them)" ;;
       esac ;;
     tl_upgradable)   # {n}
       case "$SS_LANG" in
-        ja-JP) echo "· {n} 件アップグレード可能（brew のローカル索引基準＝最後に brew update した時点）。" ;;
-        zh-TW) echo "· {n} 個可升級（依 brew 本地索引＝你上次 brew update 的時點）。" ;;
-        zh-Hans) echo "· {n} 个可升级（依 brew 本地索引＝你上次 brew update 的时间点）。" ;;
-        ko-KR) echo "· {n}개 업그레이드 가능(brew 로컬 색인 기준 = 마지막 brew update 시점)." ;;
-        es-ES) echo "· {n} actualizables (según el índice local de brew — tan fresco como tu último brew update)." ;;
-        de-DE) echo "· {n} aktualisierbar (laut brews lokalem Index — Stand deines letzten brew update)." ;;
-        fr-FR) echo "· {n} mises à jour possibles (selon l'index local de brew — daté de votre dernier brew update)." ;;
-        pt-BR) echo "· {n} atualizáveis (pelo índice local do brew — do seu último brew update)." ;;
-        en-US|*)     echo "· {n} upgradable (per brew's local index — as fresh as your last brew update)." ;;
+        ja-JP) echo "{n} 件アップグレード可能（brew のローカル索引基準＝最後に brew update した時点）。" ;;
+        zh-TW) echo "{n} 個可升級（依 brew 本地索引＝你上次 brew update 的時點）。" ;;
+        zh-Hans) echo "{n} 个可升级（依 brew 本地索引＝你上次 brew update 的时间点）。" ;;
+        ko-KR) echo "{n}개 업그레이드 가능(brew 로컬 색인 기준 = 마지막 brew update 시점)." ;;
+        es-ES) echo "{n} actualizables (según el índice local de brew — tan fresco como tu último brew update)." ;;
+        de-DE) echo "{n} aktualisierbar (laut brews lokalem Index — Stand deines letzten brew update)." ;;
+        fr-FR) echo "{n} mises à jour possibles (selon l'index local de brew — daté de votre dernier brew update)." ;;
+        pt-BR) echo "{n} atualizáveis (pelo índice local do brew — do seu último brew update)." ;;
+        en-US|*)     echo "{n} upgradable (per brew's local index — as fresh as your last brew update)." ;;
       esac ;;
     tl_nobrew)
       case "$SS_LANG" in
@@ -1183,15 +1243,15 @@ t() {
       esac ;;
     tl_orphans_header)
       case "$SS_LANG" in
-        ja-JP) echo "▸ どの formula にも不要になった依存（brew autoremove が削除するもの）:" ;;
-        zh-TW) echo "▸ 已經沒人需要的依賴孤兒（brew autoremove 會清掉的）：" ;;
-        zh-Hans) echo "▸ 已经没人需要的依赖孤儿（brew autoremove 会清掉的）：" ;;
-        ko-KR) echo "▸ 아무도 필요로 하지 않는 고아 의존성(brew autoremove가 제거할 항목):" ;;
-        es-ES) echo "▸ Dependencias huérfanas que ya nada necesita (lo que brew autoremove quitaría):" ;;
-        de-DE) echo "▸ Verwaiste Abhängigkeiten, die nichts mehr braucht (was brew autoremove entfernen würde):" ;;
-        fr-FR) echo "▸ Dépendances orphelines dont plus rien n'a besoin (ce que brew autoremove retirerait) :" ;;
-        pt-BR) echo "▸ Dependências órfãs de que nada mais precisa (o que o brew autoremove removeria):" ;;
-        en-US|*)     echo "▸ Orphaned dependencies nothing needs anymore (what brew autoremove would remove):" ;;
+        ja-JP) echo "▸ どの formula にも不要になった依存（brew autoremove が削除するもの）" ;;
+        zh-TW) echo "▸ 已經沒人需要的依賴孤兒（brew autoremove 會清掉的）" ;;
+        zh-Hans) echo "▸ 已经没人需要的依赖孤儿（brew autoremove 会清掉的）" ;;
+        ko-KR) echo "▸ 아무도 필요로 하지 않는 고아 의존성(brew autoremove가 제거할 항목)" ;;
+        es-ES) echo "▸ Dependencias huérfanas que ya nada necesita (lo que brew autoremove quitaría)" ;;
+        de-DE) echo "▸ Verwaiste Abhängigkeiten, die nichts mehr braucht (was brew autoremove entfernen würde)" ;;
+        fr-FR) echo "▸ Dépendances orphelines dont plus rien n'a besoin (ce que brew autoremove retirerait) " ;;
+        pt-BR) echo "▸ Dependências órfãs de que nada mais precisa (o que o brew autoremove removeria)" ;;
+        en-US|*)     echo "▸ Orphaned dependencies nothing needs anymore (what brew autoremove would remove)" ;;
       esac ;;
     tl_orphans_none)
       case "$SS_LANG" in
@@ -1207,15 +1267,15 @@ t() {
       esac ;;
     tl_bins_header)
       case "$SS_LANG" in
-        ja-JP) echo "▸ 手動インストールのバイナリ（マネージャ管理外 — ~/bin · ~/.local/bin · /usr/local/bin）:" ;;
-        zh-TW) echo "▸ 手動裝的裸二進位（無管理器認領——~/bin・~/.local/bin・/usr/local/bin）：" ;;
-        zh-Hans) echo "▸ 手动装的二进制文件（无管理器认领——~/bin、~/.local/bin、/usr/local/bin）：" ;;
-        ko-KR) echo "▸ 직접 설치한 바이너리(관리자 없음 — ~/bin · ~/.local/bin · /usr/local/bin):" ;;
-        es-ES) echo "▸ Binarios instalados a mano, sin gestor (~/bin · ~/.local/bin · /usr/local/bin):" ;;
-        de-DE) echo "▸ Von Hand installierte Binaries ohne Verwalter (~/bin · ~/.local/bin · /usr/local/bin):" ;;
-        fr-FR) echo "▸ Binaires installés à la main, sans gestionnaire (~/bin · ~/.local/bin · /usr/local/bin) :" ;;
-        pt-BR) echo "▸ Binários instalados à mão, sem gerenciador (~/bin · ~/.local/bin · /usr/local/bin):" ;;
-        en-US|*)     echo "▸ Hand-installed binaries no manager owns (~/bin · ~/.local/bin · /usr/local/bin):" ;;
+        ja-JP) echo "▸ 手動インストールのバイナリ（マネージャ管理外 — ~/bin · ~/.local/bin · /usr/local/bin）" ;;
+        zh-TW) echo "▸ 手動裝的裸二進位（無管理器認領——~/bin・~/.local/bin・/usr/local/bin）" ;;
+        zh-Hans) echo "▸ 手动装的二进制文件（无管理器认领——~/bin、~/.local/bin、/usr/local/bin）" ;;
+        ko-KR) echo "▸ 직접 설치한 바이너리(관리자 없음 — ~/bin · ~/.local/bin · /usr/local/bin)" ;;
+        es-ES) echo "▸ Binarios instalados a mano, sin gestor (~/bin · ~/.local/bin · /usr/local/bin)" ;;
+        de-DE) echo "▸ Von Hand installierte Binaries ohne Verwalter (~/bin · ~/.local/bin · /usr/local/bin)" ;;
+        fr-FR) echo "▸ Binaires installés à la main, sans gestionnaire (~/bin · ~/.local/bin · /usr/local/bin) " ;;
+        pt-BR) echo "▸ Binários instalados à mão, sem gerenciador (~/bin · ~/.local/bin · /usr/local/bin)" ;;
+        en-US|*)     echo "▸ Hand-installed binaries no manager owns (~/bin · ~/.local/bin · /usr/local/bin)" ;;
       esac ;;
     tl_bins_none)
       case "$SS_LANG" in
@@ -1231,15 +1291,15 @@ t() {
       esac ;;
     tl_chains_header)
       case "$SS_LANG" in
-        ja-JP) echo "▸ ツールチェーンのデータ（参考情報 — 消すなら各ツール自身の方法で）:" ;;
-        zh-TW) echo "▸ Toolchain 資料目錄（純資訊——要清請用各工具自己的方式）：" ;;
-        zh-Hans) echo "▸ Toolchain 数据目录（纯信息——要清请用各工具自己的方式）：" ;;
-        ko-KR) echo "▸ 툴체인 데이터(참고용 — 지우려면 각 도구 자체의 방법으로):" ;;
-        es-ES) echo "▸ Datos de toolchains (informativo — elimínalos con el método propio de cada herramienta):" ;;
-        de-DE) echo "▸ Toolchain-Daten (informativ — entfernen nur mit der eigenen Methode des jeweiligen Tools):" ;;
-        fr-FR) echo "▸ Données de toolchains (informatif — à retirer avec la méthode propre de chaque outil) :" ;;
-        pt-BR) echo "▸ Dados de toolchains (informativo — remova com o método próprio de cada ferramenta):" ;;
-        en-US|*)     echo "▸ Toolchain data (informational — remove with each tool's own method):" ;;
+        ja-JP) echo "▸ ツールチェーンのデータ（参考情報 — 消すなら各ツール自身の方法で）" ;;
+        zh-TW) echo "▸ Toolchain 資料目錄（純資訊——要清請用各工具自己的方式）" ;;
+        zh-Hans) echo "▸ Toolchain 数据目录（纯信息——要清请用各工具自己的方式）" ;;
+        ko-KR) echo "▸ 툴체인 데이터(참고용 — 지우려면 각 도구 자체의 방법으로)" ;;
+        es-ES) echo "▸ Datos de toolchains (informativo — elimínalos con el método propio de cada herramienta)" ;;
+        de-DE) echo "▸ Toolchain-Daten (informativ — entfernen nur mit der eigenen Methode des jeweiligen Tools)" ;;
+        fr-FR) echo "▸ Données de toolchains (informatif — à retirer avec la méthode propre de chaque outil) " ;;
+        pt-BR) echo "▸ Dados de toolchains (informativo — remova com o método próprio de cada ferramenta)" ;;
+        en-US|*)     echo "▸ Toolchain data (informational — remove with each tool's own method)" ;;
       esac ;;
     tl_hint)
       case "$SS_LANG" in
@@ -1341,15 +1401,15 @@ t() {
       esac ;;
     rs_list_header)
       case "$SS_LANG" in
-        ja-JP) echo "これまでのアンインストール（新しい順）:" ;;
-        zh-TW) echo "歷次移除（新到舊）：" ;;
-        zh-Hans) echo "历次卸载（从新到旧）：" ;;
-        ko-KR) echo "지난 제거 기록(최신순):" ;;
-        es-ES) echo "Desinstalaciones pasadas (recientes primero):" ;;
-        de-DE) echo "Bisherige Deinstallationen (neueste zuerst):" ;;
-        fr-FR) echo "Désinstallations passées (récentes d'abord) :" ;;
-        pt-BR) echo "Desinstalações anteriores (mais recentes primeiro):" ;;
-        en-US|*)     echo "Past uninstalls (newest first):" ;;
+        ja-JP) echo "▸ これまでのアンインストール（新しい順）" ;;
+        zh-TW) echo "▸ 歷次移除（新到舊）" ;;
+        zh-Hans) echo "▸ 历次卸载（从新到旧）" ;;
+        ko-KR) echo "▸ 지난 제거 기록(최신순)" ;;
+        es-ES) echo "▸ Desinstalaciones pasadas (recientes primero)" ;;
+        de-DE) echo "▸ Bisherige Deinstallationen (neueste zuerst)" ;;
+        fr-FR) echo "▸ Désinstallations passées (récentes d'abord) " ;;
+        pt-BR) echo "▸ Desinstalações anteriores (mais recentes primeiro)" ;;
+        en-US|*)     echo "▸ Past uninstalls (newest first)" ;;
       esac ;;
     rs_list_count)   # {n}
       case "$SS_LANG" in
@@ -1377,102 +1437,6 @@ t() {
       esac ;;
 
     # ---- leftovers (orphaned background items from apps that are gone) ----
-    lf_header)
-      case "$SS_LANG" in
-        ja-JP) echo "▸ 残骸 — 削除済みアプリが残した起動項目（LaunchAgents / LaunchDaemons）:" ;;
-        zh-TW) echo "▸ 孤兒殘骸——已刪除的 app 留下的開機／背景項目（LaunchAgents／Daemons）：" ;;
-        zh-Hans) echo "▸ 孤儿残留——已删除的 App 留下的启动／后台项目（LaunchAgents／Daemons）：" ;;
-        ko-KR) echo "▸ 잔재 — 삭제된 앱이 남긴 시작/백그라운드 항목(LaunchAgents/Daemons):" ;;
-        es-ES) echo "▸ Restos — ítems de arranque/segundo plano de apps que ya no están:" ;;
-        de-DE) echo "▸ Überbleibsel — Start-/Hintergrund-Einträge von Apps, die weg sind:" ;;
-        fr-FR) echo "▸ Restes — éléments de démarrage/arrière-plan d'apps disparues :" ;;
-        pt-BR) echo "▸ Sobras — itens de início/segundo plano de apps que já se foram:" ;;
-        en-US|*)     echo "▸ Leftovers — startup/background items left behind by apps that are gone:" ;;
-      esac ;;
-    lf_dead_header)
-      case "$SS_LANG" in
-        ja-JP) echo "▸ 死んでいる（起動する実行ファイルがもう存在しない）:" ;;
-        zh-TW) echo "▸ 死的（要啟動的程式已經不存在）：" ;;
-        zh-Hans) echo "▸ 死的（要启动的程序已不存在）：" ;;
-        ko-KR) echo "▸ 죽음(실행할 프로그램이 더 이상 없음):" ;;
-        es-ES) echo "▸ Muertos (el programa que lanzan ya no existe):" ;;
-        de-DE) echo "▸ Tot (das Programm, das sie starten, existiert nicht mehr):" ;;
-        fr-FR) echo "▸ Morts (le programme qu'ils lancent n'existe plus) :" ;;
-        pt-BR) echo "▸ Mortos (o programa que eles iniciam não existe mais):" ;;
-        en-US|*)     echo "▸ Dead (the program they launch no longer exists):" ;;
-      esac ;;
-    lf_review_header)
-      case "$SS_LANG" in
-        ja-JP) echo "[ WARN ] 孤児の可能性（存在しないアプリを参照 — 要確認）:" ;;
-        zh-TW) echo "[ WARN ] 可能孤兒（指向一個已不存在的 app——請自行確認）：" ;;
-        zh-Hans) echo "[ WARN ] 疑似孤儿（指向一个已不存在的 App——请自行确认）：" ;;
-        ko-KR) echo "[ WARN ] 고아로 추정(사라진 앱을 참조 — 직접 확인 필요):" ;;
-        es-ES) echo "[ WARN ] Probables huérfanos (referencian una app que ya no está — revísalos):" ;;
-        de-DE) echo "[ WARN ] Wahrscheinlich verwaist (sie verweisen auf eine App, die weg ist — prüfen):" ;;
-        fr-FR) echo "[ WARN ] Probablement orphelins (ils référencent une app disparue — à vérifier) :" ;;
-        pt-BR) echo "[ WARN ] Prováveis órfãos (referenciam um app que se foi — revise):" ;;
-        en-US|*)     echo "[ WARN ] Likely orphans (they reference an app that's gone — review):" ;;
-      esac ;;
-    lf_kept)   # {n}
-      case "$SS_LANG" in
-        ja-JP) echo "[ PASS ] 稼働中の起動項目 {n} 件はそのまま（実行ファイルが存在 — 削除しません）。" ;;
-        zh-TW) echo "[ PASS ] 另有 {n} 個還在用的項目原封不動（程式還在＝不是垃圾，別動它）。" ;;
-        zh-Hans) echo "[ PASS ] 另有 {n} 个仍在用的项目原封不动（程序还在＝不是垃圾，别动它）。" ;;
-        ko-KR) echo "[ PASS ] 아직 살아 있는 항목 {n}개는 그대로 두었습니다(프로그램이 존재 = 쓰레기가 아님)." ;;
-        es-ES) echo "[ PASS ] {n} ítem(s) vivos quedaron intactos — su programa aún existe (no es basura)." ;;
-        de-DE) echo "[ PASS ] {n} lebende Einträge blieben unberührt — ihr Programm existiert noch (kein Müll)." ;;
-        fr-FR) echo "[ PASS ] {n} élément(s) vivants laissés intacts — leur programme existe encore (pas des déchets)." ;;
-        pt-BR) echo "[ PASS ] {n} item(ns) vivos ficaram intactos — o programa deles ainda existe (não é lixo)." ;;
-        en-US|*)     echo "[ PASS ] Kept {n} live item(s) untouched — their program still exists (not junk)." ;;
-      esac ;;
-    lf_clean)
-      case "$SS_LANG" in
-        ja-JP) echo "[ PASS ] 残骸はありません — すべての起動項目が実在するものを指しています。" ;;
-        zh-TW) echo "[ PASS ] 沒有孤兒殘骸——每個開機項目都指向真實存在的東西。" ;;
-        zh-Hans) echo "[ PASS ] 没有孤儿残留——每个启动项都指向真实存在的东西。" ;;
-        ko-KR) echo "[ PASS ] 잔재 없음 — 모든 시작 항목이 실제로 존재하는 대상을 가리킵니다." ;;
-        es-ES) echo "[ PASS ] Sin restos — cada ítem de arranque apunta a algo real." ;;
-        de-DE) echo "[ PASS ] Keine Überbleibsel — jeder Starteintrag zeigt auf etwas Echtes." ;;
-        fr-FR) echo "[ PASS ] Aucun reste — chaque élément de démarrage pointe vers quelque chose de réel." ;;
-        pt-BR) echo "[ PASS ] Sem sobras — todo item de início aponta para algo real." ;;
-        en-US|*)     echo "[ PASS ] No leftovers — every startup item points to something real." ;;
-      esac ;;
-    lf_dry_note)
-      case "$SS_LANG" in
-        ja-JP) echo "🧪 プレビュー — 何も移動していません。--dry-run なしで実行すると削除できます。" ;;
-        zh-TW) echo "🧪 預覽——什麼都沒動。拿掉 --dry-run 再執行才會清。" ;;
-        zh-Hans) echo "🧪 预览——什么都没动。去掉 --dry-run 再运行才会清理。" ;;
-        ko-KR) echo "🧪 미리보기 — 아무것도 옮기지 않았습니다. 정리하려면 --dry-run 없이 실행하세요." ;;
-        es-ES) echo "🧪 vista previa — no se movió nada. Ejecuta sin --dry-run para limpiar." ;;
-        de-DE) echo "🧪 Vorschau — nichts wurde bewegt. Ohne --dry-run ausführen, um aufzuräumen." ;;
-        fr-FR) echo "🧪 aperçu — rien n'a bougé. Relancez sans --dry-run pour nettoyer." ;;
-        pt-BR) echo "🧪 prévia — nada foi movido. Execute sem --dry-run para limpar." ;;
-        en-US|*)     echo "🧪 preview — nothing moved. Run without --dry-run to clean." ;;
-      esac ;;
-    lf_confirm)
-      case "$SS_LANG" in
-        ja-JP) echo "ゴミ箱へ移動: [yes＝死んでいるもののみ ／ all＝孤児候補も含む ／ それ以外でキャンセル]: " ;;
-        zh-TW) echo "移到垃圾桶：[yes＝只清死的 ／ all＝連可能孤兒一起 ／ 其他則取消]：" ;;
-        zh-Hans) echo "移到废纸篓：[yes＝只清死的 ／ all＝连疑似孤儿一起 ／ 其他则取消]：" ;;
-        ko-KR) echo "휴지통으로 이동: [yes = 죽은 것만 · all = 고아 추정 포함 · 다른 입력은 취소]: " ;;
-        es-ES) echo "Mover a la Papelera: [yes = solo muertos · all = incluye probables huérfanos · otra cosa cancela]: " ;;
-        de-DE) echo "In den Papierkorb: [yes = nur tote · all = auch wahrscheinlich verwaiste · alles andere bricht ab]: " ;;
-        fr-FR) echo "Vers la Corbeille : [yes = morts seulement · all = orphelins probables inclus · autre saisie annule] : " ;;
-        pt-BR) echo "Mover para a Lixeira: [yes = só os mortos · all = inclui prováveis órfãos · outra coisa cancela]: " ;;
-        en-US|*)     echo "Move to Trash: [yes = dead only · all = include likely-orphans · anything else cancels]: " ;;
-      esac ;;
-    lf_done)   # {n}
-      case "$SS_LANG" in
-        ja-JP) echo "[ DONE ] 残骸 {n} 件をゴミ箱へ移動。完全に反映されるのは次回ログイン／再起動後です。元に戻す: sheersweep restore" ;;
-        zh-TW) echo "[ DONE ] 已把 {n} 個殘骸移到垃圾桶。下次登入／重開機後完全生效。想還原打：sheersweep restore" ;;
-        zh-Hans) echo "[ DONE ] 已把 {n} 个残留移到废纸篓。下次登录／重启后完全生效。想还原：sheersweep restore" ;;
-        ko-KR) echo "[ DONE ] 잔재 {n}개를 휴지통으로 옮겼습니다. 다음 로그인/재시동 후 완전히 적용됩니다. 되돌리기: sheersweep restore" ;;
-        es-ES) echo "[ DONE ] {n} resto(s) movidos a la Papelera. Surte efecto pleno tras el próximo inicio de sesión/reinicio. Deshacer: sheersweep restore" ;;
-        de-DE) echo "[ DONE ] {n} Überbleibsel in den Papierkorb gelegt. Voll wirksam nach dem nächsten Login/Neustart. Rückgängig: sheersweep restore" ;;
-        fr-FR) echo "[ DONE ] {n} reste(s) déplacé(s) vers la Corbeille. Pleinement effectif après la prochaine connexion/redémarrage. Annuler : sheersweep restore" ;;
-        pt-BR) echo "[ DONE ] {n} sobra(s) movida(s) para a Lixeira. Vale plenamente após o próximo login/reinício. Desfazer: sheersweep restore" ;;
-        en-US|*)     echo "[ DONE ] Moved {n} leftover(s) to Trash. Fully takes effect after the next login/restart. Undo: sheersweep restore" ;;
-      esac ;;
   esac
 }
 
@@ -1486,7 +1450,6 @@ sheersweep — 読める Mac クリーナー。
   sheersweep uninstall [App] [--dry-run]
   sheersweep tools
   sheersweep restore [--list]
-  sheersweep leftovers [--dry-run]
   sheersweep reclaim [--dry-run] [--stale <N>d] [path…]
   sheersweep --version | --help
 
@@ -1530,13 +1493,6 @@ CLI ツールの棚卸し（読み取り専用）
 直前のアンインストールを元に戻す
   sheersweep restore          直前のアンインストールをゴミ箱から元の場所へ戻す
   sheersweep restore --list   これまでのアンインストール履歴を表示
-
-残骸の掃除（削除済みアプリが残した起動項目）
-  sheersweep leftovers        孤児化した LaunchAgents/Daemons を探す。死んでいるもの
-                              と「孤児の可能性」を分けて表示し、稼働中の項目には
-                              手を出さない。確認後ゴミ箱へ移動（restore で復元可）。
-                              --dry-run はプレビューのみ。
-
 ビルド産物の回収（明示的な opt-in — 通常のクリーンには決して混ざりません）
   sheersweep reclaim          プロジェクトフォルダ内のビルド産物（node_modules、
                               .build、target、dist、.next…）を探します。3 つの
@@ -1576,7 +1532,6 @@ sheersweep — 你讀得懂的 Mac 清理工具。
   sheersweep uninstall [App] [--dry-run]
   sheersweep tools
   sheersweep restore [--list]
-  sheersweep leftovers [--dry-run]
   sheersweep reclaim [--dry-run] [--stale <N>d] [path…]
   sheersweep --version | --help
 
@@ -1617,12 +1572,6 @@ CLI 工具盤點（唯讀）
 還原上一次移除
   sheersweep restore          把上一次移除從垃圾桶放回原處
   sheersweep restore --list   列出歷次移除紀錄
-
-清孤兒殘骸（已刪除 app 留下的開機項目）
-  sheersweep leftovers        找出孤兒化的 LaunchAgents/Daemons：把「死的」與「可能
-                              孤兒」分開列，還在用的項目絕不碰。確認後移到垃圾桶
-                              （可用 restore 還原）。--dry-run 只預覽。
-
 回收 build 產物（明確 opt-in——永不併入預設清理）
   sheersweep reclaim          在你的專案資料夾裡找 build 產物（node_modules、
                               .build、target、dist、.next…），三個證據同時成立
@@ -1660,7 +1609,6 @@ sheersweep — 你能读懂的 Mac 清理工具。
   sheersweep uninstall [App] [--dry-run]
   sheersweep tools
   sheersweep restore [--list]
-  sheersweep leftovers [--dry-run]
   sheersweep reclaim [--dry-run] [--stale <N>d] [path…]
   sheersweep --version | --help
 
@@ -1701,12 +1649,6 @@ CLI 工具盘点（只读）
 还原上一次卸载
   sheersweep restore          把上一次卸载从废纸篓放回原处
   sheersweep restore --list   列出历次卸载记录
-
-清理孤儿残留（已删除 App 留下的启动项目）
-  sheersweep leftovers        找出孤儿化的 LaunchAgents/Daemons：把「死的」与
-                              「疑似孤儿」分开列出，还在用的项目绝不碰。确认后
-                              移到废纸篓（可用 restore 还原）。--dry-run 只预览。
-
 回收 build 产物（明确 opt-in——绝不并入默认清理）
   sheersweep reclaim          在你的项目文件夹里找 build 产物（node_modules、
                               .build、target、dist、.next…），三个证据同时成立
@@ -1744,7 +1686,6 @@ sheersweep — 읽을 수 있는 Mac 클리너.
   sheersweep uninstall [App] [--dry-run]
   sheersweep tools
   sheersweep restore [--list]
-  sheersweep leftovers [--dry-run]
   sheersweep reclaim [--dry-run] [--stale <N>d] [path…]
   sheersweep --version | --help
 
@@ -1787,13 +1728,6 @@ CLI 도구 목록(읽기 전용)
 마지막 제거 되돌리기
   sheersweep restore          마지막 제거를 휴지통에서 원래 자리로
   sheersweep restore --list   지난 제거 기록 보기
-
-잔재 정리(삭제된 앱이 남긴 시작 항목)
-  sheersweep leftovers        고아가 된 LaunchAgents/Daemons를 찾습니다. 「죽은 것」과
-                              「고아 추정」을 나눠 보여 주고, 살아 있는 항목은 절대
-                              건드리지 않습니다. 확인 후 휴지통으로(restore로 복원
-                              가능). --dry-run은 미리보기만.
-
 빌드 산출물 회수(명시적 opt-in — 기본 청소에 절대 섞이지 않음)
   sheersweep reclaim          프로젝트 폴더 안의 빌드 산출물(node_modules,
                               .build, target, dist, .next…)을 찾습니다. 세 가지
@@ -1833,7 +1767,6 @@ USO
   sheersweep uninstall [App] [--dry-run]
   sheersweep tools
   sheersweep restore [--list]
-  sheersweep leftovers [--dry-run]
   sheersweep reclaim [--dry-run] [--stale <N>d] [path…]
   sheersweep --version | --help
 
@@ -1882,14 +1815,6 @@ VER TUS HERRAMIENTAS CLI (solo lectura)
 DESHACER LA ÚLTIMA DESINSTALACIÓN
   sheersweep restore          devuelve la última desinstalación desde la Papelera
   sheersweep restore --list   muestra tus desinstalaciones pasadas
-
-LIMPIAR RESTOS (ítems de arranque de apps que ya no están)
-  sheersweep leftovers        Busca LaunchAgents/Daemons huérfanos. Separa los
-                              «muertos» de los «probables huérfanos» y nunca toca
-                              un ítem vivo (un actualizador que funciona no es
-                              basura). Mueve los elegidos a la Papelera (deshaz
-                              con restore). --dry-run solo previsualiza.
-
 RECUPERAR ARTEFACTOS DE BUILD (opt-in — nunca parte del barrido)
   sheersweep reclaim          Busca artefactos de build dentro de tus carpetas
                               de proyecto (node_modules, .build, target, dist,
@@ -1932,7 +1857,6 @@ AUFRUF
   sheersweep uninstall [App] [--dry-run]
   sheersweep tools
   sheersweep restore [--list]
-  sheersweep leftovers [--dry-run]
   sheersweep reclaim [--dry-run] [--stale <N>d] [path…]
   sheersweep --version | --help
 
@@ -1983,15 +1907,6 @@ DEINE CLI-TOOLS SEHEN (nur lesend)
 DIE LETZTE DEINSTALLATION RÜCKGÄNGIG MACHEN
   sheersweep restore          legt die letzte Deinstallation aus dem Papierkorb zurück
   sheersweep restore --list   zeigt vergangene Deinstallationen
-
-ÜBERBLEIBSEL AUFRÄUMEN (Starteinträge verschwundener Apps)
-  sheersweep leftovers        Findet verwaiste LaunchAgents/Daemons. Zeigt tote
-                              und wahrscheinlich verwaiste getrennt und rührt
-                              lebende Einträge nie an (ein funktionierender
-                              Updater ist kein Müll). Verschiebt die gewählten
-                              in den Papierkorb (rückgängig mit restore).
-                              --dry-run zeigt nur die Vorschau.
-
 BUILD-ARTEFAKTE ZURÜCKHOLEN (Opt-in — nie Teil des Standard-Laufs)
   sheersweep reclaim          Findet Build-Artefakte in deinen Projektordnern
                               (node_modules, .build, target, dist, .next…) —
@@ -2035,7 +1950,6 @@ USAGE
   sheersweep uninstall [App] [--dry-run]
   sheersweep tools
   sheersweep restore [--list]
-  sheersweep leftovers [--dry-run]
   sheersweep reclaim [--dry-run] [--stale <N>d] [path…]
   sheersweep --version | --help
 
@@ -2086,15 +2000,6 @@ VOIR VOS OUTILS CLI (lecture seule)
 ANNULER LA DERNIÈRE DÉSINSTALLATION
   sheersweep restore          remet la dernière désinstallation depuis la Corbeille
   sheersweep restore --list   affiche les désinstallations passées
-
-NETTOYER LES RESTES (éléments de démarrage d'apps disparues)
-  sheersweep leftovers        Trouve les LaunchAgents/Daemons orphelins. Sépare
-                              les « morts » des « probablement orphelins » et ne
-                              touche jamais un élément vivant (un updater qui
-                              fonctionne n'est pas un déchet). Déplace les
-                              éléments choisis vers la Corbeille (annulable avec
-                              restore). --dry-run ne fait qu'un aperçu.
-
 RÉCUPÉRER LES ARTEFACTS DE BUILD (opt-in — jamais dans le nettoyage par défaut)
   sheersweep reclaim          Trouve les artefacts de build dans vos dossiers
                               de projet (node_modules, .build, target, dist,
@@ -2137,7 +2042,6 @@ USO
   sheersweep uninstall [App] [--dry-run]
   sheersweep tools
   sheersweep restore [--list]
-  sheersweep leftovers [--dry-run]
   sheersweep reclaim [--dry-run] [--stale <N>d] [path…]
   sheersweep --version | --help
 
@@ -2185,14 +2089,6 @@ VER SUAS FERRAMENTAS CLI (somente leitura)
 DESFAZER A ÚLTIMA DESINSTALAÇÃO
   sheersweep restore          devolve a última desinstalação da Lixeira
   sheersweep restore --list   mostra as desinstalações anteriores
-
-LIMPAR SOBRAS (itens de início de apps que se foram)
-  sheersweep leftovers        Acha LaunchAgents/Daemons órfãos. Separa os
-                              "mortos" dos "prováveis órfãos" e nunca toca um
-                              item vivo (um atualizador funcionando não é lixo).
-                              Move os escolhidos para a Lixeira (desfaça com
-                              restore). --dry-run só mostra a prévia.
-
 RECUPERAR ARTEFATOS DE BUILD (opt-in — nunca parte da limpeza padrão)
   sheersweep reclaim          Acha artefatos de build nas suas pastas de
                               projeto (node_modules, .build, target, dist,
@@ -2235,7 +2131,6 @@ USAGE
   sheersweep uninstall [App] [--dry-run]
   sheersweep tools
   sheersweep restore [--list]
-  sheersweep leftovers [--dry-run]
   sheersweep reclaim [--dry-run] [--stale <N>d] [path…]
   sheersweep --version | --help
 
@@ -2283,14 +2178,6 @@ SEE YOUR CLI TOOLS (read-only)
 UNDO THE LAST UNINSTALL
   sheersweep restore          put the last uninstall back from the Trash
   sheersweep restore --list   show your past uninstalls
-
-CLEAN UP LEFTOVERS (orphaned startup items from apps that are gone)
-  sheersweep leftovers        Find orphaned LaunchAgents/Daemons. Shows "dead"
-                              vs "likely orphan" separately and never touches a
-                              live item (a working updater isn't junk). Moves the
-                              chosen ones to the Trash (undo with restore).
-                              --dry-run only previews.
-
 RECLAIM BUILD OUTPUT (opt-in — never part of the sweep)
   sheersweep reclaim          Finds build output inside your project folders
                               (node_modules, .build, target, dist, .next…) —
@@ -2336,6 +2223,7 @@ MODE="sweep"
 APP_TARGET=""
 PICK_APPS=()
 PICK_ORPHANS=()
+PICK_STARTUP=()
 PICK_ROWS=()
 RESTORE_LIST=0
 RC_ROOTS=()
@@ -2352,7 +2240,6 @@ if [ -z "${SHEERSWEEP_LIB:-}" ]; then
         uninstall|remove)         MODE="uninstall"; continue ;;
         tools|cli)                MODE="tools";     continue ;;
         restore|undo)             MODE="restore";   continue ;;
-        leftovers|orphans|cruft)  MODE="leftovers"; continue ;;
         reclaim)                  MODE="reclaim";   continue ;;
       esac
     fi
@@ -2932,13 +2819,99 @@ pick_parse() {   # $1 = input  $2 = app-row count  $3 = total row count
   return 0
 }
 
-orphan_row_id() {   # $1 = picker row number  $2 = app-row count → the orphan id
-  local idx=$(( $1 - 1 - $2 ))
-  if [ "$idx" -lt "${#OD_IDS[@]}" ]; then
-    printf '%s' "${OD_IDS[$idx]}"
-  else
-    printf '%s' "${OD_TIDS[$((idx - ${#OD_IDS[@]}))]}"
-  fi
+# ============================================================================
+# leftovers — find orphaned startup/background items (LaunchAgents/Daemons) from
+# apps that are GONE, and (on confirmation) move them to the Trash. The honest
+# part is the classification: dead vs. likely-orphan vs. LIVE-keep — so a working
+# updater (e.g. one a still-installed app shares) is never mistaken for junk.
+# ============================================================================
+# Classify every *.plist in one launchd dir into the LF_* global arrays.
+# $1 = dir, $2 = owner-home (whose Trash a removed plist would go to).
+lf_scan() {
+  local dir="$1" owner="$2" p prog label tier info
+  [ -d "$dir" ] || return 0
+  for p in "$dir"/*.plist; do
+    [ -e "$p" ] || continue
+    label="$(/usr/libexec/PlistBuddy -c 'Print :Label' "$p" 2>/dev/null)"
+    [ -z "$label" ] && label="$(basename "$p" .plist)"
+    case "$label" in com.apple.*) LF_KEPT=$((LF_KEPT + 1)); continue ;; esac  # never touch Apple's own jobs
+    prog="$(/usr/libexec/PlistBuddy -c 'Print :Program' "$p" 2>/dev/null)"
+    [ -z "$prog" ] && prog="$(/usr/libexec/PlistBuddy -c 'Print :ProgramArguments:0' "$p" 2>/dev/null)"
+    tier="live"; info=""
+    case "$prog" in
+      /bin/sh|/bin/bash|/usr/bin/env|/usr/bin/python|/usr/bin/python3|/usr/bin/perl|/usr/bin/osascript|/usr/bin/ruby|"")
+        # interpreter (or none): judge by the app paths it references instead.
+        local refs ref anyref=0 allmissing=1
+        refs="$(plutil -p "$p" 2>/dev/null | grep -oE '/Applications/[^"]+\.app' | sort -u)"
+        if [ -n "$refs" ]; then
+          while IFS= read -r ref; do
+            [ -z "$ref" ] && continue
+            anyref=1
+            [ -e "$ref" ] && allmissing=0
+          done <<REFS
+$refs
+REFS
+          if [ "$anyref" -eq 1 ] && [ "$allmissing" -eq 1 ]; then
+            tier="review"; info="$(printf '%s' "$refs" | head -1)"
+          fi
+        fi
+        ;;
+      /*)
+        # explicit binary path → dead if that binary is gone.
+        [ -e "$prog" ] || { tier="dead"; info="$prog"; }
+        ;;
+    esac
+    case "$tier" in
+      dead)   LF_DEAD_PATH+=("$p");   LF_DEAD_OWNER+=("$owner");   LF_DEAD_INFO+=("$info") ;;
+      review) LF_REVIEW_PATH+=("$p"); LF_REVIEW_OWNER+=("$owner"); LF_REVIEW_INFO+=("$info") ;;
+      *)      LF_KEPT=$((LF_KEPT + 1)) ;;
+    esac
+  done
+}
+
+# startup_discover -> ST_LABEL / ST_HINT / ST_PATH / ST_OWNER
+#
+# Launch agents and daemons whose program no longer exists. This used to be its
+# own verb (`leftovers`), which meant the same question — what did an app leave
+# behind? — had two front doors and two vocabularies. The storage was already
+# shared (both write receipts into .sheersweep/uninstalls, so `restore` already
+# undid either), so only the entrance was split.
+#
+# The detection is lf_scan's, unchanged. What changed is the OUTPUT: a picker
+# row, in the picker's language, instead of a transplanted section with its own
+# glyph. The missing program becomes a parenthesised hint, exactly like an
+# orphan's vendor guess — which is why the tool no longer needs a third arrow.
+#
+# Two tiers survive, and they are the tiers the picker already speaks:
+#   dead   — the program is provably gone      -> a plain hint
+#   review — it references an app that's gone  -> a hint ending in `?`
+startup_discover() {
+  LF_DEAD_PATH=(); LF_DEAD_OWNER=(); LF_DEAD_INFO=()
+  LF_REVIEW_PATH=(); LF_REVIEW_OWNER=(); LF_REVIEW_INFO=()
+  LF_KEPT=0
+  ST_LABEL=(); ST_HINT=(); ST_PATH=(); ST_OWNER=()
+
+  local home i label gone
+  for home in /Users/*; do
+    [ -d "$home/Library" ] || continue
+    case "$(basename "$home")" in Shared|Guest) continue ;; esac
+    lf_scan "$home/Library/LaunchAgents" "$home"
+  done
+  lf_scan "/Library/LaunchAgents"  "$REAL_HOME"
+  lf_scan "/Library/LaunchDaemons" "$REAL_HOME"
+
+  for i in "${!LF_DEAD_PATH[@]}"; do
+    label="$(basename "${LF_DEAD_PATH[$i]}" .plist)"
+    gone="$(basename "${LF_DEAD_INFO[$i]}")"; gone="${gone%.app}"
+    ST_LABEL+=("$label"); ST_PATH+=("${LF_DEAD_PATH[$i]}"); ST_OWNER+=("${LF_DEAD_OWNER[$i]}")
+    ST_HINT+=("$(t un_startup_gone) ${gone:-?}")
+  done
+  for i in "${!LF_REVIEW_PATH[@]}"; do
+    label="$(basename "${LF_REVIEW_PATH[$i]}" .plist)"
+    gone="$(basename "${LF_REVIEW_INFO[$i]}")"; gone="${gone%.app}"
+    ST_LABEL+=("$label"); ST_PATH+=("${LF_REVIEW_PATH[$i]}"); ST_OWNER+=("${LF_REVIEW_OWNER[$i]}")
+    ST_HINT+=("$(t un_startup_gone) ${gone:-?}?")
+  done
 }
 
 # Interactive picker (mole-style): list user-removable apps, read a selection,
@@ -2967,6 +2940,16 @@ pick_app() {
           printf 'T\t%s\t%s\t%s\n' "${OD_TIDS[$i]}" "${OD_TSIZE[$i]}" "${OD_THINT[$i]}"
         done
       fi
+      # Startup items whose program is gone. They ride the SAME scan because the
+      # wait is already being spent, and they answer the same question the two
+      # tiers above answer: what did an app leave behind? These weigh nothing —
+      # 24 KB for the lot on the author's machine — and run at every boot, which
+      # is exactly why they can't be ranked by size with everything else.
+      startup_discover
+      for i in "${!ST_PATH[@]}"; do
+        printf 'S\t%s\t%s\t%s\t%s\n' \
+          "${ST_LABEL[$i]}" "${ST_HINT[$i]}" "${ST_PATH[$i]}" "${ST_OWNER[$i]}"
+      done
     ) > "$scan_tmp" 2>/dev/null &
     scan_pid=$!
   fi
@@ -3001,11 +2984,15 @@ pick_app() {
   if [ -n "$scan_tmp" ]; then
     wait "$scan_pid" 2>/dev/null
     OD_IDS=(); OD_SIZE=(); OD_HINT=(); OD_TIDS=(); OD_TSIZE=(); OD_THINT=()
-    local tier idv szv hv
-    while IFS=$'\t' read -r tier idv szv hv; do
+    ST_LABEL=(); ST_HINT=(); ST_PATH=(); ST_OWNER=()
+    local tier idv szv hv extra
+    while IFS=$'\t' read -r tier idv szv hv extra; do
       case "$tier" in
         M) OD_IDS+=("$idv");  OD_SIZE+=("$szv");  OD_HINT+=("$hv") ;;
         T) OD_TIDS+=("$idv"); OD_TSIZE+=("$szv"); OD_THINT+=("$hv") ;;
+        # S rows carry a path and an owner instead of a size: the size of a
+        # startup item is never the reason you'd remove one.
+        S) ST_LABEL+=("$idv"); ST_HINT+=("$szv"); ST_PATH+=("$hv"); ST_OWNER+=("$extra") ;;
       esac
     done < "$scan_tmp"
     rm -f "$scan_tmp"
@@ -3014,6 +3001,7 @@ pick_app() {
   else
     collect_claims
     orphan_discover
+    startup_discover
   fi
   # ── every app's FULL footprint, before you choose ─────────────────────────
   # A list of bare names can't answer the question people actually ask here.
@@ -3048,18 +3036,24 @@ pick_app() {
   # ── now the whole menu, in one breath: apps, then what apps left behind ──
   printf '%s (%d)\n' "$(t un_pick_header)" "${#apps[@]}"   # show the full count → no hidden "next page"
   n=0
+  ROW_KIND=(); ROW_REF=()
   for i in "${!apps[@]}"; do
-    n=$((n + 1))
+    n=$((n + 1)); ROW_KIND+=("app"); ROW_REF+=("${apps[$i]}")
     printf '   %3d) %-44s %8s\n' "$n" "$(printf '%s' "${_names[$i]}" | vis)" "$(od_human_kb "${_sizes[$i]}")"
   done
   # 🧟 rows are numbered continuously with the apps; picking one runs the same
   # footprint→preview→typed-confirm→Trash→receipt flow, keyed by the bundle id.
+  #
+  # ROW_KIND/ROW_REF are filled AS the rows print, so "which row is which" is a
+  # fact recorded once at the only place that knows it. It used to be index
+  # arithmetic done again at selection time, with the tier boundaries hardcoded
+  # twice — fine for two tiers, and the reason a third was awkward to add.
   odn="${#OD_IDS[@]}"
   if [ "$odn" -gt 0 ]; then
     printf '\n'                          # a blank line separates groups
     m="$(t un_orphan_header)"; echo "${m//\{n\}/$odn}"
     for i in "${!OD_IDS[@]}"; do
-      n=$((n + 1))
+      n=$((n + 1)); ROW_KIND+=("orphan"); ROW_REF+=("${OD_IDS[$i]}")
       hint="${OD_HINT[$i]}"; [ -n "$hint" ] && hint="  ($hint?)"
       printf '   %3d) %-44s %8s%s\n' "$n" "${OD_IDS[$i]}" "${OD_SIZE[$i]}" "$hint"
     done
@@ -3070,9 +3064,22 @@ pick_app() {
     printf '\n'
     m="$(t un_orphan_tail)"; echo "${m//\{n\}/${#OD_TIDS[@]}}"
     for i in "${!OD_TIDS[@]}"; do
-      n=$((n + 1))
+      n=$((n + 1)); ROW_KIND+=("orphan"); ROW_REF+=("${OD_TIDS[$i]}")
       hint="${OD_THINT[$i]}"; [ -n "$hint" ] && hint="  ($hint?)"
       printf '   %3d) %-44s %8s%s\n' "$n" "${OD_TIDS[$i]}" "${OD_TSIZE[$i]}" "$hint"
+    done
+  fi
+  # Startup items last, and NOT ranked among the rows above: they weigh nothing
+  # and run at every boot, so a size-sorted list would bury the only thing that
+  # matters about them. The size column says `—` for the same reason the local
+  # snapshots row does — a number there would be true and misleading.
+  if [ "${#ST_PATH[@]}" -gt 0 ]; then
+    printf '\n'
+    m="$(t un_startup_header)"; m="${m//\{n\}/${#ST_PATH[@]}}"
+    echo "${m//\{tot\}/$(( ${#ST_PATH[@]} + LF_KEPT ))}"
+    for i in "${!ST_PATH[@]}"; do
+      n=$((n + 1)); ROW_KIND+=("startup"); ROW_REF+=("${ST_PATH[$i]}")
+      printf '   %3d) %-44s %s  (%s)\n' "$n" "${ST_LABEL[$i]}" "       —" "${ST_HINT[$i]}"
     done
   fi
   printf '\n'
@@ -3085,26 +3092,28 @@ pick_app() {
   if ! pick_parse "$choice" "${#apps[@]}" "$n"; then
     t un_pick_invalid >&2; return 2                 # already messaged → caller must not re-print
   fi
-  if [ "${#PICK_ROWS[@]}" -eq 1 ]; then
-    choice="${PICK_ROWS[0]}"
-    if [ "$choice" -le "${#apps[@]}" ]; then
-      APP_TARGET="${apps[$((choice - 1))]}"
-    else
-      APP_TARGET="$(orphan_row_id "$choice" "${#apps[@]}")"
-    fi
-  else
-    # Mixed multi-select: batch SELECTION, serial CONSENT. App rows queue up
-    # for the normal one-at-a-time flow (each still confirms by typed name);
-    # 🧟 rows go to the batch flow with its count-typed consent.
-    local k
-    for k in "${PICK_ROWS[@]}"; do
-      if [ "$k" -le "${#apps[@]}" ]; then
-        PICK_APPS+=("${apps[$((k - 1))]}")
-      else
-        PICK_ORPHANS+=("$(orphan_row_id "$k" "${#apps[@]}")")
-      fi
-    done
+  # One row → one kind, read back from the table the render built. A single
+  # picked APP still takes the direct path (APP_TARGET) so the one-app flow is
+  # untouched; everything else queues.
+  local k kind ref
+  if [ "${#PICK_ROWS[@]}" -eq 1 ] && [ "${ROW_KIND[$((PICK_ROWS[0] - 1))]}" = "app" ]; then
+    APP_TARGET="${ROW_REF[$((PICK_ROWS[0] - 1))]}"
+    return 0
   fi
+  # Mixed multi-select: batch SELECTION, serial CONSENT. App rows queue up for
+  # the normal one-at-a-time flow (each still confirms by typed name); 🧟 rows
+  # go to the batch flow with its count-typed consent; startup items are plists
+  # pointing at nothing, so they ride the same batch consent.
+  for k in "${PICK_ROWS[@]}"; do
+    kind="${ROW_KIND[$((k - 1))]}"; ref="${ROW_REF[$((k - 1))]}"
+    case "$kind" in
+      app)     PICK_APPS+=("$ref") ;;
+      orphan)  PICK_ORPHANS+=("$ref") ;;
+      startup) PICK_STARTUP+=("$ref") ;;
+    esac
+  done
+  # A single non-app pick has nothing else queued — let the caller see it as the
+  # one-item batch it is rather than as a bare APP_TARGET.
 }
 
 # Move one path into a specific account's Trash (recoverable). $1=path $2=ownerHome
@@ -3460,6 +3469,69 @@ do_uninstall_orphans() {
   printf '\n'
   m="$(t un_orphans_done)"; m="${m//\{n\}/$MV_MOVED}"
   report_moves "${m//\{ids\}/$nids}"
+  return 0
+}
+
+# do_uninstall_startup <plist path…>
+#
+# The same shape as do_uninstall_orphans, because it is the same promise:
+# preview → typed-count consent → Trash → receipt → `restore` puts it back. The
+# receipt lands in the same store the other two verbs write to, which is why
+# `restore` already understood these before they had a picker row.
+#
+# The owner is derived from the path rather than carried alongside it: a plist
+# under /Users/<u>/ belongs to that account's Trash, everything else to the
+# invoker's. One fact, read where it is written.
+do_uninstall_startup() {
+  local paths=("$@") pth owner m i
+  local n="${#paths[@]}"     # separate `local`: the array isn't in scope yet in the first
+  ITEM_PATH=(); ITEM_OWNER=()
+  for pth in "${paths[@]}"; do
+    [ -e "$pth" ] || continue
+    case "$pth" in
+      /Users/*) owner="/Users/$(printf '%s' "${pth#/Users/}" | cut -d/ -f1)" ;;
+      *)        owner="$REAL_HOME" ;;
+    esac
+    ITEM_PATH+=("$pth"); ITEM_OWNER+=("$owner")
+  done
+  m="$(t un_startup_batch)"; echo "${m//\{n\}/$n}"
+  if [ "${#ITEM_PATH[@]}" -eq 0 ]; then
+    m="$(t un_empty)"; echo "   ${m//\{app\}/startup}"
+    return 0
+  fi
+  for i in "${!ITEM_PATH[@]}"; do
+    printf '   ·   %s  %s\n' "       —" "$(printf '%s' "${ITEM_PATH[$i]}" | vis)"
+  done
+
+  if [ "$DRY" -eq 1 ]; then printf '\n'; t un_dry_note; return 0; fi
+
+  printf '\n'
+  m="$(t un_startup_confirm)"; printf '%s' "${m//\{n\}/$n}"
+  local reply=""; read -r reply || true
+  if [ "$reply" != "$n" ]; then t un_cancelled; return 0; fi
+
+# shellcheck disable=SC2034  # MV_* are read/written by trash_one/report_moves via dynamic scope
+  local rdir rfile stamp MV_TRIED=0 MV_MOVED=0 MV_STUCK_CONT=0
+  rdir="$REAL_HOME/.sheersweep/uninstalls"
+  mkdir -p "$rdir" 2>/dev/null
+  stamp="$(date +%Y%m%d-%H%M%S)"
+  rfile="$rdir/$stamp-startup.tsv"
+  {
+    echo "# sheersweep uninstall receipt"
+    echo "# app=startup items ($n)"
+    echo "# bid=startup"
+    echo "# date=$stamp"
+    echo "# format=nul-pairs"
+    printf '\0'
+  } > "$rfile" 2>/dev/null
+  for i in "${!ITEM_PATH[@]}"; do
+    trash_one "${ITEM_PATH[$i]}" "${ITEM_OWNER[$i]}" "$rfile"
+  done
+  chown -R "$(stat -f %u "$REAL_HOME" 2>/dev/null):$(stat -f %g "$REAL_HOME" 2>/dev/null)" "$REAL_HOME/.sheersweep" 2>/dev/null
+  [ "$MV_MOVED" -eq 0 ] && rm -f "$rfile" 2>/dev/null
+
+  printf '\n'
+  m="$(t un_startup_done)"; report_moves "${m//\{n\}/$MV_MOVED}"
   return 0
 }
 
@@ -3866,134 +3938,6 @@ do_restore() {
 }
 
 # ============================================================================
-# leftovers — find orphaned startup/background items (LaunchAgents/Daemons) from
-# apps that are GONE, and (on confirmation) move them to the Trash. The honest
-# part is the classification: dead vs. likely-orphan vs. LIVE-keep — so a working
-# updater (e.g. one a still-installed app shares) is never mistaken for junk.
-# ============================================================================
-# Classify every *.plist in one launchd dir into the LF_* global arrays.
-# $1 = dir, $2 = owner-home (whose Trash a removed plist would go to).
-lf_scan() {
-  local dir="$1" owner="$2" p prog label tier info
-  [ -d "$dir" ] || return 0
-  for p in "$dir"/*.plist; do
-    [ -e "$p" ] || continue
-    label="$(/usr/libexec/PlistBuddy -c 'Print :Label' "$p" 2>/dev/null)"
-    [ -z "$label" ] && label="$(basename "$p" .plist)"
-    case "$label" in com.apple.*) LF_KEPT=$((LF_KEPT + 1)); continue ;; esac  # never touch Apple's own jobs
-    prog="$(/usr/libexec/PlistBuddy -c 'Print :Program' "$p" 2>/dev/null)"
-    [ -z "$prog" ] && prog="$(/usr/libexec/PlistBuddy -c 'Print :ProgramArguments:0' "$p" 2>/dev/null)"
-    tier="live"; info=""
-    case "$prog" in
-      /bin/sh|/bin/bash|/usr/bin/env|/usr/bin/python|/usr/bin/python3|/usr/bin/perl|/usr/bin/osascript|/usr/bin/ruby|"")
-        # interpreter (or none): judge by the app paths it references instead.
-        local refs ref anyref=0 allmissing=1
-        refs="$(plutil -p "$p" 2>/dev/null | grep -oE '/Applications/[^"]+\.app' | sort -u)"
-        if [ -n "$refs" ]; then
-          while IFS= read -r ref; do
-            [ -z "$ref" ] && continue
-            anyref=1
-            [ -e "$ref" ] && allmissing=0
-          done <<REFS
-$refs
-REFS
-          if [ "$anyref" -eq 1 ] && [ "$allmissing" -eq 1 ]; then
-            tier="review"; info="$(printf '%s' "$refs" | head -1)"
-          fi
-        fi
-        ;;
-      /*)
-        # explicit binary path → dead if that binary is gone.
-        [ -e "$prog" ] || { tier="dead"; info="$prog"; }
-        ;;
-    esac
-    case "$tier" in
-      dead)   LF_DEAD_PATH+=("$p");   LF_DEAD_OWNER+=("$owner");   LF_DEAD_INFO+=("$info") ;;
-      review) LF_REVIEW_PATH+=("$p"); LF_REVIEW_OWNER+=("$owner"); LF_REVIEW_INFO+=("$info") ;;
-      *)      LF_KEPT=$((LF_KEPT + 1)) ;;
-    esac
-  done
-}
-
-do_leftovers() {
-  LF_DEAD_PATH=(); LF_DEAD_OWNER=(); LF_DEAD_INFO=()
-  LF_REVIEW_PATH=(); LF_REVIEW_OWNER=(); LF_REVIEW_INFO=()
-  LF_KEPT=0
-  local home i
-
-  for home in /Users/*; do
-    [ -d "$home/Library" ] || continue
-    case "$(basename "$home")" in Shared|Guest) continue ;; esac
-    lf_scan "$home/Library/LaunchAgents" "$home"
-  done
-  lf_scan "/Library/LaunchAgents"  "$REAL_HOME"
-  lf_scan "/Library/LaunchDaemons" "$REAL_HOME"
-
-  local ndead="${#LF_DEAD_PATH[@]}" nrev="${#LF_REVIEW_PATH[@]}"
-  t lf_header
-  if [ "$ndead" -eq 0 ] && [ "$nrev" -eq 0 ]; then
-    echo "   $(t lf_clean)"
-    m="$(t lf_kept)"; echo "   ${m//\{n\}/$LF_KEPT}"
-    return 0
-  fi
-  if [ "$ndead" -gt 0 ]; then
-    printf '\n'; t lf_dead_header
-    for i in "${!LF_DEAD_PATH[@]}"; do
-      printf '   %s\n        ↳ %s\n' "$(printf '%s' "${LF_DEAD_PATH[$i]}" | vis)" "$(printf '%s' "${LF_DEAD_INFO[$i]}" | vis)"
-    done
-  fi
-  if [ "$nrev" -gt 0 ]; then
-    printf '\n'; t lf_review_header
-    for i in "${!LF_REVIEW_PATH[@]}"; do
-      printf '   %s\n        ↳ %s\n' "$(printf '%s' "${LF_REVIEW_PATH[$i]}" | vis)" "$(printf '%s' "${LF_REVIEW_INFO[$i]}" | vis)"
-    done
-  fi
-  printf '\n'
-  m="$(t lf_kept)"; echo "   ${m//\{n\}/$LF_KEPT}"
-
-  if [ "$DRY" -eq 1 ]; then t lf_dry_note; return 0; fi
-
-  printf '%s' "$(t lf_confirm)"
-  local reply=""; read -r reply || true
-  local include_review=0
-  case "$reply" in
-    all|ALL)      include_review=1 ;;
-    y|Y|yes|YES)  include_review=0 ;;
-    *)            t un_cancelled; return 0 ;;
-  esac
-
-# shellcheck disable=SC2034  # MV_* are read/written by trash_one/report_moves via dynamic scope
-  local rdir rfile stamp MV_TRIED=0 MV_MOVED=0 MV_STUCK_CONT=0
-  rdir="$REAL_HOME/.sheersweep/uninstalls"   # same store → `restore` undoes these too
-  mkdir -p "$rdir" 2>/dev/null
-  stamp="$(date +%Y%m%d-%H%M%S)"
-  rfile="$rdir/$stamp-leftovers.tsv"
-  {
-    echo "# sheersweep leftovers receipt"
-    echo "# app=leftovers"
-    echo "# bid=leftovers"
-    echo "# date=$stamp"
-    echo "# format=nul-pairs"
-    printf '\0'
-  } > "$rfile" 2>/dev/null
-
-  if [ "$ndead" -gt 0 ]; then
-    for i in "${!LF_DEAD_PATH[@]}"; do
-      trash_one "${LF_DEAD_PATH[$i]}" "${LF_DEAD_OWNER[$i]}" "$rfile"
-    done
-  fi
-  if [ "$include_review" -eq 1 ] && [ "$nrev" -gt 0 ]; then
-    for i in "${!LF_REVIEW_PATH[@]}"; do
-      trash_one "${LF_REVIEW_PATH[$i]}" "${LF_REVIEW_OWNER[$i]}" "$rfile"
-    done
-  fi
-  chown -R "$(stat -f %u "$REAL_HOME" 2>/dev/null):$(stat -f %g "$REAL_HOME" 2>/dev/null)" "$REAL_HOME/.sheersweep" 2>/dev/null
-  [ "$MV_MOVED" -eq 0 ] && rm -f "$rfile" 2>/dev/null
-
-  printf '\n'
-  m="$(t lf_done)"; report_moves "${m//\{n\}/$MV_MOVED}"
-  return 0
-}
 
 # ============================================================================
 # reclaim — build output inside project directories (docs/reclaim-spec.md).
@@ -4712,7 +4656,7 @@ EOF
   [ -n "$DG_DIR" ] && rm -rf "$DG_DIR"; DG_DIR=""
 }
 
-# --- dispatch: uninstall / tools / restore / leftovers are verbs; default → sweep
+# --- dispatch: uninstall / tools / restore / reclaim are verbs; default → sweep
 # When sourced as a library for tests (SHEERSWEEP_LIB=1) we stop here: the pure
 # functions above are now defined, but nothing is executed.
 # shellcheck disable=SC2317  # the exit is reached only if run (not sourced) under the lib flag
@@ -4725,7 +4669,7 @@ if [ "$MODE" = "uninstall" ]; then
     # apps) — exit with it, don't also print "Cancelled". Only a clean q/blank
     # cancel (return 0, empty target) gets the un_cancelled line.
     [ "$pk" -ne 0 ] && exit "$pk"
-    if [ "${#PICK_APPS[@]}" -gt 0 ] || [ "${#PICK_ORPHANS[@]}" -gt 0 ]; then
+    if [ "${#PICK_APPS[@]}" -gt 0 ] || [ "${#PICK_ORPHANS[@]}" -gt 0 ] || [ "${#PICK_STARTUP[@]}" -gt 0 ]; then
       # multi-select → each app runs the full one-at-a-time flow (typed-name
       # consent included; a wrong name skips THAT app, the rest still come),
       # then whatever 🧟 rows were picked run as one batch at the end.
@@ -4735,6 +4679,9 @@ if [ "$MODE" = "uninstall" ]; then
       fi
       if [ "${#PICK_ORPHANS[@]}" -gt 0 ]; then
         do_uninstall_orphans "${PICK_ORPHANS[@]}" || pk=$?
+      fi
+      if [ "${#PICK_STARTUP[@]}" -gt 0 ]; then
+        do_uninstall_startup "${PICK_STARTUP[@]}" || pk=$?
       fi
       exit "$pk"
     fi
@@ -4749,10 +4696,6 @@ if [ "$MODE" = "tools" ]; then
 fi
 if [ "$MODE" = "restore" ]; then
   do_restore
-  exit $?
-fi
-if [ "$MODE" = "leftovers" ]; then
-  do_leftovers
   exit $?
 fi
 if [ "$MODE" = "reclaim" ]; then
