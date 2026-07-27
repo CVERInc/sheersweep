@@ -32,7 +32,7 @@
 #   each with the native way to remove it. Changes nothing; never needs sudo.
 set -u
 
-VERSION="0.15.1"
+VERSION="0.15.2"
 
 # ============================================================================
 # i18n — en-US · ja-JP · zh-TW · zh-Hans · ko-KR · es-ES · de-DE · fr-FR · pt-BR.
@@ -2860,6 +2860,7 @@ startup_discover() {
 # set APP_TARGET (single) or PICK_ORPHANS (multi). Apple/system apps are
 # filtered out. Returns with both unset on cancel / invalid input.
 pick_app() {
+  LF_KEPT=0            # set by whichever scan path runs; never left unbound
   local apps=() appp base bid n choice m i hint odn scan_tmp="" scan_pid=""
   # Kick the orphan scan off FIRST, in the background — it takes seconds, and
   # the person is about to spend those same seconds reading the app list. By
@@ -2892,6 +2893,10 @@ pick_app() {
         printf 'S\t%s\t%s\t%s\t%s\n' \
           "${ST_LABEL[$i]}" "${ST_HINT[$i]}" "${ST_PATH[$i]}" "${ST_OWNER[$i]}"
       done
+      # The header says "N of TOTAL", and TOTAL counts the live items we left
+      # alone — a number that only exists in here. It crosses as a row like
+      # everything else; a variable would not survive the subshell.
+      printf 'K\t%s\n' "$LF_KEPT"
     ) > "$scan_tmp" 2>/dev/null &
     scan_pid=$!
   fi
@@ -2927,6 +2932,7 @@ pick_app() {
     wait "$scan_pid" 2>/dev/null
     OD_IDS=(); OD_SIZE=(); OD_TIDS=(); OD_TSIZE=()
     ST_LABEL=(); ST_HINT=(); ST_PATH=(); ST_OWNER=()
+    LF_KEPT=0
     local tier idv szv hv extra
     while IFS=$'\t' read -r tier idv szv hv extra; do
       case "$tier" in
@@ -2935,6 +2941,7 @@ pick_app() {
         # S rows carry a path and an owner instead of a size: the size of a
         # startup item is never the reason you'd remove one.
         S) ST_LABEL+=("$idv"); ST_HINT+=("$szv"); ST_PATH+=("$hv"); ST_OWNER+=("$extra") ;;
+        K) LF_KEPT="$idv" ;;
       esac
     done < "$scan_tmp"
     rm -f "$scan_tmp"

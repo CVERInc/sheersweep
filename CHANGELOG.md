@@ -4,6 +4,38 @@ All notable changes to sheersweep are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.15.2]
+
+### Fixed — the picker died on `set -u` right after printing the whole menu
+
+```
+▸ Already removed — leftover data found (7)
+    22)     4 KB  com.operasoftware.Opera
+sheersweep: line 3027: LF_KEPT: unbound variable
+```
+
+`startup_discover` runs inside the picker's **background subshell**. Its rows
+cross back to the parent through a temp file — but `LF_KEPT`, the count of live
+startup items the header needs for its "N of TOTAL", was a variable, and a
+variable does not survive a subshell. Anyone with at least one dead startup item
+hit this; 0.15.0 and 0.15.1 are affected.
+
+The count travels as a row now, the way the rows already did.
+
+### Added — `scripts/picker-smoke.sh`, because the suite structurally cannot
+
+The check that missed this called `startup_discover` **directly, in the same
+shell** — a path that never runs in production. The functional suite couldn't
+have caught it either: it is hermetic by design, and the picker scans
+`/Applications` and every `/Users/*` home.
+
+So the boundary gets its own check, run before a release, that exercises the
+real path and asserts what the failure looked like: a non-zero exit, the words
+"unbound variable", and any `{placeholder}` still sitting unfilled in the output
+— that last one being the exact shape of a fact that failed to cross.
+
+Verified the only way that means anything: with the fix reverted, it fails.
+
 ## [0.15.1]
 
 *A pass against the project's own definition-of-done, looking for what was left
