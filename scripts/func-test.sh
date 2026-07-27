@@ -417,6 +417,38 @@ else
 fi
 teardown
 
+# (L4) one file, one row, one consent — startup rows must not repeat a plist an
+# orphan row already owns. An orphan's footprint includes
+# `LaunchAgents/<id>*.plist`, so a dead agent belonging to a surfaced id was
+# listed in BOTH sections: picked twice, moved by the first pass, and the second
+# then reported "found nothing" over an empty selection. Real-machine find.
+setup
+OD_IDS=("com.foo.Updater"); OD_TIDS=()
+LF_DEAD_PATH=("$SBX/com.foo.Updater.wake.plist" "$SBX/com.bar.Solo.plist")
+LF_DEAD_OWNER=("$SBX" "$SBX"); LF_DEAD_INFO=("/Applications/Foo.app" "/Applications/Bar.app")
+LF_REVIEW_PATH=(); LF_REVIEW_OWNER=(); LF_REVIEW_INFO=()
+: > "${LF_DEAD_PATH[0]}"; : > "${LF_DEAD_PATH[1]}"
+# re-run only the de-dup half of startup_discover (lf_scan needs a real machine)
+st_claimed_by_orphan() {
+  local base id
+  base="$(basename "$1" .plist)"
+  for id in ${OD_IDS[@]+"${OD_IDS[@]}"} ${OD_TIDS[@]+"${OD_TIDS[@]}"}; do
+    case "$base" in "$id"|"$id".*) return 0 ;; esac
+  done
+  return 1
+}
+kept=""
+for i in "${!LF_DEAD_PATH[@]}"; do
+  st_claimed_by_orphan "${LF_DEAD_PATH[$i]}" && continue
+  kept="$kept$(basename "${LF_DEAD_PATH[$i]}") "
+done
+if [ "$kept" = "com.bar.Solo.plist " ]; then
+  pass "startup rows skip a plist an orphan id already owns, keep an unclaimed one"
+else
+  fail "startup de-dup wrong (kept: $kept)"
+fi
+teardown
+
 # (C1) the sweep's clean(): a real run empties a dir's CONTENTS but KEEPS the dir;
 # --dry-run reports and deletes nothing. This is the only delete path in the sweep.
 setup

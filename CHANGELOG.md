@@ -4,6 +4,34 @@ All notable changes to sheersweep are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.15.3]
+
+### Fixed — one file was listed in two sections, and consented to twice
+
+A real run picked `16-24` and got:
+
+```
+▸ Startup items to remove (2) — to the Trash; restore puts them back
+   Found nothing belonging to startup.
+```
+
+Both plists had already gone to the Trash in the orphan batch a few lines
+earlier. An orphan's footprint includes `LaunchAgents/<id>*.plist`, and
+`com.dropbox.DropboxUpdater.wake.plist` belongs to the surfaced orphan
+`com.dropbox.DropboxUpdater` — so the same file was a row in two sections. It
+was picked twice, moved by the first pass, and the second pass then reported
+finding nothing over an empty selection.
+
+Nothing was lost — the second pass is a no-op by construction — but the count
+was inflated, the consent was asked twice for one file, and "N of 19 startup
+items" counted things another row already owned.
+
+Startup rows now skip any plist an orphan id claims. **One file, one row, one
+consent.**
+
+*Found by running it for real. The sandbox suite could not have: it does not
+have a machine with a Dropbox that used to be installed.*
+
 ## [0.15.2]
 
 ### Fixed — the picker died on `set -u` right after printing the whole menu

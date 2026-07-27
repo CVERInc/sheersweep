@@ -32,7 +32,7 @@
 #   each with the native way to remove it. Changes nothing; never needs sudo.
 set -u
 
-VERSION="0.15.2"
+VERSION="0.15.3"
 
 # ============================================================================
 # i18n — en-US · ja-JP · zh-TW · zh-Hans · ko-KR · es-ES · de-DE · fr-FR · pt-BR.
@@ -2827,7 +2827,8 @@ REFS
 # Two tiers survive, and they are the tiers the picker already speaks:
 #   dead   — the program is provably gone      -> a plain hint
 #   review — it references an app that's gone  -> a hint ending in `?`
-startup_discover() {
+startup_discover() {   # call AFTER orphan_discover — it de-dupes against its ids
+  OD_IDS=("${OD_IDS[@]:-}"); OD_TIDS=("${OD_TIDS[@]:-}")   # tolerate being called alone
   LF_DEAD_PATH=(); LF_DEAD_OWNER=(); LF_DEAD_INFO=()
   LF_REVIEW_PATH=(); LF_REVIEW_OWNER=(); LF_REVIEW_INFO=()
   LF_KEPT=0
@@ -2842,13 +2843,31 @@ startup_discover() {
   lf_scan "/Library/LaunchAgents"  "$REAL_HOME"
   lf_scan "/Library/LaunchDaemons" "$REAL_HOME"
 
+  # A plist an ORPHAN ROW already owns must not appear here as well. An orphan's
+  # footprint includes `LaunchAgents/<id>*.plist`, so a dead agent belonging to a
+  # surfaced id was being listed twice — picked twice, moved by the first pass,
+  # and then the second reported "found nothing" over an empty selection.
+  #
+  # Real-machine find, 2026-07-27: `com.dropbox.DropboxUpdater.wake.plist` is
+  # part of orphan `com.dropbox.DropboxUpdater`. One file, one row, one consent.
+  st_claimed_by_orphan() {   # $1 = plist path
+    local base id
+    base="$(basename "$1" .plist)"
+    for id in ${OD_IDS[@]+"${OD_IDS[@]}"} ${OD_TIDS[@]+"${OD_TIDS[@]}"}; do
+      case "$base" in "$id"|"$id".*) return 0 ;; esac
+    done
+    return 1
+  }
+
   for i in "${!LF_DEAD_PATH[@]}"; do
+    st_claimed_by_orphan "${LF_DEAD_PATH[$i]}" && continue
     label="$(basename "${LF_DEAD_PATH[$i]}" .plist)"
     gone="$(basename "${LF_DEAD_INFO[$i]}")"; gone="${gone%.app}"
     ST_LABEL+=("$label"); ST_PATH+=("${LF_DEAD_PATH[$i]}"); ST_OWNER+=("${LF_DEAD_OWNER[$i]}")
     ST_HINT+=("$(t un_startup_gone) ${gone:-?}")
   done
   for i in "${!LF_REVIEW_PATH[@]}"; do
+    st_claimed_by_orphan "${LF_REVIEW_PATH[$i]}" && continue
     label="$(basename "${LF_REVIEW_PATH[$i]}" .plist)"
     gone="$(basename "${LF_REVIEW_INFO[$i]}")"; gone="${gone%.app}"
     ST_LABEL+=("$label"); ST_PATH+=("${LF_REVIEW_PATH[$i]}"); ST_OWNER+=("${LF_REVIEW_OWNER[$i]}")
