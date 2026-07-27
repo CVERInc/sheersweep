@@ -32,7 +32,7 @@
 #   each with the native way to remove it. Changes nothing; never needs sudo.
 set -u
 
-VERSION="0.15.6"
+VERSION="0.15.7"
 
 # ============================================================================
 # i18n — en-US · ja-JP · zh-TW · zh-Hans · ko-KR · es-ES · de-DE · fr-FR · pt-BR.
@@ -89,8 +89,8 @@ t() {
     run_note_real)   # one notice for the whole run — narration, so it goes to stderr
       case "$SS_LANG" in
         ja-JP) echo "掃除して計測中 — ディスクが一杯だと少し時間がかかります" ;;
-        zh-TW) echo "正在清掃並測量——磁碟滿時需要一點時間" ;;
-        zh-Hans) echo "正在清扫并测量——磁盘满时需要一点时间" ;;
+        zh-TW) echo "正在清掃並測量，磁碟滿時需要一點時間" ;;
+        zh-Hans) echo "正在清扫并测量，磁盘满时需要一点时间" ;;
         ko-KR) echo "청소하고 측정하는 중 — 디스크가 가득 차면 잠시 걸립니다" ;;
         es-ES) echo "barriendo y midiendo — un momento en un disco lleno" ;;
         de-DE) echo "räume auf und messe — auf einer vollen Platte dauert es einen Moment" ;;
@@ -101,8 +101,8 @@ t() {
     run_note_dry)   # the promise in plain words, not the jargon "DRY-RUN"
       case "$SS_LANG" in
         ja-JP) echo "何も削除しません — ディスクが一杯だと少し時間がかかります" ;;
-        zh-TW) echo "不會刪除任何東西——磁碟滿時需要一點時間" ;;
-        zh-Hans) echo "不会删除任何内容——磁盘满时需要一点时间" ;;
+        zh-TW) echo "不會刪除任何東西，磁碟滿時需要一點時間" ;;
+        zh-Hans) echo "不会删除任何内容，磁盘满时需要一点时间" ;;
         ko-KR) echo "아무것도 삭제하지 않습니다 — 디스크가 가득 차면 잠시 걸립니다" ;;
         es-ES) echo "no se eliminará nada — un momento en un disco lleno" ;;
         de-DE) echo "es wird nichts gelöscht — auf einer vollen Platte dauert es einen Moment" ;;
@@ -137,8 +137,8 @@ t() {
     sweep_result_dry)   # a preview freed nothing — no invented delta
       case "$SS_LANG" in
         ja-JP) echo "プレビュー — 何も削除していません。上に挙げた項目が対象です。" ;;
-        zh-TW) echo "預覽——什麼都沒刪。上面列出的就是會清的。" ;;
-        zh-Hans) echo "预览——什么都没删。上面列出的就是会清的。" ;;
+        zh-TW) echo "預覽：什麼都沒刪。上面列出的就是會清的。" ;;
+        zh-Hans) echo "预览：什么都没删。上面列出的就是会清的。" ;;
         ko-KR) echo "미리보기 — 아무것도 지우지 않았습니다. 위에 나열된 항목이 대상입니다." ;;
         es-ES) echo "vista previa — no se borró nada. Lo listado arriba es lo que se limpiaría." ;;
         de-DE) echo "Vorschau — nichts gelöscht. Die Zeilen oben zeigen, was bereinigt würde." ;;
@@ -235,8 +235,8 @@ t() {
     snap_notool)
       case "$SS_LANG" in
         ja-JP) echo "（tmutil が見つかりません — スナップショットの解放をスキップ）" ;;
-        zh-TW) echo "（找不到 tmutil——略過快照釋放）" ;;
-        zh-Hans) echo "（找不到 tmutil——跳过快照释放）" ;;
+        zh-TW) echo "（找不到 tmutil，略過快照釋放）" ;;
+        zh-Hans) echo "（找不到 tmutil，跳过快照释放）" ;;
         ko-KR) echo "(tmutil을 찾을 수 없음 — 스냅샷 해제 건너뜀)" ;;
         es-ES) echo "(tmutil no encontrado — se omite la liberación de instantáneas)" ;;
         de-DE) echo "(tmutil nicht gefunden — Schnappschuss-Freigabe übersprungen)" ;;
@@ -357,8 +357,8 @@ t() {
     un_orphan_scan)
       case "$SS_LANG" in
         ja-JP) echo "削除済みアプリの置き土産を探しています — 数秒後、メニューは完全な形で一度に表示されます…" ;;
-        zh-TW) echo "正在掃描已移除 App 留下的資料——幾秒後整份清單一次完整登場…" ;;
-        zh-Hans) echo "正在扫描已移除 App 留下的数据——几秒后整份列表一次完整登场…" ;;
+        zh-TW) echo "正在掃描已移除 App 留下的資料，幾秒後整份清單一次完整登場…" ;;
+        zh-Hans) echo "正在扫描已移除 App 留下的数据，几秒后整份列表一次完整登场…" ;;
         ko-KR) echo "제거된 앱이 남긴 데이터를 찾는 중 — 몇 초 뒤 메뉴가 한 번에 온전히 나타납니다…" ;;
         es-ES) echo "buscando datos dejados por apps eliminadas — en unos segundos el menú aparece completo, de una vez…" ;;
         de-DE) echo "Suche nach Daten entfernter Apps — in ein paar Sekunden erscheint das Menü vollständig, auf einmal…" ;;
@@ -369,8 +369,8 @@ t() {
     un_startup_batch)   # {n}
       case "$SS_LANG" in
         ja-JP) echo "▸ 起動項目を削除します（{n} 件）— ゴミ箱へ、あとで restore で戻せます" ;;
-        zh-TW) echo "▸ 要移除的開機項目（{n} 個）——搬到垃圾桶，restore 可以還原" ;;
-        zh-Hans) echo "▸ 要移除的开机项目（{n} 个）——搬到垃圾桶，restore 可以还原" ;;
+        zh-TW) echo "▸ 要移除的開機項目（{n} 個）：搬到垃圾桶，restore 可以還原" ;;
+        zh-Hans) echo "▸ 要移除的开机项目（{n} 个）：搬到垃圾桶，restore 可以还原" ;;
         ko-KR) echo "▸ 제거할 시작 항목({n}개) — 휴지통으로, restore로 되돌릴 수 있습니다" ;;
         es-ES) echo "▸ Elementos de arranque a eliminar ({n}) — a la Papelera, restore los devuelve" ;;
         de-DE) echo "▸ Startobjekte zum Entfernen ({n}) — in den Papierkorb, restore holt sie zurück" ;;
@@ -393,8 +393,8 @@ t() {
     un_startup_header)   # {n} — startup items whose program is gone
       case "$SS_LANG" in
         ja-JP) echo "▸ [ WARN ] まだ起動しようとしています — 起動先のプログラムがありません（起動項目 {tot} 件中 {n} 件）" ;;
-        zh-TW) echo "▸ [ WARN ] 還在開機自動啟動——但要啟動的程式已經不在了（{tot} 個開機項目中的 {n} 個）" ;;
-        zh-Hans) echo "▸ [ WARN ] 还在开机自动启动——但要启动的程序已经不在了（{tot} 个开机项目中的 {n} 个）" ;;
+        zh-TW) echo "▸ [ WARN ] 還在開機自動啟動，但要啟動的程式已經不在了（{tot} 個開機項目中的 {n} 個）" ;;
+        zh-Hans) echo "▸ [ WARN ] 还在开机自动启动，但要启动的程序已经不在了（{tot} 个开机项目中的 {n} 个）" ;;
         ko-KR) echo "▸ [ WARN ] 여전히 시작되지만 실행할 프로그램이 없습니다(시작 항목 {tot}개 중 {n}개)" ;;
         es-ES) echo "▸ [ WARN ] Siguen arrancando — el programa que lanzan ya no existe ({n} de {tot} elementos de arranque)" ;;
         de-DE) echo "▸ [ WARN ] Starten weiterhin — das Programm dahinter gibt es nicht mehr ({n} von {tot} Startobjekten)" ;;
@@ -417,8 +417,8 @@ t() {
     un_orphan_header)   # {n}
       case "$SS_LANG" in
         ja-JP) echo "▸ 削除済み — 残ったデータが見つかりました（{n} 件）" ;;
-        zh-TW) echo "▸ 已移除——但留下了資料（{n} 個）" ;;
-        zh-Hans) echo "▸ 已移除——但留下了数据（{n} 个）" ;;
+        zh-TW) echo "▸ 已移除，但留下了資料（{n} 個）" ;;
+        zh-Hans) echo "▸ 已移除，但留下了数据（{n} 个）" ;;
         ko-KR) echo "▸ 이미 제거됨 — 남은 데이터 발견({n}개)" ;;
         es-ES) echo "▸ ya eliminadas — con datos abandonados ({n})" ;;
         de-DE) echo "▸ schon entfernt — zurückgelassene Daten gefunden ({n})" ;;
@@ -441,8 +441,8 @@ t() {
     un_pick_multi_hint)
       case "$SS_LANG" in
         ja-JP) echo "複数行をまとめて選べます — 例: 5 7-8 19 · all は見つかった行を全部 · アプリは1つずつ名前で確認します。" ;;
-        zh-TW) echo "可以一次選多列——例如 5 7-8 19；all 全選找到的那批；App 仍會逐個請你確認名稱。" ;;
-        zh-Hans) echo "可以一次选多行——例如 5 7-8 19；all 全选找到的那批；App 仍会逐个请你确认名称。" ;;
+        zh-TW) echo "可以一次選多列：例如 5 7-8 19；all 全選找到的那批；App 仍會逐個請你確認名稱。" ;;
+        zh-Hans) echo "可以一次选多行：例如 5 7-8 19；all 全选找到的那批；App 仍会逐个请你确认名称。" ;;
         ko-KR) echo "여러 행을 한 번에 선택할 수 있습니다 — 예: 5 7-8 19 · all은 발견된 행 전부 · 앱은 하나씩 이름으로 확인합니다." ;;
         es-ES) echo "Puedes elegir varias filas a la vez — p. ej. 5 7-8 19 · all toma todas las filas encontradas · cada app se confirma una a una por su nombre." ;;
         de-DE) echo "Mehrere Zeilen auf einmal wählen — z. B. 5 7-8 19 · all nimmt alle gefundenen Zeilen · jede App wird einzeln per Name bestätigt." ;;
@@ -453,8 +453,8 @@ t() {
     un_orphans_header)   # {n}
       case "$SS_LANG" in
         ja-JP) echo "▸ 削除済みアプリ {n} 件の置き土産 — 以下すべてゴミ箱へ移動します（復元可能）:" ;;
-        zh-TW) echo "▸ {n} 個已移除 App 的殘留資料——以下全部會移到垃圾桶（可救回）：" ;;
-        zh-Hans) echo "▸ {n} 个已移除 App 的残留数据——以下全部会移到废纸篓（可恢复）：" ;;
+        zh-TW) echo "▸ {n} 個已移除 App 的殘留資料，以下全部會移到垃圾桶（可救回）：" ;;
+        zh-Hans) echo "▸ {n} 个已移除 App 的残留数据，以下全部会移到废纸篓（可恢复）：" ;;
         ko-KR) echo "▸ 제거된 앱 {n}개가 남긴 데이터 — 아래 전부 휴지통으로 이동합니다(복원 가능):" ;;
         es-ES) echo "▸ datos dejados por {n} apps eliminadas — todo lo de abajo se mueve a la Papelera (recuperable):" ;;
         de-DE) echo "▸ Daten von {n} entfernten Apps — alles Folgende wandert in den Papierkorb (wiederherstellbar):" ;;
@@ -477,8 +477,8 @@ t() {
     un_orphan)   # {bid}
       case "$SS_LANG" in
         ja-JP) echo "{bid} を名乗るインストール済みアプリはありません — 削除済みアプリの置き土産として扱います。この id を名前に持つファイルだけを照合します。" ;;
-        zh-TW) echo "沒有任何已安裝的 App 認領 {bid}——視為已移除 App 留下的資料。只比對以這個 id 命名的檔案。" ;;
-        zh-Hans) echo "没有任何已安装的 App 认领 {bid}——视为已移除 App 留下的数据。只匹配以这个 id 命名的文件。" ;;
+        zh-TW) echo "沒有任何已安裝的 App 認領 {bid}，視為已移除 App 留下的資料。只比對以這個 id 命名的檔案。" ;;
+        zh-Hans) echo "没有任何已安装的 App 认领 {bid}，视为已移除 App 留下的数据。只匹配以这个 id 命名的文件。" ;;
         ko-KR) echo "{bid}를 소유한 설치된 앱이 없습니다 — 제거된 앱이 남긴 데이터로 간주합니다. 이 id로 이름 지어진 파일만 대조합니다." ;;
         es-ES) echo "ninguna app instalada reclama {bid} — se trata como datos dejados por una app eliminada. Solo se comparan archivos nombrados con este id exacto." ;;
         de-DE) echo "keine installierte App beansprucht {bid} — behandelt als Daten einer entfernten App. Es zählen nur Dateien, die exakt nach dieser ID benannt sind." ;;
@@ -489,8 +489,8 @@ t() {
     un_orphan_installed)   # {bid}
       case "$SS_LANG" in
         ja-JP) echo "[ HELD ] {bid} はまだインストール中の何かのものです。そのアプリ名で uninstall してください。" ;;
-        zh-TW) echo "[ HELD ] {bid} 屬於還裝在機上的東西——請改用那個 App 的名稱來 uninstall。" ;;
-        zh-Hans) echo "[ HELD ] {bid} 属于仍安装在机上的东西——请改用那个 App 的名称来 uninstall。" ;;
+        zh-TW) echo "[ HELD ] {bid} 屬於還裝在機上的東西，請改用那個 App 的名稱來 uninstall。" ;;
+        zh-Hans) echo "[ HELD ] {bid} 属于仍安装在机上的东西，请改用那个 App 的名称来 uninstall。" ;;
         ko-KR) echo "[ HELD ] {bid}는 아직 설치된 무언가의 것입니다 — 그 앱의 이름으로 uninstall 하세요." ;;
         es-ES) echo "[ HELD ] {bid} pertenece a algo aún instalado — desinstala esa app por su nombre." ;;
         de-DE) echo "[ HELD ] {bid} gehört zu etwas noch Installiertem — deinstalliere diese App über ihren Namen." ;;
@@ -513,8 +513,8 @@ t() {
     dg_group_system)
       case "$SS_LANG" in
         ja-JP) echo "▸ システム — 触らない" ;;
-        zh-TW) echo "▸ 系統——別動" ;;
-        zh-Hans) echo "▸ 系统——别动" ;;
+        zh-TW) echo "▸ 系統：別動" ;;
+        zh-Hans) echo "▸ 系统：别动" ;;
         ko-KR) echo "▸ 시스템 — 건드리지 마세요" ;;
         es-ES) echo "▸ Sistema — no tocar" ;;
         de-DE) echo "▸ System — nicht anfassen" ;;
@@ -613,8 +613,8 @@ t() {
     rc_usage)
       case "$SS_LANG" in
         ja-JP) echo "reclaim の本実行は対話式です。ターミナルで実行するか、--dry-run でヘッドレスにプレビューしてください。" ;;
-        zh-TW) echo "reclaim 的真實執行是互動式的——請在終端機跑，或加 --dry-run 無頭預覽。" ;;
-        zh-Hans) echo "reclaim 的真实执行是交互式的——请在终端运行，或加 --dry-run 无头预览。" ;;
+        zh-TW) echo "reclaim 的真實執行是互動式的，請在終端機跑，或加 --dry-run 無頭預覽。" ;;
+        zh-Hans) echo "reclaim 的真实执行是交互式的，请在终端运行，或加 --dry-run 无头预览。" ;;
         ko-KR) echo "reclaim의 실제 실행은 대화식입니다. 터미널에서 실행하거나 --dry-run으로 미리보기 하세요." ;;
         es-ES) echo "la ejecución real de reclaim es interactiva — ejecútalo en una terminal, o previsualiza sin cabeza con --dry-run." ;;
         de-DE) echo "der echte reclaim-Lauf ist interaktiv — im Terminal ausführen oder mit --dry-run headless ansehen." ;;
@@ -625,8 +625,8 @@ t() {
     rc_banner)
       case "$SS_LANG" in
         ja-JP) echo "ビルド産物の回収 — 証明済み（git 無視＋既知パターン＋マニフェスト）、加えて識別できない巨大な gitignored フォルダ（あなたが判断）。" ;;
-        zh-TW) echo "回收 build 產物——已證的（git 忽略＋已知模式＋manifest），外加又肥又證不了的 gitignored 資料夾（你決定）。" ;;
-        zh-Hans) echo "回收 build 产物——已证的（git 忽略＋已知模式＋manifest），外加又大又证不了的 gitignored 文件夹（你决定）。" ;;
+        zh-TW) echo "回收 build 產物：已證的（git 忽略＋已知模式＋manifest），外加又肥又證不了的 gitignored 資料夾（你決定）。" ;;
+        zh-Hans) echo "回收 build 产物：已证的（git 忽略＋已知模式＋manifest），外加又大又证不了的 gitignored 文件夹（你决定）。" ;;
         ko-KR) echo "빌드 산출물 회수 — 증명된 것(git 무시+알려진 패턴+매니페스트), 그리고 식별 못 하는 거대한 gitignored 폴더(당신이 판단)." ;;
         es-ES) echo "recuperar artefactos de build — probados (git + patrón + manifiesto), más carpetas gitignored grandes que no puede identificar (tú decides)." ;;
         de-DE) echo "Build-Artefakte zurückholen — bewiesen (git + Muster + Manifest), plus große gitignored Ordner, die es nicht identifizieren kann (du entscheidest)." ;;
@@ -685,8 +685,8 @@ t() {
     rc_none)
       case "$SS_LANG" in
         ja-JP) echo "[ PASS ] 対象なし — マニフェストで証明できるビルド産物も、識別できない巨大フォルダもありません。" ;;
-        zh-TW) echo "[ PASS ] 沒有可回收的——沒有 manifest 佐證的 build 產物，也沒有又肥又證不了的資料夾。" ;;
-        zh-Hans) echo "[ PASS ] 没有可回收的——没有 manifest 佐证的 build 产物，也没有又大又证不了的文件夹。" ;;
+        zh-TW) echo "[ PASS ] 沒有可回收的：沒有 manifest 佐證的 build 產物，也沒有又肥又證不了的資料夾。" ;;
+        zh-Hans) echo "[ PASS ] 没有可回收的：没有 manifest 佐证的 build 产物，也没有又大又证不了的文件夹。" ;;
         ko-KR) echo "[ PASS ] 대상 없음 — 매니페스트로 증명되는 빌드 산출물도, 식별 못 하는 거대 폴더도 없습니다." ;;
         es-ES) echo "[ PASS ] nada elegible — ni artefactos de build probados por manifiesto, ni carpetas grandes sin identificar." ;;
         de-DE) echo "[ PASS ] nichts qualifiziert — keine manifest-belegten Build-Artefakte und keine großen, nicht identifizierbaren Ordner." ;;
@@ -709,8 +709,8 @@ t() {
     rc_dry_note)
       case "$SS_LANG" in
         ja-JP) echo "プレビュー — 何も移動していません。回収するには --dry-run なしで実行。" ;;
-        zh-TW) echo "預覽——什麼都沒動。要真的回收請拿掉 --dry-run 再執行。" ;;
-        zh-Hans) echo "预览——什么都没动。要真正回收请去掉 --dry-run 再运行。" ;;
+        zh-TW) echo "預覽：什麼都沒動。要真的回收請拿掉 --dry-run 再執行。" ;;
+        zh-Hans) echo "预览：什么都没动。要真正回收请去掉 --dry-run 再运行。" ;;
         ko-KR) echo "미리보기 — 아무것도 옮기지 않았습니다. 회수하려면 --dry-run 없이 실행하세요." ;;
         es-ES) echo "vista previa — no se movió nada. Ejecuta sin --dry-run para recuperar." ;;
         de-DE) echo "Vorschau — nichts wurde bewegt. Ohne --dry-run ausführen, um Platz zu holen." ;;
@@ -721,8 +721,8 @@ t() {
     rc_multi_hint)
       case "$SS_LANG" in
         ja-JP) echo "番号で選択 — 例: 1 3 9 · all は証明済みの全行。未識別の行は名前の入力で確認します。" ;;
-        zh-TW) echo "用號碼選——例如 1 3 9；all＝所有已證那批。未識別的那幾行要打出名字才移除。" ;;
-        zh-Hans) echo "用号码选——例如 1 3 9；all＝所有已证那批。未识别的那几行要打出名字才移除。" ;;
+        zh-TW) echo "用號碼選：例如 1 3 9；all＝所有已證那批。未識別的那幾行要打出名字才移除。" ;;
+        zh-Hans) echo "用号码选：例如 1 3 9；all＝所有已证那批。未识别的那几行要打出名字才移除。" ;;
         ko-KR) echo "번호로 선택 — 예: 1 3 9 · all은 증명된 모든 행. 미확인 행은 이름을 입력해 확인합니다." ;;
         es-ES) echo "elige por número — p. ej. 1 3 9 · all = cada fila probada. Las filas sin identificar piden su nombre." ;;
         de-DE) echo "per Nummer wählen — z. B. 1 3 9 · all = jede bewiesene Zeile. Nicht identifizierte Zeilen verlangen ihren Namen." ;;
@@ -733,8 +733,8 @@ t() {
     rc_unid_header)
       case "$SS_LANG" in
         ja-JP) echo "▸ [ WARN ] 未識別 — 大きく、git が無視、でも安全に消せるとは証明できません。" ;;
-        zh-TW) echo "▸ [ WARN ] 未識別——又肥又被 git 忽略，但我證不了它們能安全刪除。" ;;
-        zh-Hans) echo "▸ [ WARN ] 未识别——又大又被 git 忽略，但我证不了它们能安全删除。" ;;
+        zh-TW) echo "▸ [ WARN ] 未識別：又肥又被 git 忽略，但我證不了它們能安全刪除。" ;;
+        zh-Hans) echo "▸ [ WARN ] 未识别：又大又被 git 忽略，但我证不了它们能安全删除。" ;;
         ko-KR) echo "▸ [ WARN ] 미확인 — 크고 git이 무시하지만, 안전하게 지울 수 있다고 증명할 수 없습니다." ;;
         es-ES) echo "▸ [ WARN ] Sin identificar — grandes, ignoradas por git, y no puedo probar que sea seguro borrarlas." ;;
         de-DE) echo "▸ [ WARN ] Nicht identifiziert — groß, von git ignoriert, und ich kann nicht beweisen, dass sie sicher zu löschen sind." ;;
@@ -745,8 +745,8 @@ t() {
     rc_unid_note)   # {min}
       case "$SS_LANG" in
         ja-JP) echo "各 {min} 以上。私には識別できません — あなたにはできます。名前を入力したものだけ、1 つずつ移動します。" ;;
-        zh-TW) echo "每個 ≥{min}。我認不出它們——你認得。逐個處理，打出名字才會移除。" ;;
-        zh-Hans) echo "每个 ≥{min}。我认不出它们——你认得。逐个处理，打出名字才会移除。" ;;
+        zh-TW) echo "每個 ≥{min}。我認不出它們，你認得。逐個處理，打出名字才會移除。" ;;
+        zh-Hans) echo "每个 ≥{min}。我认不出它们，你认得。逐个处理，打出名字才会移除。" ;;
         ko-KR) echo "각 {min} 이상. 저는 식별할 수 없지만 당신은 압니다. 이름을 입력한 것만 하나씩 제거합니다." ;;
         es-ES) echo "≥{min} cada una. No puedo identificarlas — tú sí. Se quitan de una en una, solo si escribes su nombre." ;;
         de-DE) echo "je ≥{min}. Ich kann sie nicht identifizieren — du schon. Einzeln entfernt, nur wenn du den Namen tippst." ;;
@@ -769,8 +769,8 @@ t() {
     rc_unid_skip)
       case "$SS_LANG" in
         ja-JP) echo "        ↳ スキップ — そのまま残しました。" ;;
-        zh-TW) echo "        ↳ 略過——原地保留。" ;;
-        zh-Hans) echo "        ↳ 略过——原地保留。" ;;
+        zh-TW) echo "        ↳ 略過，原地保留。" ;;
+        zh-Hans) echo "        ↳ 略过，原地保留。" ;;
         ko-KR) echo "        ↳ 건너뜀 — 그대로 두었습니다." ;;
         es-ES) echo "        ↳ omitida — se deja en su lugar." ;;
         de-DE) echo "        ↳ übersprungen — bleibt an Ort und Stelle." ;;
@@ -781,8 +781,8 @@ t() {
     rc_done)   # {n} · {size}
       case "$SS_LANG" in
         ja-JP) echo "[ DONE ] ビルドフォルダ {n} 件（{size}）をゴミ箱へ移動しました。再ビルドのコマンドはレシートに記録済み — sheersweep restore で表示できます。容量はゴミ箱を空にすると戻ります。" ;;
-        zh-TW) echo "[ DONE ] 已把 {n} 個 build 資料夾（{size}）移到垃圾桶。重建指令已寫進收據——打 sheersweep restore 隨時看得到；清空垃圾桶才會拿回空間。" ;;
-        zh-Hans) echo "[ DONE ] 已把 {n} 个 build 文件夹（{size}）移到废纸篓。重建命令已写进收据——输入 sheersweep restore 随时可见；清空废纸篓才会拿回空间。" ;;
+        zh-TW) echo "[ DONE ] 已把 {n} 個 build 資料夾（{size}）移到垃圾桶。重建指令已寫進收據，打 sheersweep restore 隨時看得到；清空垃圾桶才會拿回空間。" ;;
+        zh-Hans) echo "[ DONE ] 已把 {n} 个 build 文件夹（{size}）移到废纸篓。重建命令已写进收据，输入 sheersweep restore 随时可见；清空废纸篓才会拿回空间。" ;;
         ko-KR) echo "[ DONE ] 빌드 폴더 {n}개({size})를 휴지통으로 옮겼습니다. 재빌드 명령은 영수증에 기록됨 — sheersweep restore로 볼 수 있습니다. 공간은 휴지통을 비워야 돌아옵니다." ;;
         es-ES) echo "[ DONE ] Movidas {n} carpetas de build ({size}) a la Papelera. Los comandos de rebuild quedaron en el recibo — míralos con sheersweep restore · vaciar la Papelera recupera el espacio." ;;
         de-DE) echo "[ DONE ] {n} Build-Ordner ({size}) in den Papierkorb verschoben. Die Rebuild-Befehle stehen im Beleg — sieh sie mit sheersweep restore · erst das Leeren des Papierkorbs gibt den Platz frei." ;;
@@ -793,8 +793,8 @@ t() {
     rs_rebuild_hint)
       case "$SS_LANG" in
         ja-JP) echo "▸ 復元よりきれいな選択肢 — 再ビルド:" ;;
-        zh-TW) echo "▸ 比還原更乾淨的路——直接重建：" ;;
-        zh-Hans) echo "▸ 比恢复更干净的路——直接重建：" ;;
+        zh-TW) echo "▸ 比還原更乾淨的路，直接重建：" ;;
+        zh-Hans) echo "▸ 比恢复更干净的路，直接重建：" ;;
         ko-KR) echo "▸ 복원보다 깔끔한 길 — 다시 빌드:" ;;
         es-ES) echo "▸ la alternativa más limpia a restaurar — reconstruir:" ;;
         de-DE) echo "▸ die sauberere Alternative zum Wiederherstellen — neu bauen:" ;;
@@ -805,8 +805,8 @@ t() {
     un_refuse_apple)   # {app}
       case "$SS_LANG" in
         ja-JP) echo "[ HELD ] 拒否：{app} は Apple／システムのアプリです。封印された読み取り専用のシステムボリューム上にあり、root でも削除できません（削除しても容量は戻りません）。" ;;
-        zh-TW) echo "[ HELD ] 拒絕：{app} 是 Apple／系統 App，住在已封印的唯讀系統卷上——連 root 都刪不掉（刪了也不會釋放空間）。" ;;
-        zh-Hans) echo "[ HELD ] 拒绝：{app} 是 Apple／系统 App，位于已封印的只读系统卷上——连 root 都删不掉（删了也不会释放空间）。" ;;
+        zh-TW) echo "[ HELD ] 拒絕：{app} 是 Apple／系統 App，住在已封印的唯讀系統卷上，連 root 都刪不掉（刪了也不會釋放空間）。" ;;
+        zh-Hans) echo "[ HELD ] 拒绝：{app} 是 Apple／系统 App，位于已封印的只读系统卷上，连 root 都删不掉（删了也不会释放空间）。" ;;
         ko-KR) echo "[ HELD ] 거부: {app}은(는) Apple/시스템 앱으로, 봉인된 읽기 전용 시스템 볼륨에 있습니다 — root도 제거할 수 없습니다(지워도 공간이 돌아오지 않습니다)." ;;
         es-ES) echo "[ HELD ] rechazado: {app} es una app de Apple/del sistema en el volumen sellado de solo lectura — ni root puede quitarla (y borrarla no liberaría espacio)." ;;
         de-DE) echo "[ HELD ] abgelehnt: {app} ist eine Apple-/System-App auf dem versiegelten, schreibgeschützten Systemvolume — nicht mal root kann sie entfernen (und Löschen gäbe keinen Platz frei)." ;;
@@ -841,8 +841,8 @@ t() {
     un_header)   # {app}
       case "$SS_LANG" in
         ja-JP) echo "▸ {app} に属するもの（すべてゴミ箱へ移動 — 復元可能）:" ;;
-        zh-TW) echo "▸ 屬於 {app} 的所有東西（會移到垃圾桶——可救回）：" ;;
-        zh-Hans) echo "▸ 属于 {app} 的所有内容（将移到废纸篓——可恢复）：" ;;
+        zh-TW) echo "▸ 屬於 {app} 的所有東西（會移到垃圾桶，可救回）：" ;;
+        zh-Hans) echo "▸ 属于 {app} 的所有内容（将移到废纸篓，可恢复）：" ;;
         ko-KR) echo "▸ {app}에 속한 모든 항목(휴지통으로 이동 — 복원 가능):" ;;
         es-ES) echo "▸ Todo lo que pertenece a {app} (va a la Papelera — recuperable):" ;;
         de-DE) echo "▸ Alles, was zu {app} gehört (wandert in den Papierkorb — wiederherstellbar):" ;;
@@ -877,8 +877,8 @@ t() {
     un_dry_note)
       case "$SS_LANG" in
         ja-JP) echo "プレビュー — 何も移動していません。uninstall するには --dry-run なしで実行。" ;;
-        zh-TW) echo "預覽——什麼都沒動。要真的移除請拿掉 --dry-run 再執行。" ;;
-        zh-Hans) echo "预览——什么都没动。要真正卸载请去掉 --dry-run 再运行。" ;;
+        zh-TW) echo "預覽：什麼都沒動。要真的移除請拿掉 --dry-run 再執行。" ;;
+        zh-Hans) echo "预览：什么都没动。要真正卸载请去掉 --dry-run 再运行。" ;;
         ko-KR) echo "미리보기 — 아무것도 옮기지 않았습니다. 실제로 제거하려면 --dry-run 없이 실행하세요." ;;
         es-ES) echo "vista previa — no se movió nada. Ejecuta sin --dry-run para desinstalar." ;;
         de-DE) echo "Vorschau — nichts wurde bewegt. Ohne --dry-run ausführen, um zu deinstallieren." ;;
@@ -925,8 +925,8 @@ t() {
     un_cancelled)
       case "$SS_LANG" in
         ja-JP) echo "キャンセルしました — 何も変更していません。" ;;
-        zh-TW) echo "已取消——什麼都沒動。" ;;
-        zh-Hans) echo "已取消——什么都没动。" ;;
+        zh-TW) echo "已取消，什麼都沒動。" ;;
+        zh-Hans) echo "已取消，什么都没动。" ;;
         ko-KR) echo "취소했습니다 — 아무것도 건드리지 않았습니다." ;;
         es-ES) echo "Cancelado — no se tocó nada." ;;
         de-DE) echo "Abgebrochen — nichts wurde angerührt." ;;
@@ -937,8 +937,8 @@ t() {
     un_quit)   # {app}
       case "$SS_LANG" in
         ja-JP) echo "{app} は起動中のようです — 先に終了を依頼します…" ;;
-        zh-TW) echo "{app} 看起來正在執行——先請它結束…" ;;
-        zh-Hans) echo "{app} 似乎正在运行——先请它退出…" ;;
+        zh-TW) echo "{app} 看起來正在執行，先請它結束…" ;;
+        zh-Hans) echo "{app} 似乎正在运行，先请它退出…" ;;
         ko-KR) echo "{app}이(가) 실행 중인 것 같습니다 — 먼저 종료를 요청합니다…" ;;
         es-ES) echo "{app} parece estar en ejecución — pidiéndole que se cierre primero…" ;;
         de-DE) echo "{app} scheint zu laufen — es wird erst zum Beenden aufgefordert…" ;;
@@ -961,8 +961,8 @@ t() {
     un_item_stuck)
       case "$SS_LANG" in
         ja-JP) echo "[ FAIL ] 移動できませんでした — 元の場所に残っています（理由は下記）" ;;
-        zh-TW) echo "[ FAIL ] 搬不動——仍留在原位（原因見最後）" ;;
-        zh-Hans) echo "[ FAIL ] 移不动——仍留在原位（原因见最后）" ;;
+        zh-TW) echo "[ FAIL ] 搬不動，仍留在原位（原因見最後）" ;;
+        zh-Hans) echo "[ FAIL ] 移不动，仍留在原位（原因见最后）" ;;
         ko-KR) echo "[ FAIL ] 옮기지 못했습니다 — 원래 자리에 남아 있습니다(이유는 아래)" ;;
         es-ES) echo "[ FAIL ] no se pudo mover — sigue en su sitio (motivo abajo)" ;;
         de-DE) echo "[ FAIL ] ließ sich nicht verschieben — liegt noch am alten Ort (Grund unten)" ;;
@@ -973,8 +973,8 @@ t() {
     un_none_moved)   # {total} — nothing moved at all; there is no undo to offer
       case "$SS_LANG" in
         ja-JP) echo "[ FAIL ] {total} 件のいずれもゴミ箱へ移動できませんでした — すべて元の場所のままです。" ;;
-        zh-TW) echo "[ FAIL ] {total} 個項目一個都沒能搬進垃圾桶——全部都還在原地。" ;;
-        zh-Hans) echo "[ FAIL ] {total} 个项目一个都没能搬进垃圾桶——全部都还在原地。" ;;
+        zh-TW) echo "[ FAIL ] {total} 個項目一個都沒能搬進垃圾桶，全部都還在原地。" ;;
+        zh-Hans) echo "[ FAIL ] {total} 个项目一个都没能搬进垃圾桶，全部都还在原地。" ;;
         ko-KR) echo "[ FAIL ] {total}개 중 하나도 휴지통으로 옮기지 못했습니다 — 전부 그대로 있습니다." ;;
         es-ES) echo "[ FAIL ] Ninguno de los {total} elementos pudo ir a la Papelera — todo sigue donde estaba." ;;
         de-DE) echo "[ FAIL ] Keines der {total} Objekte konnte in den Papierkorb — alles liegt noch da." ;;
@@ -985,8 +985,8 @@ t() {
     un_partial)   # {moved} · {total}
       case "$SS_LANG" in
         ja-JP) echo "[ FAIL ] {total} 項目中 {moved} 項目しかゴミ箱へ移動できませんでした — 残りは元の場所にあります。移動した分を戻す: sheersweep restore" ;;
-        zh-TW) echo "[ FAIL ] {total} 個項目只搬走了 {moved} 個——其餘仍留在原位。想還原已搬走的部分打：sheersweep restore" ;;
-        zh-Hans) echo "[ FAIL ] {total} 个项目只移走了 {moved} 个——其余仍留在原位。要恢复已移走的部分输入：sheersweep restore" ;;
+        zh-TW) echo "[ FAIL ] {total} 個項目只搬走了 {moved} 個，其餘仍留在原位。想還原已搬走的部分打：sheersweep restore" ;;
+        zh-Hans) echo "[ FAIL ] {total} 个项目只移走了 {moved} 个，其余仍留在原位。要恢复已移走的部分输入：sheersweep restore" ;;
         ko-KR) echo "[ FAIL ] {total}개 중 {moved}개만 휴지통으로 옮겼습니다 — 나머지는 그대로 있습니다. 옮긴 것 되돌리기: sheersweep restore" ;;
         es-ES) echo "[ FAIL ] solo {moved} de {total} elementos pudieron moverse a la Papelera — el resto sigue en su sitio. Deshacer los movidos: sheersweep restore" ;;
         de-DE) echo "[ FAIL ] nur {moved} von {total} Einträgen konnten in den Papierkorb — der Rest liegt noch am alten Ort. Verschobenes rückgängig: sheersweep restore" ;;
@@ -997,8 +997,8 @@ t() {
     un_protected_hint)
       case "$SS_LANG" in
         ja-JP) echo "[ HELD ] 残ったのはアプリの「コンテナ」（Library/Containers）です。macOS が他のプログラムから保護していて、root でも動かせません。ターミナルに「フルディスクアクセス」を許可（システム設定 → プライバシーとセキュリティ → フルディスクアクセス）してから再実行してください。他アカウントのコンテナは、そのアカウントでのログインも必要な場合があります。" ;;
-        zh-TW) echo "[ HELD ] 搬不動的是 App 的「容器」（Library/Containers）——macOS 保護它們不被其他程式移動，連 root 也一樣。請給你的終端機「完整磁碟取用權」（系統設定 → 隱私權與安全性 → 完整磁碟取用權），再跑一次。別的帳號的容器可能還需要登入那個帳號處理。" ;;
-        zh-Hans) echo "[ HELD ] 移不动的是 App 的“容器”（Library/Containers）——macOS 保护它们不被其他程序移动，root 也一样。请给你的终端“完全磁盘访问权限”（系统设置 → 隐私与安全性 → 完全磁盘访问权限），再运行一次。其他账户的容器可能还需要登录该账户处理。" ;;
+        zh-TW) echo "[ HELD ] 搬不動的是 App 的「容器」（Library/Containers），macOS 保護它們不被其他程式移動，連 root 也一樣。請給你的終端機「完整磁碟取用權」（系統設定 → 隱私權與安全性 → 完整磁碟取用權），再跑一次。別的帳號的容器可能還需要登入那個帳號處理。" ;;
+        zh-Hans) echo "[ HELD ] 移不动的是 App 的“容器”（Library/Containers），macOS 保护它们不被其他程序移动，root 也一样。请给你的终端“完全磁盘访问权限”（系统设置 → 隐私与安全性 → 完全磁盘访问权限），再运行一次。其他账户的容器可能还需要登录该账户处理。" ;;
         ko-KR) echo "[ HELD ] 남은 것은 앱의 '컨테이너'(Library/Containers)입니다. macOS가 다른 프로그램으로부터 보호하며 root도 옮길 수 없습니다. 터미널에 '전체 디스크 접근 권한'을 허용(시스템 설정 → 개인정보 보호 및 보안 → 전체 디스크 접근 권한)한 뒤 다시 실행하세요. 다른 계정의 컨테이너는 해당 계정으로 로그인해야 할 수 있습니다." ;;
         es-ES) echo "[ HELD ] lo que quedó son CONTENEDORES de apps (Library/Containers) — macOS los protege de otros programas, incluso como root. Da a tu terminal Acceso total al disco (Ajustes del Sistema → Privacidad y seguridad → Acceso total al disco) y vuelve a ejecutar. Los contenedores de otra cuenta pueden requerir iniciar sesión en esa cuenta." ;;
         de-DE) echo "[ HELD ] übrig blieben App-CONTAINER (Library/Containers) — macOS schützt sie vor anderen Programmen, selbst als root. Gib deinem Terminal Festplattenvollzugriff (Systemeinstellungen → Datenschutz & Sicherheit → Festplattenvollzugriff) und führe es erneut aus. Container anderer Accounts können zusätzlich eine Anmeldung dort erfordern." ;;
@@ -1050,8 +1050,8 @@ t() {
     un_brew_deps)   # {name} {deps}
       case "$SS_LANG" in
         ja-JP) echo "[ HELD ] 拒否：インストール済みの formula が {name} に依存しています: {deps}— 削除すると壊れます。先にそちらを削除するか、そのままに。" ;;
-        zh-TW) echo "[ HELD ] 拒絕：這些已安裝的 formula 依賴 {name}：{deps}——移掉會弄壞它們。要嘛先移除它們，要嘛都留著。" ;;
-        zh-Hans) echo "[ HELD ] 拒绝：这些已安装的 formula 依赖 {name}：{deps}——移掉会弄坏它们。要么先移除它们，要么都留着。" ;;
+        zh-TW) echo "[ HELD ] 拒絕：這些已安裝的 formula 依賴 {name}：{deps}。移掉會弄壞它們。要嘛先移除它們，要嘛都留著。" ;;
+        zh-Hans) echo "[ HELD ] 拒绝：这些已安装的 formula 依赖 {name}：{deps}。移掉会弄坏它们。要么先移除它们，要么都留着。" ;;
         ko-KR) echo "[ HELD ] 거부: 설치된 formula가 {name}에 의존합니다: {deps}— 제거하면 함께 망가집니다. 그것들을 먼저 제거하거나, 모두 그대로 두세요." ;;
         es-ES) echo "[ HELD ] rechazado: hay formulas instaladas que dependen de {name}: {deps}— quitarla las rompería. Quita esas primero, o quédate con ambas." ;;
         de-DE) echo "[ HELD ] abgelehnt: installierte Formulas hängen von {name} ab: {deps}— es zu entfernen würde sie kaputt machen. Entferne erst jene, oder behalte beides." ;;
@@ -1122,8 +1122,8 @@ t() {
     un_bin_note)
       case "$SS_LANG" in
         ja-JP) echo "素のバイナリです — データをどこかに置いたかは作者のみが知ります。sheersweep はバイナリ本体だけをゴミ箱へ移動します。" ;;
-        zh-TW) echo "這是顆裸二進位——它有沒有在別處留資料，只有作者知道。sheersweep 只把本體移到垃圾桶。" ;;
-        zh-Hans) echo "这是一个裸二进制文件——它有没有在别处留数据，只有作者知道。sheersweep 只把本体移到废纸篓。" ;;
+        zh-TW) echo "這是顆裸二進位，它有沒有在別處留資料，只有作者知道。sheersweep 只把本體移到垃圾桶。" ;;
+        zh-Hans) echo "这是一个裸二进制文件，它有没有在别处留数据，只有作者知道。sheersweep 只把本体移到废纸篓。" ;;
         ko-KR) echo "순수 바이너리입니다 — 다른 곳에 데이터를 남겼는지는 만든 사람만 압니다. sheersweep은 바이너리 본체만 휴지통으로 옮깁니다." ;;
         es-ES) echo "Es un binario suelto — solo su autor sabe si guardó datos en otro lugar. sheersweep mueve solo el binario a la Papelera." ;;
         de-DE) echo "Es ist ein nacktes Binary — ob es woanders Daten ablegte, weiß nur sein Autor. sheersweep legt nur das Binary in den Papierkorb." ;;
@@ -1136,8 +1136,8 @@ t() {
     tl_banner)
       case "$SS_LANG" in
         ja-JP) echo "CLI ツールの棚卸し — 読み取り専用。何も変更しません。" ;;
-        zh-TW) echo "CLI 工具盤點——唯讀，什麼都不會動。" ;;
-        zh-Hans) echo "CLI 工具盘点——只读，什么都不会动。" ;;
+        zh-TW) echo "CLI 工具盤點：唯讀，什麼都不會動。" ;;
+        zh-Hans) echo "CLI 工具盘点：只读，什么都不会动。" ;;
         ko-KR) echo "CLI 도구 목록 — 읽기 전용. 아무것도 변경하지 않습니다." ;;
         es-ES) echo "Inventario de herramientas CLI — solo lectura. No se cambia nada." ;;
         de-DE) echo "CLI-Werkzeug-Inventur — nur lesend. Nichts wird verändert." ;;
@@ -1148,8 +1148,8 @@ t() {
     tl_brew_header)
       case "$SS_LANG" in
         ja-JP) echo "▸ 自分で入れた Homebrew formula（leaves — 他の何にも必要とされていない）" ;;
-        zh-TW) echo "▸ 你自己裝的 Homebrew formula（leaves——沒有別的東西依賴它們）" ;;
-        zh-Hans) echo "▸ 你自己装的 Homebrew formula（leaves——没有别的东西依赖它们）" ;;
+        zh-TW) echo "▸ 你自己裝的 Homebrew formula（leaves，沒有別的東西依賴它們）" ;;
+        zh-Hans) echo "▸ 你自己装的 Homebrew formula（leaves，没有别的东西依赖它们）" ;;
         ko-KR) echo "▸ 직접 설치한 Homebrew formula(leaves — 다른 어떤 것도 의존하지 않음)" ;;
         es-ES) echo "▸ Formulas de Homebrew que instalaste tú (leaves — nada más depende de ellas)" ;;
         de-DE) echo "▸ Homebrew-Formulas, die du selbst installiert hast (leaves — nichts anderes hängt davon ab)" ;;
@@ -1172,8 +1172,8 @@ t() {
     tl_nobrew)
       case "$SS_LANG" in
         ja-JP) echo "（Homebrew が見つかりません — formula の棚卸しをスキップ）" ;;
-        zh-TW) echo "（找不到 Homebrew——略過 formula 盤點）" ;;
-        zh-Hans) echo "（找不到 Homebrew——跳过 formula 盘点）" ;;
+        zh-TW) echo "（找不到 Homebrew，略過 formula 盤點）" ;;
+        zh-Hans) echo "（找不到 Homebrew，跳过 formula 盘点）" ;;
         ko-KR) echo "(Homebrew를 찾을 수 없음 — formula 목록 건너뜀)" ;;
         es-ES) echo "(Homebrew no encontrado — se omiten las formulas)" ;;
         de-DE) echo "(Homebrew nicht gefunden — Formulas übersprungen)" ;;
@@ -1208,8 +1208,8 @@ t() {
     tl_bins_header)
       case "$SS_LANG" in
         ja-JP) echo "▸ 手動インストールのバイナリ（マネージャ管理外 — ~/bin · ~/.local/bin · /usr/local/bin）" ;;
-        zh-TW) echo "▸ 手動裝的裸二進位（無管理器認領——~/bin・~/.local/bin・/usr/local/bin）" ;;
-        zh-Hans) echo "▸ 手动装的二进制文件（无管理器认领——~/bin、~/.local/bin、/usr/local/bin）" ;;
+        zh-TW) echo "▸ 手動裝的裸二進位（無管理器認領：~/bin・~/.local/bin・/usr/local/bin）" ;;
+        zh-Hans) echo "▸ 手动装的二进制文件（无管理器认领：~/bin、~/.local/bin、/usr/local/bin）" ;;
         ko-KR) echo "▸ 직접 설치한 바이너리(관리자 없음 — ~/bin · ~/.local/bin · /usr/local/bin)" ;;
         es-ES) echo "▸ Binarios instalados a mano, sin gestor (~/bin · ~/.local/bin · /usr/local/bin)" ;;
         de-DE) echo "▸ Von Hand installierte Binaries ohne Verwalter (~/bin · ~/.local/bin · /usr/local/bin)" ;;
@@ -1232,8 +1232,8 @@ t() {
     tl_chains_header)
       case "$SS_LANG" in
         ja-JP) echo "▸ ツールチェーンのデータ（参考情報 — 消すなら各ツール自身の方法で）" ;;
-        zh-TW) echo "▸ Toolchain 資料目錄（純資訊——要清請用各工具自己的方式）" ;;
-        zh-Hans) echo "▸ Toolchain 数据目录（纯信息——要清请用各工具自己的方式）" ;;
+        zh-TW) echo "▸ Toolchain 資料目錄（純資訊，要清請用各工具自己的方式）" ;;
+        zh-Hans) echo "▸ Toolchain 数据目录（纯信息，要清请用各工具自己的方式）" ;;
         ko-KR) echo "▸ 툴체인 데이터(참고용 — 지우려면 각 도구 자체의 방법으로)" ;;
         es-ES) echo "▸ Datos de toolchains (informativo — elimínalos con el método propio de cada herramienta)" ;;
         de-DE) echo "▸ Toolchain-Daten (informativ — entfernen nur mit der eigenen Methode des jeweiligen Tools)" ;;
@@ -1270,8 +1270,8 @@ t() {
     rs_none)
       case "$SS_LANG" in
         ja-JP) echo "復元できるものがありません — アンインストールの記録が見つかりません。" ;;
-        zh-TW) echo "沒有可還原的東西——找不到任何移除紀錄。" ;;
-        zh-Hans) echo "没有可还原的内容——找不到任何卸载记录。" ;;
+        zh-TW) echo "沒有可還原的東西：找不到任何移除紀錄。" ;;
+        zh-Hans) echo "没有可还原的内容：找不到任何卸载记录。" ;;
         ko-KR) echo "복원할 것이 없습니다 — 제거 기록을 찾을 수 없습니다." ;;
         es-ES) echo "Nada que restaurar — no hay recibos de desinstalación." ;;
         de-DE) echo "Nichts wiederherzustellen — keine Deinstallations-Belege gefunden." ;;
@@ -1378,8 +1378,8 @@ t() {
     rs_unreadable)   # a receipt written before the NUL-sentinel format
       case "$SS_LANG" in
         ja-JP) echo "[ WARN ] 読み取れないレシート（{file}）— 現在の形式より前のものです" ;;
-        zh-TW) echo "[ WARN ] 讀不懂這份收據（{file}）——它比現在的格式更早" ;;
-        zh-Hans) echo "[ WARN ] 读不懂这份收据（{file}）——它比现在的格式更早" ;;
+        zh-TW) echo "[ WARN ] 讀不懂這份收據（{file}），它比現在的格式更早" ;;
+        zh-Hans) echo "[ WARN ] 读不懂这份收据（{file}），它比现在的格式更早" ;;
         ko-KR) echo "[ WARN ] 읽을 수 없는 영수증({file}) — 현재 형식보다 이전입니다" ;;
         es-ES) echo "[ WARN ] No puedo leer este recibo ({file}) — es anterior al formato actual" ;;
         de-DE) echo "[ WARN ] Diese Quittung ist nicht lesbar ({file}) — älter als das heutige Format" ;;
@@ -1505,10 +1505,10 @@ sheersweep — 你讀得懂的 Mac 清理工具。
       Xcode DerivedData / DeviceSupport、CoreSimulator 快取、
       Cargo/Gradle 快取、Node 的編譯快取。
   · 系統層（一次）：/Library/Caches、/.adobeTemp、`brew cleanup`。
-  · 釋放本機 APFS（Time Machine）快照——這是釋出空間真正會回來的一步
+  · 釋放本機 APFS（Time Machine）快照：這是釋出空間真正會回來的一步
     （只刪檔案，若快照仍釘住就不會還空間）。
   · 結尾附一份唯讀 digest：uninstall／reclaim／tools 現在看得到什麼
-    ——只報數字和指路，什麼都不動。
+    只報數字和指路，什麼都不動。
 
 移除一個 App（明確 opt-in 的危險操作）
   sheersweep uninstall <App>
@@ -1519,8 +1519,8 @@ sheersweep — 你讀得懂的 Mac 清理工具。
   廠商巢狀的資料（如 Chrome 的 Google/Chrome）也用內建目錄一起收。
   共用廠商夾（Google/＝底下還有 Google 雲端硬碟的 DriveFS）絕不碰。
   就算 App 本體早就刪了也能清：不帶名稱執行時，選單會一併列出「當年沒卸乾淨」
-  的殘留資料——沒有任何已安裝 App 認領的 bundle id 資料（永不用名稱猜）。
-  CLI 工具用同一個動詞：Homebrew formula 委派給 brew 自己——先確認沒有東西
+  的殘留資料，沒有任何已安裝 App 認領的 bundle id 資料（永不用名稱猜）。
+  CLI 工具用同一個動詞：Homebrew formula 委派給 brew 自己，先確認沒有東西
   依賴它，把要執行的 `brew uninstall` 指令一字不差印給你看，輸入名稱才執行
   （還原＝brew install）。手動裝的裸二進位（~/bin、~/.local/bin、
   /usr/local/bin）則和 App 一樣移到垃圾桶。
@@ -1528,15 +1528,15 @@ sheersweep — 你讀得懂的 Mac 清理工具。
 CLI 工具盤點（唯讀）
   sheersweep tools            把這台 Mac 的 CLI 側收成一張清單：你自己裝的
                               Homebrew formula（含大小）、孤兒依賴、無管理器
-                              認領的裸二進位、大型 toolchain 資料目錄——每項
+                              認領的裸二進位、大型 toolchain 資料目錄：每項
                               附上它自己的移除方式。什麼都不動、不用密碼。
-                              可升級的 formula 會標示出來——只讀 brew 本地索引，
+                              可升級的 formula 會標示出來，只讀 brew 本地索引，
                               一樣不碰網路。
 
 還原上一次移除
   sheersweep restore          把上一次移除從垃圾桶放回原處
   sheersweep restore --list   列出歷次移除紀錄
-回收 build 產物（明確 opt-in——永不併入預設清理）
+回收 build 產物（明確 opt-in：永不併入預設清理）
   sheersweep reclaim          在你的專案資料夾裡找 build 產物（node_modules、
                               .build、target、dist、.next…），三個證據同時成立
                               才算數：git 忽略它＋名稱在簡短白名單上＋旁邊有
@@ -1545,7 +1545,7 @@ CLI 工具盤點（唯讀）
                               忽略的爬蟲暫存）不再藏起來：另列成「未識別」一區，
                               絕不自動選，逐個打出名字才移除。預覽把已證的按 repo
                               分組，附大小、重建指令與閒置天數；選列、輸入條數→移到
-                              垃圾桶＋寫收據。restore 可整批放回——或照收據裡
+                              垃圾桶＋寫收據。restore 可整批放回，或照收據裡
                               的指令乾淨重建。--stale 30d 只列 30 天以上沒動的
                               repo。
 
@@ -1582,10 +1582,10 @@ sheersweep — 你能读懂的 Mac 清理工具。
       Xcode DerivedData / DeviceSupport、CoreSimulator 缓存、
       Cargo/Gradle 缓存、Node 的编译缓存。
   · 系统层（一次）：/Library/Caches、/.adobeTemp、`brew cleanup`。
-  · 释放本机 APFS（时间机器）快照——这是释放的空间真正回来的一步
+  · 释放本机 APFS（时间机器）快照：这是释放的空间真正回来的一步
     （只删文件的话，快照仍占着空间就不会归还）。
   · 结尾附一份只读 digest：uninstall／reclaim／tools 现在看得到什么
-    ——只报数字和指路，什么都不动。
+    只报数字和指路，什么都不动。
 
 卸载一个 App（明确 opt-in 的危险操作）
   sheersweep uninstall <App>
@@ -1596,8 +1596,8 @@ sheersweep — 你能读懂的 Mac 清理工具。
   厂商嵌套的数据（如 Chrome 的 Google/Chrome）也用内置目录一并收走。
   共用厂商文件夹（Google/＝下面还有 Google 云端硬盘的 DriveFS）绝不碰。
   就算 App 本体早就删了也能清理：不带名称运行时，列表会一并列出「当年没卸干净」
-  的残留数据——没有任何已安装 App 认领的 bundle id 数据（绝不按名称猜测）。
-  CLI 工具用同一个动词：Homebrew formula 委托给 brew 自己——先确认没有东西
+  的残留数据，没有任何已安装 App 认领的 bundle id 数据（绝不按名称猜测）。
+  CLI 工具用同一个动词：Homebrew formula 委托给 brew 自己，先确认没有东西
   依赖它，把要执行的 `brew uninstall` 命令一字不差打印给你看，输入名称才执行
   （还原＝brew install）。手动装的裸二进制文件（~/bin、~/.local/bin、
   /usr/local/bin）则和 App 一样移到废纸篓。
@@ -1605,15 +1605,15 @@ sheersweep — 你能读懂的 Mac 清理工具。
 CLI 工具盘点（只读）
   sheersweep tools            把这台 Mac 的 CLI 侧收成一张清单：你自己装的
                               Homebrew formula（含大小）、孤儿依赖、无管理器
-                              认领的二进制文件、大型 toolchain 数据目录——每项
+                              认领的二进制文件、大型 toolchain 数据目录：每项
                               附上它自己的移除方式。什么都不动、不用密码。
-                              可升级的 formula 会标示出来——只读 brew 本地索引，
+                              可升级的 formula 会标示出来，只读 brew 本地索引，
                               一样不碰网络。
 
 还原上一次卸载
   sheersweep restore          把上一次卸载从废纸篓放回原处
   sheersweep restore --list   列出历次卸载记录
-回收 build 产物（明确 opt-in——绝不并入默认清理）
+回收 build 产物（明确 opt-in：绝不并入默认清理）
   sheersweep reclaim          在你的项目文件夹里找 build 产物（node_modules、
                               .build、target、dist、.next…），三个证据同时成立
                               才算数：git 忽略它＋名称在简短白名单上＋旁边有
@@ -1622,7 +1622,7 @@ CLI 工具盘点（只读）
                               忽略的爬虫暂存）不再藏起来：另列成「未识别」一区，
                               绝不自动选，逐个打出名字才移除。预览把已证的按 repo
                               分组，附大小、重建命令与闲置天数；选行、输入条数→移到
-                              废纸篓＋写收据。restore 可整批放回——或照收据里
+                              废纸篓＋写收据。restore 可整批放回，或照收据里
                               的命令干净重建。--stale 30d 只列 30 天以上没动的
                               repo。
 

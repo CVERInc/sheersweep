@@ -724,7 +724,7 @@ pp "19 x"        18 30 "-"             # junk token poisons the whole pick
 pp "all"         18 18 "-"             # no orphans → no all
 pp "all"         18 30 "19 20 21 22 23 24 25 26 27 28 29 30"  # all NEVER includes app rows
 if [ "$pp_ok" -eq 1 ]; then
-  pass "pick_parse: ranges/dupes/all ok; multi mixes apps+orphans; all is 🧟-only; junk rejects whole"
+  pass "pick_parse: ranges/dupes/all ok; multi mixes apps+orphans; all is leftovers-only; junk rejects whole"
 else
   fail "pick_parse misparsed (see above)"
 fi
@@ -932,7 +932,7 @@ p1=0; [ ! -e "$R/proj/crawl" ] && p1=1                                          
 p2=0; [ -e "$R/proj/node_modules" ] && p2=1                                           # unpicked proven kept
 p3=0; find "$REAL_HOME/.Trash" -name crawl 2>/dev/null | grep -q . && p3=1            # landed in Trash
 if [ "$p1$p2$p3" = "111" ]; then
-  pass "reclaim unified pick: a ⚠️ row picked by number + typed name moves only it; proven untouched"
+  pass "reclaim unified pick: a [ WARN ] row picked by number + typed name moves only it; proven untouched"
 else
   fail "reclaim unified pick wrong (crawl_gone=$p1 nm_kept=$p2 trashed=$p3) $(tail -3 "$SBX/u.out")"
 fi

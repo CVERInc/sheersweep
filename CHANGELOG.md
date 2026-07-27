@@ -4,6 +4,36 @@ All notable changes to sheersweep are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.15.7]
+
+### Fixed — the Chinese copy sprayed `——` where `：` belongs
+
+Taiwanese house style asks for the em dash to be *rare*: most of the time the
+clause after it either explains the one before (`：`) or is simply coordinate
+(`，`). sheersweep had it in **41 of its zh-TW strings and 41 of its zh-Hans**,
+which is not a stylistic tic at that density — it is one English punctuation
+habit wearing a Chinese font.
+
+The replacement is a judgement per line, so it was applied from a written-out
+line-number table rather than a blanket substitution, and every target was
+asserted present before the edit and absent after. A `replace()` that quietly
+matches nothing and one that works look identical from the outside.
+
+Untouched: the one Japanese string that uses `——`. That rule is zh-TW's, and
+inventing a Japanese one to make the diff symmetrical would be a worse error
+than the one being fixed.
+
+### Fixed — the harness reported `✅` while the tool reported `[ PASS ]`
+
+`func-test.sh` carries a comment explaining that exactly this makes a person
+learn two vocabularies for one result. It then shipped `✅ ALL GREEN` in
+`test.sh`, and `🧟` / `⚠️` inside two test names. The tool itself was clean;
+only the scripts that grade it were not.
+
+The CLI signet lint passed all three files, because its six checks cover
+badges, the seal, bullets and rules — and **nothing covers emoji**. It was not
+letting these through; it was never looking. Recorded rather than papered over.
+
 ## [0.15.6]
 
 ### Changed — `SECURITY.md` now records what a real machine proved, both halves

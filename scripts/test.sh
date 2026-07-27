@@ -19,4 +19,4 @@ if [ "$(uname -s)" = "Darwin" ]; then
 else
   echo "→ functional tests (skipped — not macOS)"
 fi
-echo "✅ ALL GREEN ($v)"
+echo "[ PASS ] ALL GREEN ($v)"
