@@ -926,9 +926,9 @@ mkdir -p "$R/proj/node_modules/d"; dd if=/dev/zero of="$R/proj/node_modules/d/x"
 mkdir -p "$R/proj/crawl";          dd if=/dev/zero of="$R/proj/crawl/blob"      bs=1024 count=200 2>/dev/null # unidentified → row 2
 RC_UNID_MIN_KB=64; DRY=0; RC_ROOTS=("$R"); RC_STALE_DAYS=""
 : "reads for shellcheck: $RC_UNID_MIN_KB $DRY ${RC_ROOTS[*]} $RC_STALE_DAYS"
-do_reclaim <<< $'2\ncrawl' > "$SBX/u.out" 2>&1     # pick the ⚠️ row (2), confirm by name
+do_reclaim <<< $'2\ncrawl' > "$SBX/u.out" 2>&1     # pick the [ WARN ] row (2), confirm by name
 RC_UNID_MIN_KB=$(( 512 * 1024 ))
-p1=0; [ ! -e "$R/proj/crawl" ] && p1=1                                                # picked ⚠️ moved
+p1=0; [ ! -e "$R/proj/crawl" ] && p1=1                                                # picked [ WARN ] moved
 p2=0; [ -e "$R/proj/node_modules" ] && p2=1                                           # unpicked proven kept
 p3=0; find "$REAL_HOME/.Trash" -name crawl 2>/dev/null | grep -q . && p3=1            # landed in Trash
 if [ "$p1$p2$p3" = "111" ]; then

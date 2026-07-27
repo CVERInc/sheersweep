@@ -3204,7 +3204,7 @@ trash_one() {   # $1 = path  $2 = owner-home  $3 = receipt file
 # The honest tail of every move loop: full success keeps the old one-line ✅;
 # anything less becomes a [ HELD ] with the real numbers — and when macOS's app
 # container protection is the culprit, the one line that actually helps.
-report_moves() {   # $1 = the fully-successful ✅ line, already formatted
+report_moves() {   # $1 = the fully-successful [ DONE ] line, already formatted
   local m
   if [ "$MV_TRIED" -gt 0 ] && [ "$MV_MOVED" -eq "$MV_TRIED" ]; then
     echo "$1"
