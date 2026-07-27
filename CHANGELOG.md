@@ -4,6 +4,57 @@ All notable changes to sheersweep are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.15.1]
+
+*A pass against the project's own definition-of-done, looking for what was left
+rather than declaring there was nothing.*
+
+### Fixed — a claim on the README's first trust bullet was false
+
+> "more than half is its nine-language strings"
+
+Measured: the string table is **28%** of the file; on the most generous reading
+(locale branches plus their `case`/`esac` scaffolding) it is 25%. The logic is
+about half — 2400 lines, which is not "a few screens" either.
+
+Both sentences were true once and drifted as the tool grew. The bullet now says
+what the file measures, and says plainly that reading it is not a weekend job:
+the promise is that **every line is there to be read**, not that it is short.
+
+### Fixed — three fixed-width columns that a real name would still have sheared
+
+The picker was fixed in 0.14.0; `tools` was not. Its formula column was padded
+to 24 and its version column to 12 — while `brew leaves` on this very machine
+reports `cverinc/sheersweep/sheersweep` (29) and a version string of 64
+characters. Latent, not live, which is the only reason it hadn't been seen.
+
+All three now put the variable-width field last, and the upgrade line takes the
+settled two-line shape instead of riding inside the row:
+
+```
+   ·    85 MB  rclone 1.74.3
+     → brew upgrade rclone   (1.74.4)
+```
+
+### Fixed — my own drift, made the same morning
+
+Widening nine detail rows from `%6s` to `%8s` kept the old three-space gap, so
+an unnumbered size row sat two columns to the right of the disk map's. Same row
+type, two indents, introduced and shipped within a day.
+
+### Added — tests for a destructive path that had never run
+
+`do_uninstall_startup` was written in 0.13.0 and had **no test at all**. Found by
+asking which knives had never been swung rather than which tests were green.
+Three cases now: a wrong count moves nothing and writes no receipt, a right one
+moves the plist to the Trash with a readable receipt, and `restore` puts it back.
+
+### Changed — the closing hint in `tools` points like everything else
+
+`Remove a formula … with: sheersweep uninstall <name>` became a context line and
+a runnable pointer beneath it — the shape the spec already settled for a row
+with a next step.
+
 ## [0.15.0]
 
 ### Changed — the app list is size-sorted too, so the rule has no exception left

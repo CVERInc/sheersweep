@@ -19,10 +19,14 @@ Open source, no subscription, no surprises.
 
 ## Why trust it
 
-- **You can read every line.** It's one `bash` script (see `wc -l sheersweep` for
-  the current line count) — more than half is its nine-language strings; the logic
-  fits on a few screens. sheersweep itself never deletes a file except two easy-to-find
-  ways: the sweep's `find … -delete` runs solely on the cache paths listed below, and
+- **You can read every line.** It's one `bash` script — run
+  `wc -l sheersweep` for today's number. Roughly a quarter of it is the
+  nine-language string table and a sixth is comments explaining *why*, so the
+  logic is about half the file. That is not a weekend read, and this bullet is
+  not claiming it is: the point is that **every line is there to be read**, in
+  one file, with no compiled step and nothing fetched at runtime.
+
+  sheersweep itself never deletes a file except two easy-to-find ways: the sweep's `find … -delete` runs solely on the cache paths listed below, and
   `uninstall` *moves* files to the Trash — it never calls `rm`. Every other
   destructive action is a tool's **own** uninstaller (`brew uninstall`, delegated),
   and sheersweep prints the exact command before running it.

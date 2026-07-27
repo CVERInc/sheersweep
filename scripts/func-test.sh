@@ -381,6 +381,42 @@ else
 fi
 teardown
 
+# (L3) do_uninstall_startup e2e — a destructive path added in 0.13.0 that had no
+# test at all until this audit asked which knives had never been swung. It moves
+# a plist to the owner's Trash, writes a receipt in the shared format, and
+# `restore` puts it back. Count-typed consent: a wrong count must move nothing.
+setup
+REAL_HOME="$SBX/home"
+mkdir -p "$REAL_HOME/.sheersweep/uninstalls" "$REAL_HOME/.Trash" "$SBX/Library/LaunchAgents"
+plist="$SBX/Library/LaunchAgents/com.gone.updater.plist"
+echo agent > "$plist"
+
+# wrong count → nothing moves, no receipt
+printf '99\n' | do_uninstall_startup "$plist" >/dev/null 2>&1
+n_receipts="$(find "$REAL_HOME/.sheersweep/uninstalls" -name '*.tsv' | grep -c . || true)"
+if [ -f "$plist" ] && [ "$n_receipts" -eq 0 ]; then
+  pass "startup removal: a wrong count moves nothing and writes no receipt"
+else
+  fail "startup removal ran on a wrong count (plist gone: $([ -f "$plist" ] || echo yes))"
+fi
+
+# right count → to the Trash, with a receipt restore can read
+printf '1\n' | do_uninstall_startup "$plist" >/dev/null 2>&1
+rfile="$(find "$REAL_HOME/.sheersweep/uninstalls" -name '*-startup.tsv' | head -1)"
+if [ ! -f "$plist" ] && [ -n "$rfile" ] && [ "$(receipt_header "$rfile" bid)" = "startup" ]; then
+  pass "startup removal: plist to the Trash, receipt kind=startup"
+else
+  fail "startup removal did not move the plist or write a readable receipt"
+fi
+
+printf 'y\n' | do_restore >/dev/null 2>&1
+if [ -f "$plist" ] && [ "$(cat "$plist")" = "agent" ]; then
+  pass "restore undoes a startup removal (same receipt store, same undo)"
+else
+  fail "restore could not put a startup item back"
+fi
+teardown
+
 # (C1) the sweep's clean(): a real run empties a dir's CONTENTS but KEEPS the dir;
 # --dry-run reports and deletes nothing. This is the only delete path in the sweep.
 setup

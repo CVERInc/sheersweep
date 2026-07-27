@@ -32,7 +32,7 @@
 #   each with the native way to remove it. Changes nothing; never needs sudo.
 set -u
 
-VERSION="0.15.0"
+VERSION="0.15.1"
 
 # ============================================================================
 # i18n — en-US · ja-JP · zh-TW · zh-Hans · ko-KR · es-ES · de-DE · fr-FR · pt-BR.
@@ -1229,17 +1229,29 @@ t() {
         pt-BR) echo "▸ Dados de toolchains (informativo — remova com o método próprio de cada ferramenta)" ;;
         en-US|*)     echo "▸ Toolchain data (informational — remove with each tool's own method)" ;;
       esac ;;
-    tl_hint)
+    tl_hint)   # the context line; the runnable pointer is printed under it
       case "$SS_LANG" in
-        ja-JP) echo "formula やバイナリを削除: sheersweep uninstall <名前>（--dry-run で先にプレビュー）" ;;
-        zh-TW) echo "要移除 formula 或裸二進位：sheersweep uninstall <名稱>（先加 --dry-run 預覽）" ;;
-        zh-Hans) echo "要移除 formula 或二进制文件：sheersweep uninstall <名称>（先加 --dry-run 预览）" ;;
-        ko-KR) echo "formula나 바이너리 제거: sheersweep uninstall <이름> (--dry-run으로 먼저 미리보기)" ;;
-        es-ES) echo "Quita una formula o un binario con: sheersweep uninstall <nombre>   (prueba antes con --dry-run)" ;;
-        de-DE) echo "Formula oder Binary entfernen mit: sheersweep uninstall <Name>   (erst mit --dry-run ansehen)" ;;
-        fr-FR) echo "Retirez une formula ou un binaire avec : sheersweep uninstall <nom>   (aperçu d'abord avec --dry-run)" ;;
-        pt-BR) echo "Remova uma formula ou binário com: sheersweep uninstall <nome>   (veja antes com --dry-run)" ;;
-        en-US|*)     echo "Remove a formula or a bare binary with: sheersweep uninstall <name>   (preview first with --dry-run)" ;;
+        ja-JP) echo "formula やバイナリを削除するには:" ;;
+        zh-TW) echo "要移除 formula 或裸二進位：" ;;
+        zh-Hans) echo "要移除 formula 或二进制文件：" ;;
+        ko-KR) echo "formula나 바이너리를 제거하려면:" ;;
+        es-ES) echo "Para quitar una formula o un binario:" ;;
+        de-DE) echo "Um eine Formula oder ein Binary zu entfernen:" ;;
+        fr-FR) echo "Pour retirer une formula ou un binaire :" ;;
+        pt-BR) echo "Para remover uma formula ou binário:" ;;
+        en-US|*) echo "To remove a formula or a bare binary:" ;;
+      esac ;;
+    tl_hint_dry)   # the parenthetical on the pointer line
+      case "$SS_LANG" in
+        ja-JP) echo "--dry-run で先にプレビュー" ;;
+        zh-TW) echo "先加 --dry-run 預覽" ;;
+        zh-Hans) echo "先加 --dry-run 预览" ;;
+        ko-KR) echo "--dry-run으로 먼저 미리보기" ;;
+        es-ES) echo "prueba antes con --dry-run" ;;
+        de-DE) echo "erst mit --dry-run ansehen" ;;
+        fr-FR) echo "aperçu d'abord avec --dry-run" ;;
+        pt-BR) echo "veja antes com --dry-run" ;;
+        en-US|*) echo "preview first with --dry-run" ;;
       esac ;;
 
     # ---- restore (undo the last uninstall) ----
@@ -3319,7 +3331,7 @@ do_uninstall() {
   local i last=""
   for i in "${!ITEM_PATH[@]}"; do
     if [ "${ITEM_SCOPE[$i]}" != "$last" ]; then echo "▸ ${ITEM_SCOPE[$i]}"; last="${ITEM_SCOPE[$i]}"; fi
-    printf '   ·   %8s  %s\n' "$(human "${ITEM_PATH[$i]}")" "$(printf '%s' "${ITEM_PATH[$i]}" | vis)"
+    printf '   · %8s  %s\n' "$(human "${ITEM_PATH[$i]}")" "$(printf '%s' "${ITEM_PATH[$i]}" | vis)"
   done
   local total
   total="$(od_human_kb "$(du -sck "${ITEM_PATH[@]}" 2>/dev/null | tail -1 | cut -f1)")"
@@ -3390,7 +3402,7 @@ do_uninstall_orphans() {
   fi
   for i in "${!ITEM_PATH[@]}"; do
     if [ "${ITEM_SCOPE[$i]}" != "$last" ]; then echo "▸ ${ITEM_SCOPE[$i]}"; last="${ITEM_SCOPE[$i]}"; fi
-    printf '   ·   %8s  %s\n' "$(human "${ITEM_PATH[$i]}")" "$(printf '%s' "${ITEM_PATH[$i]}" | vis)"
+    printf '   · %8s  %s\n' "$(human "${ITEM_PATH[$i]}")" "$(printf '%s' "${ITEM_PATH[$i]}" | vis)"
   done
   total="$(od_human_kb "$(du -sck "${ITEM_PATH[@]}" 2>/dev/null | tail -1 | cut -f1)")"
   printf '\n'
@@ -3549,7 +3561,7 @@ do_uninstall_brew() {
   sz="$(human "$keg")"
   cmd="brew uninstall $name"
   m="$(t un_brew_resolved)"; m="${m//\{name\}/$name}"; echo "${m//\{ver\}/$vers}"
-  printf '   ·   %8s  %s\n' "${sz:-?}" "$keg"
+  printf '   · %8s  %s\n' "${sz:-?}" "$keg"
   printf '\n'
   t un_brew_cmd
   printf '\n      %s\n\n' "$cmd"
@@ -3600,7 +3612,7 @@ do_uninstall_bin() {
   t un_bin_header
   for f in "${hits[@]}"; do
     sz="$(od_human_kb "$(du -skL "$f" 2>/dev/null | cut -f1)")"
-    printf '   ·   %8s  %s\n' "${sz:-?}" "$f"
+    printf '   · %8s  %s\n' "${sz:-?}" "$f"
   done
   printf '\n'
   t un_bin_note
@@ -3654,11 +3666,18 @@ do_tools() {
         name="${line%% *}"; vers="${line#* }"
         sz="$(human "$cellar/$name")"
         newv="$(printf '%s\n' "$outdated" | LC_ALL=C awk -v n="$name" '$1 == n {print $NF; exit}')"
+        # Same row as every other: magnitude first, variable-width last. The
+        # name column used to be padded to 24 and the version to 12 — a formula
+        # from a tap (`cverinc/sheersweep/sheersweep`, 29) or a version carrying
+        # a build hash (64 on this machine) walked straight through both and
+        # sheared the table. Nothing is lined up against the tail now.
+        #
+        # And an upgrade is a NEXT STEP, so it takes the settled two-line shape
+        # rather than riding along inside the row.
+        printf '   · %8s  %s %s\n' "${sz:-?}" "$name" "$vers"
         if [ -n "$newv" ]; then
-          printf '   ·   %8s  %-24s %-12s → %-10s brew upgrade %s\n' "${sz:-?}" "$name" "$vers" "$newv" "$name"
+          printf '     → brew upgrade %s   (%s)\n' "$name" "$newv"
           up=$((up + 1))
-        else
-          printf '   ·   %8s  %-24s %s\n' "${sz:-?}" "$name" "$vers"
         fi
       done < <(brew_run list --formula --versions $leaves 2>/dev/null)
       if [ "$up" -gt 0 ]; then
@@ -3685,9 +3704,9 @@ do_tools() {
     n=$((n + 1))
     sz="$(od_human_kb "$(du -skL "$f" 2>/dev/null | cut -f1)")"
     if [ -L "$f" ]; then
-      printf '   ·   %8s  %s → %s\n' "${sz:-?}" "$f" "$(readlink "$f")"
+      printf '   · %8s  %s → %s\n' "${sz:-?}" "$f" "$(readlink "$f")"
     else
-      printf '   ·   %8s  %s\n' "${sz:-?}" "$f"
+      printf '   · %8s  %s\n' "${sz:-?}" "$f"
     fi
   done < <(unmanaged_bins "" "$REAL_HOME")
   [ "$n" -eq 0 ] && echo "   $(t tl_bins_none)"
@@ -3705,7 +3724,7 @@ do_tools() {
     case "$sz" in ""|0B) continue ;; esac
     n=$((n + 1))
     # shellcheck disable=SC2088  # the literal "~/" is display text, not a path
-    printf '   ·   %8s  %-22s %s\n' "$sz" "~/$rel" "$hint"
+    printf '   · %8s  ~/%s  (%s)\n' "$sz" "$rel" "$hint"
   done <<'CHAINS'
 .rustup|rustup self uninstall
 .cargo|removed by: rustup self uninstall
@@ -3722,6 +3741,7 @@ CHAINS
   [ "$n" -eq 0 ] && echo "   $(t tl_bins_none)"
   printf '\n'
   t tl_hint
+  printf '   → sheersweep uninstall <name>   (%s)\n' "$(t tl_hint_dry)"
   return 0
 }
 
