@@ -32,7 +32,7 @@
 #   each with the native way to remove it. Changes nothing; never needs sudo.
 set -u
 
-VERSION="0.13.0"
+VERSION="0.13.1"
 
 # ============================================================================
 # i18n — en-US · ja-JP · zh-TW · zh-Hans · ko-KR · es-ES · de-DE · fr-FR · pt-BR.
@@ -109,18 +109,6 @@ t() {
         fr-FR) echo "rien ne sera supprimé — un moment sur un disque plein" ;;
         pt-BR) echo "nada será apagado — um momento em um disco cheio" ;;
         en-US|*)     echo "nothing will be deleted — a moment on a full disk" ;;
-      esac ;;
-    dry_banner)
-      case "$SS_LANG" in
-        ja-JP) echo "🧪 ドライラン — 何も削除しません" ;;
-        zh-TW) echo "🧪 預演（DRY-RUN）——不會刪除任何東西" ;;
-        zh-Hans) echo "🧪 预演（DRY-RUN）——不会删除任何内容" ;;
-        ko-KR) echo "🧪 시험 실행(DRY-RUN) — 아무것도 삭제하지 않습니다" ;;
-        es-ES) echo "🧪 SIMULACIÓN (dry-run) — no se eliminará nada" ;;
-        de-DE) echo "🧪 PROBELAUF (dry-run) — es wird nichts gelöscht" ;;
-        fr-FR) echo "🧪 SIMULATION (dry-run) — rien ne sera supprimé" ;;
-        pt-BR) echo "🧪 SIMULAÇÃO (dry-run) — nada será apagado" ;;
-        en-US|*)     echo "🧪 DRY-RUN — nothing will be deleted" ;;
       esac ;;
     sweep_result_real)   # {size} freed · {pct}% full
       case "$SS_LANG" in
@@ -356,27 +344,27 @@ t() {
       esac ;;
     un_appgone)   # {app}
       case "$SS_LANG" in
-        ja-JP) echo "ℹ️ {app} の本体は見当たりません（すでに削除済み）。カタログを使って、残ったデータだけを掃除します。" ;;
-        zh-TW) echo "ℹ️ 找不到 {app} 本體（已被刪除）。改用內建目錄，把它殘留的資料清掉。" ;;
-        zh-Hans) echo "ℹ️ 找不到 {app} 本体（已被删除）。改用内置目录，清理它残留的数据。" ;;
-        ko-KR) echo "ℹ️ {app}의 앱 본체는 이미 없습니다 — 내장 카탈로그로 남은 데이터만 정리합니다." ;;
-        es-ES) echo "ℹ️ la app {app} ya no está — se usa el catálogo para limpiar solo los datos que dejó." ;;
-        de-DE) echo "ℹ️ die App {app} ist schon weg — der Katalog räumt nur die zurückgelassenen Daten auf." ;;
-        fr-FR) echo "ℹ️ l'app {app} n'est plus là — le catalogue sert à nettoyer seulement les données restantes." ;;
-        pt-BR) echo "ℹ️ o app {app} já se foi — usando o catálogo para limpar só os dados que ficaram." ;;
-        en-US|*)     echo "ℹ️ {app}'s app bundle is already gone — using the catalog to clean up just the data it left behind." ;;
+        ja-JP) echo "{app} の本体は見当たりません（すでに削除済み）。カタログを使って、残ったデータだけを掃除します。" ;;
+        zh-TW) echo "找不到 {app} 本體（已被刪除）。改用內建目錄，把它殘留的資料清掉。" ;;
+        zh-Hans) echo "找不到 {app} 本体（已被删除）。改用内置目录，清理它残留的数据。" ;;
+        ko-KR) echo "{app}의 앱 본체는 이미 없습니다 — 내장 카탈로그로 남은 데이터만 정리합니다." ;;
+        es-ES) echo "la app {app} ya no está — se usa el catálogo para limpiar solo los datos que dejó." ;;
+        de-DE) echo "die App {app} ist schon weg — der Katalog räumt nur die zurückgelassenen Daten auf." ;;
+        fr-FR) echo "l'app {app} n'est plus là — le catalogue sert à nettoyer seulement les données restantes." ;;
+        pt-BR) echo "o app {app} já se foi — usando o catálogo para limpar só os dados que ficaram." ;;
+        en-US|*)     echo "{app}'s app bundle is already gone — using the catalog to clean up just the data it left behind." ;;
       esac ;;
     un_orphan_scan)
       case "$SS_LANG" in
-        ja-JP) echo "🔍 削除済みアプリの置き土産を探しています — 数秒後、メニューは完全な形で一度に表示されます…" ;;
-        zh-TW) echo "🔍 正在掃描已移除 App 留下的資料——幾秒後整份清單一次完整登場…" ;;
-        zh-Hans) echo "🔍 正在扫描已移除 App 留下的数据——几秒后整份列表一次完整登场…" ;;
-        ko-KR) echo "🔍 제거된 앱이 남긴 데이터를 찾는 중 — 몇 초 뒤 메뉴가 한 번에 온전히 나타납니다…" ;;
-        es-ES) echo "🔍 buscando datos dejados por apps eliminadas — en unos segundos el menú aparece completo, de una vez…" ;;
-        de-DE) echo "🔍 Suche nach Daten entfernter Apps — in ein paar Sekunden erscheint das Menü vollständig, auf einmal…" ;;
-        fr-FR) echo "🔍 recherche des données laissées par des apps supprimées — dans quelques secondes le menu apparaît complet, d'un coup…" ;;
-        pt-BR) echo "🔍 procurando dados deixados por apps removidos — em alguns segundos o menu aparece completo, de uma vez…" ;;
-        en-US|*)     echo "🔍 Scanning for data left behind by removed apps — the menu arrives complete, in one piece, in a few seconds…" ;;
+        ja-JP) echo "削除済みアプリの置き土産を探しています — 数秒後、メニューは完全な形で一度に表示されます…" ;;
+        zh-TW) echo "正在掃描已移除 App 留下的資料——幾秒後整份清單一次完整登場…" ;;
+        zh-Hans) echo "正在扫描已移除 App 留下的数据——几秒后整份列表一次完整登场…" ;;
+        ko-KR) echo "제거된 앱이 남긴 데이터를 찾는 중 — 몇 초 뒤 메뉴가 한 번에 온전히 나타납니다…" ;;
+        es-ES) echo "buscando datos dejados por apps eliminadas — en unos segundos el menú aparece completo, de una vez…" ;;
+        de-DE) echo "Suche nach Daten entfernter Apps — in ein paar Sekunden erscheint das Menü vollständig, auf einmal…" ;;
+        fr-FR) echo "recherche des données laissées par des apps supprimées — dans quelques secondes le menu apparaît complet, d'un coup…" ;;
+        pt-BR) echo "procurando dados deixados por apps removidos — em alguns segundos o menu aparece completo, de uma vez…" ;;
+        en-US|*)     echo "Scanning for data left behind by removed apps — the menu arrives complete, in one piece, in a few seconds…" ;;
       esac ;;
     un_startup_batch)   # {n}
       case "$SS_LANG" in
@@ -389,18 +377,6 @@ t() {
         fr-FR) echo "▸ Éléments de démarrage à retirer ({n}) — vers la Corbeille, restore les remet" ;;
         pt-BR) echo "▸ Itens de inicialização a remover ({n}) — para o Lixo, restore devolve" ;;
         en-US|*) echo "▸ Startup items to remove ({n}) — to the Trash; restore puts them back" ;;
-      esac ;;
-    un_startup_confirm)   # {n}
-      case "$SS_LANG" in
-        ja-JP) echo "削除する件数を入力してください（{n}）、または Enter で中止: " ;;
-        zh-TW) echo "輸入要移除的數量（{n}），或按 Enter 取消：" ;;
-        zh-Hans) echo "输入要移除的数量（{n}），或按 Enter 取消：" ;;
-        ko-KR) echo "제거할 개수를 입력하세요({n}), 취소하려면 Enter: " ;;
-        es-ES) echo "Escribe cuántos vas a quitar ({n}), o Enter para cancelar: " ;;
-        de-DE) echo "Tippe die Anzahl, die entfernt wird ({n}), oder Enter zum Abbrechen: " ;;
-        fr-FR) echo "Tapez le nombre à retirer ({n}), ou Entrée pour annuler : " ;;
-        pt-BR) echo "Digite quantos serão removidos ({n}), ou Enter para cancelar: " ;;
-        en-US|*) echo "Type how many are going ({n}), or Enter to cancel: " ;;
       esac ;;
     un_startup_done)   # {n}
       case "$SS_LANG" in
@@ -486,18 +462,6 @@ t() {
         pt-BR) echo "▸ dados deixados por {n} apps removidos — tudo abaixo vai para a Lixeira (recuperável):" ;;
         en-US|*)     echo "▸ Leftover data of {n} removed apps — everything below moves to the Trash (recoverable):" ;;
       esac ;;
-    un_orphans_confirm)   # {n}
-      case "$SS_LANG" in
-        ja-JP) echo "上記すべてをゴミ箱へ移動するには件数「{n}」を入力（それ以外でキャンセル）: " ;;
-        zh-TW) echo "要把以上全部移到垃圾桶，請輸入條數「{n}」（輸入其他則取消）：" ;;
-        zh-Hans) echo "要把以上全部移到废纸篓，请输入条数“{n}”（输入其他则取消）：" ;;
-        ko-KR) echo "위 항목을 모두 휴지통으로 옮기려면 개수 '{n}'을 입력하세요(다른 입력은 취소): " ;;
-        es-ES) echo "Escribe el número ({n}) para mover todo a la Papelera (otra cosa cancela): " ;;
-        de-DE) echo "Tippe die Anzahl ({n}), um alles in den Papierkorb zu verschieben (alles andere bricht ab): " ;;
-        fr-FR) echo "Saisissez le nombre ({n}) pour tout déplacer vers la Corbeille (autre chose annule) : " ;;
-        pt-BR) echo "Digite a contagem ({n}) para mover tudo para a Lixeira (qualquer outra coisa cancela): " ;;
-        en-US|*)     echo "Type the count ({n}) to move all of it to the Trash (anything else cancels): " ;;
-      esac ;;
     un_orphans_done)   # {n} items · {ids} apps
       case "$SS_LANG" in
         ja-JP) echo "[ DONE ] 削除済みアプリ {ids} 件の残り {n} 項目をゴミ箱へ移動しました。元に戻す: sheersweep restore · 容量はゴミ箱を空にすると戻ります。" ;;
@@ -512,15 +476,15 @@ t() {
       esac ;;
     un_orphan)   # {bid}
       case "$SS_LANG" in
-        ja-JP) echo "ℹ️ {bid} を名乗るインストール済みアプリはありません — 削除済みアプリの置き土産として扱います。この id を名前に持つファイルだけを照合します。" ;;
-        zh-TW) echo "ℹ️ 沒有任何已安裝的 App 認領 {bid}——視為已移除 App 留下的資料。只比對以這個 id 命名的檔案。" ;;
-        zh-Hans) echo "ℹ️ 没有任何已安装的 App 认领 {bid}——视为已移除 App 留下的数据。只匹配以这个 id 命名的文件。" ;;
-        ko-KR) echo "ℹ️ {bid}를 소유한 설치된 앱이 없습니다 — 제거된 앱이 남긴 데이터로 간주합니다. 이 id로 이름 지어진 파일만 대조합니다." ;;
-        es-ES) echo "ℹ️ ninguna app instalada reclama {bid} — se trata como datos dejados por una app eliminada. Solo se comparan archivos nombrados con este id exacto." ;;
-        de-DE) echo "ℹ️ keine installierte App beansprucht {bid} — behandelt als Daten einer entfernten App. Es zählen nur Dateien, die exakt nach dieser ID benannt sind." ;;
-        fr-FR) echo "ℹ️ aucune app installée ne revendique {bid} — traité comme des données laissées par une app supprimée. Seuls les fichiers nommés par cet id exact sont retenus." ;;
-        pt-BR) echo "ℹ️ nenhum app instalado reivindica {bid} — tratado como dados deixados por um app removido. Só entram arquivos nomeados por este id exato." ;;
-        en-US|*)     echo "ℹ️ No installed app claims {bid} — treating it as data left behind by a removed app. Only files named by this exact id are matched." ;;
+        ja-JP) echo "{bid} を名乗るインストール済みアプリはありません — 削除済みアプリの置き土産として扱います。この id を名前に持つファイルだけを照合します。" ;;
+        zh-TW) echo "沒有任何已安裝的 App 認領 {bid}——視為已移除 App 留下的資料。只比對以這個 id 命名的檔案。" ;;
+        zh-Hans) echo "没有任何已安装的 App 认领 {bid}——视为已移除 App 留下的数据。只匹配以这个 id 命名的文件。" ;;
+        ko-KR) echo "{bid}를 소유한 설치된 앱이 없습니다 — 제거된 앱이 남긴 데이터로 간주합니다. 이 id로 이름 지어진 파일만 대조합니다." ;;
+        es-ES) echo "ninguna app instalada reclama {bid} — se trata como datos dejados por una app eliminada. Solo se comparan archivos nombrados con este id exacto." ;;
+        de-DE) echo "keine installierte App beansprucht {bid} — behandelt als Daten einer entfernten App. Es zählen nur Dateien, die exakt nach dieser ID benannt sind." ;;
+        fr-FR) echo "aucune app installée ne revendique {bid} — traité comme des données laissées par une app supprimée. Seuls les fichiers nommés par cet id exact sont retenus." ;;
+        pt-BR) echo "nenhum app instalado reivindica {bid} — tratado como dados deixados por um app removido. Só entram arquivos nomeados por este id exato." ;;
+        en-US|*)     echo "No installed app claims {bid} — treating it as data left behind by a removed app. Only files named by this exact id are matched." ;;
       esac ;;
     un_orphan_installed)   # {bid}
       case "$SS_LANG" in
@@ -634,18 +598,6 @@ t() {
       echo "→ sheersweep uninstall" ;;
     dg_arrow_tools)
       echo "→ sheersweep tools" ;;
-    dg_heavy_scanning)   # notice; the per-target ticks below are the proof-of-life
-      case "$SS_LANG" in
-        ja-JP) echo "🔍 各アカウントの容量を測定中 — フルのディスクでは少し時間がかかります：" ;;
-        zh-TW) echo "🔍 正在測量各帳戶的空間用量——磁碟滿時需要一點時間：" ;;
-        zh-Hans) echo "🔍 正在测量各账户的空间用量——磁盘满时需要一点时间：" ;;
-        ko-KR) echo "🔍 각 계정의 용량을 측정하는 중 — 가득 찬 디스크에서는 잠시 걸립니다:" ;;
-        es-ES) echo "🔍 midiendo el espacio de cada cuenta — en un disco lleno tarda un poco:" ;;
-        de-DE) echo "🔍 messe die Speichernutzung aller Konten — auf einer vollen Platte dauert es einen Moment:" ;;
-        fr-FR) echo "🔍 mesure de l'espace de chaque compte — sur un disque plein cela prend un moment :" ;;
-        pt-BR) echo "🔍 medindo o espaço de cada conta — em um disco cheio leva um momento:" ;;
-        en-US|*)     echo "🔍 measuring where the space went across every account — this takes a moment on a full disk:" ;;
-      esac ;;
     dg_unreadable)   # just the label — the size is the row's own column now
       case "$SS_LANG" in
         ja-JP) echo "SIP：バージョン DB、Spotlight" ;;
@@ -720,15 +672,15 @@ t() {
       esac ;;
     rc_scanning)
       case "$SS_LANG" in
-        ja-JP) echo "🔍 ルートを歩いて候補を計量中…（du に少し時間がかかります）" ;;
-        zh-TW) echo "🔍 正在走訪根目錄並秤候選的重量…（du 需要一點時間）" ;;
-        zh-Hans) echo "🔍 正在走访根目录并称候选的重量…（du 需要一点时间）" ;;
-        ko-KR) echo "🔍 루트를 돌며 후보의 크기를 재는 중… (du에 시간이 조금 걸립니다)" ;;
-        es-ES) echo "🔍 recorriendo las raíces y pesando candidatos… (du tarda un poco)" ;;
-        de-DE) echo "🔍 gehe die Wurzeln durch und wiege Kandidaten… (du braucht einen Moment)" ;;
-        fr-FR) echo "🔍 parcours des racines et pesée des candidats… (du prend un instant)" ;;
-        pt-BR) echo "🔍 percorrendo as raízes e pesando candidatos… (du leva um momento)" ;;
-        en-US|*)     echo "🔍 walking the roots and weighing candidates… (du takes a moment)" ;;
+        ja-JP) echo "ルートを歩いて候補を計量中…（du に少し時間がかかります）" ;;
+        zh-TW) echo "正在走訪根目錄並秤候選的重量…（du 需要一點時間）" ;;
+        zh-Hans) echo "正在走访根目录并称候选的重量…（du 需要一点时间）" ;;
+        ko-KR) echo "루트를 돌며 후보의 크기를 재는 중… (du에 시간이 조금 걸립니다)" ;;
+        es-ES) echo "recorriendo las raíces y pesando candidatos… (du tarda un poco)" ;;
+        de-DE) echo "gehe die Wurzeln durch und wiege Kandidaten… (du braucht einen Moment)" ;;
+        fr-FR) echo "parcours des racines et pesée des candidats… (du prend un instant)" ;;
+        pt-BR) echo "percorrendo as raízes e pesando candidatos… (du leva um momento)" ;;
+        en-US|*)     echo "walking the roots and weighing candidates… (du takes a moment)" ;;
       esac ;;
     rc_none)
       case "$SS_LANG" in
@@ -756,15 +708,15 @@ t() {
       esac ;;
     rc_dry_note)
       case "$SS_LANG" in
-        ja-JP) echo "🧪 プレビュー — 何も移動していません。回収するには --dry-run なしで実行。" ;;
-        zh-TW) echo "🧪 預覽——什麼都沒動。要真的回收請拿掉 --dry-run 再執行。" ;;
-        zh-Hans) echo "🧪 预览——什么都没动。要真正回收请去掉 --dry-run 再运行。" ;;
-        ko-KR) echo "🧪 미리보기 — 아무것도 옮기지 않았습니다. 회수하려면 --dry-run 없이 실행하세요." ;;
-        es-ES) echo "🧪 vista previa — no se movió nada. Ejecuta sin --dry-run para recuperar." ;;
-        de-DE) echo "🧪 Vorschau — nichts wurde bewegt. Ohne --dry-run ausführen, um Platz zu holen." ;;
-        fr-FR) echo "🧪 aperçu — rien n'a bougé. Relancez sans --dry-run pour récupérer." ;;
-        pt-BR) echo "🧪 prévia — nada foi movido. Execute sem --dry-run para recuperar." ;;
-        en-US|*)     echo "🧪 preview — nothing moved. Run without --dry-run to reclaim." ;;
+        ja-JP) echo "プレビュー — 何も移動していません。回収するには --dry-run なしで実行。" ;;
+        zh-TW) echo "預覽——什麼都沒動。要真的回收請拿掉 --dry-run 再執行。" ;;
+        zh-Hans) echo "预览——什么都没动。要真正回收请去掉 --dry-run 再运行。" ;;
+        ko-KR) echo "미리보기 — 아무것도 옮기지 않았습니다. 회수하려면 --dry-run 없이 실행하세요." ;;
+        es-ES) echo "vista previa — no se movió nada. Ejecuta sin --dry-run para recuperar." ;;
+        de-DE) echo "Vorschau — nichts wurde bewegt. Ohne --dry-run ausführen, um Platz zu holen." ;;
+        fr-FR) echo "aperçu — rien n'a bougé. Relancez sans --dry-run pour récupérer." ;;
+        pt-BR) echo "prévia — nada foi movido. Execute sem --dry-run para recuperar." ;;
+        en-US|*)     echo "preview — nothing moved. Run without --dry-run to reclaim." ;;
       esac ;;
     rc_multi_hint)
       case "$SS_LANG" in
@@ -777,18 +729,6 @@ t() {
         fr-FR) echo "choisissez par numéro — p. ex. 1 3 9 · all = chaque ligne prouvée. Les lignes non identifiées demandent leur nom." ;;
         pt-BR) echo "escolha por número — ex.: 1 3 9 · all = cada linha provada. As linhas não identificadas pedem o nome." ;;
         en-US|*)     echo "Pick by number — e.g. 1 3 9 · all = every proven row. Unidentified rows each ask for their name." ;;
-      esac ;;
-    rc_confirm)   # {n} · {size}
-      case "$SS_LANG" in
-        ja-JP) echo "選んだビルドフォルダ {n} 件（{size}）をゴミ箱へ移動するには件数「{n}」を入力（それ以外でキャンセル）: " ;;
-        zh-TW) echo "要把選中的 {n} 個 build 資料夾（{size}）移到垃圾桶，請輸入條數「{n}」（輸入其他則取消）：" ;;
-        zh-Hans) echo "要把选中的 {n} 个 build 文件夹（{size}）移到废纸篓，请输入条数“{n}”（输入其他则取消）：" ;;
-        ko-KR) echo "선택한 빌드 폴더 {n}개({size})를 휴지통으로 옮기려면 개수 '{n}'을 입력하세요(다른 입력은 취소): " ;;
-        es-ES) echo "Escribe el número ({n}) para mover estas {n} carpetas de build ({size}) a la Papelera (otra cosa cancela): " ;;
-        de-DE) echo "Tippe die Anzahl ({n}), um diese {n} Build-Ordner ({size}) in den Papierkorb zu verschieben (alles andere bricht ab): " ;;
-        fr-FR) echo "Saisissez le nombre ({n}) pour déplacer ces {n} dossiers de build ({size}) vers la Corbeille (autre chose annule) : " ;;
-        pt-BR) echo "Digite a contagem ({n}) para mover estas {n} pastas de build ({size}) para a Lixeira (qualquer outra coisa cancela): " ;;
-        en-US|*)     echo "Type the count ({n}) to move these {n} build folders ({size}) to the Trash (anything else cancels): " ;;
       esac ;;
     rc_unid_header)
       case "$SS_LANG" in
@@ -825,18 +765,6 @@ t() {
         fr-FR) echo "        contient :" ;;
         pt-BR) echo "        contém:" ;;
         en-US|*)     echo "        contains:" ;;
-      esac ;;
-    rc_unid_confirm)   # {name} · {size} — kept terse on purpose: a wordy gate trains rubber-stamping
-      case "$SS_LANG" in
-        ja-JP) echo "「{name}」と入力でゴミ箱へ（{size}）、それ以外はスキップ: " ;;
-        zh-TW) echo "打出「{name}」把它（{size}）移到垃圾桶，其他則略過：" ;;
-        zh-Hans) echo "打出“{name}”把它（{size}）移到废纸篓，其他则略过：" ;;
-        ko-KR) echo "'{name}' 입력 시 휴지통으로({size}), 다른 입력은 건너뜀: " ;;
-        es-ES) echo "Escribe '{name}' para moverla ({size}) a la Papelera; otra cosa la omite: " ;;
-        de-DE) echo "Tippe '{name}', um ihn ({size}) in den Papierkorb zu verschieben; sonst überspringen: " ;;
-        fr-FR) echo "Tapez '{name}' pour le déplacer ({size}) vers la Corbeille ; sinon ignorer : " ;;
-        pt-BR) echo "Digite '{name}' para movê-la ({size}) para a Lixeira; senão pula: " ;;
-        en-US|*)     echo "Type '{name}' to move it ({size}) to the Trash, anything else skips: " ;;
       esac ;;
     rc_unid_skip)
       case "$SS_LANG" in
@@ -948,27 +876,51 @@ t() {
       esac ;;
     un_dry_note)
       case "$SS_LANG" in
-        ja-JP) echo "🧪 プレビュー — 何も移動していません。uninstall するには --dry-run なしで実行。" ;;
-        zh-TW) echo "🧪 預覽——什麼都沒動。要真的移除請拿掉 --dry-run 再執行。" ;;
-        zh-Hans) echo "🧪 预览——什么都没动。要真正卸载请去掉 --dry-run 再运行。" ;;
-        ko-KR) echo "🧪 미리보기 — 아무것도 옮기지 않았습니다. 실제로 제거하려면 --dry-run 없이 실행하세요." ;;
-        es-ES) echo "🧪 vista previa — no se movió nada. Ejecuta sin --dry-run para desinstalar." ;;
-        de-DE) echo "🧪 Vorschau — nichts wurde bewegt. Ohne --dry-run ausführen, um zu deinstallieren." ;;
-        fr-FR) echo "🧪 aperçu — rien n'a bougé. Relancez sans --dry-run pour désinstaller." ;;
-        pt-BR) echo "🧪 prévia — nada foi movido. Execute sem --dry-run para desinstalar." ;;
-        en-US|*)     echo "🧪 preview — nothing moved. Run without --dry-run to uninstall." ;;
+        ja-JP) echo "プレビュー — 何も移動していません。uninstall するには --dry-run なしで実行。" ;;
+        zh-TW) echo "預覽——什麼都沒動。要真的移除請拿掉 --dry-run 再執行。" ;;
+        zh-Hans) echo "预览——什么都没动。要真正卸载请去掉 --dry-run 再运行。" ;;
+        ko-KR) echo "미리보기 — 아무것도 옮기지 않았습니다. 실제로 제거하려면 --dry-run 없이 실행하세요." ;;
+        es-ES) echo "vista previa — no se movió nada. Ejecuta sin --dry-run para desinstalar." ;;
+        de-DE) echo "Vorschau — nichts wurde bewegt. Ohne --dry-run ausführen, um zu deinstallieren." ;;
+        fr-FR) echo "aperçu — rien n'a bougé. Relancez sans --dry-run pour désinstaller." ;;
+        pt-BR) echo "prévia — nada foi movido. Execute sem --dry-run para desinstalar." ;;
+        en-US|*)     echo "preview — nothing moved. Run without --dry-run to uninstall." ;;
       esac ;;
-    un_confirm)   # {name}
+    confirm_name)   # {name} — consent for ONE item, by typing its name
       case "$SS_LANG" in
-        ja-JP) echo "上記すべてをゴミ箱へ移動するにはアプリ名「{name}」を入力（それ以外でキャンセル）: " ;;
-        zh-TW) echo "要把以上全部移到垃圾桶，請輸入 App 名稱「{name}」（輸入其他則取消）：" ;;
-        zh-Hans) echo "要把以上全部移到废纸篓，请输入 App 名称“{name}”（输入其他则取消）：" ;;
-        ko-KR) echo "위 항목을 모두 휴지통으로 옮기려면 앱 이름 '{name}'을(를) 입력하세요(다른 입력은 취소): " ;;
-        es-ES) echo "Escribe el nombre de la app '{name}' para mover todo lo anterior a la Papelera (cualquier otra cosa cancela): " ;;
-        de-DE) echo "Tippe den App-Namen '{name}', um alles oben in den Papierkorb zu legen (alles andere bricht ab): " ;;
-        fr-FR) echo "Saisissez le nom de l'app '{name}' pour tout déplacer vers la Corbeille (toute autre saisie annule) : " ;;
-        pt-BR) echo "Digite o nome do app '{name}' para mover tudo acima para a Lixeira (qualquer outra coisa cancela): " ;;
-        en-US|*)     echo "Type the app name '{name}' to move all of the above to Trash (anything else cancels): " ;;
+        ja-JP) echo "「{name}」と入力するとゴミ箱へ移動します（それ以外はスキップ）: " ;;
+        zh-TW) echo "輸入「{name}」搬到垃圾桶（其他任何輸入都會跳過）：" ;;
+        zh-Hans) echo "输入「{name}」搬到垃圾桶（其他任何输入都会跳过）：" ;;
+        ko-KR) echo "'{name}'을(를) 입력하면 휴지통으로 옮깁니다(다른 입력은 건너뜁니다): " ;;
+        es-ES) echo "Escribe '{name}' para moverlo a la Papelera (cualquier otra cosa lo omite): " ;;
+        de-DE) echo "Tippe '{name}', um es in den Papierkorb zu legen (alles andere überspringt es): " ;;
+        fr-FR) echo "Tapez '{name}' pour le mettre à la Corbeille (toute autre saisie l'ignore) : " ;;
+        pt-BR) echo "Digite '{name}' para mover para o Lixo (qualquer outra coisa pula): " ;;
+        en-US|*) echo "Type '{name}' to move it to the Trash (anything else skips it): " ;;
+      esac ;;
+    confirm_name_run)   # {name} — the action is a command, not a move
+      case "$SS_LANG" in
+        ja-JP) echo "「{name}」と入力すると上のコマンドを実行します（それ以外は中止）: " ;;
+        zh-TW) echo "輸入「{name}」執行上面那道指令（其他任何輸入都會取消）：" ;;
+        zh-Hans) echo "输入「{name}」执行上面那道指令（其他任何输入都会取消）：" ;;
+        ko-KR) echo "'{name}'을(를) 입력하면 위 명령을 실행합니다(다른 입력은 취소): " ;;
+        es-ES) echo "Escribe '{name}' para ejecutar el comando de arriba (cualquier otra cosa cancela): " ;;
+        de-DE) echo "Tippe '{name}', um den Befehl oben auszuführen (alles andere bricht ab): " ;;
+        fr-FR) echo "Tapez '{name}' pour exécuter la commande ci-dessus (toute autre saisie annule) : " ;;
+        pt-BR) echo "Digite '{name}' para executar o comando acima (qualquer outra coisa cancela): " ;;
+        en-US|*) echo "Type '{name}' to run the command above (anything else cancels): " ;;
+      esac ;;
+    confirm_count)   # {n} — consent for a BATCH, all or nothing
+      case "$SS_LANG" in
+        ja-JP) echo "件数「{n}」を入力するとゴミ箱へ移動します（それ以外は中止）: " ;;
+        zh-TW) echo "輸入數量「{n}」搬到垃圾桶（其他任何輸入都會取消）：" ;;
+        zh-Hans) echo "输入数量「{n}」搬到垃圾桶（其他任何输入都会取消）：" ;;
+        ko-KR) echo "개수 '{n}'을(를) 입력하면 휴지통으로 옮깁니다(다른 입력은 취소): " ;;
+        es-ES) echo "Escribe la cantidad ({n}) para moverlo a la Papelera (cualquier otra cosa cancela): " ;;
+        de-DE) echo "Tippe die Anzahl ({n}), um alles in den Papierkorb zu legen (alles andere bricht ab): " ;;
+        fr-FR) echo "Tapez le nombre ({n}) pour tout mettre à la Corbeille (toute autre saisie annule) : " ;;
+        pt-BR) echo "Digite a quantidade ({n}) para mover tudo para o Lixo (qualquer outra coisa cancela): " ;;
+        en-US|*) echo "Type the count ({n}) to move it to the Trash (anything else cancels): " ;;
       esac ;;
     un_cancelled)
       case "$SS_LANG" in
@@ -1109,27 +1061,15 @@ t() {
       esac ;;
     un_brew_config)   # {name}
       case "$SS_LANG" in
-        ja-JP) echo "ℹ️ Homebrew が管理するのはツール本体のみ。{name} がホームに置いた設定（例: ~/.{name}）には触れません。" ;;
-        zh-TW) echo "ℹ️ Homebrew 只管工具本體。{name} 若在家目錄留有設定（如 ~/.{name}），原封不動。" ;;
-        zh-Hans) echo "ℹ️ Homebrew 只管工具本体。{name} 若在主目录留有设置（如 ~/.{name}），原封不动。" ;;
-        ko-KR) echo "ℹ️ Homebrew는 도구 본체만 관리합니다. {name}이(가) 홈 폴더에 남긴 설정(예: ~/.{name})은 건드리지 않습니다." ;;
-        es-ES) echo "ℹ️ Homebrew solo gestiona la herramienta en sí. Los ajustes que {name} guardara en tu carpeta personal (p. ej. ~/.{name}) quedan intactos." ;;
-        de-DE) echo "ℹ️ Homebrew verwaltet nur das Tool selbst. Einstellungen, die {name} im Benutzerordner ablegte (z. B. ~/.{name}), bleiben unberührt." ;;
-        fr-FR) echo "ℹ️ Homebrew ne gère que l'outil lui-même. Les réglages que {name} garde dans votre dossier personnel (p. ex. ~/.{name}) restent intacts." ;;
-        pt-BR) echo "ℹ️ O Homebrew só cuida do programa em si. As configurações que o {name} guardou na sua pasta pessoal (ex.: ~/.{name}) ficam intactas." ;;
-        en-US|*)     echo "ℹ️ Homebrew's receipt covers the tool itself. Any settings {name} kept in your home folder (e.g. ~/.{name}) are left untouched." ;;
-      esac ;;
-    un_brew_confirm)   # {name}
-      case "$SS_LANG" in
-        ja-JP) echo "上のコマンドを実行するには「{name}」と入力（それ以外でキャンセル）: " ;;
-        zh-TW) echo "要執行上面那行指令，請輸入「{name}」（輸入其他則取消）：" ;;
-        zh-Hans) echo "要运行上面那行命令，请输入“{name}”（输入其他则取消）：" ;;
-        ko-KR) echo "위 명령을 실행하려면 '{name}'을(를) 입력하세요(다른 입력은 취소): " ;;
-        es-ES) echo "Escribe '{name}' para ejecutar el comando de arriba (cualquier otra cosa cancela): " ;;
-        de-DE) echo "Tippe '{name}', um den Befehl oben auszuführen (alles andere bricht ab): " ;;
-        fr-FR) echo "Saisissez '{name}' pour exécuter la commande ci-dessus (toute autre saisie annule) : " ;;
-        pt-BR) echo "Digite '{name}' para executar o comando acima (qualquer outra coisa cancela): " ;;
-        en-US|*)     echo "Type '{name}' to run the command above (anything else cancels): " ;;
+        ja-JP) echo "Homebrew が管理するのはツール本体のみ。{name} がホームに置いた設定（例: ~/.{name}）には触れません。" ;;
+        zh-TW) echo "Homebrew 只管工具本體。{name} 若在家目錄留有設定（如 ~/.{name}），原封不動。" ;;
+        zh-Hans) echo "Homebrew 只管工具本体。{name} 若在主目录留有设置（如 ~/.{name}），原封不动。" ;;
+        ko-KR) echo "Homebrew는 도구 본체만 관리합니다. {name}이(가) 홈 폴더에 남긴 설정(예: ~/.{name})은 건드리지 않습니다." ;;
+        es-ES) echo "Homebrew solo gestiona la herramienta en sí. Los ajustes que {name} guardara en tu carpeta personal (p. ej. ~/.{name}) quedan intactos." ;;
+        de-DE) echo "Homebrew verwaltet nur das Tool selbst. Einstellungen, die {name} im Benutzerordner ablegte (z. B. ~/.{name}), bleiben unberührt." ;;
+        fr-FR) echo "Homebrew ne gère que l'outil lui-même. Les réglages que {name} garde dans votre dossier personnel (p. ex. ~/.{name}) restent intacts." ;;
+        pt-BR) echo "O Homebrew só cuida do programa em si. As configurações que o {name} guardou na sua pasta pessoal (ex.: ~/.{name}) ficam intactas." ;;
+        en-US|*)     echo "Homebrew's receipt covers the tool itself. Any settings {name} kept in your home folder (e.g. ~/.{name}) are left untouched." ;;
       esac ;;
     un_brew_done)   # {name}  ·  {ver}
       case "$SS_LANG" in
@@ -1169,27 +1109,15 @@ t() {
       esac ;;
     un_bin_note)
       case "$SS_LANG" in
-        ja-JP) echo "ℹ️ 素のバイナリです — データをどこかに置いたかは作者のみが知ります。sheersweep はバイナリ本体だけをゴミ箱へ移動します。" ;;
-        zh-TW) echo "ℹ️ 這是顆裸二進位——它有沒有在別處留資料，只有作者知道。sheersweep 只把本體移到垃圾桶。" ;;
-        zh-Hans) echo "ℹ️ 这是一个裸二进制文件——它有没有在别处留数据，只有作者知道。sheersweep 只把本体移到废纸篓。" ;;
-        ko-KR) echo "ℹ️ 순수 바이너리입니다 — 다른 곳에 데이터를 남겼는지는 만든 사람만 압니다. sheersweep은 바이너리 본체만 휴지통으로 옮깁니다." ;;
-        es-ES) echo "ℹ️ Es un binario suelto — solo su autor sabe si guardó datos en otro lugar. sheersweep mueve solo el binario a la Papelera." ;;
-        de-DE) echo "ℹ️ Es ist ein nacktes Binary — ob es woanders Daten ablegte, weiß nur sein Autor. sheersweep legt nur das Binary in den Papierkorb." ;;
-        fr-FR) echo "ℹ️ C'est un binaire nu — seul son auteur sait s'il a laissé des données ailleurs. sheersweep ne déplace que le binaire vers la Corbeille." ;;
-        pt-BR) echo "ℹ️ É um binário avulso — só o autor sabe se ele guardou dados em outro lugar. O sheersweep move apenas o binário para a Lixeira." ;;
-        en-US|*)     echo "ℹ️ It's a bare binary — whether it kept data elsewhere, only its author knows. sheersweep moves just the binary to the Trash." ;;
-      esac ;;
-    un_bin_confirm)   # {name}
-      case "$SS_LANG" in
-        ja-JP) echo "「{name}」と入力すると上記をゴミ箱へ移動（それ以外でキャンセル）: " ;;
-        zh-TW) echo "輸入「{name}」就把以上移到垃圾桶（輸入其他則取消）：" ;;
-        zh-Hans) echo "输入“{name}”就把以上移到废纸篓（输入其他则取消）：" ;;
-        ko-KR) echo "'{name}'을(를) 입력하면 위 항목을 휴지통으로 옮깁니다(다른 입력은 취소): " ;;
-        es-ES) echo "Escribe '{name}' para mover lo de arriba a la Papelera (cualquier otra cosa cancela): " ;;
-        de-DE) echo "Tippe '{name}', um das oben in den Papierkorb zu legen (alles andere bricht ab): " ;;
-        fr-FR) echo "Saisissez '{name}' pour déplacer ce qui précède vers la Corbeille (toute autre saisie annule) : " ;;
-        pt-BR) echo "Digite '{name}' para mover o item acima para a Lixeira (qualquer outra coisa cancela): " ;;
-        en-US|*)     echo "Type '{name}' to move the above to the Trash (anything else cancels): " ;;
+        ja-JP) echo "素のバイナリです — データをどこかに置いたかは作者のみが知ります。sheersweep はバイナリ本体だけをゴミ箱へ移動します。" ;;
+        zh-TW) echo "這是顆裸二進位——它有沒有在別處留資料，只有作者知道。sheersweep 只把本體移到垃圾桶。" ;;
+        zh-Hans) echo "这是一个裸二进制文件——它有没有在别处留数据，只有作者知道。sheersweep 只把本体移到废纸篓。" ;;
+        ko-KR) echo "순수 바이너리입니다 — 다른 곳에 데이터를 남겼는지는 만든 사람만 압니다. sheersweep은 바이너리 본체만 휴지통으로 옮깁니다." ;;
+        es-ES) echo "Es un binario suelto — solo su autor sabe si guardó datos en otro lugar. sheersweep mueve solo el binario a la Papelera." ;;
+        de-DE) echo "Es ist ein nacktes Binary — ob es woanders Daten ablegte, weiß nur sein Autor. sheersweep legt nur das Binary in den Papierkorb." ;;
+        fr-FR) echo "C'est un binaire nu — seul son auteur sait s'il a laissé des données ailleurs. sheersweep ne déplace que le binaire vers la Corbeille." ;;
+        pt-BR) echo "É um binário avulso — só o autor sabe se ele guardou dados em outro lugar. O sheersweep move apenas o binário para a Lixeira." ;;
+        en-US|*)     echo "It's a bare binary — whether it kept data elsewhere, only its author knows. sheersweep moves just the binary to the Trash." ;;
       esac ;;
 
     # ---- tools (read-only CLI inventory) ----
@@ -3116,6 +3044,41 @@ pick_app() {
   # one-item batch it is rather than as a bare APP_TARGET.
 }
 
+# receipt_open <slug> <app-label> <bid> [extra header line…] -> sets RECEIPT_FILE
+# receipt_close                                                -> hands the store back
+#
+# The receipt IS the undo. Its format was written out in five places — four of
+# them character-for-character — which is four chances for a future verb to
+# drift a header `restore` then can't read. One definition; the callers say only
+# what is theirs (the slug, the label, and reclaim's rebuild lines).
+receipt_open() {   # sets RECEIPT_FILE
+  local slug="$1" app="$2" bid="$3"; shift 3
+  local rdir stamp
+  rdir="$REAL_HOME/.sheersweep/uninstalls"
+  mkdir -p "$rdir" 2>/dev/null
+  stamp="$(date +%Y%m%d-%H%M%S)"
+  RECEIPT_FILE="$rdir/$stamp-$slug.tsv"
+  {
+    echo "# sheersweep uninstall receipt"
+    echo "# app=$app"
+    echo "# bid=$bid"
+    echo "# date=$stamp"
+    # anything the caller adds sits between the identity and the format marker
+    [ "$#" -gt 0 ] && printf '%s\n' "$@"
+    # NUL-terminated dest/orig pairs. Splitting on the first NUL means neither a
+    # TAB nor a NEWLINE in any path — nor in the app name — can corrupt the parse.
+    echo "# format=nul-pairs"
+    printf '\0'                # end-of-header sentinel: the pairs start here
+  } > "$RECEIPT_FILE" 2>/dev/null
+}
+
+receipt_close() {   # $1 = how many items actually moved
+  chown -R "$(stat -f %u "$REAL_HOME" 2>/dev/null):$(stat -f %g "$REAL_HOME" 2>/dev/null)" "$REAL_HOME/.sheersweep" 2>/dev/null
+  # a receipt for nothing is a file `restore` would offer and then do nothing with
+  [ "${1:-0}" -eq 0 ] && rm -f "$RECEIPT_FILE" 2>/dev/null
+  return 0
+}
+
 # Move one path into a specific account's Trash (recoverable). $1=path $2=ownerHome
 # Sets TRASH_DEST to the new location on success (empty if nothing moved), so the
 # caller can record a receipt that `restore` later reads to put things back.
@@ -3359,7 +3322,7 @@ do_uninstall() {
   if [ "$DRY" -eq 1 ]; then printf '\n'; t un_dry_note; return 0; fi
 
   # --- typed-name confirmation (informed consent, GitHub-delete style) --------
-  m="$(t un_confirm)"; printf '%s' "${m//\{name\}/$name}"
+  m="$(t confirm_name)"; printf '%s' "${m//\{name\}/$name}"
   local reply=""; read -r reply || true
   if [ "$reply" != "$name" ]; then t un_cancelled; return 0; fi
 
@@ -3380,28 +3343,13 @@ do_uninstall() {
   # or a NEWLINE — both legal in a macOS filename — can't corrupt the parse. The
   # leading "# ..." header stays human-readable (its fields are controlled).
 # shellcheck disable=SC2034  # MV_* are read/written by trash_one/report_moves via dynamic scope
-  local rdir rfile stamp MV_TRIED=0 MV_MOVED=0 MV_STUCK_CONT=0
-  rdir="$REAL_HOME/.sheersweep/uninstalls"
-  mkdir -p "$rdir" 2>/dev/null
-  stamp="$(date +%Y%m%d-%H%M%S)"
-  rfile="$rdir/$stamp-$bid.tsv"
-  # Header is record #1 (everything up to the first NUL); data records follow as
-  # NUL-terminated dest/orig pairs. Splitting on the first NUL means neither a TAB
-  # nor a NEWLINE in any path — nor in the app name — can corrupt the parse.
-  {
-    echo "# sheersweep uninstall receipt"
-    echo "# app=$name"
-    echo "# bid=$bid"
-    echo "# date=$stamp"
-    echo "# format=nul-pairs"   # data below: NUL-terminated dest, NUL-terminated orig, repeated
-    printf '\0'                 # end-of-header sentinel: data (NUL-pairs) starts here
-  } > "$rfile" 2>/dev/null
+  local rfile MV_TRIED=0 MV_MOVED=0 MV_STUCK_CONT=0
+  receipt_open "$bid" "$name" "$bid"; rfile="$RECEIPT_FILE"
   for i in "${!ITEM_PATH[@]}"; do
     trash_one "${ITEM_PATH[$i]}" "${ITEM_OWNER[$i]}" "$rfile"
   done
   # hand the receipt to the real user (we wrote it as root)
-  chown -R "$(stat -f %u "$REAL_HOME" 2>/dev/null):$(stat -f %g "$REAL_HOME" 2>/dev/null)" "$REAL_HOME/.sheersweep" 2>/dev/null
-  [ "$MV_MOVED" -eq 0 ] && rm -f "$rfile" 2>/dev/null
+  receipt_close "$MV_MOVED"
 
   printf '\n'
   m="$(t un_done)"; report_moves "${m//\{app\}/$name}"
@@ -3442,29 +3390,17 @@ do_uninstall_orphans() {
 
   if [ "$DRY" -eq 1 ]; then printf '\n'; t un_dry_note; return 0; fi
 
-  m="$(t un_orphans_confirm)"; printf '%s' "${m//\{n\}/$nids}"
+  m="$(t confirm_count)"; printf '%s' "${m//\{n\}/$nids}"
   local reply=""; read -r reply || true
   if [ "$reply" != "$nids" ]; then t un_cancelled; return 0; fi
 
 # shellcheck disable=SC2034  # MV_* are read/written by trash_one/report_moves via dynamic scope
   local rdir rfile stamp MV_TRIED=0 MV_MOVED=0 MV_STUCK_CONT=0
-  rdir="$REAL_HOME/.sheersweep/uninstalls"
-  mkdir -p "$rdir" 2>/dev/null
-  stamp="$(date +%Y%m%d-%H%M%S)"
-  rfile="$rdir/$stamp-orphans.tsv"
-  {
-    echo "# sheersweep uninstall receipt"
-    echo "# app=orphans ($nids ids)"
-    echo "# bid=orphans"
-    echo "# date=$stamp"
-    echo "# format=nul-pairs"
-    printf '\0'
-  } > "$rfile" 2>/dev/null
+  receipt_open orphans "orphans ($nids ids)" orphans; rfile="$RECEIPT_FILE"
   for i in "${!ITEM_PATH[@]}"; do
     trash_one "${ITEM_PATH[$i]}" "${ITEM_OWNER[$i]}" "$rfile"
   done
-  chown -R "$(stat -f %u "$REAL_HOME" 2>/dev/null):$(stat -f %g "$REAL_HOME" 2>/dev/null)" "$REAL_HOME/.sheersweep" 2>/dev/null
-  [ "$MV_MOVED" -eq 0 ] && rm -f "$rfile" 2>/dev/null
+  receipt_close "$MV_MOVED"
 
   printf '\n'
   m="$(t un_orphans_done)"; m="${m//\{n\}/$MV_MOVED}"
@@ -3506,29 +3442,17 @@ do_uninstall_startup() {
   if [ "$DRY" -eq 1 ]; then printf '\n'; t un_dry_note; return 0; fi
 
   printf '\n'
-  m="$(t un_startup_confirm)"; printf '%s' "${m//\{n\}/$n}"
+  m="$(t confirm_count)"; printf '%s' "${m//\{n\}/$n}"
   local reply=""; read -r reply || true
   if [ "$reply" != "$n" ]; then t un_cancelled; return 0; fi
 
 # shellcheck disable=SC2034  # MV_* are read/written by trash_one/report_moves via dynamic scope
   local rdir rfile stamp MV_TRIED=0 MV_MOVED=0 MV_STUCK_CONT=0
-  rdir="$REAL_HOME/.sheersweep/uninstalls"
-  mkdir -p "$rdir" 2>/dev/null
-  stamp="$(date +%Y%m%d-%H%M%S)"
-  rfile="$rdir/$stamp-startup.tsv"
-  {
-    echo "# sheersweep uninstall receipt"
-    echo "# app=startup items ($n)"
-    echo "# bid=startup"
-    echo "# date=$stamp"
-    echo "# format=nul-pairs"
-    printf '\0'
-  } > "$rfile" 2>/dev/null
+  receipt_open startup "startup items ($n)" startup; rfile="$RECEIPT_FILE"
   for i in "${!ITEM_PATH[@]}"; do
     trash_one "${ITEM_PATH[$i]}" "${ITEM_OWNER[$i]}" "$rfile"
   done
-  chown -R "$(stat -f %u "$REAL_HOME" 2>/dev/null):$(stat -f %g "$REAL_HOME" 2>/dev/null)" "$REAL_HOME/.sheersweep" 2>/dev/null
-  [ "$MV_MOVED" -eq 0 ] && rm -f "$rfile" 2>/dev/null
+  receipt_close "$MV_MOVED"
 
   printf '\n'
   m="$(t un_startup_done)"; report_moves "${m//\{n\}/$MV_MOVED}"
@@ -3623,7 +3547,7 @@ do_uninstall_brew() {
   printf '\n      %s\n\n' "$cmd"
   m="$(t un_brew_config)"; echo "${m//\{name\}/$name}"
   if [ "$DRY" -eq 1 ]; then printf '\n'; t un_dry_note; return 0; fi
-  m="$(t un_brew_confirm)"; printf '%s' "${m//\{name\}/$name}"
+  m="$(t confirm_name_run)"; printf '%s' "${m//\{name\}/$name}"
   reply=""; read -r reply || true
   if [ "$reply" != "$name" ]; then t un_cancelled; return 0; fi
   brew_run uninstall "$name" || return 1
@@ -3673,29 +3597,17 @@ do_uninstall_bin() {
   printf '\n'
   t un_bin_note
   if [ "$DRY" -eq 1 ]; then printf '\n'; t un_dry_note; return 0; fi
-  m="$(t un_bin_confirm)"; printf '%s' "${m//\{name\}/$q}"
+  m="$(t confirm_name)"; printf '%s' "${m//\{name\}/$q}"
   reply=""; read -r reply || true
   if [ "$reply" != "$q" ]; then t un_cancelled; return 0; fi
   # same receipt store and format as an app uninstall → `restore` undoes this too
 # shellcheck disable=SC2034  # MV_* are read/written by trash_one/report_moves via dynamic scope
   local rdir rfile stamp MV_TRIED=0 MV_MOVED=0 MV_STUCK_CONT=0
-  rdir="$REAL_HOME/.sheersweep/uninstalls"
-  mkdir -p "$rdir" 2>/dev/null
-  stamp="$(date +%Y%m%d-%H%M%S)"
-  rfile="$rdir/$stamp-bin-$q.tsv"
-  {
-    echo "# sheersweep uninstall receipt"
-    echo "# app=$q"
-    echo "# bid=unmanaged-binary"
-    echo "# date=$stamp"
-    echo "# format=nul-pairs"
-    printf '\0'
-  } > "$rfile" 2>/dev/null
+  receipt_open "bin-$q" "$q" unmanaged-binary; rfile="$RECEIPT_FILE"
   for f in "${hits[@]}"; do
     trash_one "$f" "$REAL_HOME" "$rfile"
   done
-  chown -R "$(stat -f %u "$REAL_HOME" 2>/dev/null):$(stat -f %g "$REAL_HOME" 2>/dev/null)" "$REAL_HOME/.sheersweep" 2>/dev/null
-  [ "$MV_MOVED" -eq 0 ] && rm -f "$rfile" 2>/dev/null
+  receipt_close "$MV_MOVED"
   printf '\n'
   m="$(t un_done)"; report_moves "${m//\{app\}/$q}"
   return 0
@@ -4305,7 +4217,7 @@ do_reclaim() {
   # PROVEN picks: one typed-count confirm for the whole batch
   if [ "${#SEL[@]}" -gt 0 ]; then
     local reply
-    m="$(t rc_confirm)"; m="${m//\{n\}/${#SEL[@]}}"
+    m="$(t confirm_count)"; m="${m//\{n\}/${#SEL[@]}}"
     printf '%s' "${m//\{size\}/$(od_human_kb "$sel_kb")}"
     reply=""; read -r reply || true
     if [ "$reply" != "${#SEL[@]}" ]; then SEL=(); sel_kb=0; t un_cancelled; fi
@@ -4321,7 +4233,7 @@ do_reclaim() {
       printf '  [ WARN ] %s   %s\n' "$(printf '%s' "${UNID_PATH[$ui]}" | vis)" "$(od_human_kb "${UNID_KB[$ui]}")"
       t rc_unid_contains
       rc_peek "${UNID_PATH[$ui]}"
-      m="$(t rc_unid_confirm)"; m="${m//\{name\}/$uname}"
+      m="$(t confirm_name)"; m="${m//\{name\}/$uname}"
       printf '%s' "${m//\{size\}/$(od_human_kb "${UNID_KB[$ui]}")}"
       ureply=""; read -r ureply || true
       if [ "$ureply" = "$uname" ]; then
@@ -4337,32 +4249,24 @@ do_reclaim() {
   fi
 
   # ---- one receipt for the run (kind=reclaim); PROVEN rows carry rebuild cmds -
-  local rdir rfile stamp tline MV_TRIED=0 MV_MOVED=0 MV_STUCK_CONT=0
-  rdir="$REAL_HOME/.sheersweep/uninstalls"
-  mkdir -p "$rdir" 2>/dev/null
-  stamp="$(date +%Y%m%d-%H%M%S)"
-  rfile="$rdir/$stamp-reclaim.tsv"
-  {
-    echo "# sheersweep uninstall receipt"
-    echo "# app=reclaim ($(( ${#SEL[@]} + ${#USEL[@]} )) dirs)"
-    echo "# bid=reclaim"
-    echo "# kind=reclaim"
-    echo "# date=$stamp"
-    local seen=$'\n'
-    if [ "${#SEL[@]}" -gt 0 ]; then for i in "${SEL[@]}"; do
-      tline="cd ${CAND_PATH[$i]%/*} && ${CAND_CMD[$i]}"
-      case "$seen" in *$'\n'"$tline"$'\n'*) ;; *)
-        echo "# rebuild=$tline"; seen="$seen$tline"$'\n' ;;
-      esac
-    done; fi
-    echo "# format=nul-pairs"
-    printf '\0'
-  } > "$rfile" 2>/dev/null
+  local rfile tline MV_TRIED=0 MV_MOVED=0 MV_STUCK_CONT=0
+  # reclaim's receipt carries a second undo: the command that rebuilds each
+  # tree. That is the only thing about it that isn't every other receipt, so
+  # it is the only thing it passes.
+  local extra=() seen=$'\n'
+  if [ "${#SEL[@]}" -gt 0 ]; then for i in "${SEL[@]}"; do
+    tline="cd ${CAND_PATH[$i]%/*} && ${CAND_CMD[$i]}"
+    case "$seen" in *$'\n'"$tline"$'\n'*) ;; *)
+      extra+=("# rebuild=$tline"); seen="$seen$tline"$'\n' ;;
+    esac
+  done; fi
+  receipt_open reclaim "reclaim ($(( ${#SEL[@]} + ${#USEL[@]} )) dirs)" reclaim \
+    "# kind=reclaim" ${extra[@]+"${extra[@]}"}
+  rfile="$RECEIPT_FILE"
   # bash 3.2: expanding an empty array under set -u errors, so guard each loop.
   if [ "${#SEL[@]}"  -gt 0 ]; then for i in "${SEL[@]}";  do trash_one "${CAND_PATH[$i]}" "${CAND_OWNER[$i]}" "$rfile"; done; fi
   if [ "${#USEL[@]}" -gt 0 ]; then for i in "${USEL[@]}"; do trash_one "${UNID_PATH[$i]}" "${UNID_OWNER[$i]}" "$rfile"; done; fi
-  chown -R "$(stat -f %u "$REAL_HOME" 2>/dev/null):$(stat -f %g "$REAL_HOME" 2>/dev/null)" "$REAL_HOME/.sheersweep" 2>/dev/null
-  [ "$MV_MOVED" -eq 0 ] && rm -f "$rfile" 2>/dev/null
+  receipt_close "$MV_MOVED"
 
   printf '\n'
   m="$(t rc_done)"; m="${m//\{n\}/$MV_MOVED}"

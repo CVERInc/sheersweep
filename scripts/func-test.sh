@@ -271,7 +271,7 @@ setup
   fi )
 teardown
 
-# (L1) leftovers classification: lf_scan must sort launchd plists into DEAD (the
+# (L1) startup-item classification: lf_scan must sort launchd plists into DEAD (the
 # launched binary is gone), REVIEW (interpreter that references a now-missing
 # /Applications app), and KEPT (program exists, OR Apple's own job, OR an
 # interpreter with no app refs). This is the honest brain — a working updater must
@@ -360,7 +360,8 @@ else
 fi
 teardown
 
-# (L2) restore must undo a LEFTOVERS sweep too: a leftovers receipt (app=leftovers)
+# (L2) BACKWARD COMPATIBILITY: `leftovers` was retired in 0.13.0, but receipts
+# it wrote are still on people's disks. restore must read one (app=leftovers)
 # moves an orphaned plist back from the Trash to where it lived. Proves the two
 # verbs share one undo.
 setup
@@ -374,9 +375,9 @@ rfile="$REAL_HOME/.sheersweep/uninstalls/20260616-000010-leftovers.tsv"
   printf '%s\0%s\0' "$REAL_HOME/.Trash/com.ea.origin.ESHelper.plist" "$orig"; } > "$rfile"
 printf 'y\n' | do_restore >/dev/null 2>&1
 if [ -f "$orig" ] && [ "$(cat "$orig")" = "plist" ] && [ -f "$rfile.restored" ]; then
-  pass "restore undoes a leftovers sweep (leftovers receipt round-trips)"
+  pass "restore still reads a receipt written by the retired leftovers verb"
 else
-  fail "restore failed to undo a leftovers sweep (orig exists: $([ -f "$orig" ] && echo y || echo n))"
+  fail "restore cannot read a pre-0.13.0 leftovers receipt (orig exists: $([ -f "$orig" ] && echo y || echo n))"
 fi
 teardown
 
@@ -641,7 +642,7 @@ else
   fail "pick_parse misparsed (see above)"
 fi
 
-# (P1 guard) honest move accounting: three real runs "succeeded" (✅) while
+# (P1 guard) honest move accounting: three real runs "succeeded" while
 # every macOS-protected container silently stayed put. trash_one must count
 # tried vs moved, mark a stuck item ❌ out loud, flag the container case, and
 # report_moves must turn any shortfall into a [ FAIL ] with real numbers — plus
@@ -778,7 +779,7 @@ e2=0; [ -n "$RC_RECEIPT" ] && [ "$(receipt_header "$RC_RECEIPT" kind)" = "reclai
 e3=0; receipt_header_all "$RC_RECEIPT" rebuild 2>/dev/null | grep -q "cd .* && npm install" && e3=1
 e4=0; grep -q "\[ DONE \]" "$SBX/rc.out" && e4=1
 if [ "$e1$e2$e3$e4" = "1111" ]; then
-  pass "reclaim e2e: moved to Trash, receipt kind=reclaim with rebuild command, honest ✅"
+  pass "reclaim e2e: moved to Trash, receipt kind=reclaim with rebuild command, clean run carries no badge"
 else
   fail "reclaim e2e wrong (moved=$e1 kind=$e2 rebuild=$e3 done=$e4) $(tail -3 "$SBX/rc.out")"
 fi

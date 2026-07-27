@@ -4,6 +4,42 @@ All notable changes to sheersweep are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.13.1]
+
+### Changed — seven consent prompts making three promises
+
+`uninstall`, its brew and bare-binary branches, the orphan batch, `reclaim`, its
+unidentified tier and the new startup section each had their own confirm string,
+nine locales deep. They said three things: type a **name** and it goes to the
+Trash, type a **name** and a command runs, type a **count** and a batch goes.
+
+Sixty-three strings become twenty-seven. The friction *is* the consent — a
+prompt that re-explains what the header above it just said is how a wall of text
+trains a rubber stamp.
+
+Two of them also got more truthful than they were. A wrong name in a batch skips
+*that* item and the rest still come, which "anything else cancels" said wasn't
+so; count-consent really is all-or-nothing, so it keeps "cancels".
+
+### Removed — decorative glyphs from narration, and two keys nobody printed
+
+`🧪` on the dry-run notes, `🔍` on the scanning notices, `ℹ️` on the info lines —
+seventy-two of them across ten keys, while the sweep's own narration had already
+dropped them and read fine. An info line isn't a state, so it takes no mark.
+
+`dry_banner` and `dg_heavy_scanning` were translated nine ways each and printed
+nowhere. Found by asking which keys the file references outside its own table.
+
+### Changed — the receipt format is written down once
+
+The receipt **is** the undo, and its header was spelled out in five places, four
+of them character-for-character. That is four chances for a future verb to drift
+a field `restore` then can't read. `receipt_open` / `receipt_close` hold it now;
+callers say only what is theirs, and reclaim passes its rebuild commands as the
+one thing about its receipt that isn't every other receipt.
+
+Net **−96 lines** and six fewer keys, with no verb losing anything it did.
+
 ## [0.13.0]
 
 ### Removed — the `leftovers` verb. The picker asks its question now.
