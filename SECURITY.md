@@ -142,9 +142,19 @@ never escalate and never need a password.
   ```
 
   A directory you just made, owned by you, with no flags and no ACL, still
-  cannot be *renamed* out of that folder. That EPERM is the whole story: it is
-  the same call `sheersweep` makes to move something to the Trash, and it is why
-  the shortfall is reported rather than worked around.
+  cannot be *renamed* out of that folder — and `rmdir` on that same empty
+  directory is refused too. macOS will even adopt it: `containermanagerd` drops
+  a `.com.apple.containermanagerd.metadata.plist` inside, so the folder you
+  created is now a container you cannot delete. **Creating is permitted; moving
+  and removing are not.**
+
+  That EPERM is the whole story: it is the same call `sheersweep` makes to move
+  something to the Trash, which is why the shortfall is reported rather than
+  worked around.
+
+  The other half of the claim is verified too — granting the terminal Full Disk
+  Access and re-running does complete the move, receipt and all. The `[ HELD ]`
+  line is not a shrug; it is the actual next step.
 - The multi-account guards above reduce the demonstrated attacks to races or
   refusals; they are the honest bound a shell script running as root can enforce,
   not a claim of formal isolation. On a single-user Mac none of this applies.

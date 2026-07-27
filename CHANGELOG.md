@@ -4,6 +4,24 @@ All notable changes to sheersweep are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.15.6]
+
+### Changed — `SECURITY.md` now records what a real machine proved, both halves
+
+The container protection turned out to be stronger than the document said.
+`rmdir` on an empty directory you just created in `~/Library/Containers` is
+refused as well, and macOS *adopts* it — `containermanagerd` drops a metadata
+plist inside, so the folder you made is a container you can no longer delete.
+**Creating is permitted; moving and removing are not.**
+
+And the other half, which had never been checked: granting the terminal Full
+Disk Access and re-running **does** complete the move, receipt and all. The
+`[ HELD ]` line is not a shrug — it is the actual next step, and now the document
+says so because someone followed it.
+
+*(Both established during a real multi-account run: 8 items across two accounts,
+`[ DONE ] Moved 8 items from 5 removed apps`, verified against the receipt.)*
+
 ## [0.15.5]
 
 ### Changed — the container claim is now something you can re-run
