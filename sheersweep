@@ -32,7 +32,7 @@
 #   each with the native way to remove it. Changes nothing; never needs sudo.
 set -u
 
-VERSION="0.14.0"
+VERSION="0.15.0"
 
 # ============================================================================
 # i18n — en-US · ja-JP · zh-TW · zh-Hans · ko-KR · es-ES · de-DE · fr-FR · pt-BR.
@@ -2943,9 +2943,17 @@ pick_app() {
   # preview can never disagree about what an app is made of. Measured on this
   # machine: 14 apps, 0.68s — the whole list, not per row.
   #
-  # SORTED BY NAME, and the ARRAY is sorted, not just the display: row N is
-  # `apps[N-1]` for the rest of this function, so a display-only sort would
-  # uninstall the wrong app.
+  # SORTED BY SIZE, largest first — like every other list this tool prints.
+  #
+  # This was alphabetical at first, on the theory that you look an app up by
+  # what it's called. But looking one up already has its own door:
+  # `sheersweep uninstall Discord`. Nobody opens the picker knowing the answer —
+  # they open it to ask what is on this machine and what each thing costs, and
+  # that question wants the heaviest row at the top. It is also the reason the
+  # footprint is measured at all: the size is what changes the decision.
+  #
+  # The ARRAY is sorted, not just the display: row N is `apps[N-1]` for the rest
+  # of this function, so a display-only sort would uninstall the wrong app.
   local _fp_rows="" _base _bid _kb
   for appp in "${apps[@]}"; do
     _base="$(basename "$appp")"; _base="${_base%.app}"
@@ -2953,15 +2961,15 @@ pick_app() {
     gather_footprint "$appp" "${_bid:-$_base}" "$_base" 0
     _kb=0
     [ "${#ITEM_PATH[@]}" -gt 0 ] && _kb="$(du -sck "${ITEM_PATH[@]}" 2>/dev/null | tail -1 | cut -f1)"
-    _fp_rows="$_fp_rows$_base"$'\t'"${_kb:-0}"$'\t'"$appp"$'\n'
+    _fp_rows="$_fp_rows${_kb:-0}"$'\t'"$_base"$'\t'"$appp"$'\n'
     printf '.' >&2                     # one tick per app weighed — proof of life
   done
   printf '\n' >&2
   apps=(); local _names=() _sizes=()
-  while IFS=$'\t' read -r _base _kb appp; do
+  while IFS=$'\t' read -r _kb _base appp; do
     [ -n "$appp" ] || continue
     apps+=("$appp"); _names+=("$_base"); _sizes+=("$_kb")
-  done < <(printf '%s' "$_fp_rows" | LC_ALL=C sort -f -t"$(printf '\t')" -k1,1)
+  done < <(printf '%s' "$_fp_rows" | LC_ALL=C sort -t"$(printf '\t')" -k1,1rn -k2,2f)
 
   # ── now the whole menu, in one breath: apps, then what apps left behind ──
   printf '%s (%d)\n' "$(t un_pick_header)" "${#apps[@]}"   # show the full count → no hidden "next page"
@@ -2969,7 +2977,7 @@ pick_app() {
   ROW_KIND=(); ROW_REF=()
   for i in "${!apps[@]}"; do
     n=$((n + 1)); ROW_KIND+=("app"); ROW_REF+=("${apps[$i]}")
-    printf '   %3d) %-44s %8s\n' "$n" "$(printf '%s' "${_names[$i]}" | vis)" "$(od_human_kb "${_sizes[$i]}")"
+    printf '   %3d) %8s  %s\n' "$n" "$(od_human_kb "${_sizes[$i]}")" "$(printf '%s' "${_names[$i]}" | vis)"
   done
   # 🧟 rows are numbered continuously with the apps; picking one runs the same
   # footprint→preview→typed-confirm→Trash→receipt flow, keyed by the bundle id.

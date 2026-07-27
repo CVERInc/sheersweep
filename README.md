@@ -143,8 +143,8 @@ driver and updater bundles under `/Library`, and every Launch Agent/Daemon
 whose program still exists. No name-guessing anywhere — the id **is** the
 identity, and it is the whole of what's shown. (A guessed vendor tag used to sit
 beside it; measured against 1073 real bundle ids it was the id's own last
-component 1067 times.) The size leads because this section is size-sorted, and
-the id goes last so no length of id can shear the columns. Everything is
+component 1067 times.) The size leads because every list this tool prints is
+size-sorted, and the id goes last so no length of id can shear the columns. Everything is
 listed — the small scraps too, numbered under a divider at the bottom, because
 you can't select what you can't see. Pick one and it runs the same preview →
 typed-confirm → Trash → receipt flow; pick **many** (`5 7-8 19`, or `all` for

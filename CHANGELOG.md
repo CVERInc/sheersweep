@@ -4,6 +4,36 @@ All notable changes to sheersweep are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.15.0]
+
+### Changed — the app list is size-sorted too, so the rule has no exception left
+
+Yesterday's rule was "the **sort key** leads", written to justify one list
+holding two shapes: a name-sorted app section leading with the name, a
+size-sorted orphan section leading with the size.
+
+Asked whether the rule and the interface were really the same thing, the honest
+answer was no — the name-sorted section was the exception and the rule had been
+bent around it. Sorting everything by size removes the exception, the clause,
+and a shape:
+
+```
+▸ Apps you can uninstall (13)
+     1)   1.4 GB  ChatGPT
+     2)   686 MB  Google Drive
+     3)   562 MB  Obsidian
+     …
+    13)     4 KB  Claude Code URL Handler
+```
+
+It is also just better. **A picker is the discovery path, not the lookup path**
+— anyone who knows which app they want already types
+`sheersweep uninstall Discord`. What is left for the list is *what is on this
+machine and what does each thing cost*, and that question wants the heaviest row
+at the top. Which is the same reason the footprint is measured at all.
+
+Ties break by name, so two same-sized apps don't shuffle between runs.
+
 ## [0.14.0]
 
 ### Removed — the guessed vendor hint
