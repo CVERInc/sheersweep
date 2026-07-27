@@ -4,6 +4,31 @@ All notable changes to sheersweep are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.13.2]
+
+### Fixed — `restore --list` rendered an unreadable receipt as an empty one
+
+Two receipts on the author's own disk predate the NUL-sentinel format. The
+header parser splits on the first NUL, so for those files every field came back
+empty and the row printed as blanks beside `0 item(s)` — indistinguishable from
+an uninstall that moved nothing.
+
+It says what it is now, and the bare `restore` path refuses one instead of
+walking the whole flow to restore nothing and calling it a success.
+
+**Deliberately not fixed by guessing.** The old layout was TAB-separated, and it
+was replaced *because* a path may contain a TAB — a mis-parse here puts a file
+back in the wrong place. Naming the file and stopping is the honest end of that
+trade.
+
+Found by reading real output rather than a fixture: the two rows were sitting at
+the top of the list, sorted first because their date field was empty.
+
+### Fixed — the restore list had no row mark
+
+`   20260616-101300   ·   leftovers   ·   2 item(s)` → `   ·   20260616-…`.
+A row you can read but not select takes `·`, like every other one.
+
 ## [0.13.1]
 
 ### Changed — seven consent prompts making three promises

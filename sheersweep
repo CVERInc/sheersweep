@@ -32,7 +32,7 @@
 #   each with the native way to remove it. Changes nothing; never needs sudo.
 set -u
 
-VERSION="0.13.1"
+VERSION="0.13.2"
 
 # ============================================================================
 # i18n — en-US · ja-JP · zh-TW · zh-Hans · ko-KR · es-ES · de-DE · fr-FR · pt-BR.
@@ -1350,6 +1350,18 @@ t() {
         fr-FR) echo "{n} élément(s)" ;;
         pt-BR) echo "{n} item(ns)" ;;
         en-US|*)     echo "{n} item(s)" ;;
+      esac ;;
+    rs_unreadable)   # a receipt written before the NUL-sentinel format
+      case "$SS_LANG" in
+        ja-JP) echo "[ WARN ] 読み取れないレシート（{file}）— 現在の形式より前のものです" ;;
+        zh-TW) echo "[ WARN ] 讀不懂這份收據（{file}）——它比現在的格式更早" ;;
+        zh-Hans) echo "[ WARN ] 读不懂这份收据（{file}）——它比现在的格式更早" ;;
+        ko-KR) echo "[ WARN ] 읽을 수 없는 영수증({file}) — 현재 형식보다 이전입니다" ;;
+        es-ES) echo "[ WARN ] No puedo leer este recibo ({file}) — es anterior al formato actual" ;;
+        de-DE) echo "[ WARN ] Diese Quittung ist nicht lesbar ({file}) — älter als das heutige Format" ;;
+        fr-FR) echo "[ WARN ] Reçu illisible ({file}) — antérieur au format actuel" ;;
+        pt-BR) echo "[ WARN ] Não consigo ler este recibo ({file}) — é anterior ao formato atual" ;;
+        en-US|*) echo "[ WARN ] Can't read this receipt ({file}) — it predates the current format" ;;
       esac ;;
     rs_restored)
       case "$SS_LANG" in
@@ -3779,10 +3791,20 @@ do_restore() {
       had=1
       app="$(receipt_header "$f" app)"
       date="$(receipt_header "$f" date)"
+      # A receipt with no NUL sentinel predates this format. Its header can't be
+      # split off, so every field comes back empty and the row rendered as blanks
+      # beside "0 item(s)" — a line that looked like an empty uninstall rather
+      # than like a file we can't read. Guessing at the old TAB layout would be
+      # worse: it was replaced BECAUSE a path may contain a TAB, and a mis-parse
+      # here restores a file to the wrong place. So: say so, and don't offer it.
+      if [ -z "$date" ] && [ -z "$app" ]; then
+        m="$(t rs_unreadable)"; echo "   ${m//\{file\}/$(basename "$f")}"
+        continue
+      fi
       local n; n="$(receipt_count "$f")"
       local mark=""; case "$f" in *.restored) mark="$(t rs_restored)" ;; esac
       local nrow; nrow="$(t rs_list_count)"; nrow="${nrow//\{n\}/$n}"
-      printf '   %s   ·   %s   ·   %s%s\n' "$date" "$app" "$nrow" "$mark"
+      printf '   ·   %s   ·   %s   ·   %s%s\n' "$date" "$app" "$nrow" "$mark"
     done
     [ "$had" -eq 0 ] && t rs_none
     return 0
@@ -3796,6 +3818,13 @@ do_restore() {
 
   app="$(receipt_header "$newest" app)"
   date="$(receipt_header "$newest" date)"
+  # Same guard as the listing: an unreadable receipt would otherwise walk the
+  # whole flow and restore nothing, reporting success. Refuse, and name the file
+  # so it can be looked at by hand.
+  if [ -z "$date" ] && [ -z "$app" ]; then
+    m="$(t rs_unreadable)"; echo "${m//\{file\}/$(basename "$newest")}" >&2
+    return 1
+  fi
   m="$(t rs_header)"; m="${m//\{app\}/$app}"; echo "${m//\{date\}/$date}"
   while IFS= read -r -d '' dest && IFS= read -r -d '' orig; do
     printf '   %s\n' "$orig"
