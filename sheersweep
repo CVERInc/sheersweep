@@ -32,7 +32,7 @@
 #   each with the native way to remove it. Changes nothing; never needs sudo.
 set -u
 
-VERSION="0.15.3"
+VERSION="0.15.4"
 
 # ============================================================================
 # i18n — en-US · ja-JP · zh-TW · zh-Hans · ko-KR · es-ES · de-DE · fr-FR · pt-BR.
@@ -969,6 +969,18 @@ t() {
         fr-FR) echo "[ FAIL ] impossible à déplacer — toujours en place (raison plus bas)" ;;
         pt-BR) echo "[ FAIL ] não foi possível mover — continua no lugar (motivo abaixo)" ;;
         en-US|*)     echo "[ FAIL ] couldn't be moved — still in place (reason at the end)" ;;
+      esac ;;
+    un_none_moved)   # {total} — nothing moved at all; there is no undo to offer
+      case "$SS_LANG" in
+        ja-JP) echo "[ FAIL ] {total} 件のいずれもゴミ箱へ移動できませんでした — すべて元の場所のままです。" ;;
+        zh-TW) echo "[ FAIL ] {total} 個項目一個都沒能搬進垃圾桶——全部都還在原地。" ;;
+        zh-Hans) echo "[ FAIL ] {total} 个项目一个都没能搬进垃圾桶——全部都还在原地。" ;;
+        ko-KR) echo "[ FAIL ] {total}개 중 하나도 휴지통으로 옮기지 못했습니다 — 전부 그대로 있습니다." ;;
+        es-ES) echo "[ FAIL ] Ninguno de los {total} elementos pudo ir a la Papelera — todo sigue donde estaba." ;;
+        de-DE) echo "[ FAIL ] Keines der {total} Objekte konnte in den Papierkorb — alles liegt noch da." ;;
+        fr-FR) echo "[ FAIL ] Aucun des {total} éléments n'a pu aller à la Corbeille — tout est resté en place." ;;
+        pt-BR) echo "[ FAIL ] Nenhum dos {total} itens pôde ir para o Lixo — está tudo onde estava." ;;
+        en-US|*) echo "[ FAIL ] None of the {total} items could be moved to the Trash — everything is still in place." ;;
       esac ;;
     un_partial)   # {moved} · {total}
       case "$SS_LANG" in
@@ -3196,6 +3208,13 @@ report_moves() {   # $1 = the fully-successful ✅ line, already formatted
   local m
   if [ "$MV_TRIED" -gt 0 ] && [ "$MV_MOVED" -eq "$MV_TRIED" ]; then
     echo "$1"
+  elif [ "$MV_MOVED" -eq 0 ]; then
+    # Nothing moved, so there is nothing to undo — and the old line said
+    # "Undo the moved ones: sheersweep restore" anyway. Following it would have
+    # restored the PREVIOUS receipt, which is somebody's deliberate uninstall.
+    # A pointer is a promise; this one was pointing at the wrong thing.
+    m="$(t un_none_moved)"; echo "${m//\{total\}/$MV_TRIED}"
+    [ "$MV_STUCK_CONT" -eq 1 ] && t un_protected_hint
   else
     m="$(t un_partial)"; m="${m//\{moved\}/$MV_MOVED}"; echo "${m//\{total\}/$MV_TRIED}"
     [ "$MV_STUCK_CONT" -eq 1 ] && t un_protected_hint
@@ -3253,9 +3272,20 @@ gather_footprint() {   # $1 = app path (may be "")  $2 = bid  $3 = name  $4 = or
     done < <(catalog_extra_rel "$bid")
   done
 
-  # system-wide bits + the .app itself → the running user's Trash (Finder-like)
+  # The .app belongs to whichever Applications folder it lives in. It used to be
+  # filed under "system-wide" unconditionally, which put `/Users/you/Applications
+  # /Foo.app` beneath a header saying the opposite. It still goes to the running
+  # user's Trash (Finder-like) — that is the owner, not the label.
+  if [ -n "$app" ]; then
+    case "$app" in
+      /Users/*) ascope="$(t acct)$(printf '%s' "${app#/Users/}" | cut -d/ -f1)" ;;
+      *)        ascope="$(t system)" ;;
+    esac
+    add "$app" "$REAL_HOME"
+  fi
+
+  # system-wide bits → the running user's Trash (Finder-like)
   ascope="$(t system)"
-  add "$app"                                                "$REAL_HOME"
   [ "$orphan" -eq 0 ] && add "/Library/Application Support/$name" "$REAL_HOME"
   add "/Library/Caches/$bid"                                "$REAL_HOME"
   for f in "/Library/LaunchAgents/$bid"*.plist;        do add "$f" "$REAL_HOME"; done

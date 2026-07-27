@@ -449,6 +449,33 @@ else
 fi
 teardown
 
+# (P2) the three accounting outcomes each say their own thing — and the ZERO case
+# must not offer an undo. Real-machine find: with 0 of 7 moved, the shortfall line
+# still read "Undo the moved ones: sheersweep restore". There was nothing to undo,
+# the receipt had already been discarded, and following it would have restored the
+# PREVIOUS receipt — somebody's deliberate uninstall. A pointer is a promise.
+setup
+# shellcheck disable=SC2034  # read by report_moves via dynamic scope
+MV_MOVED=3; MV_TRIED=3; MV_STUCK_CONT=0
+ok_all="$(report_moves "ALL-GOOD")"
+# shellcheck disable=SC2034
+MV_MOVED=1; MV_TRIED=3; MV_STUCK_CONT=1
+ok_part="$(report_moves "ALL-GOOD")"
+# shellcheck disable=SC2034
+MV_MOVED=0; MV_TRIED=7; MV_STUCK_CONT=1
+ok_none="$(report_moves "ALL-GOOD")"
+o1=0; o2=0; o3=0; o4=0
+[ "$ok_all" = "ALL-GOOD" ] && o1=1
+case "$ok_part" in *"restore"*) o2=1 ;; esac
+case "$ok_none" in *"restore"*) o3=0 ;; *) o3=1 ;; esac
+case "$ok_none" in *"[ HELD ]"*) o4=1 ;; esac
+if [ "$o1$o2$o3$o4" = "1111" ]; then
+  pass "accounting: full run stays clean · partial offers the undo · ZERO offers none, still names the reason"
+else
+  fail "accounting outcomes wrong (all=$o1 partial=$o2 zero-has-no-undo=$o3 zero-keeps-hint=$o4)"
+fi
+teardown
+
 # (C1) the sweep's clean(): a real run empties a dir's CONTENTS but KEEPS the dir;
 # --dry-run reports and deletes nothing. This is the only delete path in the sweep.
 setup

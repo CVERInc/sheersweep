@@ -4,6 +4,45 @@ All notable changes to sheersweep are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.15.4]
+
+### Fixed — an undo pointer that would have undone the wrong thing
+
+With every item stuck behind Full Disk Access, a real run printed:
+
+```
+[ FAIL ] only 0 of 7 items could be moved to the Trash — the rest are still
+         in place. Undo the moved ones: sheersweep restore
+```
+
+Nothing had moved, so there was nothing to undo — and the receipt for a run that
+moved nothing is discarded by design. Following that pointer would have restored
+the **previous** receipt: a deliberate uninstall from a minute earlier.
+
+A pointer is a promise. Zero moved now gets its own sentence, with no undo
+offered and the `[ HELD ]` explanation still there, because the reason is still
+worth knowing:
+
+```
+[ FAIL ] None of the 7 items could be moved to the Trash — everything is still
+         in place.
+[ HELD ] What stayed behind are app CONTAINERS … Full Disk Access …
+```
+
+The suite had a case for a *partial* shortfall and none for a total one — the
+gap that let a wrong pointer ship. It has all three now.
+
+### Fixed — `▸ system-wide` over a path inside your own home
+
+```
+▸ system-wide
+   ·     4 KB  /Users/chodaict/Applications/Claude Code URL Handler.app
+```
+
+The `.app` was filed under the system scope unconditionally. It now sits under
+whichever account's Applications folder it lives in. Where it goes is unchanged
+— the running user's Trash, Finder-like; that is the owner, not the label.
+
 ## [0.15.3]
 
 ### Fixed — one file was listed in two sections, and consented to twice
