@@ -4,6 +4,43 @@ All notable changes to sheersweep are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.14.0]
+
+### Removed — the guessed vendor hint
+
+Every orphan row carried a parenthesised guess derived from its own id:
+
+```
+com.dropbox.DropboxMacUpdate    5.3 MB  (dropboxmacupdate?)
+```
+
+Measured against **1073 real bundle ids** on a working machine: **1067 of the
+hints were the id's own last component, lowercased** — printed two columns from
+the id itself. Of the six that stepped back to a vendor, two were worse than the
+tail (`com.apple.quicklook.ui.helper` → `(ui?)`). Four in a thousand earned it.
+
+It cost more than the noise. The startup section uses the same parentheses for a
+*fact* and the same `?` for a guess; a mark that is filler 99% of the time
+teaches the reader to stop looking inside the parentheses at all.
+
+### Fixed — a long bundle id no longer shears the columns
+
+`com.getdropbox.dropbox.alternatenotificationservice` is 51 characters and the
+id column was 44, so the size column slid right and the list came apart.
+
+Padding it wider would only move the number at which it breaks. The fix is the
+rule the disk map has followed all along: **the sort key leads and the
+variable-width field goes last**, so nothing is lined up against it and no input
+can break the layout. These rows are size-sorted, so the size leads:
+
+```
+    19)    61 KB  com.getdropbox.dropbox.garcon
+    20)    33 KB  com.getdropbox.dropbox.alternatenotificationservice
+```
+
+The app rows keep name-first because they are name-sorted — which is the same
+rule, and means the first column of any section tells you how it is ordered.
+
 ## [0.13.2]
 
 ### Fixed — `restore --list` rendered an unreadable receipt as an empty one

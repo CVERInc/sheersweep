@@ -32,7 +32,7 @@
 #   each with the native way to remove it. Changes nothing; never needs sudo.
 set -u
 
-VERSION="0.13.2"
+VERSION="0.14.0"
 
 # ============================================================================
 # i18n — en-US · ja-JP · zh-TW · zh-Hans · ko-KR · es-ES · de-DE · fr-FR · pt-BR.
@@ -2644,16 +2644,6 @@ orphan_is_strong() {   # $1 = id  $2… = homes
   return 1
 }
 
-# A recognition hint from the id itself — clearly marked as a guess by the
-# caller's "(…?)" wrapper, because the id is the only identity we can prove.
-orphan_hint() {   # $1 = id → one lowercase word, "" if nothing useful
-  local last prev
-  last="${1##*.}"; prev="${1%.*}"; prev="${prev##*.}"
-  case "$(printf '%s' "$last" | LC_ALL=C tr '[:upper:]' '[:lower:]')" in
-    client|app|mac|macos|osx|desktop|helper|agent|main|core|ui|gui|com|net|org) last="$prev" ;;
-  esac
-  printf '%s' "$last" | LC_ALL=C tr '[:upper:]' '[:lower:]'
-}
 
 # The one size formatter. Input is KB as du/df report it (1024-byte blocks);
 # output is DECIMAL, because decimal is what this Mac shows its owner everywhere
@@ -2679,16 +2669,16 @@ od_human_kb() {   # KB (1024-byte blocks) → "12 KB" / "340 MB" / "1.2 GB", dec
 }
 
 # The discovery driver. Requires collect_claims to have run. Fills, largest
-# first: OD_IDS / OD_SIZE / OD_HINT (a strong family or ≥ 1 MB) and, below the
-# fold, OD_TIDS / OD_TSIZE / OD_THINT — the small stuff (a lone preferences
+# first: OD_IDS / OD_SIZE (a strong family or ≥ 1 MB) and, below the
+# fold, OD_TIDS / OD_TSIZE — the small stuff (a lone preferences
 # plist and the like). The tail is LISTED, not hidden: size-sorting already
 # sinks it to the bottom, and hiding evidence behind a count line would be a
 # verdict — the one thing this tool promises not to make for you. Args
 # override the homes to scan (for tests); default = every real /Users home.
 # shellcheck disable=SC2120  # args are the test seam; production calls take the default
 orphan_discover() {
-  OD_IDS=(); OD_SIZE=(); OD_HINT=(); OD_KB=()
-  OD_TIDS=(); OD_TSIZE=(); OD_THINT=(); OD_TKB=()
+  OD_IDS=(); OD_SIZE=(); OD_KB=()
+  OD_TIDS=(); OD_TSIZE=(); OD_TKB=()
   local homes=() home id kb rows="" tail="" paths=() p
   if [ "$#" -gt 0 ]; then homes=("$@"); else
     for home in /Users/*; do
@@ -2716,11 +2706,11 @@ orphan_discover() {
   )
   while read -r kb id; do
     [ -z "$id" ] && continue
-    OD_IDS+=("$id"); OD_SIZE+=("$(od_human_kb "$kb")"); OD_HINT+=("$(orphan_hint "$id")"); OD_KB+=("$kb")
+    OD_IDS+=("$id"); OD_SIZE+=("$(od_human_kb "$kb")"); OD_KB+=("$kb")
   done < <(printf '%s' "$rows" | LC_ALL=C sort -rn)
   while read -r kb id; do
     [ -z "$id" ] && continue
-    OD_TIDS+=("$id"); OD_TSIZE+=("$(od_human_kb "$kb")"); OD_THINT+=("$(orphan_hint "$id")"); OD_TKB+=("$kb")
+    OD_TIDS+=("$id"); OD_TSIZE+=("$(od_human_kb "$kb")"); OD_TKB+=("$kb")
   done < <(printf '%s' "$tail" | LC_ALL=C sort -rn)
 }
 
@@ -2872,12 +2862,12 @@ pick_app() {
       orphan_discover
       if [ "${#OD_IDS[@]}" -gt 0 ]; then
         for i in "${!OD_IDS[@]}"; do
-          printf 'M\t%s\t%s\t%s\n' "${OD_IDS[$i]}" "${OD_SIZE[$i]}" "${OD_HINT[$i]}"
+          printf 'M\t%s\t%s\n' "${OD_IDS[$i]}" "${OD_SIZE[$i]}"
         done
       fi
       if [ "${#OD_TIDS[@]}" -gt 0 ]; then
         for i in "${!OD_TIDS[@]}"; do
-          printf 'T\t%s\t%s\t%s\n' "${OD_TIDS[$i]}" "${OD_TSIZE[$i]}" "${OD_THINT[$i]}"
+          printf 'T\t%s\t%s\n' "${OD_TIDS[$i]}" "${OD_TSIZE[$i]}"
         done
       fi
       # Startup items whose program is gone. They ride the SAME scan because the
@@ -2923,13 +2913,13 @@ pick_app() {
   # The app enumeration itself overlapped the scan; if mktemp failed, scan inline.
   if [ -n "$scan_tmp" ]; then
     wait "$scan_pid" 2>/dev/null
-    OD_IDS=(); OD_SIZE=(); OD_HINT=(); OD_TIDS=(); OD_TSIZE=(); OD_THINT=()
+    OD_IDS=(); OD_SIZE=(); OD_TIDS=(); OD_TSIZE=()
     ST_LABEL=(); ST_HINT=(); ST_PATH=(); ST_OWNER=()
     local tier idv szv hv extra
     while IFS=$'\t' read -r tier idv szv hv extra; do
       case "$tier" in
-        M) OD_IDS+=("$idv");  OD_SIZE+=("$szv");  OD_HINT+=("$hv") ;;
-        T) OD_TIDS+=("$idv"); OD_TSIZE+=("$szv"); OD_THINT+=("$hv") ;;
+        M) OD_IDS+=("$idv");  OD_SIZE+=("$szv") ;;
+        T) OD_TIDS+=("$idv"); OD_TSIZE+=("$szv") ;;
         # S rows carry a path and an owner instead of a size: the size of a
         # startup item is never the reason you'd remove one.
         S) ST_LABEL+=("$idv"); ST_HINT+=("$szv"); ST_PATH+=("$hv"); ST_OWNER+=("$extra") ;;
@@ -2994,8 +2984,7 @@ pick_app() {
     m="$(t un_orphan_header)"; echo "${m//\{n\}/$odn}"
     for i in "${!OD_IDS[@]}"; do
       n=$((n + 1)); ROW_KIND+=("orphan"); ROW_REF+=("${OD_IDS[$i]}")
-      hint="${OD_HINT[$i]}"; [ -n "$hint" ] && hint="  ($hint?)"
-      printf '   %3d) %-44s %8s%s\n' "$n" "${OD_IDS[$i]}" "${OD_SIZE[$i]}" "$hint"
+      printf '   %3d) %8s  %s\n' "$n" "${OD_SIZE[$i]}" "${OD_IDS[$i]}"
     done
   fi
   # the small stuff is LISTED too (a divider, not a hiding place — you can't
@@ -3005,8 +2994,7 @@ pick_app() {
     m="$(t un_orphan_tail)"; echo "${m//\{n\}/${#OD_TIDS[@]}}"
     for i in "${!OD_TIDS[@]}"; do
       n=$((n + 1)); ROW_KIND+=("orphan"); ROW_REF+=("${OD_TIDS[$i]}")
-      hint="${OD_THINT[$i]}"; [ -n "$hint" ] && hint="  ($hint?)"
-      printf '   %3d) %-44s %8s%s\n' "$n" "${OD_TIDS[$i]}" "${OD_TSIZE[$i]}" "$hint"
+      printf '   %3d) %8s  %s\n' "$n" "${OD_TSIZE[$i]}" "${OD_TIDS[$i]}"
     done
   fi
   # Startup items last, and NOT ranked among the rows above: they weigh nothing
@@ -3019,7 +3007,7 @@ pick_app() {
     echo "${m//\{tot\}/$(( ${#ST_PATH[@]} + LF_KEPT ))}"
     for i in "${!ST_PATH[@]}"; do
       n=$((n + 1)); ROW_KIND+=("startup"); ROW_REF+=("${ST_PATH[$i]}")
-      printf '   %3d) %-44s %s  (%s)\n' "$n" "${ST_LABEL[$i]}" "       —" "${ST_HINT[$i]}"
+      printf '   %3d) %s  %s  (%s)\n' "$n" "       —" "${ST_LABEL[$i]}" "${ST_HINT[$i]}"
     done
   fi
   printf '\n'

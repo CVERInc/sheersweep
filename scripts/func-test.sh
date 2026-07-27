@@ -601,14 +601,6 @@ if [ "$gc_seen" -eq 1 ]; then
 else
   fail "proven orphan's group container missing from its footprint"
 fi
-# the hint is derived, generic last components step back one, and it's lowercase
-h1="$(orphan_hint com.spotify.client)"; h2="$(orphan_hint com.gone.app)"
-h3="$(orphan_hint org.MacVim)"; h4="$(orphan_hint calibre-ebook.com)"
-if [ "$h1" = "spotify" ] && [ "$h2" = "gone" ] && [ "$h3" = "macvim" ] && [ "$h4" = "calibre-ebook" ]; then
-  pass "orphan_hint: generic tail steps back (client/app/TLD), lowercased"
-else
-  fail "orphan_hint wrong ($h1/$h2/$h3/$h4)"
-fi
 teardown
 
 # (guard) pick_parse: the multi-select grammar. A multi selection may MIX app
