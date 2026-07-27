@@ -68,7 +68,7 @@ Locale is auto-detected; force it with `SHEERSWEEP_LANG=en-US|ja-JP|zh-TW|zh-Han
    no vendor and will never grow an "aggressive"/"deep" mode. Don't ask it to
    delete app data — that's what `uninstall` is for, on purpose (removed-app
    residue included: that's `uninstall`'s discovery section, not a sweep job).
-4. **Honor the 🔴 never-touch list — and never route around it.** No line can reach:
+4. **Honor the `[ HELD ]` never-touch list — and never route around it.** No line can reach:
    Photos / Documents / Desktop / Movies / Music, Clip Studio (CELSYS), app
    Containers & Application Support, Dropbox / cloud-sync folders, screen
    recordings, Mail / Messages / Keychains, any git repo, any Obsidian vault. If

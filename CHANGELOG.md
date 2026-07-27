@@ -4,6 +4,34 @@ All notable changes to sheersweep are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.15.5]
+
+### Changed — the container claim is now something you can re-run
+
+`SECURITY.md` asserted that macOS blocks moving `Library/Containers/*` without
+Full Disk Access. True, but an assertion — and a security document that asks to
+be trusted on its own word is the thing this project exists to argue against.
+
+It now carries the three-line probe that establishes it, touching nothing of
+yours:
+
+```sh
+mkdir ~/Library/Containers/probe          # succeeds: creating there is allowed
+mv ~/Library/Containers/probe /tmp/       # mv: … Operation not permitted
+rmdir ~/Library/Containers/probe
+```
+
+A directory you just made, owned by you, with no flags and no ACL, still cannot
+be *renamed* out of that folder. That EPERM is the whole story — it is the same
+call sheersweep makes to move something to the Trash.
+
+### Fixed — the docs still described the old glyphs
+
+`SECURITY.md` promised a `🔴 only N of M` shortfall and a `✅ summary`; the tool
+has printed badges since 0.11.0. `AGENTS.md` still pointed at a "🔴 never-touch
+list". Both now say what the tool says — including the zero case added in
+0.15.4, which `SECURITY.md` had no way to describe.
+
 ## [0.15.4]
 
 ### Fixed — an undo pointer that would have undone the wrong thing

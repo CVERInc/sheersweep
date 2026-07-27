@@ -126,10 +126,25 @@ never escalate and never need a password.
   moved by other programs — even running as root — unless the invoking terminal
   has Full Disk Access. sheersweep does not ask for that permission and cannot
   route around the protection; when it blocks a move, sheersweep reports the
-  exact shortfall (`🔴 only N of M items could be moved`) and points at the
-  System Settings toggle so the decision stays yours. Every move is *accounted*:
-  the ✅ summary appears only when everything the preview promised actually
-  reached the Trash.
+  exact shortfall (`[ FAIL ] only N of M items could be moved`, or
+  `[ FAIL ] None of the N items…` when nothing moved at all) and names the cause
+  with `[ HELD ]`, pointing at the System Settings toggle so the decision stays
+  yours. Every move is *accounted*: the `[ DONE ]` summary appears only when
+  everything the preview promised actually reached the Trash.
+
+  **Check the claim yourself**, in a terminal without Full Disk Access — it
+  touches nothing of yours:
+
+  ```sh
+  mkdir ~/Library/Containers/probe          # succeeds: creating there is allowed
+  mv ~/Library/Containers/probe /tmp/       # mv: … Operation not permitted
+  rmdir ~/Library/Containers/probe
+  ```
+
+  A directory you just made, owned by you, with no flags and no ACL, still
+  cannot be *renamed* out of that folder. That EPERM is the whole story: it is
+  the same call `sheersweep` makes to move something to the Trash, and it is why
+  the shortfall is reported rather than worked around.
 - The multi-account guards above reduce the demonstrated attacks to races or
   refusals; they are the honest bound a shell script running as root can enforce,
   not a claim of formal isolation. On a single-user Mac none of this applies.
