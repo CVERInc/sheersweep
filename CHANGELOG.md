@@ -4,6 +4,42 @@ All notable changes to sheersweep are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.16.1]
+
+### Fixed — two receipts in the same second, and `restore` offered the earlier one
+
+`restore` finds the last uninstall by filename order, and every receipt is named
+`<stamp>-<slug>.tsv`. Two written inside the same second therefore ordered by
+their **slug** — so an app removed at `23:12:42` followed by leftover rows
+confirmed at `23:12:42` could leave `restore` pointing at the app, calling it the
+last thing you did. Alphabetically `com.…` beats `orphans`; nothing about that is
+a fact regarding which happened first.
+
+It is the same defect [0.15.4] fixed from the other end: an undo pointer aimed at
+somebody's earlier, deliberate removal. Receipts now carry a two-digit sequence
+between the stamp and the slug, counted against every receipt already stamped
+that second, so filename order *is* creation order. Old receipts keep their names
+and stay readable — the sequence only has to be right going forward.
+
+Reachable in one picker run, which is exactly what 0.16.0 made routine: apps,
+leftovers and startup items now each take one short typed count, and three
+confirmations can land inside one second.
+
+### Fixed — `restore --list` said "newest first" and printed oldest first
+
+The header has promised newest-first for as long as the list has existed. The
+loop walked the ascending glob, and walked `*.tsv` fully before `*.tsv.restored`,
+so restored rows were also grouped at the end regardless of when they happened.
+On this machine that put today's removals at the bottom of forty-one rows, under
+a heading pointing at June.
+
+One reverse byte-order sort over both patterns now, NUL-framed because a slug
+carries a bundle id and an app's display name.
+
+*Both are the kind of bug a test finds and a person doesn't: the list has been
+wrong for months in plain sight, and the receipt collision needs two confirmed
+removals inside one second — so both new tests shim `date` rather than race it.*
+
 ## [0.16.0]
 
 ### Changed — picking six apps now costs one preview and one confirmation

@@ -32,7 +32,7 @@
 #   each with the native way to remove it. Changes nothing; never needs sudo.
 set -u
 
-VERSION="0.16.0"
+VERSION="0.16.1"
 
 # ============================================================================
 # i18n — en-US · ja-JP · zh-TW · zh-Hans · ko-KR · es-ES · de-DE · fr-FR · pt-BR.
@@ -3175,7 +3175,24 @@ receipt_open() {   # sets RECEIPT_FILE
   rdir="$REAL_HOME/.sheersweep/uninstalls"
   mkdir -p "$rdir" 2>/dev/null
   stamp="$(date +%Y%m%d-%H%M%S)"
-  RECEIPT_FILE="$rdir/$stamp-$slug.tsv"
+  # A sequence number between the stamp and the slug, because `restore` finds the
+  # newest receipt by FILENAME ORDER. Two receipts written in the same second —
+  # one picker run answering apps, then leftovers, then startup items — used to be
+  # ordered by their slug, so `restore` could offer the earlier of the two and
+  # call it the last uninstall. That is the 0.15.4 bug wearing a different hat:
+  # an undo pointer aimed at the wrong removal.
+  # Two fixed-width digits, so the digits sort like numbers; a hundred confirmed
+  # removals inside one second is not a thing a person can do.
+  # Counts every receipt already stamped this second — not just ones sharing this
+  # slug — because the collision that matters is between two DIFFERENT slugs.
+  local seq=0 probe f
+  for f in "$rdir/$stamp-"*; do [ -e "$f" ] && seq=$((seq + 1)); done
+  probe="$(printf '%s/%s-%02d-%s.tsv' "$rdir" "$stamp" "$seq" "$slug")"
+  while [ -e "$probe" ] && [ "$seq" -lt 99 ]; do
+    seq=$((seq + 1))
+    probe="$(printf '%s/%s-%02d-%s.tsv' "$rdir" "$stamp" "$seq" "$slug")"
+  done
+  RECEIPT_FILE="$probe"
   {
     echo "# sheersweep uninstall receipt"
     echo "# app=$app"
@@ -4032,8 +4049,17 @@ do_restore() {
 
   if [ "$RESTORE_LIST" -eq 1 ]; then
     t rs_list_header
-    local f had=0
-    for f in "$rdir"/*.tsv "$rdir"/*.tsv.restored; do
+    # The header says "newest first" and the list arrived oldest first: the glob
+    # is ascending, and the two patterns ran one after the other, so restored
+    # receipts were also grouped at the end regardless of when they happened.
+    # Someone looking for the removal they just did read the top of the list and
+    # found something from two months ago. The stamp is fixed-width and leads the
+    # name, so ONE reverse byte-order sort over both patterns is the date order —
+    # NUL-framed, because a slug carries a bundle id and an app's display name.
+    local f had=0 rlist=()
+    for f in "$rdir"/*.tsv "$rdir"/*.tsv.restored; do [ -e "$f" ] && rlist+=("$f"); done
+    if [ "${#rlist[@]}" -eq 0 ]; then t rs_none; return 0; fi
+    while IFS= read -r -d '' f; do
       [ -e "$f" ] || continue
       had=1
       app="$(receipt_header "$f" app)"
@@ -4052,15 +4078,17 @@ do_restore() {
       local mark=""; case "$f" in *.restored) mark="$(t rs_restored)" ;; esac
       local nrow; nrow="$(t rs_list_count)"; nrow="${nrow//\{n\}/$n}"
       printf '   ·   %s   ·   %s   ·   %s%s\n' "$date" "$app" "$nrow" "$mark"
-    done
+    done < <(printf '%s\0' "${rlist[@]}" | LC_ALL=C sort -zr)
     [ "$had" -eq 0 ] && t rs_none
     return 0
   fi
 
-  # newest un-restored receipt
+  # newest un-restored receipt. The glob is ascending and every name starts with
+  # the same fixed-width stamp + sequence, so the last one IS the most recent —
+  # see receipt_open for why the sequence had to exist.
   newest=""
   local f
-  for f in "$rdir"/*.tsv; do [ -e "$f" ] && newest="$f"; done   # glob is sorted → last = newest
+  for f in "$rdir"/*.tsv; do [ -e "$f" ] && newest="$f"; done
   if [ -z "$newest" ]; then t rs_none; return 0; fi
 
   app="$(receipt_header "$newest" app)"

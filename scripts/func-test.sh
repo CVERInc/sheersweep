@@ -1090,6 +1090,58 @@ DG_DIR="$SBX/dg"; mkdir -p "$DG_DIR"
 DG_DIR=""
 teardown
 
+# (undo pointer) two receipts written in the SAME second must stay in creation
+# order, because `restore` finds the last uninstall by filename order. Before the
+# sequence number, order fell to the slug: uninstall an app, then confirm the
+# leftover rows in the same second, and `restore` offered the app — the earlier
+# of the two — as "the last uninstall". `date` is shimmed so the same second is a
+# fact of the test rather than a race it usually wins.
+setup
+REAL_HOME="$SBX/home"; mkdir -p "$REAL_HOME"
+# shellcheck disable=SC2329  # shadows /bin/date for receipt_open — invoked indirectly
+date() { printf '20260101-101010\n'; }     # both receipts land in one second
+receipt_open zzz-first "first"  zzz; first="$RECEIPT_FILE"
+receipt_open aaa-second "second" aaa; second="$RECEIPT_FILE"
+unset -f date
+newest=""
+for f in "$REAL_HOME/.sheersweep/uninstalls"/*.tsv; do [ -e "$f" ] && newest="$f"; done
+if [ "$newest" = "$second" ] && [ "$first" != "$second" ]; then
+  pass "same-second receipts keep creation order (restore points at the last one)"
+else
+  fail "same-second order broke: newest=$(basename "$newest"), wanted $(basename "$second")"
+fi
+teardown
+
+# (undo pointer) `restore --list` says "newest first" — so it has to BE newest
+# first. It printed the ascending glob, and grouped the restored ones at the end
+# on top of that, so the removal you just did was at the bottom of 41 rows.
+setup
+REAL_HOME="$SBX/home"; mkdir -p "$REAL_HOME"
+# shellcheck disable=SC2329  # each shim is called by receipt_open, not from here
+date() { printf '20260101-101010\n'; }; receipt_open old "OLDEST" old
+printf 'x\0y\0' >> "$RECEIPT_FILE"
+# shellcheck disable=SC2329
+date() { printf '20260202-202020\n'; }; receipt_open mid "MIDDLE" mid
+printf 'x\0y\0' >> "$RECEIPT_FILE"
+# shellcheck disable=SC2329
+date() { printf '20260303-303030\n'; }; receipt_open new "NEWEST" new
+printf 'x\0y\0' >> "$RECEIPT_FILE"
+unset -f date
+mv "$REAL_HOME/.sheersweep/uninstalls/20260202-202020-00-mid.tsv" \
+   "$REAL_HOME/.sheersweep/uninstalls/20260202-202020-00-mid.tsv.restored"   # a restored one in the middle
+# shellcheck disable=SC2034  # read by do_restore in the sourced library
+RESTORE_LIST=1
+list_out="$(do_restore </dev/null 2>&1)"
+# shellcheck disable=SC2034  # ditto — put back so later tests see the default
+RESTORE_LIST=0
+order="$(printf '%s\n' "$list_out" | grep -oE 'OLDEST|MIDDLE|NEWEST' | tr '\n' ' ')"
+if [ "$order" = "NEWEST MIDDLE OLDEST " ]; then
+  pass "restore --list is newest first, restored rows interleaved by date"
+else
+  fail "restore --list order was '$order' (wanted 'NEWEST MIDDLE OLDEST ')"
+fi
+teardown
+
 # (multi-app batch) two picked copies of ONE app own the same folder. The batch
 # preview must ask for it once — and, more than cosmetics, must MOVE it once: the
 # second move finds nothing there, and trash_one honestly counts that as a miss,
