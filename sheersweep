@@ -32,7 +32,7 @@
 #   each with the native way to remove it. Changes nothing; never needs sudo.
 set -u
 
-VERSION="0.16.1"
+VERSION="0.16.2"
 
 # ============================================================================
 # i18n — en-US · ja-JP · zh-TW · zh-Hans · ko-KR · es-ES · de-DE · fr-FR · pt-BR.
@@ -2550,6 +2550,29 @@ looks_like_bid() {   # $1 → 0 if it has the shape of an APP's bundle id (com.v
   return 0
 }
 
+# Does this path's name carry <id> as a WHOLE id, on dot boundaries?
+#
+# The footprint reaches some families by glob — `HTTPStorages/<id>*`,
+# `LaunchAgents/<id>*.plist`, `Group Containers/*<id>*` — because the real names
+# carry suffixes (`.binarycookies`) and prefixes (a team id). A bare `<id>*` is a
+# PREFIX match, and prefixes cross app boundaries: uninstalling CLIP STUDIO
+# (`jp.co.celsys.CLIPSTUDIO`) listed CLIP STUDIO PAINT's storage
+# (`jp.co.celsys.CLIPSTUDIOPAINT`) — a different, still-installed app — and would
+# have moved it to the Trash. Found on a real machine, in a --dry-run, by
+# reading the preview. Both files say "matched by bundle id, never a
+# fuzzy/substring match"; this is what makes that sentence true.
+#
+# A dot is the only boundary an id has, so: be the id, or sit between dots.
+# (An id containing a glob metacharacter would still over-match here — but
+# `looks_like_bid` refuses that charset, and a real CFBundleIdentifier has none.)
+bid_on_dot_boundary() {   # $1 = path  $2 = bundle id
+  local b="${1##*/}"
+  case "$b" in
+    "$2"|"$2".*|*."$2"|*."$2".*) return 0 ;;
+  esac
+  return 1
+}
+
 # Every claim installed software makes on id-named data. Fills two lists:
 #   CLAIMED_IDS   — each CFBundleIdentifier found in installed bundles, INCLUDING
 #                   every Info.plist nested inside a non-Apple .app (XPC services,
@@ -2695,7 +2718,7 @@ orphan_paths_home() {   # $1 = id  $2 = home
   done
   for f in "$L/Preferences/$id".*.plist "$L/HTTPStorages/$id"* \
            "$L/Group Containers/"*"$id"* "$L/LaunchAgents/$id"*.plist; do
-    [ -e "$f" ] && printf '%s\0' "$f"
+    [ -e "$f" ] && bid_on_dot_boundary "$f" "$id" && printf '%s\0' "$f"
   done
 }
 
@@ -2722,7 +2745,7 @@ orphan_is_strong() {   # $1 = id  $2… = homes
       [ -e "$f" ] && return 0
     done
     for f in "$h/Library/Group Containers/"*"$id"*; do
-      [ -e "$f" ] && return 0
+      [ -e "$f" ] && bid_on_dot_boundary "$f" "$id" && return 0
     done
   done
   return 1
@@ -3331,14 +3354,14 @@ gather_footprint() {   # $1 = app path (may be "")  $2 = bid  $3 = name  $4 = or
     add "$home/Library/Preferences/$bid.plist"              "$home"
     for f in "$home/Library/Preferences/$bid".*.plist;   do add "$f" "$home"; done
     add "$home/Library/Containers/$bid"                     "$home"
-    for f in "$home/Library/Group Containers/"*"$bid"*;  do add "$f" "$home"; done
+    for f in "$home/Library/Group Containers/"*"$bid"*;  do bid_on_dot_boundary "$f" "$bid" && add "$f" "$home"; done
     add "$home/Library/Saved Application State/$bid.savedState" "$home"
-    for f in "$home/Library/HTTPStorages/$bid"*;         do add "$f" "$home"; done
+    for f in "$home/Library/HTTPStorages/$bid"*;         do bid_on_dot_boundary "$f" "$bid" && add "$f" "$home"; done
     add "$home/Library/WebKit/$bid"                        "$home"
     add "$home/Library/Cookies/$bid.binarycookies"        "$home"
     add "$home/Library/Application Scripts/$bid"           "$home"
     [ "$orphan" -eq 0 ] && add "$home/Library/Logs/$name"  "$home"
-    for f in "$home/Library/LaunchAgents/$bid"*.plist;   do add "$f" "$home"; done
+    for f in "$home/Library/LaunchAgents/$bid"*.plist;   do bid_on_dot_boundary "$f" "$bid" && add "$f" "$home"; done
     # vendor-nested data the standard patterns above can't reach (Chrome's
     # Google/Chrome, Brave's BraveSoftware/Brave-Browser, …). extra_is_safe()
     # refuses a shared vendor root so a sibling app (e.g. Google Drive) is never
@@ -3365,9 +3388,9 @@ gather_footprint() {   # $1 = app path (may be "")  $2 = bid  $3 = name  $4 = or
   ascope="$(t system)"
   [ "$orphan" -eq 0 ] && add "/Library/Application Support/$name" "$REAL_HOME"
   add "/Library/Caches/$bid"                                "$REAL_HOME"
-  for f in "/Library/LaunchAgents/$bid"*.plist;        do add "$f" "$REAL_HOME"; done
-  for f in "/Library/LaunchDaemons/$bid"*.plist;       do add "$f" "$REAL_HOME"; done
-  for f in "/Library/PrivilegedHelperTools/$bid"*;     do add "$f" "$REAL_HOME"; done
+  for f in "/Library/LaunchAgents/$bid"*.plist;        do bid_on_dot_boundary "$f" "$bid" && add "$f" "$REAL_HOME"; done
+  for f in "/Library/LaunchDaemons/$bid"*.plist;       do bid_on_dot_boundary "$f" "$bid" && add "$f" "$REAL_HOME"; done
+  for f in "/Library/PrivilegedHelperTools/$bid"*;     do bid_on_dot_boundary "$f" "$bid" && add "$f" "$REAL_HOME"; done
 
 }
 

@@ -4,6 +4,44 @@ All notable changes to sheersweep are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.16.2]
+
+### Fixed — one app's uninstall reached another app's data
+
+`uninstall CLIP STUDIO` listed three files belonging to **CLIP STUDIO PAINT** — a
+different application, still installed — and would have moved them to the Trash:
+
+```
+▸ CLIP STUDIO   ·   jp.co.celsys.CLIPSTUDIO
+   ·   369 KB  /Users/chodaict/Library/HTTPStorages/jp.co.celsys.CLIPSTUDIOPAINT
+   ·     4 KB  /Users/chodaict/Library/HTTPStorages/jp.co.celsys.CLIPSTUDIOPAINT.binarycookies
+   ·   4.0 MB  /Users/tin/Library/HTTPStorages/jp.co.celsys.CLIPSTUDIOPAINT
+```
+
+`jp.co.celsys.CLIPSTUDIO` is a **prefix** of `jp.co.celsys.CLIPSTUDIOPAINT`, and
+three families are reached by glob because their real names carry affixes:
+`HTTPStorages/<id>*`, `LaunchAgents/<id>*.plist`, `Group Containers/*<id>*`
+(a team id sits in front there). A bare `<id>*` is a prefix match, and prefixes
+cross app boundaries. README and AGENTS.md both promise *"matched by bundle id …
+never a fuzzy/substring match"* — this is what makes that sentence true.
+
+A dot is the only boundary a bundle id has, so a glob hit now has to **be** the
+id or **sit between dots**: `<id>`, `<id>.anything`, `anything.<id>`,
+`anything.<id>.anything`. `…CLIPSTUDIO` + `PAINT` is none of those.
+`EQHXZ8M8AV.group.com.google.drivefs` still is, and verifying that mattered as
+much as the fix — the failure mode of a boundary rule is quietly dropping the
+rows it was meant to keep. Both directions were checked against the same machine:
+the three PAINT rows are gone, every Google Drive row survives.
+
+Applied to all eight glob sites, including the two in orphan discovery — where
+the same prefix could make a removed app's id "claim" a live app's data, and
+`orphan_has_data` decide an id was worth surfacing on the strength of it.
+
+**How it was found:** the maintainer ran `uninstall --dry-run`, picked three
+rows, and read the preview. Nothing was deleted, no test caught it, and the tool
+printed the evidence itself — which is the argument for a preview that lists
+every path by name rather than a count and a total.
+
 ## [0.16.1]
 
 ### Fixed — two receipts in the same second, and `restore` offered the earlier one

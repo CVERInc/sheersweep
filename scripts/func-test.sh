@@ -1090,6 +1090,29 @@ DG_DIR="$SBX/dg"; mkdir -p "$DG_DIR"
 DG_DIR=""
 teardown
 
+# (identity) the footprint reaches some families by glob, and a bare `<id>*` is a
+# PREFIX match that crosses app boundaries. Real specimen, found in a --dry-run on
+# the maintainer's machine: uninstalling CLIP STUDIO (jp.co.celsys.CLIPSTUDIO)
+# listed CLIP STUDIO PAINT's HTTP storage (…CLIPSTUDIOPAINT) — a different app,
+# still installed — and would have moved it to the Trash under a promise that
+# says "never a fuzzy/substring match".
+B="jp.co.celsys.CLIPSTUDIO"
+bd_fail=0
+bd_no()  { bid_on_dot_boundary "$1" "$B" && { fail "boundary: $1 was claimed by $B"; bd_fail=1; }; }
+bd_yes() { bid_on_dot_boundary "$1" "$B" || { fail "boundary: $1 was NOT claimed by $B"; bd_fail=1; }; }
+bd_no  "/L/HTTPStorages/jp.co.celsys.CLIPSTUDIOPAINT"
+bd_no  "/L/HTTPStorages/jp.co.celsys.CLIPSTUDIOPAINT.binarycookies"
+bd_no  "/L/LaunchAgents/jp.co.celsys.CLIPSTUDIOPAINT.plist"
+bd_yes "/L/HTTPStorages/jp.co.celsys.CLIPSTUDIO"                    # itself
+bd_yes "/L/HTTPStorages/jp.co.celsys.CLIPSTUDIO.binarycookies"      # dotted suffix
+bd_yes "/L/LaunchAgents/jp.co.celsys.CLIPSTUDIO.helper.plist"       # dotted suffix
+# a group container carries a team-id prefix, so the id sits BETWEEN dots
+if bid_on_dot_boundary "/L/Group Containers/EQHXZ8M8AV.group.com.google.drivefs" "com.google.drivefs" \
+   && ! bid_on_dot_boundary "/L/HTTPStorages/com.google.drivefshelper" "com.google.drivefs"; then :; else
+  fail "boundary: group-container prefix or the sibling-app case is wrong"; bd_fail=1
+fi
+[ "$bd_fail" -eq 0 ] && pass "bundle id matches on dot boundaries only (a sibling app's data is never claimed)"
+
 # (undo pointer) two receipts written in the SAME second must stay in creation
 # order, because `restore` finds the last uninstall by filename order. Before the
 # sequence number, order fell to the slug: uninstall an app, then confirm the
