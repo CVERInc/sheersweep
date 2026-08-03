@@ -32,7 +32,7 @@
 #   each with the native way to remove it. Changes nothing; never needs sudo.
 set -u
 
-VERSION="0.15.7"
+VERSION="0.16.0"
 
 # ============================================================================
 # i18n — en-US · ja-JP · zh-TW · zh-Hans · ko-KR · es-ES · de-DE · fr-FR · pt-BR.
@@ -440,15 +440,39 @@ t() {
       esac ;;
     un_pick_multi_hint)
       case "$SS_LANG" in
-        ja-JP) echo "複数行をまとめて選べます — 例: 5 7-8 19 · all は見つかった行を全部 · アプリは1つずつ名前で確認します。" ;;
-        zh-TW) echo "可以一次選多列：例如 5 7-8 19；all 全選找到的那批；App 仍會逐個請你確認名稱。" ;;
-        zh-Hans) echo "可以一次选多行：例如 5 7-8 19；all 全选找到的那批；App 仍会逐个请你确认名称。" ;;
-        ko-KR) echo "여러 행을 한 번에 선택할 수 있습니다 — 예: 5 7-8 19 · all은 발견된 행 전부 · 앱은 하나씩 이름으로 확인합니다." ;;
-        es-ES) echo "Puedes elegir varias filas a la vez — p. ej. 5 7-8 19 · all toma todas las filas encontradas · cada app se confirma una a una por su nombre." ;;
-        de-DE) echo "Mehrere Zeilen auf einmal wählen — z. B. 5 7-8 19 · all nimmt alle gefundenen Zeilen · jede App wird einzeln per Name bestätigt." ;;
-        fr-FR) echo "Choisissez plusieurs lignes à la fois — p. ex. 5 7-8 19 · all prend toutes les lignes trouvées · chaque app se confirme une à une par son nom." ;;
-        pt-BR) echo "Escolha várias linhas de uma vez — ex.: 5 7-8 19 · all pega todas as linhas encontradas · cada app é confirmado um a um pelo nome." ;;
-        en-US|*)     echo "Pick several rows at once — e.g. 5 7-8 19 · all takes every discovered row · each app still confirms by name." ;;
+        ja-JP) echo "複数行をまとめて選べます — 例: 5 7-8 19 · all は見つかった行を全部 · 中身をまとめて見せてから、確認は1回です。" ;;
+        zh-TW) echo "可以一次選多列：例如 5 7-8 19；all 全選找到的那批；會先把它們的東西一次列給你看，只確認一次。" ;;
+        zh-Hans) echo "可以一次选多行：例如 5 7-8 19；all 全选找到的那批；会先把它们的东西一次列给你看，只确认一次。" ;;
+        ko-KR) echo "여러 행을 한 번에 선택할 수 있습니다 — 예: 5 7-8 19 · all은 발견된 행 전부 · 전부 한 번에 보여준 뒤 확인은 한 번입니다." ;;
+        es-ES) echo "Puedes elegir varias filas a la vez — p. ej. 5 7-8 19 · all toma todas las filas encontradas · verás todo junto y confirmas una sola vez." ;;
+        de-DE) echo "Mehrere Zeilen auf einmal wählen — z. B. 5 7-8 19 · all nimmt alle gefundenen Zeilen · du siehst alles zusammen und bestätigst einmal." ;;
+        fr-FR) echo "Choisissez plusieurs lignes à la fois — p. ex. 5 7-8 19 · all prend toutes les lignes trouvées · tout s'affiche d'un coup, une seule confirmation." ;;
+        pt-BR) echo "Escolha várias linhas de uma vez — ex.: 5 7-8 19 · all pega todas as linhas encontradas · você vê tudo junto e confirma uma vez só." ;;
+        en-US|*)     echo "Pick several rows at once — e.g. 5 7-8 19 · all takes every discovered row · you'll see everything they own, then confirm once." ;;
+      esac ;;
+    un_apps_header)   # {n} — the multi-select preview: several apps, one list
+      case "$SS_LANG" in
+        ja-JP) echo "▸ 選んだアプリ {n} 個に属するもの — 以下すべてゴミ箱へ移動します（復元可能）:" ;;
+        zh-TW) echo "▸ 你選的 {n} 個 App 的所有東西，以下全部會移到垃圾桶（可救回）：" ;;
+        zh-Hans) echo "▸ 你选的 {n} 个 App 的所有内容，以下全部会移到废纸篓（可恢复）：" ;;
+        ko-KR) echo "▸ 선택한 앱 {n}개에 속한 모든 항목 — 아래 전부 휴지통으로 이동합니다(복원 가능):" ;;
+        es-ES) echo "▸ Todo lo que pertenece a las {n} apps elegidas — todo lo de abajo va a la Papelera (recuperable):" ;;
+        de-DE) echo "▸ Alles, was zu den {n} gewählten Apps gehört — alles Folgende wandert in den Papierkorb (wiederherstellbar):" ;;
+        fr-FR) echo "▸ Tout ce qui appartient aux {n} apps choisies — tout ce qui suit part à la Corbeille (récupérable) :" ;;
+        pt-BR) echo "▸ Tudo o que pertence aos {n} apps escolhidos — tudo abaixo vai para a Lixeira (recuperável):" ;;
+        en-US|*)     echo "▸ Everything that belongs to the {n} apps you picked — all of it moves to the Trash (recoverable):" ;;
+      esac ;;
+    un_apps_done)   # {n} items · {apps} apps
+      case "$SS_LANG" in
+        ja-JP) echo "[ DONE ] アプリ {apps} 個の {n} 項目をゴミ箱へ移動しました。元に戻す: sheersweep restore · 容量はゴミ箱を空にすると戻ります。" ;;
+        zh-TW) echo "[ DONE ] 已把 {apps} 個 App 的 {n} 個項目移到垃圾桶。想還原打：sheersweep restore；清空垃圾桶才會拿回空間。" ;;
+        zh-Hans) echo "[ DONE ] 已把 {apps} 个 App 的 {n} 个项目移到废纸篓。要恢复输入：sheersweep restore；清空废纸篓才会拿回空间。" ;;
+        ko-KR) echo "[ DONE ] 앱 {apps}개의 항목 {n}개를 휴지통으로 옮겼습니다. 되돌리기: sheersweep restore · 공간은 휴지통을 비워야 돌아옵니다." ;;
+        es-ES) echo "[ DONE ] Movidos {n} elementos de {apps} apps a la Papelera. Deshacer: sheersweep restore · vaciar la Papelera recupera el espacio." ;;
+        de-DE) echo "[ DONE ] {n} Einträge aus {apps} Apps in den Papierkorb verschoben. Rückgängig: sheersweep restore · erst das Leeren des Papierkorbs gibt den Platz frei." ;;
+        fr-FR) echo "[ DONE ] {n} éléments de {apps} apps déplacés vers la Corbeille. Annuler : sheersweep restore · vider la Corbeille rend l'espace." ;;
+        pt-BR) echo "[ DONE ] {n} itens de {apps} apps movidos para a Lixeira. Desfazer: sheersweep restore · esvaziar a Lixeira devolve o espaço." ;;
+        en-US|*)     echo "[ DONE ] Moved {n} items from {apps} apps to the Trash. Undo: sheersweep restore · emptying the Trash reclaims the space." ;;
       esac ;;
     un_orphans_header)   # {n}
       case "$SS_LANG" in
@@ -2385,6 +2409,42 @@ bundle_id() {
     || /usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$1/Contents/Info.plist" 2>/dev/null
 }
 
+# Is anything running out of this bundle right now? ("" → no, e.g. an app that
+# is already gone). Matches any process whose command line points INSIDE the
+# bundle, so a helper or an .appex counts — those hold the same files open.
+#
+# The ps snapshot is taken BEFORE the match: in a `ps … | grep` pipeline both
+# sides start at once, so ps captures grep's own command line — which contains
+# the pattern — and every app on earth looks like it is running.
+app_is_running() {   # $1 = .app path
+  local procs
+  [ -n "$1" ] || return 1
+  procs="$(ps -axww -o command= 2>/dev/null)" || return 1
+  printf '%s\n' "$procs" | grep -qF -- "$1/Contents/"
+}
+
+# Ask an app to quit before its files move — best effort, in the real user's GUI
+# session — and say so only when there is something to ask. This used to announce
+# "looks like it's running, asking it to quit first…" before every removal,
+# running or not: six picked apps, six claims, most of them untrue. The check is
+# one `ps` away, so it is checked.
+#
+# SECURITY: $bid is read from the target's Info.plist — attacker-authored — and
+# interpolated into an AppleScript string. A crafted CFBundleIdentifier could
+# break out and run arbitrary AppleScript/shell as REAL_USER. A real bundle id
+# is only [A-Za-z0-9.-]; if it has anything else, skip the (best-effort) quit
+# rather than risk injection — the uninstall itself proceeds regardless.
+quit_app() {   # $1 = .app path  $2 = bundle id  $3 = display name
+  local m
+  app_is_running "$1" || return 0
+  m="$(t un_quit)"; echo "${m//\{app\}/$3}"
+  case "$2" in
+    ""|*[!A-Za-z0-9.-]*) ;;   # empty or unusual → don't feed it to osascript
+    *) sudo -u "$REAL_USER" osascript -e "tell application id \"$2\" to quit" >/dev/null 2>&1 || true ;;
+  esac
+  return 0
+}
+
 # ── Vendor-nested app data: the catalog that closes the "uninstall left a GB
 # behind" gap ────────────────────────────────────────────────────────────────
 # Some apps DON'T store their data at Application Support/<AppName> or /<bundle
@@ -2741,10 +2801,11 @@ orphan_discover() {
 # Parse a picker selection: one number, several ("5 7-8 19", commas ok), or
 # `all` (= every 🧟 orphan row — never the apps: "all" must not be able to
 # mean "uninstall everything installed"). Fills PICK_ROWS with unique rows.
-# A multi selection may MIX app and 🧟 rows: selection is batch, consent is
-# not — downstream, each app still gets its own one-at-a-time typed-name
-# confirmation (precise surgery), while 🧟 residue gets batch consent
-# (housekeeping; see do_uninstall_orphans). Returns 0 = ok · 1 = invalid.
+# A multi selection may MIX app and 🧟 rows: downstream each KIND is previewed
+# and consented to as one batch of its own (see do_uninstall_apps and
+# do_uninstall_orphans) — one app alone still confirms by typed name, because
+# a count of 1 is not a fact you had to read anything to know.
+# Returns 0 = ok · 1 = invalid.
 pick_parse() {   # $1 = input  $2 = app-row count  $3 = total row count
   local input="$1" napps="$2" total="$3" tok lo hi k seen=" "
   PICK_ROWS=()
@@ -3086,10 +3147,9 @@ pick_app() {
     APP_TARGET="${ROW_REF[$((PICK_ROWS[0] - 1))]}"
     return 0
   fi
-  # Mixed multi-select: batch SELECTION, serial CONSENT. App rows queue up for
-  # the normal one-at-a-time flow (each still confirms by typed name); 🧟 rows
-  # go to the batch flow with its count-typed consent; startup items are plists
-  # pointing at nothing, so they ride the same batch consent.
+  # Mixed multi-select: batch SELECTION, batch CONSENT — one per KIND, because
+  # the three kinds are three different promises. App rows, 🧟 rows and startup
+  # items each get their own combined preview and their own count-typed consent.
   for k in "${PICK_ROWS[@]}"; do
     kind="${ROW_KIND[$((k - 1))]}"; ref="${ROW_REF[$((k - 1))]}"
     case "$kind" in
@@ -3294,6 +3354,31 @@ gather_footprint() {   # $1 = app path (may be "")  $2 = bid  $3 = name  $4 = or
 
 }
 
+# Collapse ITEM_PATH/ITEM_OWNER/ITEM_SCOPE to one row per path, first wins.
+#
+# Only the multi-app path can produce a duplicate, and it produces them for a
+# real reason: two copies of one app (~/Applications and /Applications share a
+# bundle id) own the SAME Application Support folder. Listing it twice asks for
+# consent twice, and — worse — moving it twice reports a failure, because the
+# second move finds nothing there and `trash_one` counts an honest miss.
+# O(n²) on purpose: n is a picker's worth of rows, and bash 3.2 has no
+# associative arrays to do better with.
+dedupe_items() {
+  local P=() O=() S=() i j dup
+  [ "${#ITEM_PATH[@]}" -gt 0 ] || return 0
+  for i in "${!ITEM_PATH[@]}"; do
+    dup=0
+    if [ "${#P[@]}" -gt 0 ]; then
+      for j in "${!P[@]}"; do
+        [ "${P[$j]}" = "${ITEM_PATH[$i]}" ] && { dup=1; break; }
+      done
+    fi
+    [ "$dup" -eq 1 ] && continue
+    P+=("${ITEM_PATH[$i]}"); O+=("${ITEM_OWNER[$i]}"); S+=("${ITEM_SCOPE[$i]}")
+  done
+  ITEM_PATH=("${P[@]}"); ITEM_OWNER=("${O[@]}"); ITEM_SCOPE=("${S[@]}")
+}
+
 do_uninstall() {
   local target="$1" app bid name rc orphan=0
   # an empty target must die HERE: handed to the resolvers below, "" would match
@@ -3402,17 +3487,8 @@ do_uninstall() {
   local reply=""; read -r reply || true
   if [ "$reply" != "$name" ]; then t un_cancelled; return 0; fi
 
-  # ask the app to quit (best-effort, in the real user's GUI session).
-  # SECURITY: $bid is read from the target's Info.plist — attacker-authored — and
-  # interpolated into an AppleScript string. A crafted CFBundleIdentifier could
-  # break out and run arbitrary AppleScript/shell as REAL_USER. A real bundle id
-  # is only [A-Za-z0-9.-]; if it has anything else, skip the (best-effort) quit
-  # rather than risk injection — the uninstall itself proceeds regardless.
-  m="$(t un_quit)"; echo "${m//\{app\}/$name}"
-  case "$bid" in
-    ""|*[!A-Za-z0-9.-]*) ;;   # empty or unusual → don't feed it to osascript
-    *) sudo -u "$REAL_USER" osascript -e "tell application id \"$bid\" to quit" >/dev/null 2>&1 || true ;;
-  esac
+  # ask the app to quit, if it is actually running (see quit_app)
+  quit_app "$app" "$bid" "$name"
 
   # write a receipt as we move, so `restore` can undo this exact uninstall later.
   # The data rows are NUL-delimited (dest \0 orig \0) so a path containing a TAB
@@ -3430,6 +3506,105 @@ do_uninstall() {
   printf '\n'
   m="$(t un_done)"; report_moves "${m//\{app\}/$name}"
   return 0
+}
+
+# Batch removal of PICKED APPS — the multi-select path, one pick, one consent.
+#
+# Choosing six rows used to cost six full previews with a typed app name between
+# each: the friction of one deliberate removal, paid six times, which is how a
+# gate stops being read and starts being typed through. The picker IS the
+# selection — by row, off a list already on screen — so consent here takes the
+# shape the 🧟 rows and startup items already use: ONE combined preview of every
+# file, grouped by app, then the COUNT of apps, typed once. All or nothing: a
+# wrong count cancels the whole batch and touches nothing.
+#
+# Nothing else is traded away. Same footprint, same Trash (never rm), same
+# [ HELD ] accounting when macOS holds a container back — and ONE receipt, so
+# `restore` puts the whole batch back in one step instead of six.
+#
+# A single picked app is NOT a batch: it goes to do_uninstall, which asks for its
+# name. Typing "1" is not consent to remove Obsidian.
+do_uninstall_apps() {
+  local targets=("$@") target app bid name m i rc=0 last="" total label
+  local B_APP=() B_BID=() B_NAME=() I_PATH=() I_OWNER=() I_SCOPE=()
+
+  # ── resolve + gather everything FIRST; nothing is asked until the whole list
+  # is known, because the count you type is only meaningful over a full list.
+  for target in "${targets[@]}"; do
+    resolve_app "$target"; app="$RESOLVED_APP"
+    if [ -z "$app" ]; then
+      m="$(t un_notfound)"; echo "${m//\{app\}/$target}" >&2; rc=1; continue
+    fi
+    case "$app" in
+      /System/*) m="$(t un_refuse_apple)"; echo "${m//\{app\}/$app}" >&2; rc=1; continue ;;
+    esac
+    bid="$(bundle_id "$app")"
+    if [ -z "$bid" ]; then
+      m="$(t un_refuse_nobid)"; echo "${m//\{app\}/$app}" >&2; rc=1; continue
+    fi
+    case "$bid" in
+      com.apple.Safari|com.apple.SafariTechnologyPreview)
+        m="$(t un_refuse_protected)"; echo "${m//\{app\}/$app}" >&2; rc=1; continue ;;
+    esac
+    name="$(basename "$app")"; name="${name%.app}"
+    gather_footprint "$app" "$bid" "$name" 0
+    if [ "${#ITEM_PATH[@]}" -eq 0 ]; then
+      m="$(t un_empty)"; echo "   ${m//\{app\}/$name}"; continue
+    fi
+    B_APP+=("$app"); B_BID+=("$bid"); B_NAME+=("$name")
+    # the group header carries the app's identity — name AND bundle id, the same
+    # two facts the one-app flow prints, so the batch view never says less
+    for i in "${!ITEM_PATH[@]}"; do
+      I_PATH+=("${ITEM_PATH[$i]}"); I_OWNER+=("${ITEM_OWNER[$i]}")
+      I_SCOPE+=("$name   ·   $bid")
+    done
+  done
+
+  local napps="${#B_APP[@]}"          # separate `local`: the array isn't in scope yet in the first
+  [ "$napps" -eq 0 ] && return "$rc"
+  if [ "$napps" -eq 1 ]; then do_uninstall "${B_APP[0]}"; return $?; fi
+
+  ITEM_PATH=("${I_PATH[@]}"); ITEM_OWNER=("${I_OWNER[@]}"); ITEM_SCOPE=("${I_SCOPE[@]}")
+  dedupe_items
+
+  printf '\n'
+  m="$(t un_apps_header)"; echo "${m//\{n\}/$napps}"
+  for i in "${!ITEM_PATH[@]}"; do
+    if [ "${ITEM_SCOPE[$i]}" != "$last" ]; then echo "▸ ${ITEM_SCOPE[$i]}"; last="${ITEM_SCOPE[$i]}"; fi
+    printf '   · %8s  %s\n' "$(human "${ITEM_PATH[$i]}")" "$(printf '%s' "${ITEM_PATH[$i]}" | vis)"
+  done
+  total="$(od_human_kb "$(du -sck "${ITEM_PATH[@]}" 2>/dev/null | tail -1 | cut -f1)")"
+  printf '\n'
+  echo "   $(t un_total)$total"
+
+  if [ "$DRY" -eq 1 ]; then printf '\n'; t un_dry_note; return "$rc"; fi
+
+  printf '\n'
+  m="$(t confirm_count)"; printf '%s' "${m//\{n\}/$napps}"
+  local reply=""; read -r reply || true
+  if [ "$reply" != "$napps" ]; then t un_cancelled; return 0; fi
+
+  for i in "${!B_APP[@]}"; do quit_app "${B_APP[$i]}" "${B_BID[$i]}" "${B_NAME[$i]}"; done
+
+  # One receipt for the batch, labelled with the names it holds — `restore
+  # --list` shows what came out, not just how much. Sanitised of TAB/newline:
+  # a macOS app name may legally contain either, and the receipt header is
+  # line-oriented (the item paths below it are NUL-framed and safe as they are).
+  label=""
+  for i in "${!B_NAME[@]}"; do label="$label${label:+, }${B_NAME[$i]}"; done
+  label="$(printf 'apps (%s): %s' "$napps" "$label" | tr '\n\t' '  ')"
+# shellcheck disable=SC2034  # MV_* are read/written by trash_one/report_moves via dynamic scope
+  local rfile MV_TRIED=0 MV_MOVED=0 MV_STUCK_CONT=0
+  receipt_open apps "$label" apps; rfile="$RECEIPT_FILE"
+  for i in "${!ITEM_PATH[@]}"; do
+    trash_one "${ITEM_PATH[$i]}" "${ITEM_OWNER[$i]}" "$rfile"
+  done
+  receipt_close "$MV_MOVED"
+
+  printf '\n'
+  m="$(t un_apps_done)"; m="${m//\{n\}/$MV_MOVED}"
+  report_moves "${m//\{apps\}/$napps}"
+  return "$rc"
 }
 
 # Batch removal of PROVEN orphans — discovery arrives in bulk (years of
@@ -4675,12 +4850,12 @@ if [ "$MODE" = "uninstall" ]; then
     # cancel (return 0, empty target) gets the un_cancelled line.
     [ "$pk" -ne 0 ] && exit "$pk"
     if [ "${#PICK_APPS[@]}" -gt 0 ] || [ "${#PICK_ORPHANS[@]}" -gt 0 ] || [ "${#PICK_STARTUP[@]}" -gt 0 ]; then
-      # multi-select → each app runs the full one-at-a-time flow (typed-name
-      # consent included; a wrong name skips THAT app, the rest still come),
-      # then whatever 🧟 rows were picked run as one batch at the end.
+      # multi-select → apps first, as ONE preview and ONE typed-count consent
+      # (a single surviving app falls back to its typed-name flow), then whatever
+      # 🧟 rows and startup items were picked, each as their own batch.
       pk=0
       if [ "${#PICK_APPS[@]}" -gt 0 ]; then
-        for arg in "${PICK_APPS[@]}"; do do_uninstall "$arg" || pk=$?; done
+        do_uninstall_apps "${PICK_APPS[@]}" || pk=$?
       fi
       if [ "${#PICK_ORPHANS[@]}" -gt 0 ]; then
         do_uninstall_orphans "${PICK_ORPHANS[@]}" || pk=$?

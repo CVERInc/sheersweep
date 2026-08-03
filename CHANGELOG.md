@@ -4,6 +4,57 @@ All notable changes to sheersweep are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.16.0]
+
+### Changed — picking six apps now costs one preview and one confirmation
+
+Multi-select was batch selection with serial consent: six rows meant six full
+previews, each ending in the app's name typed out by hand. The friction of one
+deliberate removal is right; the same friction six times is not more safety, it
+is the thing that teaches a person to type through a prompt without reading it.
+Six `[ DONE ]` lines scroll past and nobody re-reads number four.
+
+So app rows now take the shape the leftover (🧟) rows and startup items already
+had: **one combined preview of every file, grouped by app — name and bundle id
+both — one grand total, and the COUNT of apps typed once.** All or nothing; a
+wrong count cancels the batch and touches nothing. The picker *is* the selection
+step — you chose by row, off a list already on screen — so re-proving each app's
+identity afterwards was asking a question that had been answered.
+
+Nothing else moved: same footprint per app, same Trash (never `rm`), same
+`[ HELD ]` accounting when macOS holds a container back. The batch writes **one**
+receipt instead of six, so `sheersweep restore` puts the whole pass back in one
+step — it used to take six restores, run in reverse order, to undo one decision.
+
+**One picked app is still typed by name.** It isn't a batch, and typing `1` is
+not a fact you had to read anything to know. `all` still refuses to mean "every
+installed app" — it only ever takes the discovered rows.
+
+### Fixed — two copies of one app consented to the same folder twice
+
+`~/Applications/Foo.app` and `/Applications/Foo.app` share a bundle id, so they
+share `Application Support/Foo`. Serially that was invisible (the second run
+found the folder already gone and listed it at 0 KB). In one list it would have
+been printed twice, consented to twice — and *moved* twice, where the second
+move finds nothing and `trash_one` honestly counts a miss: a clean run reported
+as "only 3 of 4 items could be moved". The batch collapses to one row per path,
+first occurrence wins.
+
+### Fixed — it announced that every app "looks like it's running"
+
+The quit-first line was printed before every removal, running or not: six picked
+apps, six claims, most of them false — including `Claude Code URL Handler`, a
+4 KB shim, and three Google Drive shortcut stubs. The claim is one `ps` away
+from being checkable, so now it is checked: the line appears (and the Apple
+Event goes out) only when a process is actually alive inside that bundle — a
+helper or an `.appex` counts, since they hold the same files open. An
+already-removed app has no bundle to run from and is never claimed to be running.
+
+The check reads its process table into a variable *before* matching. A
+`ps … | grep` pipeline starts both sides at once, so `ps` captures grep's own
+command line — which contains the pattern being searched for — and every app on
+the machine comes back "running". That version was written first, and it passed.
+
 ## [0.15.7]
 
 ### Fixed — the Chinese copy sprayed `——` where `：` belongs

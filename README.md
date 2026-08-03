@@ -153,12 +153,14 @@ listed — the small scraps too, numbered under a divider at the bottom, because
 you can't select what you can't see. Pick one and it runs the same preview →
 typed-confirm → Trash → receipt flow; pick **many** (`5 7-8 19`, or `all` for
 every discovered row) and the selection may mix apps, leftover data and startup
-items freely — selection
-is batch, consent is not. Each selected **app** still walks its own preview and
-typed-name confirmation, one at a time (`all` never touches app rows); the leftover
-rows then run as one batch: one combined preview of every file, one
-confirmation (you type the count of ids shown), one receipt — and
-`sheersweep restore` undoes the whole batch. Years of residue, one pass.
+items freely (`all` never touches app rows). Each **kind** then gets one combined
+preview of every file it owns and **one** confirmation — you type the count of
+apps, or of ids, shown — one receipt, and `sheersweep restore` undoes the whole
+batch. Six apps used to cost six previews and six typed names, which is how a
+gate stops being read; the picker is where you chose, so the consent belongs
+there, once. One app on its own is not a batch: it still asks for its name,
+because typing `1` is not a fact you had to read anything to know.
+Years of residue, one pass.
 `sheersweep uninstall <bundle-id>` reaches a single one directly (add
 `--dry-run` to preview headlessly).
 

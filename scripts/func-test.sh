@@ -1090,6 +1090,50 @@ DG_DIR="$SBX/dg"; mkdir -p "$DG_DIR"
 DG_DIR=""
 teardown
 
+# (multi-app batch) two picked copies of ONE app own the same folder. The batch
+# preview must ask for it once — and, more than cosmetics, must MOVE it once: the
+# second move finds nothing there, and trash_one honestly counts that as a miss,
+# so a duplicated row turns a clean run into "only 3 of 4 could be moved".
+ITEM_PATH=("/a/Support" "/Users/x/Applications/Foo.app" "/a/Support" "/Applications/Foo.app")
+ITEM_OWNER=("/Users/x" "/Users/x" "/Users/x" "/Users/x")
+ITEM_SCOPE=("Foo" "Foo" "Foo (second copy)" "Foo (second copy)")
+dedupe_items
+if [ "${#ITEM_PATH[@]}" -eq 3 ] && [ "${ITEM_PATH[2]}" = "/Applications/Foo.app" ] \
+   && [ "${#ITEM_OWNER[@]}" -eq 3 ] && [ "${ITEM_SCOPE[2]}" = "Foo (second copy)" ]; then
+  pass "dedupe_items: one row per path, first wins, the three arrays stay parallel"
+else
+  fail "dedupe_items left ${#ITEM_PATH[@]} rows: ${ITEM_PATH[*]}"
+fi
+ITEM_PATH=(); ITEM_OWNER=(); ITEM_SCOPE=()
+if dedupe_items 2>/dev/null && [ "${#ITEM_PATH[@]}" -eq 0 ]; then
+  pass "dedupe_items: an empty list is a no-op (bash 3.2 + set -u)"
+else
+  fail "dedupe_items died on an empty list"
+fi
+
+# (honesty) "looks like it's running — asking it to quit first…" was printed
+# before EVERY removal, running or not. The claim is one `ps` away from being
+# true, so it has to be checked — including the already-gone app, whose bundle
+# path is empty and which nothing can be running from.
+setup
+mkdir -p "$SBX/Runner.app/Contents/MacOS" "$SBX/Idle.app/Contents/MacOS"
+printf '#!/bin/sh\nsleep 30\n' > "$SBX/Runner.app/Contents/MacOS/run"
+chmod +x "$SBX/Runner.app/Contents/MacOS/run"
+"$SBX/Runner.app/Contents/MacOS/run" & runner_pid=$!
+sleep 1   # let the process appear in the table we are about to read
+if app_is_running "$SBX/Runner.app"; then
+  pass "app_is_running: sees a process living inside the bundle"
+else
+  fail "app_is_running: missed a process running from the bundle"
+fi
+if app_is_running "$SBX/Idle.app" || app_is_running ""; then
+  fail "app_is_running: claimed a bundle nothing runs from (or an empty path) is running"
+else
+  pass "app_is_running: silent for an idle bundle and for an already-gone app"
+fi
+kill "$runner_pid" 2>/dev/null; wait "$runner_pid" 2>/dev/null
+teardown
+
 # (guard) EVERY localized t() key must NAME every supported locale.
 #
 # The old version of this check asked whether `t <key>` returned something in

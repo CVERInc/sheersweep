@@ -58,7 +58,9 @@ Locale is auto-detected; force it with `SHEERSWEEP_LANG=en-US|ja-JP|zh-TW|zh-Han
 1. **Dry-run first, every time.** Run `--dry-run`, read what it would free, *then*
    decide. The preview deletes nothing.
 2. **Never bypass the human's confirmation gate.** `uninstall` waits for the human
-   to **type the app's name**; `leftovers` / `restore` wait for an interactive
+   to **type the app's name** (a multi-select in the picker asks instead for the
+   **count of apps**, once, over one combined preview); `leftovers` / `restore`
+   wait for an interactive
    yes/no. These prompts read from a TTY and are for the *human*, not you — do not
    pipe answers in, fake a TTY, or auto-confirm to "save a step." User excitement
    is not authorization.
