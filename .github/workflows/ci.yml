@@ -13,7 +13,7 @@ jobs:
   ci:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: ShellCheck
         run: shellcheck sheersweep
@@ -40,6 +40,6 @@ jobs:
   func-test:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Functional tests (hermetic — fixtures only, no sudo)
         run: bash scripts/func-test.sh
