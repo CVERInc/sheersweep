@@ -1209,6 +1209,99 @@ fi
 kill "$runner_pid" 2>/dev/null; wait "$runner_pid" 2>/dev/null
 teardown
 
+# (tilde) The ~/… display rule, including the prefix trap that the 0.16.2
+# bundle-id fix taught us to test for: `/Users/chodaictx` is not inside
+# `/Users/chodaict`, and a pattern without the trailing slash says it is —
+# rendering a path (`~x/bin/foo`) that exists on no machine. An empty REAL_HOME
+# must fall through untouched rather than turn every absolute path into `~`.
+saved_real_home="${REAL_HOME:-}"
+REAL_HOME="/Users/chodaict"
+t_home="$(tilde "/Users/chodaict/.local/bin/agy")"
+t_deep="$(tilde "/Users/chodaict/a b/c'd")"          # spaces and a quote survive
+t_out="$(tilde "/usr/local/bin/agy")"
+t_pfx="$(tilde "/Users/chodaictx/bin/agy")"          # the prefix trap
+t_self="$(tilde "/Users/chodaict")"                  # the home itself: not "~/"
+REAL_HOME=""
+t_nohome="$(tilde "/Users/chodaict/x")"
+REAL_HOME="$saved_real_home"
+# shellcheck disable=SC2088  # "~/…" is the expected RENDERING, not a path to expand
+if [ "$t_home" = "~/.local/bin/agy" ] && [ "$t_deep" = "~/a b/c'd" ] \
+   && [ "$t_out" = "/usr/local/bin/agy" ] \
+   && [ "$t_pfx" = "/Users/chodaictx/bin/agy" ] \
+   && [ "$t_self" = "/Users/chodaict" ] \
+   && [ "$t_nohome" = "/Users/chodaict/x" ]; then
+  pass "tilde: ~/ inside the home, absolute outside, and a prefixed home is not a home"
+else
+  fail "tilde: wrong ($t_home | $t_out | $t_pfx | $t_self | $t_nohome)"
+fi
+
+# (tools/chains) The toolchain section's header promises "each tool's own
+# method", so every row must carry one: either a runnable command, or an @key
+# whose localized note SAYS there is no single command. A bare noun ("Maven
+# cache") is what this test exists to keep out — it reads like an answer.
+# The @keys are resolved through t() in EVERY locale here, because the note is
+# the only thing standing between the header's promise and an empty hand.
+chains_bad=""
+while IFS='|' read -r rel hint; do
+  [ -z "$rel" ] && continue
+  case "$hint" in
+    "")  chains_bad="$chains_bad $rel:empty" ;;
+    @*)  for loc in ja-JP zh-TW zh-Hans ko-KR es-ES de-DE fr-FR pt-BR en-US; do
+           SS_LANG="$loc"; note="$(t "tl_chain_${hint#@}")"
+           # an unknown key falls through t()'s *) and returns the key itself
+           case "$note" in ""|tl_chain_*) chains_bad="$chains_bad $rel:$loc" ;; esac
+         done
+         SS_LANG="en-US" ;;
+    *)   # A hint that isn't an @key gets printed behind →, which on this screen
+         # means "paste this into a shell" — so it has to BE that. The first
+         # version of this check only rejected an empty hint and a stray →, and
+         # a bare noun ("Maven cache") walked between them: it is neither, and it
+         # is exactly what the header's promise was being broken by. Naming a
+         # removal verb (or carrying a flag) is the cheapest structural proof
+         # that a string is a command and not a label.
+         case "$hint" in
+           *uninstall*|*clean*|*delete*|*remove*|*\ -*) ;;
+           *) chains_bad="$chains_bad $rel:noun" ;;
+         esac
+         # → is reserved for the pointer itself; a command must not smuggle it in
+         case "$hint" in *→*) chains_bad="$chains_bad $rel:arrow" ;; esac ;;
+  esac
+done < <(awk "/<<'CHAINS'/{f=1;next} /^CHAINS\$/{f=0} f" "$SCRIPT")
+n_chains="$(awk "/<<'CHAINS'/{f=1;next} /^CHAINS\$/{f=0} f" "$SCRIPT" | grep -c .)"
+if [ -z "$chains_bad" ] && [ "$n_chains" -ge 10 ]; then
+  pass "tools: all $n_chains toolchain rows carry a method (command or a note in 9 locales)"
+else
+  fail "tools: toolchain row without a usable method:$chains_bad (n=$n_chains)"
+fi
+
+# (tools) The whole screen, rendered against a sandbox home with Homebrew stubbed
+# out. Three claims the sections used to disagree on: a path under the home reads
+# as ~/…, a symlink target hangs off ↳ (never →, which on this screen means "a
+# command you can run"), and no ▸ header is left standing over empty space.
+setup
+mkdir -p "$SBX/.local/bin" "$SBX/elsewhere" "$SBX/.m2"
+printf '#!/bin/sh\n' > "$SBX/elsewhere/real"; chmod +x "$SBX/elsewhere/real"
+ln -s "$SBX/elsewhere/real" "$SBX/.local/bin/linked"
+head -c 2000000 /dev/zero > "$SBX/.m2/blob"
+tools_out="$(
+  REAL_HOME="$SBX"
+  # shellcheck disable=SC2329,SC2034  # do_tools calls this; BREW_BIN is read there
+  brew_locate() { BREW_BIN=""; }
+  do_tools
+)"
+# every ▸ header must be followed by a line with content, not a blank/EOF
+hdr_empty="$(printf '%s\n' "$tools_out" | awk '/^▸/ { if ((getline nxt) <= 0 || nxt !~ /[^ ]/) print }' | wc -l | tr -d ' ')"
+if printf '%s\n' "$tools_out" | grep -q '·.*~/\.local/bin/linked  ↳ ~/elsewhere/real' \
+   && ! printf '%s\n' "$tools_out" | grep -q "$SBX" \
+   && printf '%s\n' "$tools_out" | grep -q '(Maven' \
+   && [ "$hdr_empty" -eq 0 ]; then
+  pass "tools: ~/ paths, ↳ for symlink targets, no header over empty space"
+else
+  fail "tools: rendering off (headers over blanks: $hdr_empty)"
+  printf '%s\n' "$tools_out" | sed 's/^/     /'
+fi
+teardown
+
 # (guard) EVERY localized t() key must NAME every supported locale.
 #
 # The old version of this check asked whether `t <key>` returned something in

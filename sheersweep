@@ -32,7 +32,7 @@
 #   each with the native way to remove it. Changes nothing; never needs sudo.
 set -u
 
-VERSION="0.16.2"
+VERSION="0.17.0"
 
 # ============================================================================
 # i18n — en-US · ja-JP · zh-TW · zh-Hans · ko-KR · es-ES · de-DE · fr-FR · pt-BR.
@@ -1169,6 +1169,18 @@ t() {
         pt-BR) echo "Inventário de ferramentas CLI — somente leitura. Nada é alterado." ;;
         en-US|*)     echo "CLI tool inventory — read-only. Nothing is changed." ;;
       esac ;;
+    tl_none)   # shared by all three INVENTORY sections (formulae · binaries · toolchains)
+      case "$SS_LANG" in
+        ja-JP) echo "（なし）" ;;
+        zh-TW) echo "（沒有）" ;;
+        zh-Hans) echo "（没有）" ;;
+        ko-KR) echo "(없음)" ;;
+        es-ES) echo "(ninguno)" ;;
+        de-DE) echo "(keine)" ;;
+        fr-FR) echo "(aucun)" ;;
+        pt-BR) echo "(nenhum)" ;;
+        en-US|*)     echo "(none)" ;;
+      esac ;;
     tl_brew_header)
       case "$SS_LANG" in
         ja-JP) echo "▸ 自分で入れた Homebrew formula（leaves — 他の何にも必要とされていない）" ;;
@@ -1241,18 +1253,6 @@ t() {
         pt-BR) echo "▸ Binários instalados à mão, sem gerenciador (~/bin · ~/.local/bin · /usr/local/bin)" ;;
         en-US|*)     echo "▸ Hand-installed binaries no manager owns (~/bin · ~/.local/bin · /usr/local/bin)" ;;
       esac ;;
-    tl_bins_none)
-      case "$SS_LANG" in
-        ja-JP) echo "（なし）" ;;
-        zh-TW) echo "（沒有）" ;;
-        zh-Hans) echo "（没有）" ;;
-        ko-KR) echo "(없음)" ;;
-        es-ES) echo "(ninguno)" ;;
-        de-DE) echo "(keine)" ;;
-        fr-FR) echo "(aucun)" ;;
-        pt-BR) echo "(nenhum)" ;;
-        en-US|*)     echo "(none)" ;;
-      esac ;;
     tl_chains_header)
       case "$SS_LANG" in
         ja-JP) echo "▸ ツールチェーンのデータ（参考情報 — 消すなら各ツール自身の方法で）" ;;
@@ -1265,17 +1265,58 @@ t() {
         pt-BR) echo "▸ Dados de toolchains (informativo — remova com o método próprio de cada ferramenta)" ;;
         en-US|*)     echo "▸ Toolchain data (informational — remove with each tool's own method)" ;;
       esac ;;
-    tl_hint)   # the context line; the runnable pointer is printed under it
+    # The toolchain rows whose removal ISN'T one command. The section header
+    # promises "each tool's own method", so a row that has no such command has to
+    # say that out loud — a noun ("Maven cache") reads like an answer and isn't
+    # one. These are notes, not pointers: they print in parentheses, never behind
+    # the → that this screen reserves for something you can paste into a shell.
+    tl_chain_cargo)
       case "$SS_LANG" in
-        ja-JP) echo "formula やバイナリを削除するには:" ;;
-        zh-TW) echo "要移除 formula 或裸二進位：" ;;
-        zh-Hans) echo "要移除 formula 或二进制文件：" ;;
-        ko-KR) echo "formula나 바이너리를 제거하려면:" ;;
-        es-ES) echo "Para quitar una formula o un binario:" ;;
-        de-DE) echo "Um eine Formula oder ein Binary zu entfernen:" ;;
-        fr-FR) echo "Pour retirer une formula ou un binaire :" ;;
-        pt-BR) echo "Para remover uma formula ou binário:" ;;
-        en-US|*) echo "To remove a formula or a bare binary:" ;;
+        ja-JP) echo "Rust のパッケージキャッシュ — rustup self uninstall で一緒に消えます。次のビルドで再生成されます" ;;
+        zh-TW) echo "Rust 的套件快取：rustup self uninstall 會一起帶走，下次 build 會自己長回來" ;;
+        zh-Hans) echo "Rust 的包缓存：rustup self uninstall 会一起带走，下次 build 会自己长回来" ;;
+        ko-KR) echo "Rust 패키지 캐시 — rustup self uninstall이 함께 지웁니다. 다음 빌드에서 다시 생깁니다" ;;
+        es-ES) echo "Caché de paquetes de Rust: rustup self uninstall también se la lleva; se regenera en la próxima compilación" ;;
+        de-DE) echo "Rusts Paket-Cache — rustup self uninstall nimmt ihn mit; er entsteht beim nächsten Build neu" ;;
+        fr-FR) echo "Cache de paquets Rust — rustup self uninstall l'emporte aussi ; il se reconstitue à la prochaine compilation" ;;
+        pt-BR) echo "Cache de pacotes do Rust — rustup self uninstall também o remove; ele volta na próxima compilação" ;;
+        en-US|*) echo "Rust's package cache — rustup self uninstall takes this too; it refills on the next build" ;;
+      esac ;;
+    tl_chain_m2)
+      case "$SS_LANG" in
+        ja-JP) echo "Maven のローカルリポジトリ — 整理用のコマンドはありません。次のビルドで取り直されます" ;;
+        zh-TW) echo "Maven 的本機倉庫：沒有清理指令，下次 build 會重新抓回來" ;;
+        zh-Hans) echo "Maven 的本地仓库：没有清理命令，下次 build 会重新抓回来" ;;
+        ko-KR) echo "Maven 로컬 저장소 — 정리 명령이 없습니다. 다음 빌드에서 다시 받습니다" ;;
+        es-ES) echo "Repositorio local de Maven: no hay comando de limpieza; se vuelve a descargar en la próxima compilación" ;;
+        de-DE) echo "Mavens lokales Repository — kein Aufräumbefehl; es wird beim nächsten Build neu geladen" ;;
+        fr-FR) echo "Dépôt local de Maven — aucune commande de nettoyage ; il se retélécharge à la prochaine compilation" ;;
+        pt-BR) echo "Repositório local do Maven — não há comando de limpeza; ele é baixado de novo na próxima compilação" ;;
+        en-US|*) echo "Maven's local repository — no prune command; it refills on the next build" ;;
+      esac ;;
+    tl_chain_dotnet)
+      case "$SS_LANG" in
+        ja-JP) echo "単一のコマンドはありません — .NET 自身のアンインストールツールで削除します" ;;
+        zh-TW) echo "沒有單一指令：用 .NET 自己的解除安裝工具移除" ;;
+        zh-Hans) echo "没有单一命令：用 .NET 自己的卸载工具移除" ;;
+        ko-KR) echo "단일 명령이 없습니다 — .NET 자체 제거 도구로 지웁니다" ;;
+        es-ES) echo "No hay un solo comando: lo quita la propia herramienta de desinstalación de .NET" ;;
+        de-DE) echo "Kein einzelner Befehl — das eigene Uninstall-Tool von .NET entfernt es" ;;
+        fr-FR) echo "Pas de commande unique — l'outil de désinstallation de .NET s'en charge" ;;
+        pt-BR) echo "Não há um comando único — a própria ferramenta de desinstalação do .NET o remove" ;;
+        en-US|*) echo "No single command — .NET's own uninstall tool removes it" ;;
+      esac ;;
+    tl_chain_gradle)
+      case "$SS_LANG" in
+        ja-JP) echo "デフォルトの sweep が Gradle のキャッシュを既に消しています。残っているのは設定です" ;;
+        zh-TW) echo "預設的 sweep 已經清掉 Gradle 的快取，剩下的是它的設定" ;;
+        zh-Hans) echo "默认的 sweep 已经清掉 Gradle 的缓存，剩下的是它的配置" ;;
+        ko-KR) echo "기본 sweep이 Gradle 캐시는 이미 지웁니다. 남은 것은 설정입니다" ;;
+        es-ES) echo "El barrido por defecto ya limpia las cachés de Gradle; lo que queda es su configuración" ;;
+        de-DE) echo "Der Standard-Sweep leert Gradles Caches bereits; übrig bleibt seine Konfiguration" ;;
+        fr-FR) echo "Le balayage par défaut vide déjà les caches de Gradle ; il ne reste que sa configuration" ;;
+        pt-BR) echo "A varredura padrão já limpa os caches do Gradle; o que sobra é a configuração" ;;
+        en-US|*) echo "The default sweep already clears Gradle's caches; what's left is its config" ;;
       esac ;;
     tl_hint_dry)   # the parenthetical on the pointer line
       case "$SS_LANG" in
@@ -2332,6 +2373,24 @@ free_kb() { df -k /System/Volumes/Data | awk '/Data$/{print $4}'; }
 # value, so a control byte in a name never changes WHAT is trashed, only how the
 # preview reads. LC_ALL=C so the ranges are bytes, not multibyte-aware.
 vis() { LC_ALL=C tr -d '\000-\037\177'; }
+
+# A path under the RUNNING user's home renders as ~/… — the same rule the sweep's
+# rows follow (see clean()), lifted out so every surface can share one answer.
+# Anything outside that home (/usr/local/bin, a brew cellar) stays absolute,
+# because there ~/ would be a lie about where the file is.
+#
+# The trailing slash in the pattern is load-bearing, and it is the same shape the
+# 0.16.2 bundle-id fix needed: without it, `/Users/chodaictx/bin/foo` matches a
+# `/Users/chodaict` home by PREFIX and renders as `~x/bin/foo` — a path that
+# exists nowhere. An empty REAL_HOME (sourced as a library, say) must fall
+# through untouched rather than turn every absolute path into `~`.
+tilde() {   # $1 = path → ~/… when it sits under $REAL_HOME, else unchanged
+  case "${REAL_HOME:-}" in "") printf '%s' "$1"; return ;; esac
+  case "$1" in
+    "$REAL_HOME"/*) printf '~%s' "${1#"$REAL_HOME"}" ;;
+    *)              printf '%s' "$1" ;;
+  esac
+}
 
 # Clear a directory's CONTENTS (keep the dir). Dry-run only reports the size.
 clean() {
@@ -3832,7 +3891,7 @@ do_uninstall_brew() {
   sz="$(human "$keg")"
   cmd="brew uninstall $name"
   m="$(t un_brew_resolved)"; m="${m//\{name\}/$name}"; echo "${m//\{ver\}/$vers}"
-  printf '   · %8s  %s\n' "${sz:-?}" "$keg"
+  printf '   · %8s  %s\n' "${sz:-?}" "$(tilde "$keg" | vis)"
   printf '\n'
   t un_brew_cmd
   printf '\n      %s\n\n' "$cmd"
@@ -3883,7 +3942,10 @@ do_uninstall_bin() {
   t un_bin_header
   for f in "${hits[@]}"; do
     sz="$(od_human_kb "$(du -skL "$f" 2>/dev/null | cut -f1)")"
-    printf '   · %8s  %s\n' "${sz:-?}" "$f"
+    # vis, like every other consent screen: this row sits directly above the
+    # typed-name prompt, and a filename may carry ESC. It was the one preview in
+    # the script printing a path raw. tilde keeps it reading like `tools`.
+    printf '   · %8s  %s\n' "${sz:-?}" "$(tilde "$f" | vis)"
   done
   printf '\n'
   t un_bin_note
@@ -3917,10 +3979,10 @@ do_tools() {
 
   # ---- Homebrew: what you chose, and what nothing needs anymore --------------
   brew_locate
+  printf '\n'
   if [ -z "$BREW_BIN" ]; then
     t tl_nobrew
   else
-    printf '\n'
     t tl_brew_header
     leaves="$(brew_run leaves 2>/dev/null)"
     if [ -n "$leaves" ]; then
@@ -3954,16 +4016,25 @@ do_tools() {
       if [ "$up" -gt 0 ]; then
         m="$(t tl_upgradable)"; echo "   ${m//\{n\}/$up}"
       fi
+      tl_pointer_uninstall
+    else
+      # A header over empty space is the shape the orphans section was fixed out
+      # of — every inventory section here answers, even when the answer is none.
+      echo "   $(t tl_none)"
     fi
     orphans="$(brew_run autoremove --dry-run 2>/dev/null)"
     # always lead with the ▸ header so this section reads like the others — then
-    # either the list, or a ✅ "none" underneath it (not a bare orphan line).
+    # either the list, or a [ PASS ] "none" underneath it (not a bare orphan line).
     printf '\n'
     t tl_orphans_header
     if [ -z "$orphans" ]; then
+      # [ PASS ], not "(none)": this section is a CHECK (is anything stranded?),
+      # and nothing stranded is a clean result. The three inventory sections
+      # around it are counts, not checks — an empty shelf passes nothing.
       echo "   $(t tl_orphans_none)"
     else
       printf '%s\n' "$orphans" | grep -v '^==>' | sed 's/^/   /'
+      printf '   → brew autoremove\n'
     fi
   fi
 
@@ -3974,13 +4045,23 @@ do_tools() {
   while IFS= read -r -d '' f; do
     n=$((n + 1))
     sz="$(od_human_kb "$(du -skL "$f" 2>/dev/null | cut -f1)")"
+    # ~/… per the house rule (see tilde) — the header already speaks in ~/bin and
+    # ~/.local/bin, so spelling out /Users/<you> on every row said the same thing
+    # twice and pushed the symlink target off the edge. /usr/local/bin stays
+    # absolute because it is not under anyone's home.
+    #
+    # ↳ for the target, never →: on this screen → means "a command you can run",
+    # and a symlink destination is not one. The size is the TARGET's (du -L
+    # follows the link), which is exactly why the target is worth printing —
+    # it's what tells you these 130 MB are counted once, not twice.
     if [ -L "$f" ]; then
-      printf '   · %8s  %s → %s\n' "${sz:-?}" "$f" "$(readlink "$f")"
+      printf '   · %8s  %s  ↳ %s\n' "${sz:-?}" \
+        "$(tilde "$f" | vis)" "$(tilde "$(readlink "$f")" | vis)"
     else
-      printf '   · %8s  %s\n' "${sz:-?}" "$f"
+      printf '   · %8s  %s\n' "${sz:-?}" "$(tilde "$f" | vis)"
     fi
   done < <(unmanaged_bins "" "$REAL_HOME")
-  [ "$n" -eq 0 ] && echo "   $(t tl_bins_none)"
+  if [ "$n" -eq 0 ]; then echo "   $(t tl_none)"; else tl_pointer_uninstall; fi
 
   # ---- toolchain data folders (informational — each row shows the NATIVE way
   # to reclaim it; sheersweep never touches these) ------------------------------
@@ -3995,25 +4076,39 @@ do_tools() {
     case "$sz" in ""|0B) continue ;; esac
     n=$((n + 1))
     # shellcheck disable=SC2088  # the literal "~/" is display text, not a path
-    printf '   · %8s  ~/%s  (%s)\n' "$sz" "$rel" "$hint"
+    printf '   · %8s  ~/%s\n' "$sz" "$rel"
+    # The method gets its own line, the same two-line shape `brew upgrade` takes:
+    # a runnable command behind →, or — when the tool genuinely has no single
+    # command — a localized note in parentheses that SAYS so. What this column
+    # must never be again is a noun ("Maven cache"): the header promises a
+    # method, and a noun reads like one without being one.
+    case "$hint" in
+      @*) printf '     (%s)\n' "$(t "tl_chain_${hint#@}")" ;;
+      *)  printf '     → %s\n' "$hint" ;;
+    esac
   done <<'CHAINS'
 .rustup|rustup self uninstall
-.cargo|removed by: rustup self uninstall
-go|Go workspace · go clean -modcache
-.pyenv|pyenv — Python versions/shims
-.nvm|nvm — Node versions
-.sdkman|SDKMAN
-.dotnet|.NET SDK data
-.m2|Maven cache
-.gradle|Gradle (the default sweep already clears its caches)
-Library/Android|Android Studio → SDK Manager
-.android|Android emulator/adb data
+.cargo|@cargo
+go/pkg/mod|go clean -modcache
+.pyenv|pyenv uninstall <version>
+.nvm|nvm uninstall <version>
+.sdkman|sdk uninstall <candidate> <version>
+.dotnet|@dotnet
+.m2|@m2
+.gradle|@gradle
+Library/Android|sdkmanager --uninstall <package>
+.android|avdmanager delete avd -n <name>
 CHAINS
-  [ "$n" -eq 0 ] && echo "   $(t tl_bins_none)"
-  printf '\n'
-  t tl_hint
-  printf '   → sheersweep uninstall <name>   (%s)\n' "$(t tl_hint_dry)"
+  [ "$n" -eq 0 ] && echo "   $(t tl_none)"
   return 0
+}
+
+# The next step shared by the two sections `uninstall` can act on (formulae and
+# bare binaries). It prints at each section's tail rather than once at the foot
+# of the screen: a pointer three sections away from its rows is a pointer you
+# have to go looking for, and the toolchain rows below carry their own methods.
+tl_pointer_uninstall() {
+  printf '   → sheersweep uninstall <name>   (%s)\n' "$(t tl_hint_dry)"
 }
 
 # ============================================================================

@@ -201,14 +201,31 @@ sheersweep tools
 
 One read-only screen: the Homebrew formulae **you** chose (leaves, with sizes),
 orphaned dependencies (`brew autoremove` candidates), hand-installed binaries no
-manager owns, and the big toolchain data folders (`~/.rustup`, `~/.android`, …) —
-each with the **native** command that removes it. It changes nothing, needs no
-password, and never touches the network. Which to keep is your call — this verb
-just finally lets you *see* what you have; sheersweep gives evidence, not verdicts.
+manager owns, and the big toolchain data folders (`~/.rustup`, `~/.android`, …).
+It changes nothing, needs no password, and never touches the network. Which to
+keep is your call — this verb just finally lets you *see* what you have;
+sheersweep gives evidence, not verdicts.
 
-Upgradable formulae are flagged inline (`apfel  1.5.0  → 1.8.3  brew upgrade
-apfel`) — read from **brew's local index**, so even this stays offline: it's
-exactly as fresh as your last `brew update`, and the summary line says so.
+Every row says how to get rid of it, and says it the same way: `→` means a
+command you can paste into a shell, nothing else on the screen uses that arrow,
+and a folder whose tool has **no** single removal command says so in a note
+rather than offering you a noun to guess from.
+
+```
+▸ Hand-installed binaries no manager owns (~/bin · ~/.local/bin · /usr/local/bin)
+   ·   130 MB  ~/.local/bin/agent  ↳ ~/.grok/bin/agent
+   → sheersweep uninstall <name>   (preview first with --dry-run)
+
+▸ Toolchain data (informational — remove with each tool's own method)
+   ·   4.7 GB  ~/.android
+     → avdmanager delete avd -n <name>
+   ·   340 MB  ~/.m2
+     (Maven's local repository — no prune command; it refills on the next build)
+```
+
+Upgradable formulae get the same two-line shape (`→ brew upgrade gh   (2.97.0)`)
+— read from **brew's local index**, so even this stays offline: it's exactly as
+fresh as your last `brew update`, and the summary line says so.
 
 ### Startup items apps forgot to take with them
 

@@ -4,6 +4,94 @@ All notable changes to sheersweep are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.17.0]
+
+### Fixed — a section header that promised a method and handed back a noun
+
+`tools`' toolchain section is headed *"remove with each tool's own method"*, and
+the README went further: *"each with the **native** command that removes it."*
+Seven of its eleven rows had no command in them at all:
+
+```
+   ·   4.7 GB  ~/.android  (Android emulator/adb data)
+   ·   340 MB  ~/.m2  (Maven cache)
+```
+
+`Android emulator/adb data` is a definition wearing the costume of an answer. On
+the machine this was found on it was the **only** row that printed, and it was
+4.7 GB — the reader follows the header, finds a noun, and leaves with nothing.
+
+Every row now carries a method, in one of two shapes and never a third: a
+command behind `→`, or — when the tool genuinely has none — a *localized note in
+parentheses that says so*. "No single command" is an answer; a noun is not.
+
+```
+   ·   4.7 GB  ~/.android
+     → avdmanager delete avd -n <name>
+   ·   340 MB  ~/.m2
+     (Maven's local repository — no prune command; it refills on the next build)
+```
+
+One row changed what it points at rather than what it says: `~/go` became
+`~/go/pkg/mod`. `go clean -modcache` clears the module cache, and `~/go` is your
+**workspace** — printing that command beside a 5 GB `~/go` claims a scope it
+does not have. The other partial commands carry a `<placeholder>` that already
+reads as per-item (`nvm uninstall <version>`), so they kept their folder.
+
+### Changed — one screen, one arrow, one way of saying "none"
+
+Four conventions were sharing one screen. Now:
+
+- **`→` means a command you can paste into a shell.** Nothing else uses it. A
+  symlink's destination — which is not a command — moved to `↳`, and
+  `Android Studio → SDK Manager` (a GUI path wearing the command glyph) is gone.
+- **Paths under your home render as `~/…`**, the rule the sweep's rows have
+  followed all along, now lifted into a shared `tilde` and reused by the CLI
+  previews. The binaries section printed `/Users/you/.local/bin/agent →
+  /Users/you/.grok/bin/agent` under a header that said `~/.local/bin`, and the
+  full home path twice in one row pushed the destination off the edge:
+
+  ```
+  ·   130 MB  ~/.local/bin/agent  ↳ ~/.grok/bin/agent
+  ```
+
+  `/usr/local/bin` stays absolute: it is not under anyone's home, and `~/` there
+  would be a lie about where the file is.
+- **The next step sits at the tail of the section it belongs to**, not three
+  sections away at the foot of the screen. Orphaned dependencies had named
+  `brew autoremove` in prose since it was written but never offered it as
+  something runnable; it does now, when there is anything to run it on.
+- **Empty sections answer.** The formulae section could print its `▸` header over
+  blank space — the exact shape the orphans section was fixed out of, fixed there
+  and nowhere else. The three *inventory* sections now share one `(none)`.
+  Orphaned dependencies keeps `[ PASS ]`, deliberately: it is a **check**, and
+  nothing stranded is a clean result. An empty shelf passes nothing.
+- `(Homebrew not found — skipping formulae)` gets the blank line every other
+  section got.
+
+### Fixed — the one preview that printed a path raw
+
+`uninstall <bare-binary>` printed its path without `vis()`. Every other consent
+screen strips terminal control bytes before printing, for the reason the
+function's own comment gives: these lines sit directly above the typed-name
+prompt the whole tool's safety rests on, and a filename may carry ESC. It was
+the last one printing unsanitized.
+
+### Added — `tools` had no tests at all
+
+- `tilde`: `~/` inside the home, absolute outside — and `/Users/chodaictx` is
+  **not** inside `/Users/chodaict`. That is the same prefix trap 0.16.2 fixed for
+  bundle ids, one release later in a different alphabet.
+- Every toolchain row must carry a usable method, and every note must resolve in
+  all nine locales. The first version of this gate rejected an empty hint and a
+  stray `→` — and a bare `Maven cache` walked straight between them, which is
+  precisely the defect above. It now requires the hint to *be* a command.
+- The rendered screen: `~/` paths, `↳` for symlink targets, and no `▸` header
+  left standing over empty space.
+
+All four were confirmed by breaking the script on purpose and watching each one
+fail. A gate nobody has seen fail is a gate you only know is quiet.
+
 ## [0.16.2]
 
 ### Fixed — one app's uninstall reached another app's data
