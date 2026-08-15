@@ -106,8 +106,8 @@ A second, deliberate verb — for when you actually want an app *gone*: the app
 
 ```bash
 sheersweep uninstall                     # pick from a numbered list of your apps
-sheersweep uninstall Discord             # …or name it directly
-sheersweep uninstall Discord --dry-run   # preview only — moves nothing
+sheersweep uninstall Example-Application             # …or name it directly
+sheersweep uninstall Example-Application --dry-run   # preview only — moves nothing
 ```
 
 It's held to the same trust rules as the sweep:
