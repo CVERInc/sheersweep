@@ -105,7 +105,7 @@ A second, deliberate verb — for when you actually want an app *gone*: the app
 **and every trace it left behind, across every account**.
 
 ```bash
-sheersweep uninstall                     # pick from a numbered list of your apps
+sheersweep uninstall                                 # pick from a numbered list of your apps
 sheersweep uninstall Example-Application             # …or name it directly
 sheersweep uninstall Example-Application --dry-run   # preview only — moves nothing
 ```
