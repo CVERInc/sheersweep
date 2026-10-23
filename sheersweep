@@ -32,7 +32,7 @@
 #   each with the native way to remove it. Changes nothing; never needs sudo.
 set -u
 
-VERSION="0.17.0"
+VERSION="0.17.1"
 
 # ============================================================================
 # i18n — en-US · ja-JP · zh-TW · zh-Hans · ko-KR · es-ES · de-DE · fr-FR · pt-BR.
@@ -3842,11 +3842,19 @@ brew_locate() {
     BREW_BIN="$(command -v brew 2>/dev/null)"
   fi
 }
+# HOMEBREW_NO_AUTOREMOVE: since Homebrew made autoremove the default, a bare
+# `brew cleanup` and `brew uninstall <one>` also uninstall every dependency
+# nothing needs anymore — formulae nobody typed a name for, with their bin/
+# links. That turned the sweep into a silent package remover and the one-formula
+# consent into a batch (issue #2: python@3.14 and /opt/homebrew/bin/python3
+# went, under a daemon still using them). Orphans stay a read-only report;
+# `brew autoremove` is yours to run. One list, both branches, so they can't drift.
+BREW_ENV=(HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_AUTOREMOVE=1)
 brew_run() {
   if [ "$(id -u)" -eq 0 ]; then
-    sudo -u "$REAL_USER" HOMEBREW_NO_AUTO_UPDATE=1 "$BREW_BIN" "$@"
+    sudo -u "$REAL_USER" "${BREW_ENV[@]}" "$BREW_BIN" "$@"
   else
-    HOMEBREW_NO_AUTO_UPDATE=1 "$BREW_BIN" "$@"
+    /usr/bin/env "${BREW_ENV[@]}" "$BREW_BIN" "$@"
   fi
 }
 
@@ -3904,6 +3912,7 @@ do_uninstall_brew() {
   m="$(t un_brew_done)"; m="${m//\{name\}/$name}"; echo "${m//\{ver\}/$vers}"
   # If this was the last formula needing some dependencies, say so — but never
   # auto-run autoremove: the consent above covered ONE formula, not a batch.
+  # (brew would do it on its own here; BREW_ENV is what keeps this true.)
   [ -n "$(brew_run autoremove --dry-run 2>/dev/null)" ] && t un_brew_orphans
   return 0
 }
@@ -5073,8 +5082,9 @@ clean "/.adobeTemp"
 # Homebrew old versions. Reuse brew_locate/brew_run so this shares the uninstall
 # path's fixes: brew is found by absolute prefix (works on Apple Silicon under the
 # sanitized sudo PATH, where the old `command -v brew` silently found nothing), it
-# runs as the real user (brew refuses root), and HOMEBREW_NO_AUTO_UPDATE=1 keeps
-# even this cleanup off the network.
+# runs as the real user (brew refuses root), HOMEBREW_NO_AUTO_UPDATE=1 keeps
+# even this cleanup off the network, and HOMEBREW_NO_AUTOREMOVE=1 keeps it to old
+# versions and downloads — never a formula that is still installed.
 brew_locate
 if [ -n "$BREW_BIN" ]; then
   # brew prints a line per removed keg and a summary. We showed `tail -3` of it,

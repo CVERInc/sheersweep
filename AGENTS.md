@@ -106,5 +106,7 @@ Locale is auto-detected; force it with `SHEERSWEEP_LANG=en-US|ja-JP|zh-TW|zh-Han
   files only via the sweep's `find … -delete` on the listed cache paths, or by
   *moving* to the Trash (`uninstall`/`leftovers`). The one `rm` it makes is
   discarding an empty receipt it just wrote itself — never your data. Anything
-  else destructive is a tool's own uninstaller (`brew uninstall`, `brew cleanup`),
-  delegated and shown verbatim before it runs.
+  else destructive is a tool's own uninstaller (`brew uninstall`, delegated and
+  shown verbatim before it runs) or the sweep's `brew cleanup`, held to old
+  versions and downloads (`HOMEBREW_NO_AUTOREMOVE=1`). Orphaned dependencies are
+  listed, never removed: don't run `brew autoremove` for the human.

@@ -1355,6 +1355,37 @@ else
   fail "i18n: a localized key is missing a locale (or extraction broke: $n_keys keys / $n_locs locales)"
 fi
 
+# (brew) Every brew call runs with autoremove off, as root (sudo -u) and not.
+# Homebrew's default lets `brew cleanup` / `brew uninstall <one>` also uninstall
+# every orphaned dependency; that removed python@3.14 from under a running
+# daemon (issue #2). A fake brew reports the env it was handed; `id` and `sudo`
+# are stubbed so the root branch runs without privileges.
+setup
+# shellcheck disable=SC2016  # the $… are for the fake brew to expand, not us
+printf '#!/bin/sh\necho "autoremove=${HOMEBREW_NO_AUTOREMOVE:-unset} update=${HOMEBREW_NO_AUTO_UPDATE:-unset} args=$*"\n' > "$SBX/brew"
+chmod +x "$SBX/brew"
+brew_user="$(
+  # shellcheck disable=SC2034  # read by brew_run
+  BREW_BIN="$SBX/brew"
+  brew_run cleanup -n
+)"
+brew_root="$(
+  # shellcheck disable=SC2034  # read by brew_run
+  BREW_BIN="$SBX/brew" REAL_USER="nobody"
+  # shellcheck disable=SC2329  # brew_run calls these
+  id() { echo 0; }
+  # shellcheck disable=SC2329
+  sudo() { shift 2; /usr/bin/env "$@"; }   # drop `-u <user>`, keep VAR=… cmd …
+  brew_run uninstall python@3.14
+)"
+if [ "$brew_user" = "autoremove=1 update=1 args=cleanup -n" ] \
+   && [ "$brew_root" = "autoremove=1 update=1 args=uninstall python@3.14" ]; then
+  pass "brew: autoremove off on both the sudo and the plain path"
+else
+  fail "brew: autoremove not off (user: $brew_user | root: $brew_root)"
+fi
+teardown
+
 echo ""
 [ "$fails" -eq 0 ] || { printf '[ FAIL ] %s functional test(s) failed\n' "$fails"; exit 1; }
 # A test run changes nothing, so the closing badge is PASS, not DONE.

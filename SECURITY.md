@@ -10,7 +10,8 @@ bottom).
 
 sheersweep never deletes a file of *yours* except by moving it to the Trash, and
 every other destructive action is a tool's **own** uninstaller, printed verbatim
-before it runs and only after you type a confirmation.
+before it runs and only after you type a confirmation — except the sweep's
+`brew cleanup`, which is held to Homebrew's old versions and downloads.
 
 ## What can delete, and what can't
 
@@ -37,7 +38,12 @@ read the risk:
 3. **Delegated uninstallers.** A Homebrew formula is removed by running
    `brew uninstall <name>` — the tool's own uninstaller — which sheersweep prints
    in full and runs only after you type the formula's name. sheersweep itself does
-   not `rm` your data to do this. (`brew cleanup` in the sweep works the same way.)
+   not `rm` your data to do this. Every brew call runs with
+   `HOMEBREW_NO_AUTOREMOVE=1`: Homebrew's default would also uninstall each
+   dependency nothing needs anymore, which turns a one-formula confirmation into
+   a batch. The sweep's `brew cleanup` asks for no confirmation, so it is held
+   to old versions and downloads and never removes an installed formula.
+   Orphaned dependencies are only listed; `brew autoremove` is yours to run.
 
 The only `rm` sheersweep itself makes is discarding an empty receipt file it just
 wrote — never your data.

@@ -29,7 +29,11 @@ Open source, no subscription, no surprises.
   sheersweep itself never deletes a file except two easy-to-find ways: the sweep's `find … -delete` runs solely on the cache paths listed below, and
   `uninstall` *moves* files to the Trash — it never calls `rm`. Every other
   destructive action is a tool's **own** uninstaller (`brew uninstall`, delegated),
-  and sheersweep prints the exact command before running it.
+  and sheersweep prints the exact command before running it. The one delegated
+  step without a prompt is the sweep's `brew cleanup`, and it is held to old
+  versions and downloads: sheersweep turns Homebrew's autoremove off, so neither
+  it nor `brew uninstall <one>` takes orphaned dependencies along. Those are
+  listed, and `brew autoremove` is yours to run.
 - **Dry-run first.** `sheersweep --dry-run` prints how much each item *would*
   free and deletes nothing. Run it, read it, then decide.
 - **`[ HELD ]` never-touch list — no line in the script can reach these:**
@@ -57,7 +61,8 @@ Open source, no subscription, no surprises.
   `Library/Caches`, `Library/Logs`, `~/.cache`, `~/.npm`, Xcode
   `DerivedData` / `DeviceSupport`, CoreSimulator caches, Cargo/Gradle caches,
   and Node's per-user compile cache.
-- System-wide, once: `/Library/Caches`, `/.adobeTemp`, `brew cleanup`.
+- System-wide, once: `/Library/Caches`, `/.adobeTemp`, `brew cleanup` (old
+  versions and downloads only — never a formula still installed).
 - **The sweep names no vendor.** It clears only regenerable cache/log/temp
   locations — never a vendor's application data. (Adobe's residue, once a
   hard-coded special case here, is now found honestly by `uninstall`'s

@@ -4,6 +4,48 @@ All notable changes to sheersweep are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/), and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.17.1]
+
+### Fixed — a one-formula consent that Homebrew turned into a batch
+
+`sheersweep uninstall <formula>` asks you to type one name, and the code beside
+it said so: *"never auto-run autoremove: the consent above covered ONE formula,
+not a batch."* Homebrew has since made autoremove the default, so the
+`brew uninstall <name>` it delegates to went on to uninstall every dependency
+nothing needed anymore. The sweep's bare `brew cleanup` did the same, with no
+prompt at all, and its output reached you as one size figure. The comment
+described a rule that was no longer in effect.
+
+On the machine this was found on (#2), `python@3.14` went that way, and with it
+the `/opt/homebrew/bin/python3` link. A daemon started hours earlier kept
+running on the deleted binary, and every new launch of it failed.
+
+Every brew call now runs with `HOMEBREW_NO_AUTOREMOVE=1`, on the sudo path and
+the plain one, from one shared list so the two can't drift. The previews
+(`cleanup -n`) see the same setting, so a dry run no longer promises removals
+the real run won't make. Orphaned dependencies stay where they were: listed in
+`tools` and after an uninstall. `brew autoremove` is yours to run. A
+functional test hands both paths a fake brew that reports its environment, and
+fails without the setting.
+
+The README, `SECURITY.md` and `AGENTS.md` said every delegated removal is
+printed and confirmed. The sweep's `brew cleanup` never was. They now name it
+as the one unprompted step and say what it is held to: old versions and
+downloads, never a formula that is still installed.
+
+The issue's other suggestion was a warning about running processes before a keg
+is pruned. It isn't taken. With autoremove off, nothing prunes a keg that is
+still installed, and a process scan would be slow and miss idle daemons. Its
+advice to restart them can't bring back a deleted interpreter either.
+
+### Docs — a cache folder's contract, not a tool's habit
+
+`Library/Caches` is a folder an app must be able to lose. Playwright keeps its
+browsers there and doesn't fetch them again on its own, so after a sweep the
+next run fails with `Executable doesn't exist`. The README now says why the sweep
+carves no exception for it (that would be the first vendor it names) and points
+to `PLAYWRIGHT_BROWSERS_PATH`.
+
 ## [0.17.0]
 
 ### Fixed — a section header that promised a method and handed back a noun
