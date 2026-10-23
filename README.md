@@ -37,7 +37,15 @@ Open source, no subscription, no surprises.
   Containers & Application Support, Dropbox / cloud-sync folders, screen
   recordings, Mail / Messages / Keychains, any git repo, any Obsidian vault.
 - **Only regenerable junk.** Everything it clears is a cache, a log, or temp that
-  the OS and your apps recreate on next use.
+  the OS and your apps recreate on next use. The line is the *folder's* contract,
+  not any one tool's habit: Apple's rule for `Library/Caches` is that an app must
+  be able to re-create or re-download whatever it keeps there, because the
+  system may empty it too. A few tools park downloads there that they won't
+  fetch again on their own. Playwright's browsers are the usual one, and the
+  next run fails with `Executable doesn't exist`. The sweep carves no exception
+  for them (that would be the first vendor it names). Give such a tool a home
+  of its own instead, e.g. `export PLAYWRIGHT_BROWSERS_PATH="$HOME/.local/share/ms-playwright"`
+  in `~/.zshenv`.
 - **The safety model is written down.** [`SECURITY.md`](SECURITY.md) lays out the
   full threat model in plain terms — the deletion surface, how the never-touch
   list is unreachable by construction, and the multi-account hardening — and how

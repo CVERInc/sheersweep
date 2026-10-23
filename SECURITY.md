@@ -21,7 +21,9 @@ read the risk:
    listed in `--help` (`Library/Caches`, `Library/Logs`, `~/.cache`, `~/.npm`,
    Xcode `DerivedData`/`DeviceSupport`, CoreSimulator/Cargo/Gradle caches,
    `/Library/Caches`, `/.adobeTemp`). These are regenerable — the OS and your apps
-   rebuild them. There is no "aggressive" or "deep" mode, and there never will be.
+   rebuild them; a tool that parks a download there and won't re-fetch it is
+   outside that contract (README › Why trust it). There is no "aggressive" or
+   "deep" mode, and there never will be.
 
 2. **`uninstall` / `leftovers` / `reclaim` move to the Trash** — they call `mv`
    into the owning account's `~/.Trash`, never `rm`. Every move is recorded in a
